@@ -92,8 +92,47 @@ require_once 'includes/header.php';
             <div class="d-flex flex-wrap gap-3 mb-3">
                 <span class="badge bg-primary"><?= e($tour['category']) ?></span>
                 <span class="text-muted"><i class="bi bi-people-fill me-1"></i> Max <?= $tour['max_participants'] ?> peserta</span>
+                <span class="text-muted"><?= renderStars($tour['rating']) ?> <?= $tour['rating'] ?> (<?= $tour['total_reviews'] ?> ulasan)</span>
             </div>
             <p class="lead"><?= nl2br(e($tour['description'])) ?></p>
+
+            <!-- Gallery -->
+            <h5 class="fw-bold mt-4 mb-3"><i class="bi bi-images me-2"></i>Galeri Foto</h5>
+            <div class="row g-2 mb-4">
+                <?php $galleryKw = getGalleryKeywords($tour); ?>
+                <?php foreach (array_slice($galleryKw, 0, 4) as $i => $kw):
+                    $galleryUrl = "https://loremflickr.com/640/480/" . urlencode(strtolower($kw)) . "?lock=" . crc32($kw); ?>
+                <div class="col-6 col-md-3">
+                    <a href="<?= $galleryUrl ?>" target="_blank" class="text-decoration-none">
+                        <img src="<?= $galleryUrl ?>" class="w-100 rounded-3" style="height: 120px; object-fit: cover;" alt="" onerror="this.remove()">
+                    </a>
+                </div>
+                <?php endforeach; ?>
+            </div>
+
+            <!-- Fasilitas -->
+            <h5 class="fw-bold mt-4 mb-3"><i class="bi bi-check2-square me-2"></i>Fasilitas Termasuk</h5>
+            <div class="row g-2 mb-4">
+                <?php foreach (getTourFacilities() as $f): ?>
+                <div class="col-6 col-md-4">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi <?= $f['icon'] ?> text-primary"></i>
+                        <small><?= $f['label'] ?></small>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+
+            <!-- Peta -->
+            <h5 class="fw-bold mt-4 mb-3"><i class="bi bi-geo-alt me-2"></i>Lokasi</h5>
+            <div class="rounded-3 overflow-hidden mb-4 border">
+                <?php
+                    $mapKw = urlencode(preg_replace('/\d+[dD]\d+[nN]?/i', '', $tour['title']));
+                    $lat = -6.2 + (crc32($tour['id']) % 1000) / 1000;
+                    $lng = 106.8 + (crc32($tour['id'] + 999) % 1000) / 1000;
+                ?>
+                <img src="https://maps.googleapis.com/maps/api/staticmap?center=<?= $mapKw ?>&zoom=5&size=800x200&maptype=roadmap&markers=color:red|<?= $mapKw ?>&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="Peta <?= e($tour['title']) ?>" class="w-100" style="height: 200px; object-fit: cover;" onerror="this.style.display='none'">
+            </div>
 
             <!-- Itinerary -->
             <?php if (count($itineraries) > 0): ?>

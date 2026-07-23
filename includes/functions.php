@@ -81,9 +81,9 @@ function e($string) {
 }
 
 /**
- * Ambil data tours aktif
+ * Ambil data tours aktif dengan filter lanjutan
  */
-function getTours($category = null, $search = null) {
+function getTours($category = null, $search = null, $priceRange = null, $duration = null, $rating = null) {
     $sql = "SELECT * FROM tours WHERE is_active = 1";
     $params = [];
 
@@ -96,6 +96,29 @@ function getTours($category = null, $search = null) {
         $sql .= " AND (title LIKE ? OR description LIKE ?)";
         $params[] = "%$search%";
         $params[] = "%$search%";
+    }
+
+    if ($priceRange) {
+        switch ($priceRange) {
+            case '1': $sql .= " AND price < 5000000"; break;
+            case '2': $sql .= " AND price BETWEEN 5000000 AND 10000000"; break;
+            case '3': $sql .= " AND price BETWEEN 10000000 AND 20000000"; break;
+            case '4': $sql .= " AND price > 20000000"; break;
+        }
+    }
+
+    if ($duration) {
+        // Extract durasi dari title (pola: 5D4N, 8D7N, dll)
+        switch ($duration) {
+            case '1': $sql .= " AND title REGEXP '[3-5][Dd][0-9]?[Nn]?'"; break;
+            case '2': $sql .= " AND title REGEXP '[6-8][Dd][0-9]?[Nn]?'"; break;
+            case '3': $sql .= " AND title REGEXP '1[0-9][Dd]'"; break;
+        }
+    }
+
+    if ($rating) {
+        $sql .= " AND rating >= ?";
+        $params[] = (float)$rating;
     }
 
     $sql .= " ORDER BY created_at DESC";
@@ -249,6 +272,44 @@ function getDiskonPersen($tour) {
         return round((($tour['original_price'] - $tour['price']) / $tour['original_price']) * 100);
     }
     return 0;
+}
+
+/**
+ * Ekstrak kata kunci untuk galeri dari judul tour
+ */
+function getGalleryKeywords($tour) {
+    $base = $tour['title'];
+    $base = preg_replace('/\d+[dD]\d+[nN]?/i', '', $base);
+    $base = str_ireplace(['Tour', 'Package', 'Paket', 'Travel', '–', '-'], ' ', $base);
+    $base = trim(preg_replace('/\s+/', ' ', $base));
+
+    $keywords = [$base];
+
+    // Tambah variasi kata kunci
+    $words = array_filter(explode(' ', $base));
+    if (count($words) >= 2) {
+        $keywords[] = $words[0] . ' landmark';
+        $keywords[] = $words[0] . ' culture';
+        if (isset($words[1])) {
+            $keywords[] = $words[0] . ' ' . $words[1] . ' view';
+        }
+    }
+
+    return array_unique($keywords);
+}
+
+/**
+ * Fasilitas default untuk tour
+ */
+function getTourFacilities() {
+    return [
+        ['icon' => 'bi-building', 'label' => 'Hotel Bintang 4'],
+        ['icon' => 'bi-bus-front', 'label' => 'Transport AC'],
+        ['icon' => 'bi-cup-hot', 'label' => 'Makan Sesuai Itinerary'],
+        ['icon' => 'bi-person-badge', 'label' => 'Tour Guide Profesional'],
+        ['icon' => 'bi-shield-check', 'label' => 'Asuransi Perjalanan'],
+        ['icon' => 'bi-camera', 'label' => 'Dokumentasi'],
+    ];
 }
 
 /**
