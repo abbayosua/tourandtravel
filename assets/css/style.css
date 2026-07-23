@@ -21,12 +21,52 @@
     opacity: 0.9;
 }
 
-/* ===== Kategori Scroll ===== */
-.kategori-scroll::-webkit-scrollbar {
-    height: 0;
+/* ===== Category Cards ===== */
+.cat-card {
+    border-radius: 12px;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
-/* ===== Tour Cards Klook-style ===== */
+.cat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1) !important;
+}
+
+/* ===== Promo Cards ===== */
+.promo-card {
+    border-radius: 12px;
+    transition: transform 0.2s;
+}
+
+.promo-card:hover {
+    transform: translateX(4px);
+}
+
+/* ===== Destination Cards ===== */
+.dest-card {
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.25s;
+}
+
+.dest-card:hover {
+    transform: translateY(-3px);
+}
+
+.dest-img {
+    height: 120px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.dest-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(transparent 50%, rgba(0,0,0,0.6));
+}
+
+/* ===== Old Tour Card ===== */
 .tour-card-klook {
     border-radius: 12px;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
@@ -50,24 +90,13 @@
     opacity: 1;
 }
 
-/* ===== Old Tour Card (keep for admin etc) ===== */
-.tour-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-.tour-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
-}
-
-.tour-card .card-img-top {
-    transition: transform 0.5s ease;
-}
-
-.tour-card:hover .card-img-top {
-    transform: scale(1.1);
+@media (max-width: 576px) {
+    .dest-img {
+        height: 80px;
+    }
+    .cat-card .fs-2 {
+        font-size: 1.25rem !important;
+    }
 }
 
 /* ===== Category Cards ===== */

@@ -9,6 +9,23 @@ $tours = getTours();
 $featuredTours = array_slice($tours, 0, 8);
 $categories = getCategories();
 
+// Ambil promo tours
+$promoTours = db()->query("SELECT * FROM tours WHERE category = 'Promo' AND is_active = 1")->fetchAll();
+if (!count($promoTours)) {
+    // fallback ke tour dengan harga termurah
+    $promoTours = db()->query("SELECT * FROM tours WHERE is_active = 1 AND price > 0 ORDER BY price ASC LIMIT 3")->fetchAll();
+}
+
+// Destinasi populer untuk section
+$destinasi = [
+    ['name' => 'Bali', 'category' => 'Domestik', 'img' => 'bali'],
+    ['name' => 'China', 'category' => 'China', 'img' => 'china'],
+    ['name' => 'Jepang', 'category' => 'Jepang', 'img' => 'japan'],
+    ['name' => 'Korea', 'category' => 'Korea Selatan', 'img' => 'korea'],
+    ['name' => 'Vietnam', 'category' => 'Vietnam', 'img' => 'vietnam'],
+    ['name' => 'Singapore', 'category' => 'Internasional', 'img' => 'singapore'],
+];
+
 require_once 'includes/header.php';
 ?>
 
@@ -27,7 +44,6 @@ require_once 'includes/header.php';
                         <button class="btn btn-primary px-4 rounded-3 m-1" onclick="window.location='tours.php?search='+encodeURIComponent(document.getElementById('heroSearch').value)">Cari</button>
                     </div>
                 </div>
-                <!-- Category Pills -->
                 <div class="d-flex flex-wrap gap-2 justify-content-center mt-4">
                     <a href="tours.php" class="btn btn-sm btn-light rounded-pill px-3 fw-semibold"><i class="bi bi-grid-fill me-1"></i>Semua</a>
                     <?php foreach ($categories as $cat): ?>
@@ -63,35 +79,112 @@ require_once 'includes/header.php';
     </div>
 </section>
 
-<!-- Kategori Pills (scrollable) -->
+<!-- Category Cards – ala Klook -->
+<section class="py-4">
+    <div class="container">
+        <h5 class="fw-bold mb-3">Kategori Wisata</h5>
+        <div class="row g-2">
+            <?php
+            $catIcons = [
+                'Domestik' => ['bi-flag-fill', '#0d6efd'],
+                'Internasional' => ['bi-globe2', '#6610f2'],
+                'China' => ['bi-building', '#dc3545'],
+                'Jepang' => ['bi-sun-fill', '#fd7e14'],
+                'Korea Selatan' => ['bi-music-note-beamed', '#e83e8c'],
+                'Vietnam' => ['bi-tree-fill', '#198754'],
+                'Taiwan' => ['bi-geo-alt-fill', '#20c997'],
+                'Kanada' => ['bi-snow2', '#0dcaf0'],
+            ];
+            $displayCats = ['Domestik', 'China', 'Jepang', 'Korea Selatan', 'Vietnam', 'Internasional'];
+            foreach ($displayCats as $cat):
+                $icon = $catIcons[$cat] ?? ['bi-compass', '#6f42c1'];
+                $count = db()->prepare("SELECT COUNT(*) FROM tours WHERE category = ? AND is_active = 1");
+                $count->execute([$cat]);
+                $total = $count->fetchColumn();
+            ?>
+            <div class="col-4 col-md-2">
+                <a href="tours.php?category=<?= e($cat) ?>" class="text-decoration-none">
+                    <div class="card border-0 shadow-sm text-center py-3 cat-card">
+                        <div class="fs-2 mb-1" style="color: <?= $icon[1] ?>;"><i class="bi <?= $icon[0] ?>"></i></div>
+                        <h6 class="fw-semibold small mb-0 text-dark"><?= e($cat) ?></h6>
+                        <small class="text-muted"><?= $total ?> paket</small>
+                    </div>
+                </a>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+
+<!-- Promo / Flash Deals Banner -->
+<?php if (count($promoTours) > 0): ?>
 <section class="py-4 bg-light">
     <div class="container">
-        <div class="d-flex align-items-center gap-2 overflow-auto pb-2 kategori-scroll">
-            <a href="tours.php" class="btn btn-primary rounded-pill fw-semibold px-4 flex-shrink-0">
-                <i class="bi bi-stars me-1"></i>Semua
-            </a>
-            <?php foreach ($categories as $cat): ?>
-                <?php
-                    $icon = match($cat) {
-                        'Domestik' => 'bi-flag',
-                        'Internasional' => 'bi-globe2',
-                        default => 'bi-compass'
-                    };
-                ?>
-                <a href="tours.php?category=<?= e($cat) ?>" class="btn btn-outline-secondary rounded-pill px-4 flex-shrink-0">
-                    <i class="bi <?= $icon ?> me-1"></i><?= e($cat) ?>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold mb-0"><i class="bi bi-lightning-charge-fill text-warning me-1"></i> Flash Deals</h5>
+            <a href="tours.php?category=Promo" class="btn btn-sm btn-outline-danger rounded-pill px-3">Lihat Semua</a>
+        </div>
+        <div class="row g-3">
+            <?php foreach (array_slice($promoTours, 0, 3) as $promo): ?>
+            <div class="col-md-4">
+                <a href="tour-detail.php?slug=<?= e($promo['slug']) ?>" class="text-decoration-none">
+                    <div class="card border-0 shadow-sm overflow-hidden promo-card">
+                        <div class="row g-0">
+                            <div class="col-4">
+                                <img src="<?= getTourImage($promo, 'small') ?>" class="h-100 w-100" style="object-fit: cover;" alt="">
+                            </div>
+                            <div class="col-8">
+                                <div class="card-body py-2 px-3">
+                                    <div class="d-flex align-items-center gap-1 mb-1">
+                                        <span class="badge bg-danger small">HOT</span>
+                                        <small class="text-muted">Promo</small>
+                                    </div>
+                                    <h6 class="fw-semibold small mb-1 text-dark"><?= e($promo['title']) ?></h6>
+                                    <?php if ($promo['price'] > 0): ?>
+                                        <span class="fw-bold text-primary small"><?= formatRupiah($promo['price']) ?></span>
+                                    <?php else: ?>
+                                        <span class="badge bg-info">Hubungi Kami</span>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </a>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
+
+<!-- Popular Destinations – ala Klook -->
+<section class="py-4">
+    <div class="container">
+        <h5 class="fw-bold mb-3">Destinasi Populer</h5>
+        <div class="row g-2">
+            <?php foreach ($destinasi as $dest): ?>
+            <div class="col-4 col-md-2">
+                <a href="tours.php?category=<?= e($dest['category']) ?>" class="text-decoration-none">
+                    <div class="card border-0 shadow-sm overflow-hidden dest-card">
+                        <div class="dest-img" style="background-image: url('https://picsum.photos/seed/<?= $dest['img'] ?>/400/300');">
+                            <div class="dest-overlay d-flex align-items-end p-2">
+                                <span class="fw-semibold text-white small"><?= e($dest['name']) ?></span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
             <?php endforeach; ?>
         </div>
     </div>
 </section>
 
 <!-- Featured Tours – ala Klook card grid -->
-<section class="py-5">
+<section class="py-4 bg-light">
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h4 class="fw-bold mb-1">Rekomendasi Paket Tour</h4>
+                <h5 class="fw-bold mb-1">Rekomendasi Paket Tour</h5>
                 <p class="text-muted mb-0 small">Pilihan terbaik untuk liburan Anda</p>
             </div>
             <a href="tours.php" class="btn btn-outline-primary rounded-pill px-4">Lihat Semua <i class="bi bi-arrow-right ms-1"></i></a>
@@ -103,7 +196,6 @@ require_once 'includes/header.php';
                     <div class="position-relative overflow-hidden rounded-top" style="height: 180px;">
                         <img src="<?= getTourImage($tour, 'medium') ?>" onerror="this.src='<?= getTourImageFallback($tour, 'medium') ?>'" class="w-100 h-100" style="object-fit: cover;" alt="<?= e($tour['title']) ?>">
                         <span class="badge bg-white text-dark position-absolute top-0 start-0 m-2 shadow-sm"><?= e($tour['category']) ?></span>
-                        <button class="btn btn-sm position-absolute top-0 end-0 m-1 text-white like-btn"><i class="bi bi-heart"></i></button>
                     </div>
                     <div class="card-body p-3">
                         <h6 class="fw-semibold mb-1 text-truncate"><?= e($tour['title']) ?></h6>
@@ -136,10 +228,10 @@ require_once 'includes/header.php';
 </section>
 
 <!-- Kenapa Pilih Kami – ala Klook trust -->
-<section class="py-5 bg-light">
+<section class="py-5">
     <div class="container">
         <div class="text-center mb-4">
-            <h4 class="fw-bold">Kenapa Pilih <?= SITE_NAME ?>?</h4>
+            <h5 class="fw-bold">Kenapa Pilih <?= SITE_NAME ?>?</h5>
         </div>
         <div class="row g-3">
             <div class="col-6 col-md-3">
