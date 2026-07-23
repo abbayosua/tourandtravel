@@ -147,32 +147,6 @@ require_once 'includes/header.php';
                 </div>
             </div>
 
-            <script>
-            var galleryModal = new bootstrap.Modal(document.getElementById('galleryModal'));
-            var galleryCarousel = new bootstrap.Carousel(document.getElementById('galleryCarousel'), { interval: false });
-
-            function openGallery(index) {
-                galleryCarousel.to(index);
-                galleryModal.show();
-                updateDots(index);
-            }
-
-            function slideTo(index) {
-                galleryCarousel.to(index);
-                updateDots(index);
-            }
-
-            document.getElementById('galleryCarousel').addEventListener('slid.bs.carousel', function(e) {
-                updateDots(e.to);
-            });
-
-            function updateDots(index) {
-                document.querySelectorAll('.gallery-dot').forEach(function(el, i) {
-                    el.style.opacity = i === index ? '1' : '0.6';
-                });
-            }
-            </script>
-
             <!-- Fasilitas -->
             <h5 class="fw-bold mt-4 mb-3"><i class="bi bi-check2-square me-2"></i>Fasilitas Termasuk</h5>
             <div class="row g-2 mb-4">
@@ -330,3 +304,36 @@ require_once 'includes/header.php';
 </div>
 
 <?php require_once 'includes/footer.php'; ?>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof bootstrap === 'undefined') return;
+    window._galleryModal = new bootstrap.Modal(document.getElementById('galleryModal'));
+    window._galleryCarousel = new bootstrap.Carousel(document.getElementById('galleryCarousel'), { interval: false });
+    var el = document.getElementById('galleryCarousel');
+    if (el) {
+        el.addEventListener('slid.bs.carousel', function(e) {
+            updateDots(e.to);
+        });
+    }
+});
+
+function openGallery(index) {
+    if (!window._galleryCarousel) return;
+    window._galleryCarousel.to(index);
+    window._galleryModal.show();
+    updateDots(index);
+}
+
+function slideTo(index) {
+    if (!window._galleryCarousel) return;
+    window._galleryCarousel.to(index);
+    updateDots(index);
+}
+
+function updateDots(index) {
+    document.querySelectorAll('.gallery-dot').forEach(function(el, i) {
+        el.style.opacity = i === index ? '1' : '0.6';
+    });
+}
+</script>
