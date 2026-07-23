@@ -107,3 +107,18 @@ document.addEventListener('DOMContentLoaded', function () {
     initSearchAutocomplete('heroSearch', 'heroSearchDropdown');
     initSearchAutocomplete('catalogSearch', 'catalogSearchDropdown');
 });
+
+// Toggle navbar search on scroll
+var navbar = document.querySelector('.sticky-top');
+if (navbar) {
+    var hero = document.querySelector('.hero-klook');
+    window.addEventListener('scroll', function () {
+        var scrollY = window.scrollY;
+        var heroBottom = hero ? hero.offsetTop + hero.offsetHeight : 400;
+        if (scrollY > heroBottom - 80) {
+            navbar.classList.add('navbar-scrolled');
+        } else {
+            navbar.classList.remove('navbar-scrolled');
+        }
+    });
+}

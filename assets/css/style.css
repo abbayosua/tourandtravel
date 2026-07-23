@@ -9,6 +9,20 @@
     min-height: 80vh;
 }
 
+/* Nav search: hidden default, muncul pas scroll */
+.nav-search-wrapper {
+    opacity: 0;
+    transform: translateY(-5px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+}
+
+.navbar-scrolled .nav-search-wrapper {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+}
+
 .hero-bg {
     position: absolute;
     inset: 0;
