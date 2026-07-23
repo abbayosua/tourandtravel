@@ -35,7 +35,7 @@
                 <?php if (isset($_SESSION['user_id'])): ?>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                        <i class="bi bi-person-circle me-1"></i><?= e($_SESSION['user_name']) ?>
+                        <i class="bi bi-person-circle me-1"></i><?= e($_SESSION['user_name'] ?? 'User') ?>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" href="wishlist.php"><i class="bi bi-heart me-2"></i>Wishlist</a></li>

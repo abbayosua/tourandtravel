@@ -77,6 +77,7 @@ function uploadGambar($file, $targetDir) {
  * Escape HTML
  */
 function e($string) {
+    if ($string === null) return '';
     return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
 }
 
