@@ -5,7 +5,8 @@ require_once 'includes/functions.php';
 
 $pageTitle = 'Beranda';
 
-$tours = getTours();
+$toursResult = getTours();
+$tours = $toursResult['tours'];
 $featuredTours = array_slice($tours, 0, 8);
 $categories = getCategories();
 
@@ -16,6 +17,11 @@ if (!count($promoTours)) {
     $promoTours = db()->query("SELECT * FROM tours WHERE is_active = 1 AND price > 0 ORDER BY price ASC LIMIT 3")->fetchAll();
 }
 
+<?php
+$wishlistIds = [];
+if (isLoggedIn()) {
+    $wishlistIds = getWishlistIds($_SESSION['user_id']);
+}
 require_once 'includes/header.php';
 ?>
 
@@ -207,6 +213,12 @@ require_once 'includes/header.php';
                         <?php $diskon = getDiskonPersen($tour); if ($diskon > 0): ?>
                             <span class="badge bg-danger position-absolute top-0 start-0 m-2 shadow-sm">-<?= $diskon ?>%</span>
                         <?php endif; ?>
+                        <button class="btn btn-sm position-absolute top-0 end-0 m-1 like-btn wishlist-btn <?= in_array($tour['id'], $wishlistIds) ? 'text-danger' : 'text-white' ?>" 
+                            data-tour-id="<?= $tour['id'] ?>" 
+                            onclick="toggleWishlist(this, <?= $tour['id'] ?>)">
+                            <i class="bi bi-heart<?= in_array($tour['id'], $wishlistIds) ? '-fill' : '' ?>"></i>
+                        </button>
+                        <span class="badge bg-white text-dark position-absolute top-0 start-0 m-2 shadow-sm" style="margin-top: 38px !important;"><?= e($tour['category']) ?></span>
                         <span class="badge bg-white text-dark position-absolute top-0 end-0 m-2 shadow-sm"><?= e($tour['category']) ?></span>
                     </div>
                     <div class="card-body p-3">

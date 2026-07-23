@@ -28,8 +28,25 @@
                     <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'tours.php' ? 'active' : '' ?>" href="<?= BASE_URL ?>/tours.php">Paket Tour</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#kontak">Kontak</a>
+                    <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'wishlist.php' ? 'active' : '' ?>" href="<?= BASE_URL ?>/wishlist.php">
+                        <i class="bi bi-heart"></i>
+                    </a>
                 </li>
+                <?php if (isset($_SESSION['user_id'])): ?>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle me-1"></i><?= e($_SESSION['user_name']) ?>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="wishlist.php"><i class="bi bi-heart me-2"></i>Wishlist</a></li>
+                        <li><a class="dropdown-item" href="logout.php"><i class="bi bi-box-arrow-right me-2"></i>Keluar</a></li>
+                    </ul>
+                </li>
+                <?php else: ?>
+                <li class="nav-item">
+                    <a class="nav-link" href="login.php"><i class="bi bi-person me-1"></i>Masuk</a>
+                </li>
+                <?php endif; ?>
             </ul>
         </div>
     </div>

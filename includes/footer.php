@@ -36,5 +36,25 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="<?= BASE_URL ?>/assets/js/script.js"></script>
+<script>
+function toggleWishlist(btn, tourId) {
+    <?php if (!isLoggedIn()): ?>
+    window.location.href = 'login.php?redirect=' + encodeURIComponent(window.location.href);
+    return;
+    <?php endif; ?>
+    var icon = btn.querySelector('i');
+    fetch('wishlist-ajax.php?tour_id=' + tourId + '&action=toggle')
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+            if (d.status === 'added') {
+                icon.className = 'bi bi-heart-fill';
+                btn.className = btn.className.replace(/text-\w+/g, '').trim() + ' text-danger';
+            } else if (d.status === 'removed') {
+                icon.className = 'bi bi-heart';
+                btn.className = btn.className.replace(/text-\w+/g, '').trim() + ' text-white';
+            }
+        });
+}
+</script>
 </body>
 </html>

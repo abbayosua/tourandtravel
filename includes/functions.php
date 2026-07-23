@@ -81,50 +81,119 @@ function e($string) {
 }
 
 /**
- * Ambil data tours aktif dengan filter lanjutan
+ * Ambil data tours aktif dengan filter lanjutan + sort + pagination
  */
-function getTours($category = null, $search = null, $priceRange = null, $duration = null, $rating = null) {
+function getTours($category = null, $search = null, $priceRange = null, $duration = null, $rating = null, $sort = null, $page = 1, $perPage = 12) {
     $sql = "SELECT * FROM tours WHERE is_active = 1";
+    $countSql = "SELECT COUNT(*) FROM tours WHERE is_active = 1";
     $params = [];
+    $countParams = [];
 
     if ($category) {
         $sql .= " AND category = ?";
+        $countSql .= " AND category = ?";
         $params[] = $category;
+        $countParams[] = $category;
     }
 
     if ($search) {
         $sql .= " AND (title LIKE ? OR description LIKE ?)";
+        $countSql .= " AND (title LIKE ? OR description LIKE ?)";
         $params[] = "%$search%";
         $params[] = "%$search%";
+        $countParams[] = "%$search%";
+        $countParams[] = "%$search%";
     }
 
     if ($priceRange) {
-        switch ($priceRange) {
-            case '1': $sql .= " AND price < 5000000"; break;
-            case '2': $sql .= " AND price BETWEEN 5000000 AND 10000000"; break;
-            case '3': $sql .= " AND price BETWEEN 10000000 AND 20000000"; break;
-            case '4': $sql .= " AND price > 20000000"; break;
-        }
+        $rangeSql = match($priceRange) {
+            '1' => " AND price < 5000000",
+            '2' => " AND price BETWEEN 5000000 AND 10000000",
+            '3' => " AND price BETWEEN 10000000 AND 20000000",
+            '4' => " AND price > 20000000",
+            default => ''
+        };
+        $sql .= $rangeSql;
+        $countSql .= $rangeSql;
     }
 
     if ($duration) {
-        // Extract durasi dari title (pola: 5D4N, 8D7N, dll)
-        switch ($duration) {
-            case '1': $sql .= " AND title REGEXP '[3-5][Dd][0-9]?[Nn]?'"; break;
-            case '2': $sql .= " AND title REGEXP '[6-8][Dd][0-9]?[Nn]?'"; break;
-            case '3': $sql .= " AND title REGEXP '1[0-9][Dd]'"; break;
-        }
+        $durSql = match($duration) {
+            '1' => " AND (title REGEXP '[3-5][Dd][0-9]?[Nn]?' OR title REGEXP '3[[:space:]]*Hari')",
+            '2' => " AND (title REGEXP '[6-8][Dd][0-9]?[Nn]?' OR title REGEXP '[6-8][[:space:]]*Hari')",
+            '3' => " AND (title REGEXP '1[0-9][Dd]' OR title REGEXP '1[0-9][[:space:]]*Hari' OR title REGEXP '11[Dd]')",
+            default => ''
+        };
+        $sql .= $durSql;
+        $countSql .= $durSql;
     }
 
     if ($rating) {
         $sql .= " AND rating >= ?";
+        $countSql .= " AND rating >= ?";
         $params[] = (float)$rating;
+        $countParams[] = (float)$rating;
     }
 
-    $sql .= " ORDER BY created_at DESC";
+    // Sort
+    $sql .= match($sort) {
+        'price_asc' => " ORDER BY price ASC",
+        'price_desc' => " ORDER BY price DESC",
+        'rating' => " ORDER BY rating DESC, total_reviews DESC",
+        'popular' => " ORDER BY total_reviews DESC, rating DESC",
+        default => " ORDER BY created_at DESC"
+    };
+
+    // Pagination
+    $page = max(1, (int)$page);
+    $offset = ($page - 1) * $perPage;
+    $sql .= " LIMIT $perPage OFFSET $offset";
+
+    // Hitung total
+    $countStmt = db()->prepare($countSql);
+    $countStmt->execute($countParams);
+    $total = $countStmt->fetchColumn();
+
     $stmt = db()->prepare($sql);
     $stmt->execute($params);
+    $tours = $stmt->fetchAll();
+
+    return ['tours' => $tours, 'total' => $total, 'page' => $page, 'perPage' => $perPage, 'lastPage' => max(1, (int)ceil($total / $perPage))];
+}
+
+/**
+ * Cek user login
+ */
+function isLoggedIn() {
+    return isset($_SESSION['user_id']);
+}
+
+function getUser() {
+    if (!isLoggedIn()) return null;
+    $stmt = db()->prepare("SELECT id, name, email, phone FROM users WHERE id = ?");
+    $stmt->execute([$_SESSION['user_id']]);
+    return $stmt->fetch();
+}
+
+/**
+ * Wishlist
+ */
+function isWishlisted($userId, $tourId) {
+    $stmt = db()->prepare("SELECT COUNT(*) FROM wishlists WHERE user_id = ? AND tour_id = ?");
+    $stmt->execute([$userId, $tourId]);
+    return $stmt->fetchColumn() > 0;
+}
+
+function getUserWishlists($userId) {
+    $stmt = db()->prepare("SELECT t.* FROM wishlists w JOIN tours t ON w.tour_id = t.id WHERE w.user_id = ? AND t.is_active = 1 ORDER BY w.created_at DESC");
+    $stmt->execute([$userId]);
     return $stmt->fetchAll();
+}
+
+function getWishlistIds($userId) {
+    $stmt = db()->prepare("SELECT tour_id FROM wishlists WHERE user_id = ?");
+    $stmt->execute([$userId]);
+    return $stmt->fetchAll(PDO::FETCH_COLUMN);
 }
 
 /**
