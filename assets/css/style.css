@@ -2,9 +2,29 @@
 :root {
     --primary: #0d6efd;
     --primary-dark: #0b5ed7;
+    --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+    --shadow-lg: 0 8px 30px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.04);
+    --shadow-hover: 0 12px 40px rgba(0,0,0,0.14), 0 6px 12px rgba(0,0,0,0.06);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
 }
 
-/* ===== Hero Premium ===== */
+/* ===== Typography ===== */
+body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== Global Card ===== */
+.card {
+    border-radius: var(--radius-md) !important;
+}
+
+/* ===== Hero ===== */
 .hero-klook {
     min-height: 80vh;
 }
@@ -81,18 +101,19 @@
 
 /* ===== Category Cards ===== */
 .cat-card {
-    border-radius: 12px;
+    border-radius: var(--radius-md) !important;
     transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid rgba(0,0,0,0.04) !important;
 }
 
 .cat-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.1) !important;
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg) !important;
 }
 
 /* ===== Promo Cards ===== */
 .promo-card {
-    border-radius: 12px;
+    border-radius: var(--radius-md) !important;
     transition: transform 0.2s;
 }
 
@@ -102,17 +123,17 @@
 
 /* ===== Destination Cards ===== */
 .dest-card {
-    border-radius: 12px;
+    border-radius: var(--radius-md) !important;
     overflow: hidden;
     transition: transform 0.25s;
 }
 
 .dest-card:hover {
-    transform: translateY(-3px);
+    transform: translateY(-4px);
 }
 
 .dest-img {
-    height: 120px;
+    height: 140px;
     background-size: cover;
     background-position: center;
     position: relative;
@@ -121,22 +142,29 @@
 .dest-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(transparent 50%, rgba(0,0,0,0.6));
+    background: linear-gradient(transparent 40%, rgba(0,0,0,0.7));
 }
 
-/* ===== Old Tour Card ===== */
+/* ===== Tour Cards ===== */
 .tour-card-klook {
-    border-radius: 12px;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    border-radius: var(--radius-md) !important;
+    box-shadow: var(--shadow-sm) !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none !important;
 }
 
 .tour-card-klook:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.12) !important;
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-hover) !important;
 }
 
 .tour-card-klook .rounded-top {
-    border-radius: 12px 12px 0 0;
+    border-radius: var(--radius-md) var(--radius-md) 0 0 !important;
+}
+
+.tour-card-klook h6 {
+    font-size: 0.95rem;
+    line-height: 1.3;
 }
 
 .tour-card-klook .like-btn {
@@ -164,13 +192,14 @@
 
 /* ===== Flight Cards ===== */
 .flight-card {
-    border-radius: 16px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: var(--radius-lg) !important;
+    box-shadow: var(--shadow-sm) !important;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .flight-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.08) !important;
+    box-shadow: var(--shadow-md) !important;
 }
 
 .flight-logo {
