@@ -157,9 +157,9 @@ function getTourImage($tour, $size = 'medium') {
         return BASE_URL . '/uploads/' . $tour['cover_image'];
     }
 
-    // 2. Wikimedia Commons (via DB)
+    // 2. Wikimedia Commons (via DB — path relatif: wiki/hash.webp)
     if (!empty($tour['wiki_image'])) {
-        return $tour['wiki_image'];
+        return BASE_URL . '/uploads/' . $tour['wiki_image'];
     }
 
     $dimensions = [
@@ -199,7 +199,7 @@ function getDestinasiImage($city) {
     if (file_exists($cacheFile)) {
         $cache = json_decode(file_get_contents($cacheFile), true) ?: [];
         if (isset($cache[$city]) && $cache[$city]) {
-            return $cache[$city];
+            return BASE_URL . '/uploads/' . $cache[$city];
         }
     }
     return "https://picsum.photos/seed/" . strtolower(str_replace(' ', '-', $city)) . "/400/300";
