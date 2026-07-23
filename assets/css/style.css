@@ -15,6 +15,7 @@
     inset: 0;
     background: url('https://images.unsplash.com/photo-1488085061387-422e29b40080?w=1920&q=80') center/cover no-repeat;
     opacity: 0.15;
+    transition: opacity 0.8s ease;
 }
 
 .hero-video {
@@ -28,7 +29,7 @@
 }
 
 .hero-video.loaded {
-    opacity: 0.15;
+    opacity: 0.25;
 }
 
 .hero-klook .opacity-90 {

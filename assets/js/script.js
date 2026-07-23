@@ -29,6 +29,9 @@ window.addEventListener('load', function () {
 
     video.addEventListener('canplay', function () {
         video.classList.add('loaded');
+        // Hilangkan background image statis setelah video siap
+        var bg = document.querySelector('.hero-bg');
+        if (bg) bg.style.opacity = '0';
         video.play().catch(function () {});
     });
 
