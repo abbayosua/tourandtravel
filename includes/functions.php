@@ -149,25 +149,12 @@ function getCategories() {
 }
 
 /**
- * Ambil URL gambar tour, fallback ke loremflickr jika tidak ada
+ * Ambil URL gambar tour, fallback ke seeded picsum jika tidak ada
  */
 function getTourImage($tour, $size = 'medium') {
     if ($tour['cover_image']) {
         return BASE_URL . '/uploads/' . $tour['cover_image'];
     }
-
-    // Extract keyword dari judul tour untuk loremflickr
-    $keyword = $tour['title'];
-    // Buang angka seperti 5D4N, 4D3N, dll
-    $keyword = preg_replace('/\d+D\d+N/i', '', $keyword);
-    // Buang kata umum
-    $keyword = str_replace(['Tour', 'Package', 'Paket', '-'], '', $keyword);
-    $keyword = trim($keyword);
-    // Ambil 2 kata pertama
-    $words = explode(' ', $keyword);
-    $keyword = implode(' ', array_slice($words, 0, 2));
-    $keyword = strtolower(str_replace(' ', '-', $keyword));
-    $keyword = urlencode($keyword);
 
     $dimensions = [
         'small'  => '320/240',
@@ -175,8 +162,9 @@ function getTourImage($tour, $size = 'medium') {
         'large'  => '1200/800',
     ];
     $dim = $dimensions[$size] ?? '640/480';
+    $seed = strtolower(str_replace(' ', '-', $tour['title']));
 
-    return "https://loremflickr.com/{$dim}/{$keyword}?lock=" . (crc32($tour['id'] ?? $tour['title']) % 10000);
+    return "https://picsum.photos/seed/{$seed}/{$dim}";
 }
 
 /**
