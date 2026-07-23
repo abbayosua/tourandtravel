@@ -203,6 +203,7 @@ require_once 'includes/header.php';
 
                     <!-- Form Booking -->
                     <hr>
+                    <?php if (isLoggedIn()): ?>
                     <h6 class="fw-semibold">Booking Sekarang</h6>
                     <?php if ($bookingError): ?>
                         <div class="alert alert-danger py-2 small"><?= $bookingError ?></div>
@@ -245,6 +246,15 @@ require_once 'includes/header.php';
                         </div>
                         <button type="submit" class="btn btn-primary w-100 fw-semibold">Pesan Sekarang</button>
                     </form>
+                    <?php else: ?>
+                    <div class="text-center py-4">
+                        <i class="bi bi-person-lock fs-1 text-muted mb-2 d-block"></i>
+                        <p class="fw-semibold mb-2">Register untuk Booking</p>
+                        <p class="small text-muted mb-3">Hanya butuh waktu 2 menit! Dapatkan akses booking dan riwayat pemesanan.</p>
+                        <a href="register.php?redirect=<?= urlencode($_SERVER['REQUEST_URI']) ?>" class="btn btn-primary w-100 mb-2">Daftar Sekarang</a>
+                        <a href="login.php?redirect=<?= urlencode($_SERVER['REQUEST_URI']) ?>" class="btn btn-outline-primary w-100">Sudah punya akun? Masuk</a>
+                    </div>
+                    <?php endif; ?>
                     <?php else: ?>
                     <div class="alert alert-warning py-2 small mb-0">
                         <i class="bi bi-exclamation-triangle me-1"></i> Belum ada jadwal keberangkatan tersedia
