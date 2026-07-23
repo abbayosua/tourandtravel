@@ -43,6 +43,12 @@ require_once 'includes/header.php';
                         <div class="search-dropdown" id="heroSearchDropdown"></div>
                     </div>
                 </div>
+                <div class="d-flex flex-wrap gap-2 mt-3">
+                    <a href="tours.php" class="btn btn-sm btn-light rounded-pill px-3 fw-semibold"><i class="bi bi-grid-fill me-1"></i>Semua</a>
+                    <?php foreach ($categories as $cat): ?>
+                        <a href="tours.php?category=<?= e($cat) ?>" class="btn btn-sm btn-outline-light rounded-pill px-3"><?= e($cat) ?></a>
+                    <?php endforeach; ?>
+                </div>
             </div>
         </div>
     </div>
