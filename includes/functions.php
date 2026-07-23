@@ -222,6 +222,36 @@ function getSisaSlot($tourDateId) {
 }
 
 /**
+ * Render bintang rating HTML
+ */
+function renderStars($rating) {
+    $full = floor($rating);
+    $half = ($rating - $full) >= 0.5;
+    $html = '<span class="text-warning small">';
+    for ($i = 0; $i < 5; $i++) {
+        if ($i < $full) {
+            $html .= '<i class="bi bi-star-fill"></i>';
+        } elseif ($i == $full && $half) {
+            $html .= '<i class="bi bi-star-half"></i>';
+        } else {
+            $html .= '<i class="bi bi-star"></i>';
+        }
+    }
+    $html .= '</span>';
+    return $html;
+}
+
+/**
+ * Hitung diskon persen
+ */
+function getDiskonPersen($tour) {
+    if (!empty($tour['original_price']) && $tour['original_price'] > $tour['price']) {
+        return round((($tour['original_price'] - $tour['price']) / $tour['original_price']) * 100);
+    }
+    return 0;
+}
+
+/**
  * Ambil tour berdasarkan keyword (destinasi kota)
  */
 function getToursByCity($keyword) {

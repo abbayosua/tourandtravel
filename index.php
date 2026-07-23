@@ -204,10 +204,17 @@ require_once 'includes/header.php';
                 <div class="card tour-card-klook border-0 shadow-sm h-100">
                     <div class="position-relative overflow-hidden rounded-top" style="height: 180px;">
                         <img src="<?= getTourImage($tour, 'medium') ?>" onerror="this.src='<?= getTourImageFallback($tour, 'medium') ?>'" class="w-100 h-100" style="object-fit: cover;" alt="<?= e($tour['title']) ?>">
-                        <span class="badge bg-white text-dark position-absolute top-0 start-0 m-2 shadow-sm"><?= e($tour['category']) ?></span>
+                        <?php $diskon = getDiskonPersen($tour); if ($diskon > 0): ?>
+                            <span class="badge bg-danger position-absolute top-0 start-0 m-2 shadow-sm">-<?= $diskon ?>%</span>
+                        <?php endif; ?>
+                        <span class="badge bg-white text-dark position-absolute top-0 end-0 m-2 shadow-sm"><?= e($tour['category']) ?></span>
                     </div>
                     <div class="card-body p-3">
                         <h6 class="fw-semibold mb-1 text-truncate"><?= e($tour['title']) ?></h6>
+                        <div class="d-flex align-items-center gap-2 small mb-1">
+                            <?= renderStars($tour['rating']) ?>
+                            <span class="text-muted">(<?= $tour['total_reviews'] ?>)</span>
+                        </div>
                         <div class="d-flex align-items-center text-muted small mb-2">
                             <i class="bi bi-clock me-1"></i>
                             <?php
@@ -225,6 +232,9 @@ require_once 'includes/header.php';
                             <div>
                                 <span class="fw-bold text-primary"><?= formatRupiah($tour['price']) ?></span>
                                 <small class="text-muted">/org</small>
+                                <?php if ($diskon > 0): ?>
+                                    <br><small class="text-decoration-line-through text-muted"><?= formatRupiah($tour['original_price']) ?></small>
+                                <?php endif; ?>
                             </div>
                             <a href="tour-detail.php?slug=<?= e($tour['slug']) ?>" class="btn btn-sm btn-primary rounded-pill px-3">Pesan</a>
                         </div>

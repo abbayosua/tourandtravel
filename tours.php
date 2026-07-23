@@ -48,14 +48,24 @@ require_once 'includes/header.php';
                 <div class="card tour-card h-100 shadow-sm border-0">
                     <div class="position-relative overflow-hidden" style="height: 220px;">
                         <img src="<?= getTourImage($tour, 'medium') ?>" onerror="this.src='<?= getTourImageFallback($tour, 'medium') ?>'" class="card-img-top h-100 w-100" style="object-fit: cover;" alt="<?= e($tour['title']) ?>">
+                        <?php $diskon = getDiskonPersen($tour); if ($diskon > 0): ?>
+                            <span class="badge bg-danger position-absolute top-0 start-0 m-2 shadow-sm">-<?= $diskon ?>%</span>
+                        <?php endif; ?>
                         <span class="badge bg-primary position-absolute top-0 end-0 m-2"><?= e($tour['category']) ?></span>
                     </div>
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title fw-semibold"><?= e($tour['title']) ?></h5>
+                        <div class="d-flex align-items-center gap-2 small mb-1">
+                            <?= renderStars($tour['rating']) ?>
+                            <span class="text-muted">(<?= $tour['total_reviews'] ?>)</span>
+                        </div>
                         <p class="card-text small text-muted flex-grow-1"><?= substr(e($tour['description']), 0, 120) ?>...</p>
                         <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
                             <div>
                                 <span class="fw-bold text-primary fs-5"><?= formatRupiah($tour['price']) ?></span>
+                                <?php if ($diskon > 0): ?>
+                                    <small class="text-decoration-line-through text-muted ms-1"><?= formatRupiah($tour['original_price']) ?></small>
+                                <?php endif; ?>
                                 <span class="d-block small text-muted">/orang</span>
                             </div>
                             <a href="tour-detail.php?slug=<?= e($tour['slug']) ?>" class="btn btn-primary">Lihat Detail</a>

@@ -131,7 +131,16 @@ require_once 'includes/header.php';
             <!-- Harga -->
             <div class="card border-0 shadow-sm mb-4 sticky-top" style="top: 80px; z-index: 100;">
                 <div class="card-body">
+                    <div class="d-flex align-items-center gap-2 small mb-2">
+                        <?= renderStars($tour['rating']) ?>
+                        <span class="text-muted">(<?= $tour['total_reviews'] ?> ulasan)</span>
+                    </div>
+                    <?php $diskon = getDiskonPersen($tour); ?>
                     <h4 class="fw-bold text-primary mb-0"><?= formatRupiah($tour['price']) ?></h4>
+                    <?php if ($diskon > 0): ?>
+                        <small class="text-decoration-line-through text-muted"><?= formatRupiah($tour['original_price']) ?></small>
+                        <span class="badge bg-danger ms-1">-<?= $diskon ?>%</span>
+                    <?php endif; ?>
                     <p class="text-muted">/ orang</p>
 
                     <!-- Pilih Tanggal -->
