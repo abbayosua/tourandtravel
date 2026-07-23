@@ -23,30 +23,28 @@ if (isLoggedIn()) {
 require_once 'includes/header.php';
 ?>
 
-<!-- Hero – ala Klook -->
+<!-- Hero -->
 <section class="hero-klook d-flex align-items-center position-relative overflow-hidden">
     <div class="hero-bg"></div>
     <video id="heroVideo" class="hero-video" muted loop playsinline preload="none"></video>
+    <div class="hero-overlay"></div>
     <div class="container position-relative z-1">
         <div class="row justify-content-center">
-            <div class="col-lg-8 text-center text-white">
-                <h1 class="display-4 fw-bold mb-2">Jelajahi Petualanganmu</h1>
-                <p class="lead mb-4 opacity-90">Temukan paket tour terbaik untuk liburan impian Anda</p>
-                <div class="bg-white rounded-4 p-2 shadow-lg mx-auto" style="max-width: 560px;">
+            <div class="col-lg-7 text-center text-white">
+                <span class="badge bg-white text-primary rounded-pill px-3 py-2 mb-3 fw-semibold shadow-sm">
+                    <i class="bi bi-check-circle-fill text-success me-1"></i> 15.000+ pelanggan puas
+                </span>
+                <h1 class="display-4 fw-bold mb-2 lh-1">Your World of Joy</h1>
+                <p class="lead mb-4 text-white-50">Temukan paket tour impian Anda dari ratusan destinasi</p>
+                <div class="bg-white rounded-4 p-2 shadow-lg mx-auto" style="max-width: 540px;">
                     <div class="search-wrapper">
                         <div class="input-group input-group-lg">
                             <span class="input-group-text bg-transparent border-0"><i class="bi bi-search text-muted"></i></span>
-                            <input type="text" class="form-control border-0 shadow-none" placeholder="Cari destinasi atau paket tour..." id="heroSearch" autocomplete="off" onkeypress="if(event.key==='Enter') window.location='tours.php?search='+encodeURIComponent(this.value)">
+                            <input type="text" class="form-control border-0 shadow-none" placeholder="Cari destinasi atau aktivitas..." id="heroSearch" autocomplete="off" onkeypress="if(event.key==='Enter') window.location='tours.php?search='+encodeURIComponent(this.value)">
                             <button class="btn btn-primary px-4 rounded-3 m-1" onclick="window.location='tours.php?search='+encodeURIComponent(document.getElementById('heroSearch').value)">Cari</button>
                         </div>
                         <div class="search-dropdown" id="heroSearchDropdown"></div>
                     </div>
-                </div>
-                <div class="d-flex flex-wrap gap-2 justify-content-center mt-4">
-                    <a href="tours.php" class="btn btn-sm btn-light rounded-pill px-3 fw-semibold"><i class="bi bi-grid-fill me-1"></i>Semua</a>
-                    <?php foreach ($categories as $cat): ?>
-                        <a href="tours.php?category=<?= e($cat) ?>" class="btn btn-sm btn-outline-light rounded-pill px-3"><?= e($cat) ?></a>
-                    <?php endforeach; ?>
                 </div>
             </div>
         </div>
