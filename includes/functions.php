@@ -433,4 +433,40 @@ function countToursByCity($city) {
     $stmt->execute(["%$city%"]);
     return $stmt->fetchColumn();
 }
+
+/**
+ * Ambil reviews untuk suatu tour
+ */
+function getTourReviews($tourId) {
+    $stmt = db()->prepare("
+        SELECT r.*, u.name as user_name 
+        FROM reviews r 
+        JOIN users u ON r.user_id = u.id 
+        WHERE r.tour_id = ? 
+        ORDER BY r.created_at DESC
+    ");
+    $stmt->execute([$tourId]);
+    return $stmt->fetchAll();
+}
+
+function canReview($userId, $tourId) {
+    $stmt = db()->prepare("SELECT COUNT(*) FROM bookings WHERE user_id = ? AND tour_id = ? AND status = 'confirmed'");
+    $stmt->execute([$userId, $tourId]);
+    if ($stmt->fetchColumn() == 0) return false;
+    $stmt = db()->prepare("SELECT COUNT(*) FROM reviews WHERE user_id = ? AND tour_id = ?");
+    $stmt->execute([$userId, $tourId]);
+    return $stmt->fetchColumn() == 0;
+}
+
+function getRealRating($tourId) {
+    $stmt = db()->prepare("SELECT COALESCE(ROUND(AVG(rating), 1), 0) FROM reviews WHERE tour_id = ?");
+    $stmt->execute([$tourId]);
+    return (float)$stmt->fetchColumn();
+}
+
+function getReviewCount($tourId) {
+    $stmt = db()->prepare("SELECT COUNT(*) FROM reviews WHERE tour_id = ?");
+    $stmt->execute([$tourId]);
+    return (int)$stmt->fetchColumn();
+}
 ?>

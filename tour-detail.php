@@ -200,6 +200,69 @@ require_once 'includes/header.php';
                 <?php endforeach; ?>
             </div>
             <?php endif; ?>
+
+            <!-- Reviews -->
+            <?php if (isset($_GET['review']) && $_GET['review'] === 'success'): ?>
+                <div class="alert alert-success py-2">Ulasan berhasil dikirim, terima kasih!</div>
+            <?php endif; ?>
+            <h5 class="fw-bold mt-5 mb-3"><i class="bi bi-chat-square-text me-2"></i>Ulasan</h5>
+            <?php
+                $reviews = getTourReviews($tour['id']);
+                $realRating = getRealRating($tour['id']);
+                $realCount = getReviewCount($tour['id']);
+            ?>
+            <?php if ($realCount > 0): ?>
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <span class="fs-4 fw-bold text-warning"><?= $realRating ?></span>
+                    <span class="text-warning"><?= renderStars($realRating) ?></span>
+                    <span class="text-muted small">dari <?= $realCount ?> ulasan</span>
+                </div>
+                <div class="row g-3 mb-4">
+                <?php foreach ($reviews as $r): ?>
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body p-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="fw-semibold small"><?= e($r['user_name']) ?></span>
+                                    <span class="text-warning small"><?= renderStars($r['rating']) ?></span>
+                                </div>
+                                <p class="small text-muted mb-0"><?= nl2br(e($r['comment'])) ?></p>
+                                <small class="text-muted" style="font-size: 10px;"><?= date('d M Y', strtotime($r['created_at'])) ?></small>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <p class="text-muted small mb-4">Belum ada ulasan untuk tour ini.</p>
+            <?php endif; ?>
+
+            <!-- Review Form -->
+            <?php if (isLoggedIn() && canReview($_SESSION['user_id'], $tour['id'])): ?>
+                <div class="card border-0 shadow-sm mb-4 bg-light">
+                    <div class="card-body p-3">
+                        <h6 class="fw-semibold mb-2">Tulis Ulasan</h6>
+                        <form method="POST" action="review-submit.php">
+                            <input type="hidden" name="tour_id" value="<?= $tour['id'] ?>">
+                            <input type="hidden" name="slug" value="<?= e($tour['slug']) ?>">
+                            <div class="mb-2">
+                                <label class="form-label small">Rating</label>
+                                <div class="rating-input">
+                                    <?php for ($i = 5; $i >= 1; $i--): ?>
+                                    <input type="radio" name="rating" value="<?= $i ?>" id="star<?= $i ?>" <?= $i === 5 ? 'checked' : '' ?>>
+                                    <label for="star<?= $i ?>" class="text-warning fs-5" style="cursor: pointer;"><i class="bi bi-star<?= $i === 5 ? '-fill' : '' ?>"></i></label>
+                                    <?php endfor; ?>
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <textarea name="comment" class="form-control form-control-sm" rows="3" placeholder="Bagikan pengalaman Anda..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm">Kirim Ulasan</button>
+                        </form>
+                    </div>
+                </div>
+            <?php endif; ?>
+
         </div>
 
         <!-- Sidebar -->

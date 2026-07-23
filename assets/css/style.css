@@ -175,6 +175,34 @@
     opacity: 0.6 !important;
 }
 
+/* Star rating input */
+.rating-input {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: 4px;
+}
+
+.rating-input input {
+    display: none;
+}
+
+.rating-input label {
+    cursor: pointer;
+}
+
+.rating-input label i {
+    font-size: 1.5rem;
+    color: #dee2e6;
+    transition: color 0.15s;
+}
+
+.rating-input label:hover i,
+.rating-input label:hover ~ label i,
+.rating-input input:checked ~ label i {
+    color: #ffc107;
+}
+
 /* ===== Category Cards ===== */
 .category-card {
     border-radius: 12px;

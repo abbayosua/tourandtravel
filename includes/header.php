@@ -38,6 +38,7 @@
                         <i class="bi bi-person-circle me-1"></i><?= e($_SESSION['user_name'] ?? 'User') ?>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="profile.php"><i class="bi bi-person-circle me-2"></i>Profil</a></li>
                         <li><a class="dropdown-item" href="my-bookings.php"><i class="bi bi-ticket-perforated me-2"></i>Booking Saya</a></li>
                         <li><a class="dropdown-item" href="wishlist.php"><i class="bi bi-heart me-2"></i>Wishlist</a></li>
                         <li><hr class="dropdown-divider"></li>
