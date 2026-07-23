@@ -170,6 +170,11 @@
     font-size: 11px;
 }
 
+/* Gallery modal backdrop opacity */
+#galleryModal + .modal-backdrop {
+    opacity: 0.6 !important;
+}
+
 /* ===== Category Cards ===== */
 .category-card {
     border-radius: 12px;
