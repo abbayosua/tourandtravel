@@ -4,27 +4,53 @@
     --primary-dark: #0b5ed7;
 }
 
-/* ===== Hero Section ===== */
-.hero-section {
+/* ===== Hero Klook-style ===== */
+.hero-klook {
+    min-height: 75vh;
     background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);
-    min-height: 85vh;
-    position: relative;
 }
 
-.hero-section::before {
-    content: '';
+.hero-bg {
     position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
+    inset: 0;
     background: url('https://images.unsplash.com/photo-1488085061387-422e29b40080?w=1920&q=80') center/cover no-repeat;
-    opacity: 0.2;
+    opacity: 0.15;
 }
 
-.hero-section > .container {
-    position: relative;
-    z-index: 1;
+.hero-klook .opacity-90 {
+    opacity: 0.9;
 }
 
-/* ===== Tour Cards ===== */
+/* ===== Kategori Scroll ===== */
+.kategori-scroll::-webkit-scrollbar {
+    height: 0;
+}
+
+/* ===== Tour Cards Klook-style ===== */
+.tour-card-klook {
+    border-radius: 12px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.tour-card-klook:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12) !important;
+}
+
+.tour-card-klook .rounded-top {
+    border-radius: 12px 12px 0 0;
+}
+
+.tour-card-klook .like-btn {
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.tour-card-klook:hover .like-btn {
+    opacity: 1;
+}
+
+/* ===== Old Tour Card (keep for admin etc) ===== */
 .tour-card {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border-radius: 12px;

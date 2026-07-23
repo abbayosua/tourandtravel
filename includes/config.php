@@ -7,7 +7,7 @@ define('DB_PASS', '');
 
 // URL website (sesuaikan dengan localhost)
 define('BASE_URL', 'http://localhost/tourandtravel');
-define('SITE_NAME', 'Wanderlust Travel');
+define('SITE_NAME', 'TourAndTravel');
 
 // Session
 session_start();
