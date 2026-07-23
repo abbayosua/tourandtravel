@@ -149,11 +149,17 @@ function getCategories() {
 }
 
 /**
- * Ambil URL gambar tour, fallback ke picsum jika loremflickr gagal
+ * Ambil URL gambar tour, prioritas: upload > wiki > loremflickr > picsum
  */
 function getTourImage($tour, $size = 'medium') {
+    // 1. Uploaded image
     if ($tour['cover_image']) {
         return BASE_URL . '/uploads/' . $tour['cover_image'];
+    }
+
+    // 2. Wikimedia Commons (via DB)
+    if (!empty($tour['wiki_image'])) {
+        return $tour['wiki_image'];
     }
 
     $dimensions = [
@@ -163,7 +169,7 @@ function getTourImage($tour, $size = 'medium') {
     ];
     $dim = $dimensions[$size] ?? '640/480';
 
-    // Pool keyword yang pasti work di loremflickr
+    // 3. Loremflickr fallback
     $pool = ['travel', 'beach', 'mountain', 'ocean', 'city', 'nature', 'landscape', 'sea'];
     $idx = abs(crc32($tour['id'] ?? $tour['title'])) % count($pool);
     $keyword = $pool[$idx];
@@ -183,6 +189,20 @@ function getTourImageFallback($tour, $size = 'medium') {
     $dim = $dimensions[$size] ?? '640/480';
     $seed = strtolower(str_replace([' '], '-', $tour['title']));
     return "https://picsum.photos/seed/{$seed}/{$dim}";
+}
+
+/**
+ * Ambil gambar destinasi kota dari cache Wikimedia
+ */
+function getDestinasiImage($city) {
+    $cacheFile = __DIR__ . '/../cache/wiki-cities.json';
+    if (file_exists($cacheFile)) {
+        $cache = json_decode(file_get_contents($cacheFile), true) ?: [];
+        if (isset($cache[$city]) && $cache[$city]) {
+            return $cache[$city];
+        }
+    }
+    return "https://picsum.photos/seed/" . strtolower(str_replace(' ', '-', $city)) . "/400/300";
 }
 
 /**
