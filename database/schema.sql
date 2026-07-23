@@ -42,6 +42,7 @@ CREATE TABLE IF NOT EXISTS itineraries (
 
 CREATE TABLE IF NOT EXISTS bookings (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT DEFAULT NULL,
     tour_id INT NOT NULL,
     tour_date_id INT NOT NULL,
     name VARCHAR(100) NOT NULL,
@@ -52,6 +53,7 @@ CREATE TABLE IF NOT EXISTS bookings (
     status ENUM('pending', 'confirmed', 'cancelled') NOT NULL DEFAULT 'pending',
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
     FOREIGN KEY (tour_id) REFERENCES tours(id) ON DELETE CASCADE,
     FOREIGN KEY (tour_date_id) REFERENCES tour_dates(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

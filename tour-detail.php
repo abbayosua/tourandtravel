@@ -55,8 +55,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($errors)) {
         $totalPrice = $tour['price'] * $participants;
 
-        $stmt = db()->prepare("INSERT INTO bookings (tour_id, tour_date_id, name, email, phone, participants, total_price, notes, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
-        $stmt->execute([$tour['id'], $tourDateId, $name, $email, $phone, $participants, $totalPrice, $notes]);
+        $stmt = db()->prepare("INSERT INTO bookings (user_id, tour_id, tour_date_id, name, email, phone, participants, total_price, notes, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
+        $stmt->execute([$_SESSION['user_id'] ?? null, $tour['id'], $tourDateId, $name, $email, $phone, $participants, $totalPrice, $notes]);
         $bookingId = db()->lastInsertId();
 
         header("Location: booking-success.php?id=$bookingId");
