@@ -16,3 +16,21 @@ document.querySelectorAll('.alert-dismissible').forEach(alert => {
         bsAlert.close();
     }, 5000);
 });
+
+// Lazy-load hero video after page load
+window.addEventListener('load', function () {
+    var video = document.getElementById('heroVideo');
+    if (!video) return;
+
+    var source = document.createElement('source');
+    source.src = 'backgroundvideo.mp4';
+    source.type = 'video/mp4';
+    video.appendChild(source);
+
+    video.addEventListener('canplay', function () {
+        video.classList.add('loaded');
+        video.play().catch(function () {});
+    });
+
+    video.load();
+});

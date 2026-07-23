@@ -32,6 +32,7 @@ require_once 'includes/header.php';
 <!-- Hero – ala Klook -->
 <section class="hero-klook d-flex align-items-center position-relative overflow-hidden">
     <div class="hero-bg"></div>
+    <video id="heroVideo" class="hero-video" muted loop playsinline preload="none"></video>
     <div class="container position-relative z-1">
         <div class="row justify-content-center">
             <div class="col-lg-8 text-center text-white">
