@@ -16,16 +16,6 @@ if (!count($promoTours)) {
     $promoTours = db()->query("SELECT * FROM tours WHERE is_active = 1 AND price > 0 ORDER BY price ASC LIMIT 3")->fetchAll();
 }
 
-// Destinasi populer untuk section
-$destinasi = [
-    ['name' => 'Bali', 'category' => 'Domestik', 'img' => 'bali'],
-    ['name' => 'China', 'category' => 'China', 'img' => 'china'],
-    ['name' => 'Jepang', 'category' => 'Jepang', 'img' => 'japan'],
-    ['name' => 'Korea', 'category' => 'Korea Selatan', 'img' => 'korea'],
-    ['name' => 'Vietnam', 'category' => 'Vietnam', 'img' => 'vietnam'],
-    ['name' => 'Singapore', 'category' => 'Internasional', 'img' => 'singapore'],
-];
-
 require_once 'includes/header.php';
 ?>
 
@@ -158,25 +148,43 @@ require_once 'includes/header.php';
 </section>
 <?php endif; ?>
 
-<!-- Popular Destinations – ala Klook -->
+<!-- Destinasi Kota – ala Klook -->
 <section class="py-4">
     <div class="container">
         <h5 class="fw-bold mb-3">Destinasi Populer</h5>
+        <?php $cityDests = getCityDestinations(); ?>
         <div class="row g-2">
-            <?php foreach ($destinasi as $dest): ?>
-            <div class="col-4 col-md-2">
-                <a href="tours.php?category=<?= e($dest['category']) ?>" class="text-decoration-none">
-                    <div class="card border-0 shadow-sm overflow-hidden dest-card">
-                        <div class="dest-img" style="background-image: url('https://picsum.photos/seed/<?= $dest['img'] ?>/400/300');">
-                            <div class="dest-overlay d-flex align-items-end p-2">
-                                <span class="fw-semibold text-white small"><?= e($dest['name']) ?></span>
+            <?php foreach ($cityDests as $category => $cities):
+                $catSlug = urlencode($category);
+                $first = true;
+            ?>
+                <?php foreach ($cities as $dest):
+                    $tourCount = countToursByCity($dest['city']);
+                ?>
+                <div class="col-4 col-lg-2">
+                    <a href="destinasi.php?city=<?= urlencode($dest['city']) ?>" class="text-decoration-none">
+                        <div class="card border-0 shadow-sm overflow-hidden dest-card">
+                            <div class="dest-img" style="background-image: url('https://picsum.photos/seed/<?= $dest['img'] ?>/400/300');">
+                                <div class="dest-overlay d-flex align-items-end p-2">
+                                    <div>
+                                        <span class="fw-semibold text-white small d-block"><?= e($dest['city']) ?></span>
+                                        <small class="text-white-50" style="font-size: 10px;"><?= $tourCount ?> paket</small>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </a>
-            </div>
+                    </a>
+                </div>
+                <?php endforeach; ?>
             <?php endforeach; ?>
         </div>
+        <?php if (count($cityDests) > 0): ?>
+        <div class="mt-3 kategori-scroll d-flex gap-1 overflow-auto pb-1">
+            <?php foreach ($cityDests as $category => $cities): ?>
+                <a href="tours.php?category=<?= urlencode($category) ?>" class="btn btn-sm btn-outline-primary rounded-pill flex-shrink-0"><?= e($category) ?></a>
+            <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
     </div>
 </section>
 
@@ -318,6 +326,65 @@ require_once 'includes/header.php';
                             <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
                         </div>
                         <p class="mb-0 small text-muted">"Dari Seoul sampai Busan semua kece! Makin seru sama temen-temen satu grup. Next mau ke Jepang bareng sini lagi!"</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Blog & Info Cards – ala Klook -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 overflow-hidden">
+                    <div class="row g-0">
+                        <div class="col-4">
+                            <div style="height: 100%; min-height: 120px; background: url('https://picsum.photos/seed/travelblog/400/400') center/cover no-repeat;"></div>
+                        </div>
+                        <div class="col-8">
+                            <div class="card-body p-3">
+                                <span class="badge bg-primary mb-2">Blog</span>
+                                <h6 class="fw-semibold small">Cek blog TourAndTravel</h6>
+                                <p class="small text-muted mb-2">Ikuti tren travel, itinerary ideas, dan tips traveling terbaru.</p>
+                                <a href="tours.php" class="small fw-semibold text-primary text-decoration-none">Baca selengkapnya <i class="bi bi-arrow-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 overflow-hidden">
+                    <div class="row g-0">
+                        <div class="col-4">
+                            <div style="height: 100%; min-height: 120px; background: url('https://picsum.photos/seed/reward/400/400') center/cover no-repeat;"></div>
+                        </div>
+                        <div class="col-8">
+                            <div class="card-body p-3">
+                                <span class="badge bg-success mb-2">Reward</span>
+                                <h6 class="fw-semibold small">Dapatkan TourCash</h6>
+                                <p class="small text-muted mb-2">Setiap booking dapat poin reward. Tukarkan untuk diskon tour berikutnya!</p>
+                                <a href="tours.php" class="small fw-semibold text-success text-decoration-none">Pelajari <i class="bi bi-arrow-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 overflow-hidden">
+                    <div class="row g-0">
+                        <div class="col-4">
+                            <div style="height: 100%; min-height: 120px; background: url('https://picsum.photos/seed/referral/400/400') center/cover no-repeat;"></div>
+                        </div>
+                        <div class="col-8">
+                            <div class="card-body p-3">
+                                <span class="badge bg-warning text-dark mb-2">Referral</span>
+                                <h6 class="fw-semibold small">Ajak Teman, Dapat Diskon</h6>
+                                <p class="small text-muted mb-2">Ajak teman daftar & booking, kamu dan teman dapat diskon Rp100.000!</p>
+                                <a href="tours.php" class="small fw-semibold text-warning text-decoration-none">Bagikan <i class="bi bi-arrow-right"></i></a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

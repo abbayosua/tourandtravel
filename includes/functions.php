@@ -200,4 +200,56 @@ function getSisaSlot($tourDateId) {
     $row = $stmt->fetch();
     return $row ? (int)$row['sisa'] : 0;
 }
+
+/**
+ * Ambil tour berdasarkan keyword (destinasi kota)
+ */
+function getToursByCity($keyword) {
+    $stmt = db()->prepare("SELECT * FROM tours WHERE is_active = 1 AND (title LIKE ? OR description LIKE ?) ORDER BY price ASC");
+    $like = "%$keyword%";
+    $stmt->execute([$like, $like]);
+    return $stmt->fetchAll();
+}
+
+/**
+ * Data destinasi kota terstruktur per kategori
+ */
+function getCityDestinations() {
+    return [
+        'China' => [
+            ['city' => 'Beijing', 'img' => 'beijing'],
+            ['city' => 'Shanghai', 'img' => 'shanghai'],
+            ['city' => 'Zhangjiajie', 'img' => 'zhangjiajie'],
+            ['city' => 'Chengdu', 'img' => 'chengdu'],
+            ['city' => 'Chongqing', 'img' => 'chongqing'],
+            ['city' => 'Guizhou', 'img' => 'guizhou'],
+            ['city' => 'Yunnan', 'img' => 'yunnan'],
+            ['city' => 'Xinjiang', 'img' => 'xinjiang'],
+        ],
+        'Jepang' => [
+            ['city' => 'Tokyo', 'img' => 'tokyo'],
+            ['city' => 'Osaka', 'img' => 'osaka'],
+            ['city' => 'Kyoto', 'img' => 'kyoto'],
+        ],
+        'Korea Selatan' => [
+            ['city' => 'Seoul', 'img' => 'seoul'],
+            ['city' => 'Busan', 'img' => 'busan'],
+        ],
+        'Vietnam' => [
+            ['city' => 'Hanoi', 'img' => 'hanoi'],
+            ['city' => 'Da Lat', 'img' => 'dalat'],
+            ['city' => 'Sapa', 'img' => 'sapa'],
+            ['city' => 'Halong', 'img' => 'halong-bay'],
+        ],
+    ];
+}
+
+/**
+ * Hitung jumlah tour di suatu kota
+ */
+function countToursByCity($city) {
+    $stmt = db()->prepare("SELECT COUNT(*) FROM tours WHERE is_active = 1 AND title LIKE ?");
+    $stmt->execute(["%$city%"]);
+    return $stmt->fetchColumn();
+}
 ?>
