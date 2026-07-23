@@ -13,11 +13,9 @@ $categories = getCategories();
 // Ambil promo tours
 $promoTours = db()->query("SELECT * FROM tours WHERE category = 'Promo' AND is_active = 1")->fetchAll();
 if (!count($promoTours)) {
-    // fallback ke tour dengan harga termurah
     $promoTours = db()->query("SELECT * FROM tours WHERE is_active = 1 AND price > 0 ORDER BY price ASC LIMIT 3")->fetchAll();
 }
 
-<?php
 $wishlistIds = [];
 if (isLoggedIn()) {
     $wishlistIds = getWishlistIds($_SESSION['user_id']);
