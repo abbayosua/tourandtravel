@@ -100,15 +100,78 @@ require_once 'includes/header.php';
             <h5 class="fw-bold mt-4 mb-3"><i class="bi bi-images me-2"></i>Galeri Foto</h5>
             <div class="row g-2 mb-4">
                 <?php $galleryKw = getGalleryKeywords($tour); ?>
-                <?php foreach (array_slice($galleryKw, 0, 4) as $i => $kw):
-                    $galleryUrl = "https://loremflickr.com/640/480/" . urlencode(strtolower($kw)) . "?lock=" . crc32($kw); ?>
-                <div class="col-6 col-md-3">
-                    <a href="<?= $galleryUrl ?>" target="_blank" class="text-decoration-none">
-                        <img src="<?= $galleryUrl ?>" class="w-100 rounded-3" style="height: 120px; object-fit: cover;" alt="" onerror="this.remove()">
-                    </a>
+                <?php $galleryImages = []; ?>
+                <?php foreach (array_slice($galleryKw, 0, 6) as $i => $kw):
+                    $galleryUrl = "https://loremflickr.com/800/600/" . urlencode(strtolower($kw)) . "?lock=" . crc32($kw);
+                    $thumbUrl = "https://loremflickr.com/320/240/" . urlencode(strtolower($kw)) . "?lock=" . crc32($kw);
+                    $galleryImages[] = $galleryUrl;
+                ?>
+                <div class="col-4 col-md-2">
+                    <img src="<?= $thumbUrl ?>" class="w-100 rounded-3 gallery-thumb" style="height: 100px; object-fit: cover; cursor: pointer;" alt="" onerror="this.remove()" data-index="<?= $i ?>" onclick="openGallery(<?= $i ?>)">
                 </div>
                 <?php endforeach; ?>
             </div>
+
+            <!-- Gallery Modal -->
+            <div class="modal fade" id="galleryModal" tabindex="-1">
+                <div class="modal-dialog modal-xl modal-dialog-centered">
+                    <div class="modal-content bg-dark border-0">
+                        <div class="modal-header border-0">
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body text-center py-2">
+                            <div id="galleryCarousel" class="carousel slide">
+                                <div class="carousel-inner">
+                                    <?php foreach ($galleryImages as $i => $img): ?>
+                                    <div class="carousel-item <?= $i === 0 ? 'active' : '' ?>">
+                                        <img src="<?= $img ?>" class="img-fluid rounded" style="max-height: 75vh; object-fit: contain;" alt="">
+                                    </div>
+                                    <?php endforeach; ?>
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#galleryCarousel" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon"></span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#galleryCarousel" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-0 justify-content-center">
+                            <div class="d-flex gap-2">
+                                <?php foreach ($galleryImages as $i => $img): ?>
+                                <img src="<?= $img ?>" class="rounded-2 gallery-dot <?= $i === 0 ? 'active' : '' ?>" style="width: 50px; height: 40px; object-fit: cover; cursor: pointer; opacity: 0.6;" onerror="this.remove()" onclick="slideTo(<?= $i ?>)">
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+            var galleryModal = new bootstrap.Modal(document.getElementById('galleryModal'));
+            var galleryCarousel = new bootstrap.Carousel(document.getElementById('galleryCarousel'), { interval: false });
+
+            function openGallery(index) {
+                galleryCarousel.to(index);
+                galleryModal.show();
+                updateDots(index);
+            }
+
+            function slideTo(index) {
+                galleryCarousel.to(index);
+                updateDots(index);
+            }
+
+            document.getElementById('galleryCarousel').addEventListener('slid.bs.carousel', function(e) {
+                updateDots(e.to);
+            });
+
+            function updateDots(index) {
+                document.querySelectorAll('.gallery-dot').forEach(function(el, i) {
+                    el.style.opacity = i === index ? '1' : '0.6';
+                });
+            }
+            </script>
 
             <!-- Fasilitas -->
             <h5 class="fw-bold mt-4 mb-3"><i class="bi bi-check2-square me-2"></i>Fasilitas Termasuk</h5>
