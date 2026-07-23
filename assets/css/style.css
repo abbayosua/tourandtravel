@@ -17,6 +17,11 @@
     pointer-events: none;
 }
 
+.nav-search-wrapper .input-group {
+    border-radius: 50px !important;
+    overflow: hidden;
+}
+
 .navbar-scrolled .nav-search-wrapper {
     opacity: 1;
     transform: translateY(0);
