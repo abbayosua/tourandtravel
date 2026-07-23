@@ -163,17 +163,12 @@ function getTourImage($tour, $size = 'medium') {
     ];
     $dim = $dimensions[$size] ?? '640/480';
 
-    // Ekstrak keyword untuk loremflickr
-    $keyword = $tour['title'];
-    $keyword = preg_replace('/\d+[dD]\d+[nN]?/i', '', $keyword);
-    $keyword = str_ireplace(['Tour', 'Package', 'Paket'], '', $keyword);
-    $keyword = str_replace(['-', '/'], ' ', $keyword); // hyphen → space biar jadi kata terpisah
-    $keyword = trim($keyword);
-    $words = array_filter(explode(' ', $keyword));
-    $words = array_slice($words, 0, 3);
-    $keyword = strtolower(implode(',', $words));
+    // Pool keyword yang pasti work di loremflickr
+    $pool = ['travel', 'beach', 'mountain', 'ocean', 'city', 'nature', 'landscape', 'sea'];
+    $idx = abs(crc32($tour['id'] ?? $tour['title'])) % count($pool);
+    $keyword = $pool[$idx];
 
-    return "https://loremflickr.com/{$dim}/{$keyword}";
+    return "https://loremflickr.com/{$dim}/{$keyword}?lock=" . $idx;
 }
 
 /**
