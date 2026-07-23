@@ -20,8 +20,8 @@
 .hero-overlay {
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.4) 100%),
-                linear-gradient(180deg, rgba(13,110,253,0.3) 0%, rgba(102,16,242,0.4) 100%);
+    background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.5) 100%),
+                linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.45) 100%);
     z-index: 1;
     pointer-events: none;
 }
