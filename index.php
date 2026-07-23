@@ -29,11 +29,11 @@ require_once 'includes/header.php';
     <video id="heroVideo" class="hero-video" muted loop playsinline preload="none"></video>
     <div class="hero-overlay"></div>
     <div class="container position-relative z-1">
-        <div class="row justify-content-center">
-            <div class="col-lg-7 text-center text-white">
+        <div class="row">
+            <div class="col-lg-7 text-white">
                 <h1 class="display-4 fw-bold mb-2 lh-1">Your World of Joy</h1>
                 <p class="lead mb-4 text-white-50">Temukan paket tour impian Anda dari ratusan destinasi</p>
-                <div class="bg-white rounded-4 p-2 shadow-lg mx-auto" style="max-width: 540px;">
+                <div class="bg-white rounded-4 p-2 shadow-lg" style="max-width: 600px;">
                     <div class="search-wrapper">
                         <div class="input-group input-group-lg">
                             <span class="input-group-text bg-transparent border-0"><i class="bi bi-search text-muted"></i></span>
