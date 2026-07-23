@@ -84,7 +84,7 @@ require_once 'includes/header.php';
         <div class="col-lg-8">
             <!-- Gambar -->
             <div class="card border-0 shadow-sm mb-4">
-                <img src="<?= getTourImage($tour, 'large') ?>" onerror="this.src='<?= getTourImageFallback($tour, 'large') ?>'" class="card-img-top" style="max-height: 450px; object-fit: cover;" alt="<?= e($tour['title']) ?>">
+                <img src="<?= getTourImage($tour, 'large') ?>" onerror="this.src='<?= getTourImageFallback($tour, 'large') ?>'" class="card-img-top" style="max-height: 450px; object-fit: cover; cursor: pointer;" alt="<?= e($tour['title']) ?>" onclick="openGallery(0)">
             </div>
 
             <!-- Info Tour -->
