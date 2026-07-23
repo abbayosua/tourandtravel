@@ -10,31 +10,25 @@
 </head>
 <body>
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+<!-- Navbar Line 1: Logo + User -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top pb-0">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="<?= BASE_URL ?>/">
+        <a class="navbar-brand fw-bold py-2" href="<?= BASE_URL ?>/">
             <i class="bi bi-airplane-engines-fill"></i> <?= SITE_NAME ?>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
+            <ul class="navbar-nav ms-auto align-items-lg-center">
                 <li class="nav-item">
-                    <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'index.php' ? 'active' : '' ?>" href="<?= BASE_URL ?>/">Beranda</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'tours.php' ? 'active' : '' ?>" href="<?= BASE_URL ?>/tours.php">Paket Tour</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'wishlist.php' ? 'active' : '' ?>" href="<?= BASE_URL ?>/wishlist.php">
+                    <a class="nav-link py-2 <?= basename($_SERVER['PHP_SELF']) === 'wishlist.php' ? 'active' : '' ?>" href="<?= BASE_URL ?>/wishlist.php">
                         <i class="bi bi-heart"></i>
                     </a>
                 </li>
                 <?php if (isset($_SESSION['user_id'])): ?>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                    <a class="nav-link dropdown-toggle py-2" href="#" data-bs-toggle="dropdown">
                         <i class="bi bi-person-circle me-1"></i><?= e($_SESSION['user_name'] ?? 'User') ?>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
@@ -47,10 +41,32 @@
                 </li>
                 <?php else: ?>
                 <li class="nav-item">
-                    <a class="nav-link" href="login.php"><i class="bi bi-person me-1"></i>Masuk</a>
+                    <a class="nav-link py-2" href="login.php"><i class="bi bi-person me-1"></i>Masuk</a>
                 </li>
                 <?php endif; ?>
             </ul>
         </div>
+    </div>
+</nav>
+
+<!-- Navbar Line 2: Category tabs -->
+<?php
+$navCategories = ['Domestik', 'Internasional', 'China', 'Jepang', 'Korea Selatan', 'Vietnam', 'Taiwan', 'Kanada', 'Kazakhstan'];
+?>
+<nav class="navbar navbar-expand navbar-dark bg-primary pt-0 border-top border-white border-opacity-10" style="margin-top: -1px;">
+    <div class="container">
+        <ul class="navbar-nav flex-row gap-1 overflow-auto py-1 w-100 kategori-scroll">
+            <li class="nav-item">
+                <a class="nav-link text-white fw-semibold small py-1 px-3 rounded-3 <?= basename($_SERVER['PHP_SELF']) === 'index.php' ? 'active bg-white bg-opacity-25' : '' ?>" href="<?= BASE_URL ?>/">Semua</a>
+            </li>
+            <?php foreach ($navCategories as $cat): ?>
+                <?php
+                $isActive = (basename($_SERVER['PHP_SELF']) === 'tours.php' && ($_GET['category'] ?? '') === $cat);
+                ?>
+                <li class="nav-item">
+                    <a class="nav-link text-white-50 small py-1 px-3 rounded-3 flex-shrink-0 <?= $isActive ? 'active bg-white bg-opacity-25 text-white' : '' ?>" href="<?= BASE_URL ?>/tours.php?category=<?= urlencode($cat) ?>"><?= e($cat) ?></a>
+                </li>
+            <?php endforeach; ?>
+        </ul>
     </div>
 </nav>
