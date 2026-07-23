@@ -33,10 +33,13 @@ require_once 'includes/header.php';
                 <h1 class="display-4 fw-bold mb-2">Jelajahi Petualanganmu</h1>
                 <p class="lead mb-4 opacity-90">Temukan paket tour terbaik untuk liburan impian Anda</p>
                 <div class="bg-white rounded-4 p-2 shadow-lg mx-auto" style="max-width: 560px;">
-                    <div class="input-group input-group-lg">
-                        <span class="input-group-text bg-transparent border-0"><i class="bi bi-search text-muted"></i></span>
-                        <input type="text" class="form-control border-0 shadow-none" placeholder="Cari destinasi atau paket tour..." id="heroSearch" onkeypress="if(event.key==='Enter') window.location='tours.php?search='+encodeURIComponent(this.value)">
-                        <button class="btn btn-primary px-4 rounded-3 m-1" onclick="window.location='tours.php?search='+encodeURIComponent(document.getElementById('heroSearch').value)">Cari</button>
+                    <div class="search-wrapper">
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-transparent border-0"><i class="bi bi-search text-muted"></i></span>
+                            <input type="text" class="form-control border-0 shadow-none" placeholder="Cari destinasi atau paket tour..." id="heroSearch" autocomplete="off" onkeypress="if(event.key==='Enter') window.location='tours.php?search='+encodeURIComponent(this.value)">
+                            <button class="btn btn-primary px-4 rounded-3 m-1" onclick="window.location='tours.php?search='+encodeURIComponent(document.getElementById('heroSearch').value)">Cari</button>
+                        </div>
+                        <div class="search-dropdown" id="heroSearchDropdown"></div>
                     </div>
                 </div>
                 <div class="d-flex flex-wrap gap-2 justify-content-center mt-4">

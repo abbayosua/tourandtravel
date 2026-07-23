@@ -88,9 +88,10 @@ require_once 'includes/header.php';
                 </select>
             </div>
             <div class="col-6 col-md">
-                <div class="input-group input-group-sm">
-                    <input type="text" name="search" class="form-control" placeholder="Cari..." value="<?= e($search ?? '') ?>">
+                <div class="search-wrapper input-group input-group-sm">
+                    <input type="text" name="search" class="form-control" placeholder="Cari..." id="catalogSearch" autocomplete="off" value="<?= e($search ?? '') ?>">
                     <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i></button>
+                    <div class="search-dropdown" id="catalogSearchDropdown"></div>
                 </div>
             </div>
         </form>

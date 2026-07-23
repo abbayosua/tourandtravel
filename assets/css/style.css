@@ -114,6 +114,62 @@
     }
 }
 
+/* ===== Autocomplete Search ===== */
+.search-wrapper {
+    position: relative;
+}
+
+.search-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1055;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    max-height: 360px;
+    overflow-y: auto;
+    display: none;
+}
+
+.search-dropdown.show {
+    display: block;
+}
+
+.search-dropdown .search-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.15s;
+}
+
+.search-dropdown .search-item:hover {
+    background: #f0f4ff;
+}
+
+.search-dropdown .search-item:not(:last-child) {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.search-dropdown .search-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.search-dropdown .search-item .small {
+    font-size: 11px;
+}
+
 /* ===== Category Cards ===== */
 .category-card {
     border-radius: 12px;

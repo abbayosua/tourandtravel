@@ -37,3 +37,73 @@ window.addEventListener('load', function () {
 
     video.load();
 });
+
+// Autocomplete Search
+function initSearchAutocomplete(inputId, dropdownId) {
+    var input = document.getElementById(inputId);
+    var dropdown = document.getElementById(dropdownId);
+    if (!input || !dropdown) return;
+
+    var debounceTimer;
+
+    input.addEventListener('input', function () {
+        clearTimeout(debounceTimer);
+        var q = this.value.trim();
+        if (q.length < 2) {
+            dropdown.classList.remove('show');
+            dropdown.innerHTML = '';
+            return;
+        }
+        debounceTimer = setTimeout(function () {
+            fetch('search-ajax.php?q=' + encodeURIComponent(q))
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    if (!data || !data.length) {
+                        dropdown.classList.remove('show');
+                        dropdown.innerHTML = '';
+                        return;
+                    }
+                    var html = '';
+                    data.forEach(function (item) {
+                        var url, icon, label2;
+                        if (item.type === 'category') {
+                            url = 'tours.php?category=' + encodeURIComponent(item.label);
+                            icon = 'bi-tag';
+                            label2 = 'Kategori';
+                        } else {
+                            url = 'tour-detail.php?slug=' + item.slug;
+                            icon = 'bi-geo-alt';
+                            label2 = 'Mulai ' + (item.price ? 'Rp' + Number(item.price).toLocaleString('id-ID') : '-');
+                        }
+                        html += '<a href="' + url + '" class="search-item">' +
+                            '<div class="search-icon bg-light text-primary"><i class="bi ' + icon + '"></i></div>' +
+                            '<div class="flex-grow-1"><div class="fw-semibold small">' + escapeHtml(item.label) + '</div>' +
+                            '<div class="text-muted" style="font-size: 11px;">' + label2 + '</div></div></a>';
+                    });
+                    dropdown.innerHTML = html;
+                    dropdown.classList.add('show');
+                });
+        }, 300);
+    });
+
+    document.addEventListener('click', function (e) {
+        if (!input.parentElement.contains(e.target)) {
+            dropdown.classList.remove('show');
+        }
+    });
+
+    input.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') dropdown.classList.remove('show');
+    });
+}
+
+function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    initSearchAutocomplete('heroSearch', 'heroSearchDropdown');
+    initSearchAutocomplete('catalogSearch', 'catalogSearchDropdown');
+});
