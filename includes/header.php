@@ -18,11 +18,12 @@
         </a>
         <!-- Search bar muncul pas scroll -->
         <div class="mx-auto d-none d-lg-block" style="flex: 1; max-width: 400px;">
-            <div class="nav-search-wrapper">
+            <div class="nav-search-wrapper search-wrapper">
                 <div class="input-group input-group-sm">
                     <span class="input-group-text bg-white border-0"><i class="bi bi-search text-muted small"></i></span>
-                    <input type="text" class="form-control border-0 shadow-none small" placeholder="Cari destinasi..." id="navSearch" onkeypress="if(event.key==='Enter' && this.value.trim()) window.location='tours.php?search='+encodeURIComponent(this.value)">
+                    <input type="text" class="form-control border-0 shadow-none small" placeholder="Cari destinasi..." id="navSearch" autocomplete="off" onkeypress="if(event.key==='Enter' && this.value.trim()) window.location='tours.php?search='+encodeURIComponent(this.value)">
                 </div>
+                <div class="search-dropdown" id="navSearchDropdown"></div>
             </div>
         </div>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">

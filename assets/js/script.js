@@ -106,6 +106,7 @@ function escapeHtml(str) {
 document.addEventListener('DOMContentLoaded', function () {
     initSearchAutocomplete('heroSearch', 'heroSearchDropdown');
     initSearchAutocomplete('catalogSearch', 'catalogSearchDropdown');
+    initSearchAutocomplete('navSearch', 'navSearchDropdown');
 });
 
 // Toggle navbar search on scroll
