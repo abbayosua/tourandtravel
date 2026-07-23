@@ -11,7 +11,8 @@
 <body>
 
 <!-- Navbar Line 1: Logo + User -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top pb-0">
+<div class="sticky-top">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary pb-0">
     <div class="container">
         <a class="navbar-brand fw-bold py-2" href="<?= BASE_URL ?>/">
             <i class="bi bi-airplane-engines-fill"></i> <?= SITE_NAME ?>
@@ -94,3 +95,4 @@
         </ul>
     </div>
 </nav>
+</div><!-- /.sticky-top -->
