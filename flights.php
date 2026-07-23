@@ -6,7 +6,9 @@ require_once 'includes/functions.php';
 $pageTitle = 'Pesawat';
 $from = $_GET['from'] ?? '';
 $to = $_GET['to'] ?? '';
+$date = $_GET['date'] ?? '';
 $class = $_GET['class'] ?? '';
+$passengers = (int)($_GET['passengers'] ?? 1);
 
 $cities = db()->query("SELECT DISTINCT from_city FROM flights WHERE is_active = 1 ORDER BY from_city")->fetchAll(PDO::FETCH_COLUMN);
 
@@ -22,57 +24,127 @@ $flights = $flights->fetchAll();
 
 require_once 'includes/header.php';
 ?>
-<section class="py-4">
+<section class="py-4 bg-light" style="min-height: 80vh;">
     <div class="container">
-        <h4 class="fw-bold mb-3">Pesawat</h4>
-        <form method="GET" class="row g-2 mb-3">
-            <div class="col-md-3"><input type="text" name="from" class="form-control form-control-sm" placeholder="Dari..." value="<?= e($from) ?>"></div>
-            <div class="col-md-3"><input type="text" name="to" class="form-control form-control-sm" placeholder="Ke..." value="<?= e($to) ?>"></div>
-            <div class="col-md-2">
-                <select name="class" class="form-select form-select-sm">
-                    <option value="">Semua Kelas</option>
-                    <option value="economy" <?= $class === 'economy' ? 'selected' : '' ?>>Ekonomi</option>
-                    <option value="business" <?= $class === 'business' ? 'selected' : '' ?>>Bisnis</option>
-                    <option value="first" <?= $class === 'first' ? 'selected' : '' ?>>First</option>
-                </select>
-            </div>
-            <div class="col-md-2"><button class="btn btn-primary btn-sm w-100" type="submit">Cari</button></div>
-        </form>
-        <div class="row g-2">
-            <?php foreach ($flights as $f): ?>
-            <div class="col-md-6">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body p-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="fw-semibold mb-0"><?= e($f['airline']) ?></h6>
-                                <small class="text-muted"><?= e($f['flight_number']) ?> · <?= e($f['class']) ?></small>
-                            </div>
-                            <span class="badge bg-primary"><?= e($f['duration']) ?></span>
+        <!-- Search Form -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-3 p-md-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-airplane me-2"></i>Cari Penerbangan</h5>
+                <form method="GET" class="row g-2 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label small fw-semibold text-muted">Dari</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white"><i class="bi bi-geo-alt text-primary"></i></span>
+                            <input type="text" name="from" class="form-control" placeholder="Kota asal..." value="<?= e($from) ?>">
                         </div>
-                        <div class="d-flex justify-content-between align-items-center mt-2">
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="text-center">
-                                    <div class="fw-bold"><?= date('H:i', strtotime($f['departure_time'])) ?></div>
-                                    <small class="text-muted"><?= e(substr($f['from_city'], 0, 20)) ?></small>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-semibold text-muted">Ke</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white"><i class="bi bi-geo-alt text-danger"></i></span>
+                            <input type="text" name="to" class="form-control" placeholder="Kota tujuan..." value="<?= e($to) ?>">
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label class="form-label small fw-semibold text-muted">Tanggal</label>
+                        <input type="date" name="date" class="form-control" value="<?= e($date ?: date('Y-m-d')) ?>">
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label class="form-label small fw-semibold text-muted">Kelas</label>
+                        <select name="class" class="form-select">
+                            <option value="">Semua</option>
+                            <option value="economy" <?= $class === 'economy' ? 'selected' : '' ?>>Ekonomi</option>
+                            <option value="business" <?= $class === 'business' ? 'selected' : '' ?>>Bisnis</option>
+                            <option value="first" <?= $class === 'first' ? 'selected' : '' ?>>First</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-grid">
+                        <button class="btn btn-primary" type="submit"><i class="bi bi-search me-1"></i>Cari</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <?php if (count($flights) > 0): ?>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h5 class="fw-bold mb-0"><?= count($flights) ?> Penerbangan Ditemukan</h5>
+                <small class="text-muted"><?= $from ?: 'Semua kota' ?> → <?= $to ?: 'Semua tujuan' ?></small>
+            </div>
+            <small class="text-muted">Urut: Termurah</small>
+        </div>
+
+        <div class="row g-3">
+            <?php foreach ($flights as $f): 
+                $dep = date('H:i', strtotime($f['departure_time']));
+                $arr = date('H:i', strtotime($f['arrival_time']));
+                $airlineCode = substr($f['airline'], 0, 2);
+            ?>
+            <div class="col-12">
+                <div class="card border-0 shadow-sm flight-card">
+                    <div class="card-body p-3 p-md-4">
+                        <div class="row align-items-center g-3">
+                            <!-- Airline -->
+                            <div class="col-md-2 d-flex align-items-center gap-2">
+                                <div class="flight-logo d-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary fw-bold rounded-2" style="width: 44px; height: 44px;">
+                                    <?= $airlineCode ?>
                                 </div>
-                                <div class="text-muted small">→</div>
-                                <div class="text-center">
-                                    <div class="fw-bold"><?= date('H:i', strtotime($f['arrival_time'])) ?></div>
-                                    <small class="text-muted"><?= e(substr($f['to_city'], 0, 20)) ?></small>
+                                <div>
+                                    <div class="fw-semibold small"><?= e($f['airline']) ?></div>
+                                    <small class="text-muted" style="font-size: 11px;"><?= e($f['flight_number']) ?></small>
                                 </div>
                             </div>
-                            <div class="text-end">
-                                <div class="fw-bold text-primary"><?= formatRupiah($f['price']) ?></div>
-                                <a href="flight-detail.php?id=<?= $f['id'] ?>" class="btn btn-sm btn-primary rounded-pill px-3 mt-1">Pilih</a>
+
+                            <!-- Route -->
+                            <div class="col-md-5">
+                                <div class="d-flex align-items-center justify-content-center gap-2">
+                                    <div class="text-center" style="min-width: 70px;">
+                                        <div class="fs-5 fw-bold"><?= $dep ?></div>
+                                        <small class="text-muted"><?= e(explode('(', $f['from_city'])[0]) ?></small>
+                                    </div>
+                                    <div class="flex-grow-1 text-center position-relative">
+                                        <div class="border-top border-2 border-primary position-relative" style="height: 0;">
+                                            <i class="bi bi-airplane-fill text-primary position-absolute top-0 start-50 translate-middle" style="font-size: 12px;"></i>
+                                        </div>
+                                        <small class="text-muted d-block mt-1"><?= e($f['duration']) ?></small>
+                                    </div>
+                                    <div class="text-center" style="min-width: 70px;">
+                                        <div class="fs-5 fw-bold"><?= $arr ?></div>
+                                        <small class="text-muted"><?= e(explode('(', $f['to_city'])[0]) ?></small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Class & Info -->
+                            <div class="col-md-2 text-center">
+                                <span class="badge bg-<?= $f['class'] === 'economy' ? 'success' : ($f['class'] === 'business' ? 'warning text-dark' : 'danger') ?> rounded-pill">
+                                    <?= ucfirst($f['class']) ?>
+                                </span>
+                                <small class="d-block text-muted mt-1">Langsung</small>
+                            </div>
+
+                            <!-- Price & CTA -->
+                            <div class="col-md-3 text-md-end">
+                                <div class="fs-5 fw-bold text-primary"><?= formatRupiah($f['price']) ?></div>
+                                <small class="text-muted">/orang</small>
+                                <div class="mt-2">
+                                    <a href="flight-detail.php?id=<?= $f['id'] ?>" class="btn btn-primary btn-sm rounded-pill px-4 fw-semibold w-100 w-md-auto">Pilih</a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <?php endforeach; ?>
-            <?php if (empty($flights)): ?><div class="col-12 text-center py-5 text-muted">Tidak ada penerbangan.</div><?php endif; ?>
         </div>
+        <?php else: ?>
+        <div class="text-center py-5">
+            <i class="bi bi-airplane fs-1 text-muted"></i>
+            <p class="mt-2 text-muted">Tidak ada penerbangan ditemukan.</p>
+            <a href="flights.php" class="btn btn-primary rounded-pill px-4">Reset Pencarian</a>
+        </div>
+        <?php endif; ?>
     </div>
 </section>
 <?php require_once 'includes/footer.php'; ?>

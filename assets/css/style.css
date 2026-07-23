@@ -162,6 +162,22 @@
     position: relative;
 }
 
+/* ===== Flight Cards ===== */
+.flight-card {
+    border-radius: 16px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.flight-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08) !important;
+}
+
+.flight-logo {
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
 .search-dropdown {
     position: absolute;
     top: 100%;
