@@ -228,6 +228,103 @@ require_once 'includes/header.php';
     </div>
 </section>
 
+<!-- Social Proof – ala Klook -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-3 text-center">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm py-4 h-100">
+                    <div class="display-5 text-warning mb-2">★ 4.8</div>
+                    <div class="mb-1">
+                        <span class="text-warning"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></span>
+                    </div>
+                    <h6 class="fw-semibold mb-0">Rating Pelanggan</h6>
+                    <small class="text-muted">Dari 2.000+ ulasan</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm py-4 h-100">
+                    <div class="display-5 text-primary mb-2"><i class="bi bi-people-fill"></i></div>
+                    <div class="fs-3 fw-bold text-primary">5.000+</div>
+                    <h6 class="fw-semibold mb-0">Pelanggan Puas</h6>
+                    <small class="text-muted">Tersebar di 12+ destinasi</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm py-4 h-100">
+                    <div class="display-5 text-success mb-2"><i class="bi bi-hand-thumbs-up-fill"></i></div>
+                    <div class="fs-3 fw-bold text-success">99%</div>
+                    <h6 class="fw-semibold mb-0">Kepuasan</h6>
+                    <small class="text-muted">Pelanggan merekomendasikan kami</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-4">
+            <h5 class="fw-bold">Apa Kata Mereka?</h5>
+            <p class="text-muted small">Pengalaman pelanggan yang sudah traveling bersama kami</p>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-2">
+                            <img src="https://i.pravatar.cc/80?img=1" class="rounded-circle me-3" width="48" height="48" alt="">
+                            <div>
+                                <h6 class="fw-semibold mb-0">Sari Dewi</h6>
+                                <small class="text-muted">Bali Paradise 5D4N</small>
+                            </div>
+                        </div>
+                        <div class="text-warning small mb-2">
+                            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        </div>
+                        <p class="mb-0 small text-muted">"Liburan ke Bali bareng TourAndTravel puas banget! Hotelnya enak, guide-nya ramah, itinerary-nya lengkap. Recommended!"</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-2">
+                            <img src="https://i.pravatar.cc/80?img=12" class="rounded-circle me-3" width="48" height="48" alt="">
+                            <div>
+                                <h6 class="fw-semibold mb-0">Bambang S.</h6>
+                                <small class="text-muted">Beijing 8D7N</small>
+                            </div>
+                        </div>
+                        <div class="text-warning small mb-2">
+                            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        </div>
+                        <p class="mb-0 small text-muted">"Pertama kali ke China, awalnya khawatir tapi ternyata lancar semua. Guide lokalnya speak Indonesian,很棒!"</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-2">
+                            <img src="https://i.pravatar.cc/80?img=5" class="rounded-circle me-3" width="48" height="48" alt="">
+                            <div>
+                                <h6 class="fw-semibold mb-0">Rina A.</h6>
+                                <small class="text-muted">Korea Tour 7D6N</small>
+                            </div>
+                        </div>
+                        <div class="text-warning small mb-2">
+                            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        </div>
+                        <p class="mb-0 small text-muted">"Dari Seoul sampai Busan semua kece! Makin seru sama temen-temen satu grup. Next mau ke Jepang bareng sini lagi!"</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- Kenapa Pilih Kami – ala Klook trust -->
 <section class="py-5">
     <div class="container">
