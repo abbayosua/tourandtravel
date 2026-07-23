@@ -149,7 +149,7 @@ function getCategories() {
 }
 
 /**
- * Ambil URL gambar tour, fallback ke seeded picsum jika tidak ada
+ * Ambil URL gambar tour, fallback ke picsum jika loremflickr gagal
  */
 function getTourImage($tour, $size = 'medium') {
     if ($tour['cover_image']) {
@@ -162,8 +162,31 @@ function getTourImage($tour, $size = 'medium') {
         'large'  => '1200/800',
     ];
     $dim = $dimensions[$size] ?? '640/480';
-    $seed = strtolower(str_replace(' ', '-', $tour['title']));
 
+    // Ekstrak keyword untuk loremflickr
+    $keyword = $tour['title'];
+    $keyword = preg_replace('/\d+[dD]\d+[nN]?/i', '', $keyword);
+    $keyword = str_ireplace(['Tour', 'Package', 'Paket'], '', $keyword);
+    $keyword = str_replace(['-', '/'], ' ', $keyword); // hyphen → space biar jadi kata terpisah
+    $keyword = trim($keyword);
+    $words = array_filter(explode(' ', $keyword));
+    $words = array_slice($words, 0, 3);
+    $keyword = strtolower(implode(',', $words));
+
+    return "https://loremflickr.com/{$dim}/{$keyword}";
+}
+
+/**
+ * Ambil URL fallback gambar (picsum) jika loremflickr gagal load
+ */
+function getTourImageFallback($tour, $size = 'medium') {
+    $dimensions = [
+        'small'  => '320/240',
+        'medium' => '640/480',
+        'large'  => '1200/800',
+    ];
+    $dim = $dimensions[$size] ?? '640/480';
+    $seed = strtolower(str_replace([' '], '-', $tour['title']));
     return "https://picsum.photos/seed/{$seed}/{$dim}";
 }
 

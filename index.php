@@ -58,7 +58,7 @@ require_once 'includes/header.php';
             <div class="col-md-6 col-lg-3">
                 <div class="card tour-card h-100 shadow-sm border-0">
                     <div class="position-relative overflow-hidden" style="height: 200px;">
-                        <img src="<?= getTourImage($tour, 'medium') ?>" class="card-img-top h-100 w-100" style="object-fit: cover;" alt="<?= e($tour['title']) ?>">
+                        <img src="<?= getTourImage($tour, 'medium') ?>" onerror="this.src='<?= getTourImageFallback($tour, 'medium') ?>'" class="card-img-top h-100 w-100" style="object-fit: cover;" alt="<?= e($tour['title']) ?>">
                         <span class="badge bg-primary position-absolute top-0 end-0 m-2"><?= e($tour['category']) ?></span>
                     </div>
                     <div class="card-body d-flex flex-column">
