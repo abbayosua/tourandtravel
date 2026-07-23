@@ -19,7 +19,6 @@
 
 .nav-search-wrapper .input-group {
     border-radius: 50px !important;
-    overflow: hidden;
 }
 
 .navbar-scrolled .nav-search-wrapper {
@@ -168,7 +167,7 @@
     top: 100%;
     left: 0;
     right: 0;
-    z-index: 1055;
+    z-index: 99999;
     background: #fff;
     border: 1px solid rgba(0,0,0,0.1);
     border-radius: 12px;

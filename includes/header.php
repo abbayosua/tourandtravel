@@ -11,8 +11,8 @@
 <body>
 
 <!-- Navbar Line 1: Logo + User -->
-<div class="sticky-top">
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary pb-0">
+<div class="sticky-top" style="z-index: 1020;">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary pb-0 position-relative" style="z-index: 1;">
     <div class="container">
         <a class="navbar-brand fw-bold py-2" href="<?= BASE_URL ?>/">
             <i class="bi bi-airplane-engines-fill"></i> <?= SITE_NAME ?>
