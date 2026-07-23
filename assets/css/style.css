@@ -23,6 +23,18 @@
     pointer-events: all;
 }
 
+/* Search bar hover border di hero */
+.hero-klook .search-wrapper .input-group {
+    border: 2px solid transparent;
+    border-radius: 12px;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.hero-klook .search-wrapper:hover .input-group {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15);
+}
+
 .hero-bg {
     position: absolute;
     inset: 0;
