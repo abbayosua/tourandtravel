@@ -31,6 +31,16 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto align-items-lg-center">
+                <li class="nav-item dropdown">
+                    <a class="nav-link py-2 dropdown-toggle" href="#" data-bs-toggle="dropdown">Layanan</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="tours.php"><i class="bi bi-map me-2"></i>Paket Tour</a></li>
+                        <li><a class="dropdown-item" href="hotels.php"><i class="bi bi-building me-2"></i>Hotel</a></li>
+                        <li><a class="dropdown-item" href="flights.php"><i class="bi bi-airplane me-2"></i>Pesawat</a></li>
+                        <li><a class="dropdown-item" href="ferries.php"><i class="bi bi-ship me-2"></i>Ferry</a></li>
+                        <li><a class="dropdown-item" href="rental-cars.php"><i class="bi bi-car-front me-2"></i>Rental Mobil</a></li>
+                    </ul>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link py-2 <?= basename($_SERVER['PHP_SELF']) === 'wishlist.php' ? 'active' : '' ?>" href="<?= BASE_URL ?>/wishlist.php">
                         <i class="bi bi-heart"></i>
@@ -59,24 +69,28 @@
     </div>
 </nav>
 
-<!-- Navbar Line 2: Category tabs -->
-<?php
-$navCategories = ['Domestik', 'Internasional', 'China', 'Jepang', 'Korea Selatan', 'Vietnam', 'Taiwan', 'Kanada', 'Kazakhstan'];
-?>
+<!-- Navbar Line 2: Service links -->
 <nav class="navbar navbar-expand navbar-dark bg-primary pt-0 border-top border-white border-opacity-10" style="margin-top: -1px;">
     <div class="container">
         <ul class="navbar-nav flex-row gap-1 overflow-auto py-1 w-100 kategori-scroll">
             <li class="nav-item">
-                <a class="nav-link text-white fw-semibold small py-1 px-3 rounded-3 <?= basename($_SERVER['PHP_SELF']) === 'index.php' ? 'active bg-white bg-opacity-25' : '' ?>" href="<?= BASE_URL ?>/">Semua</a>
+                <a class="nav-link text-white fw-semibold small py-1 px-3 rounded-3 <?= basename($_SERVER['PHP_SELF']) === 'index.php' ? 'active bg-white bg-opacity-25' : '' ?>" href="<?= BASE_URL ?>/">Beranda</a>
             </li>
-            <?php foreach ($navCategories as $cat): ?>
-                <?php
-                $isActive = (basename($_SERVER['PHP_SELF']) === 'tours.php' && ($_GET['category'] ?? '') === $cat);
-                ?>
-                <li class="nav-item">
-                    <a class="nav-link text-white-50 small py-1 px-3 rounded-3 flex-shrink-0 <?= $isActive ? 'active bg-white bg-opacity-25 text-white' : '' ?>" href="<?= BASE_URL ?>/tours.php?category=<?= urlencode($cat) ?>"><?= e($cat) ?></a>
-                </li>
-            <?php endforeach; ?>
+            <li class="nav-item">
+                <a class="nav-link text-white-50 small py-1 px-3 rounded-3 <?= strpos($_SERVER['PHP_SELF'], 'tours.php') !== false ? 'active bg-white bg-opacity-25 text-white' : '' ?>" href="<?= BASE_URL ?>/tours.php">Tour</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white-50 small py-1 px-3 rounded-3 <?= strpos($_SERVER['PHP_SELF'], 'hotels') !== false ? 'active bg-white bg-opacity-25 text-white' : '' ?>" href="<?= BASE_URL ?>/hotels.php">Hotel</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white-50 small py-1 px-3 rounded-3 <?= strpos($_SERVER['PHP_SELF'], 'flights.php') !== false ? 'active bg-white bg-opacity-25 text-white' : '' ?>" href="<?= BASE_URL ?>/flights.php">Pesawat</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white-50 small py-1 px-3 rounded-3 <?= strpos($_SERVER['PHP_SELF'], 'ferries.php') !== false ? 'active bg-white bg-opacity-25 text-white' : '' ?>" href="<?= BASE_URL ?>/ferries.php">Ferry</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white-50 small py-1 px-3 rounded-3 <?= strpos($_SERVER['PHP_SELF'], 'rental-cars') !== false || strpos($_SERVER['PHP_SELF'], 'rental-car-detail') !== false ? 'active bg-white bg-opacity-25 text-white' : '' ?>" href="<?= BASE_URL ?>/rental-cars.php">Rental</a>
+            </li>
         </ul>
     </div>
 </nav>

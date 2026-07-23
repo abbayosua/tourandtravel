@@ -113,6 +113,10 @@ document.addEventListener('DOMContentLoaded', function () {
 var navbar = document.querySelector('.sticky-top');
 if (navbar) {
     var hero = document.querySelector('.hero-klook');
+    if (!hero) {
+        // Not on landing page — always show search
+        navbar.classList.add('navbar-scrolled');
+    }
     window.addEventListener('scroll', function () {
         var scrollY = window.scrollY;
         var heroBottom = hero ? hero.offsetTop + hero.offsetHeight : 400;
