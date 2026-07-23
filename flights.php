@@ -33,16 +33,22 @@ require_once 'includes/header.php';
                 <form method="GET" class="row g-2 align-items-end">
                     <div class="col-md-3">
                         <label class="form-label small fw-semibold text-muted">Dari</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-white"><i class="bi bi-geo-alt text-primary"></i></span>
-                            <input type="text" name="from" class="form-control" placeholder="Kota asal..." value="<?= e($from) ?>">
+                        <div class="search-wrapper">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i class="bi bi-geo-alt text-primary"></i></span>
+                                <input type="text" name="from" class="form-control city-search" placeholder="Kota asal..." value="<?= e($from) ?>" autocomplete="off" data-target="fromDropdown" id="fromInput">
+                            </div>
+                            <div class="search-dropdown" id="fromDropdown"></div>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label small fw-semibold text-muted">Ke</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-white"><i class="bi bi-geo-alt text-danger"></i></span>
-                            <input type="text" name="to" class="form-control" placeholder="Kota tujuan..." value="<?= e($to) ?>">
+                        <div class="search-wrapper">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i class="bi bi-geo-alt text-danger"></i></span>
+                                <input type="text" name="to" class="form-control city-search" placeholder="Kota tujuan..." value="<?= e($to) ?>" autocomplete="off" data-target="toDropdown" id="toInput">
+                            </div>
+                            <div class="search-dropdown" id="toDropdown"></div>
                         </div>
                     </div>
                     <div class="col-6 col-md-2">
@@ -148,3 +154,48 @@ require_once 'includes/header.php';
     </div>
 </section>
 <?php require_once 'includes/footer.php'; ?>
+
+<script>
+document.querySelectorAll('.city-search').forEach(function(input) {
+    var dropdownId = input.getAttribute('data-target');
+    var dropdown = document.getElementById(dropdownId);
+    if (!dropdown) return;
+
+    var debounce;
+
+    input.addEventListener('input', function() {
+        clearTimeout(debounce);
+        var q = this.value.trim();
+        if (q.length < 1) {
+            dropdown.classList.remove('show');
+            return;
+        }
+        debounce = setTimeout(function() {
+            fetch('city-search-ajax.php?q=' + encodeURIComponent(q))
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (!data.length) { dropdown.classList.remove('show'); return; }
+                    var html = '';
+                    data.forEach(function(item) {
+                        html += '<div class="search-item" onclick="selectCity(\'' + input.id + '\',\'' + dropdownId + '\',\'' + item.label.replace(/'/g, "\\'") + '\')">' +
+                            '<div class="search-icon bg-light text-primary"><i class="bi bi-geo-alt"></i></div>' +
+                            '<div class="fw-semibold small">' + item.label + '</div></div>';
+                    });
+                    dropdown.innerHTML = html;
+                    dropdown.classList.add('show');
+                });
+        }, 200);
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!input.parentElement.contains(e.target)) {
+            dropdown.classList.remove('show');
+        }
+    });
+});
+
+function selectCity(inputId, dropdownId, city) {
+    document.getElementById(inputId).value = city;
+    document.getElementById(dropdownId).classList.remove('show');
+}
+</script>
