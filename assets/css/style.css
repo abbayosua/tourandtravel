@@ -1,0 +1,146 @@
+/* ===== Root Variables ===== */
+:root {
+    --primary: #0d6efd;
+    --primary-dark: #0b5ed7;
+}
+
+/* ===== Hero Section ===== */
+.hero-section {
+    background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);
+    min-height: 85vh;
+    position: relative;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: url('https://images.unsplash.com/photo-1488085061387-422e29b40080?w=1920&q=80') center/cover no-repeat;
+    opacity: 0.2;
+}
+
+.hero-section > .container {
+    position: relative;
+    z-index: 1;
+}
+
+/* ===== Tour Cards ===== */
+.tour-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.tour-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+}
+
+.tour-card .card-img-top {
+    transition: transform 0.5s ease;
+}
+
+.tour-card:hover .card-img-top {
+    transform: scale(1.1);
+}
+
+/* ===== Category Cards ===== */
+.category-card {
+    border-radius: 12px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.category-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(13, 110, 253, 0.2) !important;
+}
+
+/* ===== Itinerary Timeline ===== */
+.itinerary-card {
+    border-radius: 12px;
+    transition: transform 0.2s ease;
+}
+
+.itinerary-card:hover {
+    transform: translateX(5px);
+}
+
+/* ===== Date Items ===== */
+.date-item:last-child {
+    border-bottom: none !important;
+}
+
+/* ===== Sticky Sidebar ===== */
+@media (max-width: 991.98px) {
+    .sticky-top {
+        position: static !important;
+    }
+}
+
+/* ===== Admin ===== */
+.sidebar {
+    min-height: calc(100vh - 56px);
+}
+
+.sidebar .nav-link {
+    color: rgba(255,255,255,0.8);
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin-bottom: 4px;
+    transition: all 0.2s;
+}
+
+.sidebar .nav-link:hover {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+}
+
+.sidebar .nav-link.active {
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+}
+
+.sidebar .nav-link i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+/* ===== Stat Cards ===== */
+.stat-card {
+    border-radius: 12px;
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+}
+
+/* ===== Tables ===== */
+.table-tour img {
+    width: 60px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+/* ===== Print ===== */
+.table-action .btn {
+    padding: 2px 8px;
+    font-size: 0.8rem;
+}
+
+/* ===== Footer ===== */
+footer a:hover {
+    opacity: 0.8;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 576px) {
+    .hero-section {
+        min-height: 60vh;
+    }
+    .hero-section h1 {
+        font-size: 1.75rem;
+    }
+}
