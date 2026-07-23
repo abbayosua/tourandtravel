@@ -31,9 +31,6 @@ require_once 'includes/header.php';
     <div class="container position-relative z-1">
         <div class="row justify-content-center">
             <div class="col-lg-7 text-center text-white">
-                <span class="badge bg-white text-primary rounded-pill px-3 py-2 mb-3 fw-semibold shadow-sm">
-                    <i class="bi bi-check-circle-fill text-success me-1"></i> 15.000+ pelanggan puas
-                </span>
                 <h1 class="display-4 fw-bold mb-2 lh-1">Your World of Joy</h1>
                 <p class="lead mb-4 text-white-50">Temukan paket tour impian Anda dari ratusan destinasi</p>
                 <div class="bg-white rounded-4 p-2 shadow-lg mx-auto" style="max-width: 540px;">
