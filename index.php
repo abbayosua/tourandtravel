@@ -85,18 +85,18 @@ require_once 'includes/header.php';
         <div class="row g-2">
             <?php
             $catIcons = [
-                'Domestik' => ['bi-flag-fill', '#0d6efd'],
-                'Internasional' => ['bi-globe2', '#6610f2'],
-                'China' => ['bi-building', '#dc3545'],
-                'Jepang' => ['bi-sun-fill', '#fd7e14'],
-                'Korea Selatan' => ['bi-music-note-beamed', '#e83e8c'],
-                'Vietnam' => ['bi-tree-fill', '#198754'],
-                'Taiwan' => ['bi-geo-alt-fill', '#20c997'],
-                'Kanada' => ['bi-snow2', '#0dcaf0'],
+                'Domestik' => '🇮🇩',
+                'Internasional' => '🌍',
+                'China' => '🇨🇳',
+                'Jepang' => '🇯🇵',
+                'Korea Selatan' => '🇰🇷',
+                'Vietnam' => '🇻🇳',
+                'Taiwan' => '🇹🇼',
+                'Kanada' => '🇨🇦',
             ];
             $displayCats = ['Domestik', 'China', 'Jepang', 'Korea Selatan', 'Vietnam', 'Internasional'];
             foreach ($displayCats as $cat):
-                $icon = $catIcons[$cat] ?? ['bi-compass', '#6f42c1'];
+                $flag = $catIcons[$cat] ?? '🌏';
                 $count = db()->prepare("SELECT COUNT(*) FROM tours WHERE category = ? AND is_active = 1");
                 $count->execute([$cat]);
                 $total = $count->fetchColumn();
@@ -104,7 +104,7 @@ require_once 'includes/header.php';
             <div class="col-4 col-md-2">
                 <a href="tours.php?category=<?= e($cat) ?>" class="text-decoration-none">
                     <div class="card border-0 shadow-sm text-center py-3 cat-card">
-                        <div class="fs-2 mb-1" style="color: <?= $icon[1] ?>;"><i class="bi <?= $icon[0] ?>"></i></div>
+                        <div class="fs-2 mb-1"><?= $flag ?></div>
                         <h6 class="fw-semibold small mb-0 text-dark"><?= e($cat) ?></h6>
                         <small class="text-muted"><?= $total ?> paket</small>
                     </div>
