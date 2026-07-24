@@ -34,6 +34,18 @@
                 <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'tours.php' ? 'active' : '' ?>" href="tours.php">
                     <i class="bi bi-map"></i> Kelola Tour
                 </a>
+                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'hotels.php' || basename($_SERVER['PHP_SELF']) === 'hotel-edit.php' ? 'active' : '' ?>" href="hotels.php">
+                    <i class="bi bi-building"></i> Kelola Hotel
+                </a>
+                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'flights.php' || basename($_SERVER['PHP_SELF']) === 'flight-edit.php' ? 'active' : '' ?>" href="flights.php">
+                    <i class="bi bi-airplane"></i> Kelola Pesawat
+                </a>
+                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'ferries.php' || basename($_SERVER['PHP_SELF']) === 'ferry-edit.php' ? 'active' : '' ?>" href="ferries.php">
+                    <i class="bi bi-ship"></i> Kelola Ferry
+                </a>
+                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'rental-cars.php' || basename($_SERVER['PHP_SELF']) === 'rental-car-edit.php' ? 'active' : '' ?>" href="rental-cars.php">
+                    <i class="bi bi-car-front"></i> Kelola Rental
+                </a>
                 <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'bookings.php' ? 'active' : '' ?>" href="bookings.php">
                     <i class="bi bi-ticket-perforated"></i> Kelola Booking
                 </a>

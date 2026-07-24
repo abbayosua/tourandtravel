@@ -36,7 +36,6 @@
                     <a class="nav-link py-2 dropdown-toggle" href="#" data-bs-toggle="dropdown">Layanan</a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="tours.php"><i class="bi bi-map me-2"></i>Paket Tour</a></li>
-                        <li><a class="dropdown-item" href="hotels.php"><i class="bi bi-building me-2"></i>Hotel</a></li>
                         <li><a class="dropdown-item" href="flights.php"><i class="bi bi-airplane me-2"></i>Pesawat</a></li>
                         <li><a class="dropdown-item" href="ferries.php"><i class="bi bi-ship me-2"></i>Ferry</a></li>
                         <li><a class="dropdown-item" href="rental-cars.php"><i class="bi bi-car-front me-2"></i>Rental Mobil</a></li>
@@ -79,9 +78,6 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link text-white-50 small py-1 px-3 rounded-3 <?= strpos($_SERVER['PHP_SELF'], 'tours.php') !== false ? 'active bg-white bg-opacity-25 text-white' : '' ?>" href="<?= BASE_URL ?>/tours.php">Tour</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-white-50 small py-1 px-3 rounded-3 <?= strpos($_SERVER['PHP_SELF'], 'hotels') !== false ? 'active bg-white bg-opacity-25 text-white' : '' ?>" href="<?= BASE_URL ?>/hotels.php">Hotel</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link text-white-50 small py-1 px-3 rounded-3 <?= strpos($_SERVER['PHP_SELF'], 'flights.php') !== false ? 'active bg-white bg-opacity-25 text-white' : '' ?>" href="<?= BASE_URL ?>/flights.php">Pesawat</a>
