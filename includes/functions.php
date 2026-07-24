@@ -469,4 +469,56 @@ function getReviewCount($tourId) {
     $stmt->execute([$tourId]);
     return (int)$stmt->fetchColumn();
 }
+
+/**
+ * Generate kode booking unik (contoh: TAT-7A2B1)
+ */
+function generateBookingCode() {
+    $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    $code = 'TAT-';
+    for ($i = 0; $i < 5; $i++) {
+        $code .= $chars[random_int(0, strlen($chars) - 1)];
+    }
+    // Cek unique
+    $stmt = db()->prepare("SELECT COUNT(*) FROM bookings WHERE booking_code = ?");
+    $stmt->execute([$code]);
+    if ($stmt->fetchColumn() > 0) {
+        return generateBookingCode(); // recursive
+    }
+    return $code;
+}
+
+/**
+ * Upload & kompres ke WebP untuk dokumen
+ */
+function uploadWebP($file, $targetDir, $quality = 70) {
+    $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if ($file['error'] !== UPLOAD_ERR_OK) return ['success' => false, 'message' => 'Gagal upload'];
+    if (!in_array($file['type'], $allowedTypes)) return ['success' => false, 'message' => 'Tipe file harus JPG/PNG/WebP'];
+    
+    if (!is_dir($targetDir)) mkdir($targetDir, 0755, true);
+    
+    $gd = match ($file['type']) {
+        'image/jpeg' => @imagecreatefromjpeg($file['tmp_name']),
+        'image/png' => @imagecreatefrompng($file['tmp_name']),
+        'image/webp' => @imagecreatefromwebp($file['tmp_name']),
+        default => null,
+    };
+    if (!$gd) return ['success' => false, 'message' => 'File rusak'];
+    
+    // Resize max 1200px
+    $w = imagesx($gd); $h = imagesy($gd);
+    if ($w > 1200) { $r = 1200/$w; $nw=1200; $nh=(int)($h*$r);
+        $rz = imagecreatetruecolor($nw,$nh);
+        imagecopyresampled($rz, $gd, 0,0,0,0, $nw,$nh, $w,$h);
+        imagedestroy($gd); $gd = $rz;
+    }
+    
+    $filename = uniqid() . '.webp';
+    $dest = $targetDir . '/' . $filename;
+    imagewebp($gd, $dest, $quality);
+    imagedestroy($gd);
+    
+    return ['success' => true, 'filename' => $filename, 'size' => filesize($dest)];
+}
 ?>

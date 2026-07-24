@@ -74,14 +74,14 @@ require_once 'includes/admin-header.php';
                 <thead class="table-light">
                     <tr>
                         <th>#</th>
+                        <th>Kode</th>
                         <th>Nama</th>
                         <th>Tour</th>
                         <th>Berangkat</th>
                         <th>Peserta</th>
-                        <th>Total Harga</th>
+                        <th>Total</th>
                         <th>Kontak</th>
                         <th>Status</th>
-                        <th>Tanggal Booking</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -89,6 +89,7 @@ require_once 'includes/admin-header.php';
                     <?php foreach ($bookings as $b): ?>
                     <tr>
                         <td><?= $b['id'] ?></td>
+                        <td><strong class="small" style="font-size: 11px;"><?= e($b['booking_code'] ?? '-') ?></strong></td>
                         <td><strong><?= e($b['name']) ?></strong></td>
                         <td><small><?= e($b['tour_title']) ?></small></td>
                         <td><small><?= tglIndonesia($b['departure_date']) ?></small></td>
@@ -96,7 +97,9 @@ require_once 'includes/admin-header.php';
                         <td><?= formatRupiah($b['total_price']) ?></td>
                         <td>
                             <small>
-                                <?= e($b['email']) ?><br>
+                                <?php if ($b['passport_photo']): ?>
+                                    <a href="../uploads/passports/<?= e($b['passport_photo']) ?>" target="_blank" class="text-primary small">Foto</a><br>
+                                <?php endif; ?>
                                 <a href="https://wa.me/<?= preg_replace('/[^0-9]/', '', $b['phone']) ?>" target="_blank" class="text-success"><?= e($b['phone']) ?></a>
                             </small>
                         </td>
@@ -105,7 +108,6 @@ require_once 'includes/admin-header.php';
                                 <?= ucfirst($b['status']) ?>
                             </span>
                         </td>
-                        <td><small><?= date('d/m/Y H:i', strtotime($b['created_at'])) ?></small></td>
                         <td class="table-action">
                             <div class="dropdown">
                                 <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">Ubah Status</button>

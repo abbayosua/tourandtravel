@@ -22,10 +22,10 @@ $itineraries = getItineraries($tour['id']);
 // Proses booking form
 $bookingMessage = '';
 $bookingError = '';
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $tourDateId = $_POST['tour_date_id'] ?? 0;
+$bookingCode = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['booking_submit'])) {
+    $tourDateId = (int)($_POST['tour_date_id'] ?? 0);
     $name = trim($_POST['name'] ?? '');
-    $email = trim($_POST['email'] ?? '');
     $phone = trim($_POST['phone'] ?? '');
     $participants = (int)($_POST['participants'] ?? 0);
     $notes = trim($_POST['notes'] ?? '');
@@ -33,8 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Validasi
     $errors = [];
     if (!$name) $errors[] = 'Nama harus diisi';
-    if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'Email tidak valid';
-    if (!$phone) $errors[] = 'No. telepon harus diisi';
+    if (!$phone) $errors[] = 'No. WhatsApp harus diisi';
     if ($participants < 1) $errors[] = 'Jumlah peserta minimal 1';
 
     // Validasi slot
@@ -43,23 +42,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = "Maaf, sisa slot hanya $sisaSlot kursi";
     }
 
-    // Ambil data tanggal untuk harga
+    // Validasi tanggal
     $stmtDate = db()->prepare("SELECT * FROM tour_dates WHERE id = ? AND tour_id = ?");
     $stmtDate->execute([$tourDateId, $tour['id']]);
     $selectedDate = $stmtDate->fetch();
+    if (!$selectedDate) $errors[] = 'Tanggal keberangkatan tidak valid';
 
-    if (!$selectedDate) {
-        $errors[] = 'Tanggal keberangkatan tidak valid';
+    // Upload passport
+    $passportFile = '';
+    if (empty($errors) && isset($_FILES['passport_photo']) && $_FILES['passport_photo']['error'] !== UPLOAD_ERR_NO_FILE) {
+        $upload = uploadWebP($_FILES['passport_photo'], __DIR__ . '/uploads/passports');
+        if ($upload['success']) {
+            $passportFile = $upload['filename'];
+        } else {
+            $errors[] = $upload['message'];
+        }
+    } else {
+        $errors[] = 'Foto paspor wajib diupload';
     }
 
     if (empty($errors)) {
         $totalPrice = $tour['price'] * $participants;
+        $bookingCode = generateBookingCode();
 
-        $stmt = db()->prepare("INSERT INTO bookings (user_id, tour_id, tour_date_id, name, email, phone, participants, total_price, notes, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
-        $stmt->execute([$_SESSION['user_id'] ?? null, $tour['id'], $tourDateId, $name, $email, $phone, $participants, $totalPrice, $notes]);
-        $bookingId = db()->lastInsertId();
+        $stmt = db()->prepare("INSERT INTO bookings (booking_code, tour_id, tour_date_id, name, phone, participants, total_price, notes, passport_photo, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
+        $stmt->execute([$bookingCode, $tour['id'], $tourDateId, $name, $phone, $participants, $totalPrice, $notes, $passportFile]);
 
-        header("Location: booking-success.php?id=$bookingId");
+        header("Location: booking-success.php?code=$bookingCode");
         exit;
     } else {
         $bookingError = implode('<br>', $errors);
@@ -303,7 +312,6 @@ require_once 'includes/header.php';
 
                     <!-- Form Booking -->
                     <hr>
-                    <?php if (isLoggedIn()): ?>
                     <h6 class="fw-semibold">Booking Sekarang</h6>
                     <?php if ($bookingError): ?>
                         <div class="alert alert-danger py-2 small"><?= $bookingError ?></div>
@@ -311,7 +319,8 @@ require_once 'includes/header.php';
                     <?php if ($bookingMessage): ?>
                         <div class="alert alert-success py-2 small"><?= $bookingMessage ?></div>
                     <?php endif; ?>
-                    <form method="POST">
+                    <form method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="booking_submit" value="1">
                         <div class="mb-2">
                             <label class="form-label small">Pilih Tanggal</label>
                             <select name="tour_date_id" class="form-select form-select-sm" required>
@@ -329,16 +338,17 @@ require_once 'includes/header.php';
                             <input type="text" name="name" class="form-control form-control-sm" required>
                         </div>
                         <div class="mb-2">
-                            <label class="form-label small">Email</label>
-                            <input type="email" name="email" class="form-control form-control-sm" required>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label small">No. Telepon/WA</label>
-                            <input type="text" name="phone" class="form-control form-control-sm" required>
+                            <label class="form-label small">No. WhatsApp</label>
+                            <input type="text" name="phone" class="form-control form-control-sm" placeholder="0812xxxx" required>
                         </div>
                         <div class="mb-2">
                             <label class="form-label small">Jumlah Peserta</label>
                             <input type="number" name="participants" class="form-control form-control-sm" min="1" value="1" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small">Upload Foto Paspor</label>
+                            <input type="file" name="passport_photo" class="form-control form-control-sm" accept="image/jpeg,image/png,image/webp" required>
+                            <div class="form-text">Format JPG/PNG/WebP, max 2MB</div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label small">Catatan (opsional)</label>
@@ -346,15 +356,6 @@ require_once 'includes/header.php';
                         </div>
                         <button type="submit" class="btn btn-primary w-100 fw-semibold">Pesan Sekarang</button>
                     </form>
-                    <?php else: ?>
-                    <div class="text-center py-4">
-                        <i class="bi bi-person-lock fs-1 text-muted mb-2 d-block"></i>
-                        <p class="fw-semibold mb-2">Register untuk Booking</p>
-                        <p class="small text-muted mb-3">Hanya butuh waktu 2 menit! Dapatkan akses booking dan riwayat pemesanan.</p>
-                        <a href="register.php?redirect=<?= urlencode($_SERVER['REQUEST_URI']) ?>" class="btn btn-primary w-100 mb-2">Daftar Sekarang</a>
-                        <a href="login.php?redirect=<?= urlencode($_SERVER['REQUEST_URI']) ?>" class="btn btn-outline-primary w-100">Sudah punya akun? Masuk</a>
-                    </div>
-                    <?php endif; ?>
                     <?php else: ?>
                     <div class="alert alert-warning py-2 small mb-0">
                         <i class="bi bi-exclamation-triangle me-1"></i> Belum ada jadwal keberangkatan tersedia
