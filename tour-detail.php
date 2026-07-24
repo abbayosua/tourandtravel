@@ -23,7 +23,7 @@ $itineraries = getItineraries($tour['id']);
 $bookingMessage = '';
 $bookingError = '';
 $bookingCode = '';
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['booking_submit'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
     $tourDateId = (int)($_POST['tour_date_id'] ?? 0);
     $name = trim($_POST['name'] ?? '');
     $phone = trim($_POST['phone'] ?? '');
@@ -320,7 +320,7 @@ require_once 'includes/header.php';
                         <div class="alert alert-success py-2 small"><?= $bookingMessage ?></div>
                     <?php endif; ?>
                     <form method="POST" enctype="multipart/form-data">
-                        <input type="hidden" name="booking_submit" value="1">
+                        <input type="hidden" name="form_submitted" value="1">
                         <div class="mb-2">
                             <label class="form-label small">Pilih Tanggal</label>
                             <select name="tour_date_id" class="form-select form-select-sm" required>
@@ -354,7 +354,7 @@ require_once 'includes/header.php';
                             <label class="form-label small">Catatan (opsional)</label>
                             <textarea name="notes" class="form-control form-control-sm" rows="2"></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100 fw-semibold">Pesan Sekarang</button>
+                        <button type="submit" class="btn btn-primary w-100 fw-semibold" id="bookingSubmitBtn" onclick="var btn=this;btn.disabled=true;btn.innerHTML='<span class=\'spinner-border spinner-border-sm me-2\'></span>Memproses...';setTimeout(function(){btn.form.submit();},100);return false;">Pesan Sekarang</button>
                     </form>
                     <?php else: ?>
                     <div class="alert alert-warning py-2 small mb-0">
