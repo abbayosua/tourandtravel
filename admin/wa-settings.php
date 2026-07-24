@@ -90,8 +90,8 @@ require_once 'includes/admin-header.php';
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 </style>
 
-<div class="container-fluid py-4">
-    <div class="row">
+
+<div class="row">
         <div class="col-12">
             <h4 class="fw-bold mb-4"><i class="bi bi-whatsapp me-2 text-success"></i>Pengaturan WhatsApp</h4>
         </div>

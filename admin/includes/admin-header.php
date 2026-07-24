@@ -7,26 +7,77 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../assets/css/style.css">
+<style>
+#adminSidebar {
+    width: 250px;
+    min-height: calc(100vh - 56px);
+    transition: width 0.3s ease, padding 0.3s ease;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+#adminSidebar.collapsed {
+    width: 0;
+    padding: 0;
+}
+#adminSidebar.collapsed .nav-link {
+    white-space: nowrap;
+}
+#adminContent {
+    min-height: calc(100vh - 56px);
+    transition: margin-left 0.3s ease;
+}
+@media (max-width: 767.98px) {
+    #adminSidebar {
+        position: fixed;
+        z-index: 1040;
+        left: 0;
+        top: 56px;
+        height: calc(100vh - 56px);
+    }
+    #adminSidebar.collapsed {
+        transform: translateX(-100%);
+        width: 250px !important;
+        padding: 1rem !important;
+    }
+    #adminSidebar:not(.collapsed) {
+        box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    }
+    #sidebarOverlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 1035;
+        background: rgba(0,0,0,0.4);
+    }
+    #sidebarOverlay.show {
+        display: block;
+    }
+}
+</style>
 </head>
 <body>
 
 <!-- Navbar -->
 <nav class="navbar navbar-expand navbar-dark bg-primary sticky-top">
     <div class="container-fluid">
+        <button class="btn btn-sm btn-outline-light me-2" id="sidebarToggle" title="Toggle Sidebar">
+            <i class="bi bi-list"></i>
+        </button>
         <a class="navbar-brand fw-bold" href="dashboard.php">
             <i class="bi bi-airplane-engines-fill"></i> Admin Panel
         </a>
-        <div class="d-flex align-items-center">
+        <div class="d-flex align-items-center ms-auto">
             <span class="text-white me-3 small"><?= e($_SESSION['admin_username']) ?></span>
             <a href="logout.php" class="btn btn-sm btn-outline-light">Logout</a>
         </div>
     </div>
 </nav>
 
-<div class="container-fluid">
-    <div class="row">
+<div class="container-fluid px-0">
+    <div id="sidebarOverlay"></div>
+    <div class="d-flex" id="adminWrapper">
         <!-- Sidebar -->
-        <div class="col-md-2 bg-dark sidebar p-3 d-none d-md-block">
+        <div class="bg-dark sidebar p-3" id="adminSidebar">
             <nav class="nav flex-column">
                 <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'dashboard.php' ? 'active' : '' ?>" href="dashboard.php">
                     <i class="bi bi-speedometer2"></i> Dashboard
@@ -58,4 +109,5 @@
                 </a>
             </nav>
         </div>
-        <div class="col-md-10 ms-auto p-4">
+        <!-- Content -->
+        <div class="flex-grow-1 p-4" id="adminContent">
