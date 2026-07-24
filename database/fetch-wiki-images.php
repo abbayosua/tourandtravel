@@ -39,7 +39,7 @@ function fetchWikiUrl($keyword) {
         'format' => 'json',
     ]);
 
-    $ctx = stream_context_create(['http' => ['timeout' => 15, 'user_agent' => 'TourAndTravel-Bot/1.0']]);
+    $ctx = stream_context_create(['http' => ['timeout' => 20, 'user_agent' => 'TourAndTravel/1.0 (https://github.com/abbayosua/tourandtravel; contact@tourandtravel.com)']]);
     $res = @file_get_contents("https://commons.wikimedia.org/w/api.php?{$params}", false, $ctx);
     if (!$res) { echo "NETWORK ERR\n"; return null; }
 
