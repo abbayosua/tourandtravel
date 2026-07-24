@@ -3,12 +3,9 @@
  * AJAX handler untuk koneksi WhatsApp
  */
 require_once '../includes/config.php';
+require_once '../includes/auth.php';
 session_start();
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    http_response_code(403);
-    echo json_encode(['error' => 'Unauthorized']);
-    exit;
-}
+cekLogin();
 
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 $wa_config_file = __DIR__ . '/../includes/wa-config.json';

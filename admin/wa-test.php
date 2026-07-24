@@ -1,12 +1,10 @@
 <?php
 require_once '../includes/config.php';
+require_once '../includes/auth.php';
 require_once '../includes/send-wa.php';
 
 session_start();
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header('Location: login.php');
-    exit;
-}
+cekLogin();
 
 $phone = trim($_POST['test_phone'] ?? WA_ADMIN);
 if (!$phone) {
