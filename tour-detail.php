@@ -26,6 +26,7 @@ $bookingCode = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
     $tourDateId = (int)($_POST['tour_date_id'] ?? 0);
     $name = trim($_POST['name'] ?? '');
+    $email = trim($_POST['email'] ?? '');
     $phone = trim($_POST['phone'] ?? '');
     $participants = (int)($_POST['participants'] ?? 0);
     $notes = trim($_POST['notes'] ?? '');
@@ -65,8 +66,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
         $totalPrice = $tour['price'] * $participants;
         $bookingCode = generateBookingCode();
 
-        $stmt = db()->prepare("INSERT INTO bookings (booking_code, tour_id, tour_date_id, name, phone, participants, total_price, notes, passport_photo, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
-        $stmt->execute([$bookingCode, $tour['id'], $tourDateId, $name, $phone, $participants, $totalPrice, $notes, $passportFile]);
+        $stmt = db()->prepare("INSERT INTO bookings (booking_code, tour_id, tour_date_id, name, email, phone, participants, total_price, notes, passport_photo, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
+        $stmt->execute([$bookingCode, $tour['id'], $tourDateId, $name, $email, $phone, $participants, $totalPrice, $notes, $passportFile]);
 
         // Kirim notifikasi WhatsApp ke admin
         require_once 'includes/send-wa.php';
@@ -340,6 +341,10 @@ require_once 'includes/header.php';
                         <div class="mb-2">
                             <label class="form-label small">Nama Lengkap</label>
                             <input type="text" name="name" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small">Email (opsional)</label>
+                            <input type="email" name="email" class="form-control form-control-sm" placeholder="email@contoh.com">
                         </div>
                         <div class="mb-2">
                             <label class="form-label small">No. WhatsApp</label>
