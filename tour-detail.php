@@ -68,6 +68,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
         $stmt = db()->prepare("INSERT INTO bookings (booking_code, tour_id, tour_date_id, name, phone, participants, total_price, notes, passport_photo, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
         $stmt->execute([$bookingCode, $tour['id'], $tourDateId, $name, $phone, $participants, $totalPrice, $notes, $passportFile]);
 
+        // Kirim notifikasi WhatsApp ke admin
+        require_once 'includes/send-wa.php';
+        sendBookingNotification($tour, $bookingCode, $name, $phone, $participants, $totalPrice, tglIndonesia($selectedDate['departure_date']));
+
         header("Location: booking-success.php?code=$bookingCode");
         exit;
     } else {
