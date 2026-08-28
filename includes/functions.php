@@ -140,6 +140,118 @@ function formatCurrencySpan($amount, $sourceCurrency = null, $extraClass = '') {
 }
 
 /**
+ * =====================
+ * TRANSLATION FUNCTIONS
+ * =====================
+ */
+
+/**
+ * Get current language from session/cookie
+ */
+function getCurrentLang() {
+    if (isset($_SESSION['lang'])) return $_SESSION['lang'];
+    if (isset($_COOKIE['lang'])) {
+        $_SESSION['lang'] = $_COOKIE['lang'];
+        return $_COOKIE['lang'];
+    }
+    return 'id';
+}
+
+/**
+ * Set current language
+ */
+function setLang($lang) {
+    $lang = in_array($lang, ['id', 'en']) ? $lang : 'id';
+    $_SESSION['lang'] = $lang;
+    setcookie('lang', $lang, time() + (86400 * 365), '/');
+}
+
+/**
+ * Get translation from DB cache (with fallback to key)
+ */
+function t($key, $fallback = null) {
+    static $cache = [];
+    $lang = getCurrentLang();
+    $cacheKey = $lang . ':' . $key;
+
+    if (isset($cache[$cacheKey])) return $cache[$cacheKey];
+
+    if ($lang === 'id') {
+        $cache[$cacheKey] = $fallback ?? $key;
+        return $cache[$cacheKey];
+    }
+
+    try {
+        $stmt = db()->prepare("SELECT value FROM translations WHERE `key` = ? AND lang = ? LIMIT 1");
+        $stmt->execute([$key, $lang]);
+        $row = $stmt->fetch();
+        if ($row) {
+            $cache[$cacheKey] = $row['value'];
+            return $cache[$cacheKey];
+        }
+    } catch (Throwable $e) {}
+
+    $cache[$cacheKey] = $fallback ?? $key;
+    return $cache[$cacheKey];
+}
+
+/**
+ * Translate text via MyMemory API
+ */
+function translateMyMemory($text, $from = 'id', $to = 'en') {
+    if (empty($text) || $from === $to) return $text;
+
+    $url = 'https://api.mymemory.translated.net/get?q=' . urlencode($text) . '&langpair=' . $from . '|' . $to;
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_TIMEOUT => 10,
+        CURLOPT_SSL_VERIFYPEER => false,
+    ]);
+    $json = curl_exec($ch);
+    curl_close($ch);
+
+    if (!$json) return $text;
+
+    $data = json_decode($json, true);
+    if (isset($data['responseData']['translatedText'])) {
+        $translated = $data['responseData']['translatedText'];
+        if (!empty($translated) && strtolower($translated) !== strtolower($text)) {
+            return $translated;
+        }
+    }
+    return $text;
+}
+
+/**
+ * Save translation to DB
+ */
+function saveTranslation($key, $lang, $value) {
+    try {
+        $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = ?");
+        $stmt->execute([$key, $lang, $value, $value]);
+    } catch (Throwable $e) {}
+}
+
+/**
+ * Translate and cache a key
+ */
+function translateAndCache($key, $fromLang = 'id', $toLang = 'en') {
+    $existing = '';
+    try {
+        $stmt = db()->prepare("SELECT value FROM translations WHERE `key` = ? AND lang = ? LIMIT 1");
+        $stmt->execute([$key, $toLang]);
+        $row = $stmt->fetch();
+        if ($row) return $row['value'];
+    } catch (Throwable $e) {}
+
+    $translated = translateMyMemory($key, $fromLang, $toLang);
+    saveTranslation($key, $toLang, $translated);
+    return $translated;
+}
+
+/**
  * Format tanggal Indonesia
  */
 function tglIndonesia($date) {
