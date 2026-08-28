@@ -73,6 +73,7 @@ require_once 'includes/admin-header.php';
                             </span>
                         </td>
                         <td class="table-action">
+                            <a href="../tour-detail.php?slug=<?= htmlspecialchars($t['slug']) ?>" target="_blank" class="btn btn-sm btn-info text-white" title="Lihat"><i class="bi bi-eye"></i></a>
                             <a href="tour-edit.php?id=<?= $t['id'] ?>" class="btn btn-sm btn-warning" title="Edit"><i class="bi bi-pencil"></i></a>
                             <a href="tours.php?delete=<?= $t['id'] ?>" class="btn btn-sm btn-danger" title="Hapus" onclick="return confirm('Yakin ingin menghapus tour ini?')"><i class="bi bi-trash"></i></a>
                         </td>
