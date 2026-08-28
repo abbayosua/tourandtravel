@@ -347,6 +347,29 @@ function getDiskonPersen($tour) {
 /**
  * Ekstrak kata kunci untuk galeri dari judul tour
  */
+/**
+ * Galeri tour: simpan di tabel tour_images
+ */
+function getTourImages($tourId) {
+    try {
+        $stmt = db()->prepare("SELECT * FROM tour_images WHERE tour_id = ? ORDER BY sort_order ASC, id ASC");
+        $stmt->execute([$tourId]);
+        return $stmt->fetchAll();
+    } catch (Throwable $e) { return []; }
+}
+
+function getTourGalleryUrls($tour) {
+    $imgs = getTourImages($tour['id'] ?? 0);
+    if (!empty($imgs)) {
+        return array_map(fn($r) => BASE_URL . '/uploads/' . ltrim($r['image_path'], '/'), $imgs);
+    }
+    $kws = getGalleryKeywords($tour);
+    $urls = [];
+    foreach (array_slice($kws, 0, 6) as $kw) {
+        $urls[] = "https://loremflickr.com/800/600/" . urlencode(strtolower($kw)) . "?lock=" . crc32($kw);
+    }
+    return $urls;
+}
 function getGalleryKeywords($tour) {
     $base = $tour['title'];
     $base = preg_replace('/\d+[dD]\d+[nN]?/i', '', $base);

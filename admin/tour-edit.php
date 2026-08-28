@@ -107,6 +107,39 @@ if (isset($_GET['delete_date'])) {
     exit;
 }
 
+// Handle hapus gambar galeri
+if (isset($_GET['delete_gallery'])) {
+    $gid = (int)$_GET['delete_gallery'];
+    $row = db()->prepare("SELECT * FROM tour_images WHERE id=? AND tour_id=?");
+    $row->execute([$gid, $id]);
+    $img = $row->fetch();
+    if ($img) {
+        if (!empty($img['image_path']) && file_exists(__DIR__ . '/../uploads/' . $img['image_path'])) {
+            @unlink(__DIR__ . '/../uploads/' . $img['image_path']);
+        }
+        db()->prepare("DELETE FROM tour_images WHERE id=? AND tour_id=?")->execute([$gid, $id]);
+    }
+    header("Location: tour-edit.php?id=$id&msg=gallery_deleted"); exit;
+}
+
+// Handle upload galeri
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_gallery'])) {
+    if (!empty($_FILES['gallery_images']['name'][0])) {
+        $maxOrder = db()->prepare("SELECT COALESCE(MAX(sort_order),0) FROM tour_images WHERE tour_id=?");
+        $maxOrder->execute([$id]);
+        $nextOrder = (int)$maxOrder->fetchColumn() + 1;
+        foreach ($_FILES['gallery_images']['tmp_name'] as $idx => $tmp) {
+            if ($_FILES['gallery_images']['error'][$idx] !== UPLOAD_ERR_OK) continue;
+            $file = ['name'=>$_FILES['gallery_images']['name'][$idx],'type'=>$_FILES['gallery_images']['type'][$idx],'tmp_name'=>$tmp,'error'=>$_FILES['gallery_images']['error'][$idx],'size'=>$_FILES['gallery_images']['size'][$idx]];
+            $up = uploadGambar($file, __DIR__ . '/../uploads');
+            if ($up['success']) {
+                db()->prepare("INSERT INTO tour_images (tour_id, image_path, sort_order) VALUES (?, ?, ?)")->execute([$id, $up['filename'], $nextOrder++]);
+            }
+        }
+        header("Location: tour-edit.php?id=$id&msg=gallery_added"); exit;
+    }
+}
+
 $msg = '';
 if (isset($_GET['msg'])) {
     $msgs = [
@@ -307,6 +340,45 @@ require_once 'includes/admin-header.php';
         </div>
         <?php else: ?>
         <p class="text-muted small mb-0">Belum ada itinerary.</p>
+        <?php endif; ?>
+    </div>
+</div>
+
+<!-- Galeri Foto -->
+<div class="card border-0 shadow-sm mb-3">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h6 class="fw-bold mb-0"><i class="bi bi-images me-2"></i>Galeri Foto</h6>
+        <small class="text-muted">Upload beberapa gambar (JPG/PNG/WebP, max 2MB)</small>
+    </div>
+    <div class="card-body">
+        <?php
+        try { $galleryItems = db()->prepare("SELECT * FROM tour_images WHERE tour_id=? ORDER BY sort_order ASC, id ASC"); $galleryItems->execute([$id]); $galleryItems = $galleryItems->fetchAll(); } catch(Throwable $e){ $galleryItems=[]; }
+        ?>
+        <form method="POST" enctype="multipart/form-data" class="mb-3">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-9">
+                    <label class="form-label small">Pilih Gambar (bisa banyak)</label>
+                    <input type="file" name="gallery_images[]" class="form-control form-control-sm" accept="image/jpeg,image/png,image/webp" multiple required>
+                </div>
+                <div class="col-md-3 d-grid">
+                    <button type="submit" name="add_gallery" class="btn btn-sm btn-primary">Upload Galeri</button>
+                </div>
+            </div>
+        </form>
+        <?php if (count($galleryItems)>0): ?>
+        <div class="row g-2">
+            <?php foreach ($galleryItems as $g): ?>
+            <div class="col-4 col-md-2">
+                <div class="position-relative">
+                    <img src="../uploads/<?= e($g['image_path']) ?>" class="w-100 rounded-3 border" style="height: 110px; object-fit: cover;">
+                    <a href="tour-edit.php?id=<?= $id ?>&delete_gallery=<?= $g['id'] ?>" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 py-0 px-1" onclick="return confirm('Hapus gambar ini?')" title="Hapus" style="font-size: 11px;"><i class="bi bi-trash"></i></a>
+                    <small class="d-block text-truncate text-muted" style="font-size: 10px;"><?= e($g['image_path']) ?></small>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+        <?php else: ?>
+        <p class="text-muted small mb-0">Belum ada foto galeri. Upload untuk mengganti galeri auto (loremflickr).</p>
         <?php endif; ?>
     </div>
 </div>

@@ -111,17 +111,14 @@ require_once 'includes/header.php';
             <p class="lead"><?= nl2br(e($tour['description'])) ?></p>
 
             <!-- Gallery -->
+            <?php $galleryImages = getTourGalleryUrls($tour); ?>
             <h5 class="fw-bold mt-4 mb-3"><i class="bi bi-images me-2"></i>Galeri Foto</h5>
             <div class="row g-2 mb-4">
-                <?php $galleryKw = getGalleryKeywords($tour); ?>
-                <?php $galleryImages = []; ?>
-                <?php foreach (array_slice($galleryKw, 0, 6) as $i => $kw):
-                    $galleryUrl = "https://loremflickr.com/800/600/" . urlencode(strtolower($kw)) . "?lock=" . crc32($kw);
-                    $thumbUrl = "https://loremflickr.com/320/240/" . urlencode(strtolower($kw)) . "?lock=" . crc32($kw);
-                    $galleryImages[] = $galleryUrl;
+                <?php foreach ($galleryImages as $i => $galleryUrl):
+                    $thumbUrl = str_contains($galleryUrl, 'loremflickr.com') ? str_replace('800/600', '320/240', $galleryUrl) : $galleryUrl;
                 ?>
                 <div class="col-4 col-md-2">
-                    <img src="<?= $thumbUrl ?>" class="w-100 rounded-3 gallery-thumb" style="height: 100px; object-fit: cover; cursor: pointer;" alt="" onerror="this.remove()" data-index="<?= $i ?>" onclick="openGallery(<?= $i ?>)">
+                    <img src="<?= e($thumbUrl) ?>" class="w-100 rounded-3 gallery-thumb" style="height: 100px; object-fit: cover; cursor: pointer;" alt="<?= e($tour['title']) ?>" loading="lazy" onerror="this.remove()" data-index="<?= $i ?>" onclick="openGallery(<?= $i ?>)">
                 </div>
                 <?php endforeach; ?>
             </div>

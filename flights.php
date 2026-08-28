@@ -3,6 +3,7 @@ require_once 'includes/config.php';
 require_once 'includes/db.php';
 require_once 'includes/functions.php';
 require_once 'includes/duffel.php';
+require_once 'includes/flightlist.php';
 
 $pageTitle = 'Pesawat';
 $from = trim($_GET['from'] ?? '');
@@ -20,37 +21,67 @@ $duffelError = null;
 $localSchedules = [];
 
 if ($doSearch && $from && $to) {
-    $cabinMap = ['economy'=>'economy','business'=>'business','first'=>'first','premium_economy'=>'premium_economy'];
-    $cabin = $cabinMap[$class] ?? 'economy';
-    if ($class === '') $cabin = 'economy';
-    $result = duffelSearchOffers($from, $to, $date, $cabin, $passengers);
-    if (isset($result['error'])) {
-        $duffelError = $result['error'];
-    } else {
-        $all = $result['offers'] ?? [];
-        if ($class) {
-            $filtered = array_values(array_filter($all, function($o) use ($class) {
-                $seg = $o['slices'][0]['segments'][0] ?? null;
-                if (!$seg) return true;
-                $cc = strtolower($seg['passengers'][0]['cabin_class'] ?? '');
-                return $cc === $class;
-            }));
-            $duffelOffers = $filtered;
-            if (empty($duffelOffers)) $duffelOffers = $all;
+    // Primary: FlightList (gratis, real airlines)
+    $flightlistResult = flightlistSearchOffers($from, $to, $date, $class ?: 'economy', $passengers);
+    if (isset($flightlistResult['offers']) && count($flightlistResult['offers']) > 0) {
+        $duffelOffers = $flightlistResult['offers'];
+        $flightlistCurrency = $flightlistResult['currency'] ?? 'USD';
+        // Mark as FlightList source via session flag
+        $offerSource = 'flightlist';
+    } elseif (!empty($flightlistResult['unreachable'])) {
+        // FlightList unreachable -> fallback Duffel
+        $cabinMap = ['economy'=>'economy','business'=>'business','first'=>'first','premium_economy'=>'premium_economy'];
+        $cabin = $cabinMap[$class] ?? 'economy';
+        if ($class === '') $cabin = 'economy';
+        $result = duffelSearchOffers($from, $to, $date, $cabin, $passengers);
+        if (isset($result['error'])) {
+            $duffelError = $result['error'] . ' (FlightList juga tidak terjangkau)';
         } else {
-            $duffelOffers = $all;
+            $all = $result['offers'] ?? [];
+            if ($class) {
+                $filtered = array_values(array_filter($all, function($o) use ($class) {
+                    $seg = $o['slices'][0]['segments'][0] ?? null;
+                    if (!$seg) return true;
+                    $cc = strtolower($seg['passengers'][0]['cabin_class'] ?? '');
+                    return $cc === $class;
+                }));
+                $duffelOffers = $filtered;
+                if (empty($duffelOffers)) $duffelOffers = $all;
+            } else {
+                $duffelOffers = $all;
+            }
+            $offerSource = 'duffel';
         }
-    }
-    if ($duffelError || empty($duffelOffers)) {
-        $sql = "SELECT fs.*, f.airline, f.flight_number, f.from_city, f.to_city, f.departure_time, f.arrival_time, f.duration, f.class FROM flight_schedules fs JOIN flights f ON fs.flight_id=f.id WHERE fs.is_active=1 AND fs.departure_date=?";
-        $params=[$date];
-        if ($from) {$sql.=" AND f.from_city LIKE ?";$params[]="%$from%";}
-        if ($to) {$sql.=" AND f.to_city LIKE ?";$params[]="%$to%";}
-        if ($class) {$sql.=" AND f.class=?";$params[]=$class;}
-        $sql.=" ORDER BY fs.price ASC LIMIT 20";
-        $st=db()->prepare($sql);
-        $st->execute($params);
-        $localSchedules=$st->fetchAll();
+        if (!empty($result['error']) || empty($duffelOffers)) {
+            // Final fallback: DB seed
+            $sql = "SELECT fs.*, f.airline, f.flight_number, f.from_city, f.to_city, f.departure_time, f.arrival_time, f.duration, f.class FROM flight_schedules fs JOIN flights f ON fs.flight_id=f.id WHERE fs.is_active=1 AND fs.departure_date=?";
+            $params=[$date];
+            if ($from) {$sql.=" AND f.from_city LIKE ?";$params[]="%$from%";}
+            if ($to) {$sql.=" AND f.to_city LIKE ?";$params[]="%$to%";}
+            if ($class) {$sql.=" AND f.class=?";$params[]=$class;}
+            $sql.=" ORDER BY fs.price ASC LIMIT 20";
+            $st=db()->prepare($sql);
+            $st->execute($params);
+            $localSchedules=$st->fetchAll();
+            if (empty($localSchedules) && empty($duffelOffers)) {
+                $duffelError = $flightlistResult['error'] ?? ($result['error'] ?? 'Tidak ada penerbangan untuk rute/tanggal ini.');
+            }
+        }
+    } else {
+        // FlightList reachable but 0 results -> show FlightList 0 (no fallback to avoid confusing mix), with DB fallback if desired
+        $offerSource = 'flightlist';
+        if (empty($flightlistResult['offers'])) {
+            // Fallback to DB so demo not empty
+            $sql = "SELECT fs.*, f.airline, f.flight_number, f.from_city, f.to_city, f.departure_time, f.arrival_time, f.duration, f.class FROM flight_schedules fs JOIN flights f ON fs.flight_id=f.id WHERE fs.is_active=1 AND fs.departure_date=?";
+            $params=[$date];
+            if ($from) {$sql.=" AND f.from_city LIKE ?";$params[]="%$from%";}
+            if ($to) {$sql.=" AND f.to_city LIKE ?";$params[]="%$to%";}
+            if ($class) {$sql.=" AND f.class=?";$params[]=$class;}
+            $sql.=" ORDER BY fs.price ASC LIMIT 20";
+            $st=db()->prepare($sql);
+            $st->execute($params);
+            $localSchedules=$st->fetchAll();
+        }
     }
 } elseif ($doSearch && (!$from || !$to)) {
     $duffelError = 'Silakan isi kota asal dan tujuan.';
@@ -66,7 +97,7 @@ require_once 'includes/header.php';
     <div class="container">
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-body p-3 p-md-4">
-                <h5 class="fw-bold mb-3"><i class="bi bi-airplane me-2"></i>Cari Penerbangan <small class="text-muted fw-normal" style="font-size:12px">(Live via Duffel - Test Mode)</small></h5>
+                <h5 class="fw-bold mb-3"><i class="bi bi-airplane me-2"></i>Cari Penerbangan <small class="text-muted fw-normal" style="font-size:12px">(Live: FlightList → Duffel → Lokal)</small></h5>
                 <?php if ($duffelError): ?>
                     <div class="alert alert-warning py-2 small"><?= e($duffelError) ?></div>
                 <?php endif; ?>
@@ -127,18 +158,43 @@ require_once 'includes/header.php';
         </div>
         <?php if ($doSearch): ?>
             <?php if (!empty($duffelOffers)): ?>
+            <?php
+                $badge = 'Live Duffel'; $badgeClass='bg-success';
+                if (($offerSource ?? '') === 'flightlist') { $badge='FlightList (Real)'; $badgeClass='bg-primary'; }
+                elseif (($offerSource ?? '') === 'duffel') { $badge='Live Duffel'; $badgeClass='bg-success'; }
+            ?>
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <div><h5 class="fw-bold mb-0"><?= count($duffelOffers) ?> Penerbangan <span class="badge bg-success ms-1" style="font-size:11px">Live Duffel</span></h5><small class="text-muted"><?= tglIndonesia($date) ?> · <?= e($from) ?> → <?= e($to) ?> · <?= $passengers ?> pax</small></div>
+                <div><h5 class="fw-bold mb-0"><?= count($duffelOffers) ?> Penerbangan <span class="badge <?= $badgeClass ?> ms-1" style="font-size:11px"><?= $badge ?></span></h5><small class="text-muted"><?= tglIndonesia($date) ?> · <?= e($from) ?> → <?= e($to) ?> · <?= $passengers ?> pax</small></div>
             </div>
             <div class="row g-3" id="duffelResults">
                 <?php foreach ($duffelOffers as $o):
-                    $slice = $o['slices'][0]; $seg = $slice['segments'][0];
-                    $dep = date('H:i', strtotime($seg['departing_at'])); $arr = date('H:i', strtotime($seg['arriving_at']));
-                    $carrier = $seg['marketing_carrier'] ?? $seg['operating_carrier'];
-                    $duration = duffelFormatDuration($slice['duration'] ?? $seg['duration']);
-                    $cc = $seg['passengers'][0]['cabin_class'] ?? 'economy';
-                    $baggages = $seg['passengers'][0]['baggages'] ?? [];
-                    $offerId = $o['id'];
+                    $isFlightList = isset($o['route']) && isset($o['flyFrom']);
+                    if ($isFlightList) {
+                        $route0 = $o['route'][0] ?? $o;
+                        $airlineCode = $o['airlines'][0] ?? ($route0['airline'] ?? 'ZZ');
+                        $carrier = ['name'=>$airlineCode, 'iata_code'=>$airlineCode, 'logo_symbol_url'=>null];
+                        $dep = date('H:i', strtotime($o['local_departure'] ?? $route0['local_departure'] ?? ''));
+                        $arr = date('H:i', strtotime($o['local_arrival'] ?? $route0['local_arrival'] ?? ''));
+                        $duration = flightlistFormatDuration($o['duration']['departure'] ?? $o['duration']['total'] ?? 0);
+                        $stops = count($o['route']) > 1 ? count($o['route'])-1 : 0;
+                        $cc = 'economy';
+                        $offerId = $o['id'];
+                        $fromCode = $o['flyFrom'] ?? $route0['flyFrom'] ?? '';
+                        $toCode = $o['flyTo'] ?? $route0['flyTo'] ?? '';
+                        $isFL = true;
+                    } else {
+                        $slice = $o['slices'][0]; $seg = $slice['segments'][0];
+                        $dep = date('H:i', strtotime($seg['departing_at'])); $arr = date('H:i', strtotime($seg['arriving_at']));
+                        $carrier = $seg['marketing_carrier'] ?? $seg['operating_carrier'];
+                        $duration = duffelFormatDuration($slice['duration'] ?? $seg['duration']);
+                        $cc = $seg['passengers'][0]['cabin_class'] ?? 'economy';
+                        $offerId = $o['id'];
+                        $isFL = false;
+                        $fromCode = $seg['origin']['iata_code'] ?? '';
+                        $toCode = $seg['destination']['iata_code'] ?? '';
+                        $stops = count($slice['segments']) > 1 ? count($slice['segments'])-1 : 0;
+                    }
+                    $baggages = $isFL ? [] : ($seg['passengers'][0]['baggages'] ?? []);
                 ?>
                 <div class="col-12">
                     <div class="card border-0 shadow-sm flight-card">
@@ -150,14 +206,14 @@ require_once 'includes/header.php';
                                 </div>
                                 <div class="col-md-4">
                                     <div class="d-flex align-items-center justify-content-center gap-2">
-                                        <div class="text-center" style="min-width:70px;"><div class="fs-5 fw-bold"><?= $dep ?></div><small class="text-muted"><?= e($seg['origin']['iata_code'] ?? '') ?></small></div>
-                                        <div class="flex-grow-1 text-center px-2"><div class="border-top border-2 border-primary position-relative"><i class="bi bi-airplane-fill text-primary position-absolute top-0 start-50 translate-middle" style="font-size:12px;"></i></div><small class="text-muted d-block mt-1"><?= e($duration) ?></small><?php if (count($slice['segments'])>1): ?><small class="text-warning" style="font-size:11px"><?= count($slice['segments'])-1 ?> transit</small><?php else: ?><small class="text-success" style="font-size:11px">Langsung</small><?php endif; ?></div>
-                                        <div class="text-center" style="min-width:70px;"><div class="fs-5 fw-bold"><?= $arr ?></div><small class="text-muted"><?= e($seg['destination']['iata_code'] ?? '') ?></small></div>
+                                        <div class="text-center" style="min-width:70px;"><div class="fs-5 fw-bold"><?= $dep ?></div><small class="text-muted"><?= e($isFL ? $fromCode : ($seg['origin']['iata_code'] ?? '')) ?></small></div>
+                                        <div class="flex-grow-1 text-center px-2"><div class="border-top border-2 border-primary position-relative"><i class="bi bi-airplane-fill text-primary position-absolute top-0 start-50 translate-middle" style="font-size:12px;"></i></div><small class="text-muted d-block mt-1"><?= e($duration) ?></small><?php if ($stops>0): ?><small class="text-warning" style="font-size:11px"><?= $stops ?> transit</small><?php else: ?><small class="text-success" style="font-size:11px">Langsung</small><?php endif; ?></div>
+                                        <div class="text-center" style="min-width:70px;"><div class="fs-5 fw-bold"><?= $arr ?></div><small class="text-muted"><?= e($isFL ? $toCode : ($seg['destination']['iata_code'] ?? '')) ?></small></div>
                                     </div>
                                 </div>
                                 <div class="col-md-2 text-center"><span class="badge bg-<?= $cc==='economy'?'success':($cc==='business'?'warning text-dark':'danger') ?> rounded-pill"><?= ucfirst($cc) ?></span><small class="d-block text-muted mt-1" style="font-size:11px"><?php foreach($baggages as $bg) echo e($bg['quantity'].' '.($bg['type']==='checked'?'bagasi':'kabin')).' '; ?></small></div>
-                                <div class="col-md-2 text-center"><div class="fs-6 fw-bold text-primary"><?= duffelFormatPrice($o['total_amount'], $o['total_currency']) ?></div><small class="text-muted">/orang</small></div>
-                                <div class="col-md-2 text-md-end"><a href="flight-detail.php?offer_id=<?= e($offerId) ?>" class="btn btn-primary rounded-pill px-4 fw-semibold w-100">Pilih</a></div>
+                                <div class="col-md-2 text-center"><div class="fs-6 fw-bold text-primary"><?= $isFL ? flightlistFormatPrice($o['price'] ?? $o['conversion']['USD'] ?? 0) : duffelFormatPrice($o['total_amount'], $o['total_currency']) ?></div><small class="text-muted">/orang</small></div>
+                                <div class="col-md-2 text-md-end"><a href="flight-detail.php?<?= $isFL ? "fl_offer_id=".e($offerId) : "offer_id=".e($offerId) ?>" class="btn btn-primary rounded-pill px-4 fw-semibold w-100">Pilih</a></div>
                             </div>
                         </div>
                     </div>
