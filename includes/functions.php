@@ -43,7 +43,7 @@ function getDefaultCurrency() {
  */
 function setDefaultCurrency($code) {
     $code = in_array($code, ['IDR', 'SGD', 'USD']) ? $code : 'IDR';
-    $stmt = db()->prepare("INSERT INTO settings (setting_key, setting_value) VALUES ('default_currency', ?) ON DUPLICATE KEY setting_value = ?");
+    $stmt = db()->prepare("INSERT INTO settings (setting_key, setting_value) VALUES ('default_currency', ?) ON DUPLICATE KEY UPDATE setting_value = ?");
     $stmt->execute([$code, $code]);
 }
 

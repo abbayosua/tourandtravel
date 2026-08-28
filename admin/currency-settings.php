@@ -4,8 +4,6 @@ require_once '../includes/config.php';
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
 require_once '../includes/auth.php';
-
-session_start();
 cekLogin();
 
 $message = '';
@@ -33,7 +31,7 @@ $currentRates = getExchangeRates();
 $currencies = getSupportedCurrencies();
 ?>
 
-<?php require_once '../includes/admin-header.php'; ?>
+<?php require_once __DIR__ . '/includes/admin-header.php'; ?>
 
 <h4 class="fw-bold mb-3"><i class="bi bi-currency-exchange me-2"></i>Pengaturan Mata Uang</h4>
 
@@ -120,4 +118,4 @@ $currencies = getSupportedCurrencies();
     </div>
 </div>
 
-<?php require_once '../includes/admin-footer.php'; ?>
+<?php require_once __DIR__ . '/includes/admin-footer.php'; ?>
