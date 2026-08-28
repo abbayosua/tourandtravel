@@ -3,7 +3,7 @@ require_once 'includes/config.php';
 require_once 'includes/db.php';
 require_once 'includes/functions.php';
 
-$pageTitle = 'Paket Tour';
+$pageTitle = t('Paket Tour');
 $category = $_GET['category'] ?? null;
 $search = $_GET['search'] ?? null;
 $priceRange = $_GET['harga'] ?? null;
@@ -37,11 +37,11 @@ require_once 'includes/header.php';
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
-                <h4 class="fw-bold mb-0">Paket Tour</h4>
-                <small class="text-muted"><?= $total ?> tour ditemukan</small>
+                <h4 class="fw-bold mb-0"><?= t('Paket Tour') ?></h4>
+                <small class="text-muted"><?= $total ?> <?= t('tour ditemukan') ?></small>
             </div>
             <a href="tours.php" class="btn btn-sm btn-outline-secondary rounded-pill <?= !$category && !$search && !$priceRange && !$duration && !$rating && !$sort ? 'd-none' : '' ?>">
-                <i class="bi bi-x-circle me-1"></i>Reset
+                <i class="bi bi-x-circle me-1"></i><?= t('Reset') ?>
             </a>
         </div>
 
@@ -49,7 +49,7 @@ require_once 'includes/header.php';
         <form method="GET" class="row g-2 mb-3">
             <div class="col-6 col-md">
                 <select name="category" class="form-select form-select-sm" onchange="this.form.submit()">
-                    <option value="">Semua Kategori</option>
+                    <option value=""><?= t('Semua Kategori') ?></option>
                     <?php foreach ($categories as $cat): ?>
                         <option value="<?= e($cat) ?>" <?= $category === $cat ? 'selected' : '' ?>><?= e($cat) ?></option>
                     <?php endforeach; ?>

@@ -3,7 +3,7 @@ require_once 'includes/config.php';
 require_once 'includes/db.php';
 require_once 'includes/functions.php';
 
-$pageTitle = 'Beranda';
+$pageTitle = t('Beranda');
 
 $toursResult = getTours();
 $tours = $toursResult['tours'];
@@ -31,20 +31,20 @@ require_once 'includes/header.php';
     <div class="container position-relative z-1">
         <div class="row">
             <div class="col-lg-7 text-white">
-                <h1 class="display-4 fw-bold mb-2 lh-1">Your World of Joy</h1>
-                <p class="lead mb-4 text-white-50">Temukan paket tour impian Anda dari ratusan destinasi</p>
+                <h1 class="display-4 fw-bold mb-2 lh-1"><?= t('Your World of Joy') ?></h1>
+                <p class="lead mb-4 text-white-50"><?= t('Temukan paket tour impian Anda dari ratusan destinasi') ?></p>
                 <div class="bg-white rounded-4 p-2 shadow-lg" style="max-width: 600px;">
                     <div class="search-wrapper">
                         <div class="input-group input-group-lg">
                             <span class="input-group-text bg-transparent border-0"><i class="bi bi-search text-muted"></i></span>
-                            <input type="text" class="form-control border-0 shadow-none" placeholder="Cari destinasi atau aktivitas..." id="heroSearch" autocomplete="off" onkeypress="if(event.key==='Enter') window.location='tours.php?search='+encodeURIComponent(this.value)">
-                            <button class="btn btn-primary px-4 rounded-3 m-1" onclick="window.location='tours.php?search='+encodeURIComponent(document.getElementById('heroSearch').value)">Cari</button>
+                            <input type="text" class="form-control border-0 shadow-none" placeholder="<?= t('Cari destinasi atau aktivitas...') ?>" id="heroSearch" autocomplete="off" onkeypress="if(event.key==='Enter') window.location='tours.php?search='+encodeURIComponent(this.value)">
+                            <button class="btn btn-primary px-4 rounded-3 m-1" onclick="window.location='tours.php?search='+encodeURIComponent(document.getElementById('heroSearch').value)"><?= t('Cari') ?></button>
                         </div>
                         <div class="search-dropdown" id="heroSearchDropdown"></div>
                     </div>
                 </div>
                 <div class="d-flex flex-wrap gap-2 mt-3">
-                    <a href="tours.php" class="btn btn-sm btn-light rounded-pill px-3 fw-semibold"><i class="bi bi-grid-fill me-1"></i>Semua</a>
+                    <a href="tours.php" class="btn btn-sm btn-light rounded-pill px-3 fw-semibold"><i class="bi bi-grid-fill me-1"></i><?= t('Semua') ?></a>
                     <?php foreach ($categories as $cat): ?>
                         <a href="tours.php?category=<?= e($cat) ?>" class="btn btn-sm btn-outline-light rounded-pill px-3"><?= e($cat) ?></a>
                     <?php endforeach; ?>
@@ -60,19 +60,19 @@ require_once 'includes/header.php';
         <div class="row text-center g-2">
             <div class="col-3">
                 <div class="fw-bold text-primary fs-5">150+</div>
-                <small class="text-muted">Paket Tour</small>
+                <small class="text-muted"><?= t('Paket Tour') ?></small>
             </div>
             <div class="col-3">
                 <div class="fw-bold text-primary fs-5">5.000+</div>
-                <small class="text-muted">Pelanggan</small>
+                <small class="text-muted"><?= t('Pelanggan') ?></small>
             </div>
             <div class="col-3">
                 <div class="fw-bold text-primary fs-5">12+</div>
-                <small class="text-muted">Destinasi</small>
+                <small class="text-muted"><?= t('Destinasi') ?></small>
             </div>
             <div class="col-3">
                 <div class="fw-bold text-primary fs-5">7</div>
-                <small class="text-muted">Tahun</small>
+                <small class="text-muted"><?= t('Tahun') ?></small>
             </div>
         </div>
     </div>
@@ -81,7 +81,7 @@ require_once 'includes/header.php';
 <!-- Category Cards – ala Klook -->
 <section class="py-4">
     <div class="container">
-        <h5 class="fw-bold mb-3">Kategori Wisata</h5>
+        <h5 class="fw-bold mb-3"><?= t('Kategori Wisata') ?></h5>
         <div class="row g-2">
             <?php
             $catIcons = [
@@ -120,8 +120,8 @@ require_once 'includes/header.php';
 <section class="py-4 bg-light">
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="fw-bold mb-0"><i class="bi bi-lightning-charge-fill text-warning me-1"></i> Flash Deals</h5>
-            <a href="tours.php?category=Promo" class="btn btn-sm btn-outline-danger rounded-pill px-3">Lihat Semua</a>
+            <h5 class="fw-bold mb-0"><i class="bi bi-lightning-charge-fill text-warning me-1"></i> <?= t('Flash Deals') ?></h5>
+            <a href="tours.php?category=Promo" class="btn btn-sm btn-outline-danger rounded-pill px-3"><?= t('Lihat Semua') ?></a>
         </div>
         <div class="row g-3">
             <?php foreach (array_slice($promoTours, 0, 3) as $promo): ?>
@@ -135,14 +135,14 @@ require_once 'includes/header.php';
                             <div class="col-8">
                                 <div class="card-body py-2 px-3">
                                     <div class="d-flex align-items-center gap-1 mb-1">
-                                        <span class="badge bg-danger small">HOT</span>
-                                        <small class="text-muted">Promo</small>
+                                        <span class="badge bg-danger small"><?= t('HOT') ?></span>
+                                        <small class="text-muted"><?= t('Promo') ?></small>
                                     </div>
                                     <h6 class="fw-semibold small mb-1 text-dark"><?= e($promo['title']) ?></h6>
                                     <?php if ($promo['price'] > 0): ?>
                                         <span class="fw-bold text-primary small"><?= formatCurrencySpan($promo['price'], $promo['price_currency'] ?? 'IDR') ?></span>
                                     <?php else: ?>
-                                        <span class="badge bg-info">Hubungi Kami</span>
+                                        <span class="badge bg-info"><?= t('Hubungi Kami') ?></span>
                                     <?php endif; ?>
                                 </div>
                             </div>
@@ -159,7 +159,7 @@ require_once 'includes/header.php';
 <!-- Destinasi Kota – ala Klook -->
 <section class="py-4">
     <div class="container">
-        <h5 class="fw-bold mb-3">Destinasi Populer</h5>
+        <h5 class="fw-bold mb-3"><?= t('Destinasi Populer') ?></h5>
         <?php $cityDests = getCityDestinations(); ?>
         <div class="row g-2">
             <?php foreach ($cityDests as $category => $cities):
@@ -176,7 +176,7 @@ require_once 'includes/header.php';
                                 <div class="dest-overlay d-flex align-items-end p-2">
                                     <div>
                                         <span class="fw-semibold text-white small d-block"><?= e($dest['city']) ?></span>
-                                        <small class="text-white-50" style="font-size: 10px;"><?= $tourCount ?> paket</small>
+                                        <small class="text-white-50" style="font-size: 10px;"><?= $tourCount ?> <?= t('paket') ?></small>
                                     </div>
                                 </div>
                             </div>
@@ -201,10 +201,10 @@ require_once 'includes/header.php';
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h5 class="fw-bold mb-1">Rekomendasi Paket Tour</h5>
-                <p class="text-muted mb-0 small">Pilihan terbaik untuk liburan Anda</p>
+                <h5 class="fw-bold mb-1"><?= t('Rekomendasi Paket Tour') ?></h5>
+                <p class="text-muted mb-0 small"><?= t('Pilihan terbaik untuk liburan Anda') ?></p>
             </div>
-            <a href="tours.php" class="btn btn-outline-primary rounded-pill px-4">Lihat Semua <i class="bi bi-arrow-right ms-1"></i></a>
+            <a href="tours.php" class="btn btn-outline-primary rounded-pill px-4"><?= t('Lihat Semua') ?> <i class="bi bi-arrow-right ms-1"></i></a>
         </div>
         <div class="row g-3">
             <?php foreach ($featuredTours as $tour): ?>
@@ -270,24 +270,24 @@ require_once 'includes/header.php';
                     <div class="mb-1">
                         <span class="text-warning"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></span>
                     </div>
-                    <h6 class="fw-semibold mb-0">Rating Pelanggan</h6>
-                    <small class="text-muted">Dari 2.000+ ulasan</small>
+                    <h6 class="fw-semibold mb-0"><?= t('Rating Pelanggan') ?></h6>
+                    <small class="text-muted"><?= t('Dari 2.000+ ulasan') ?></small>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card border-0 shadow-sm py-4 h-100">
                     <div class="display-5 text-primary mb-2"><i class="bi bi-people-fill"></i></div>
                     <div class="fs-3 fw-bold text-primary">5.000+</div>
-                    <h6 class="fw-semibold mb-0">Pelanggan Puas</h6>
-                    <small class="text-muted">Tersebar di 12+ destinasi</small>
+                    <h6 class="fw-semibold mb-0"><?= t('Pelanggan Puas') ?></h6>
+                    <small class="text-muted"><?= t('Tersebar di 12+ destinasi') ?></small>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card border-0 shadow-sm py-4 h-100">
                     <div class="display-5 text-success mb-2"><i class="bi bi-hand-thumbs-up-fill"></i></div>
                     <div class="fs-3 fw-bold text-success">99%</div>
-                    <h6 class="fw-semibold mb-0">Kepuasan</h6>
-                    <small class="text-muted">Pelanggan merekomendasikan kami</small>
+                    <h6 class="fw-semibold mb-0"><?= t('Kepuasan') ?></h6>
+                    <small class="text-muted"><?= t('Pelanggan merekomendasikan kami') ?></small>
                 </div>
             </div>
         </div>
@@ -298,8 +298,8 @@ require_once 'includes/header.php';
 <section class="py-5 bg-light">
     <div class="container">
         <div class="text-center mb-4">
-            <h5 class="fw-bold">Apa Kata Mereka?</h5>
-            <p class="text-muted small">Pengalaman pelanggan yang sudah traveling bersama kami</p>
+            <h5 class="fw-bold"><?= t('Apa Kata Mereka?') ?></h5>
+            <p class="text-muted small"><?= t('Pengalaman pelanggan yang sudah traveling bersama kami') ?></p>
         </div>
         <div class="row g-3">
             <div class="col-md-4">
@@ -369,10 +369,10 @@ require_once 'includes/header.php';
                         </div>
                         <div class="col-8">
                             <div class="card-body p-3">
-                                <span class="badge bg-primary mb-2">Blog</span>
-                                <h6 class="fw-semibold small">Cek blog TourAndTravel</h6>
-                                <p class="small text-muted mb-2">Ikuti tren travel, itinerary ideas, dan tips traveling terbaru.</p>
-                                <a href="tours.php" class="small fw-semibold text-primary text-decoration-none">Baca selengkapnya <i class="bi bi-arrow-right"></i></a>
+                                <span class="badge bg-primary mb-2"><?= t('Blog') ?></span>
+                                <h6 class="fw-semibold small"><?= t('Cek blog TourAndTravel') ?></h6>
+                                <p class="small text-muted mb-2"><?= t('Ikuti tren travel, itinerary ideas, dan tips traveling terbaru.') ?></p>
+                                <a href="tours.php" class="small fw-semibold text-primary text-decoration-none"><?= t('Baca selengkapnya') ?> <i class="bi bi-arrow-right"></i></a>
                             </div>
                         </div>
                     </div>
@@ -386,10 +386,10 @@ require_once 'includes/header.php';
                         </div>
                         <div class="col-8">
                             <div class="card-body p-3">
-                                <span class="badge bg-success mb-2">Reward</span>
-                                <h6 class="fw-semibold small">Dapatkan TourCash</h6>
-                                <p class="small text-muted mb-2">Setiap booking dapat poin reward. Tukarkan untuk diskon tour berikutnya!</p>
-                                <a href="tours.php" class="small fw-semibold text-success text-decoration-none">Pelajari <i class="bi bi-arrow-right"></i></a>
+                                <span class="badge bg-success mb-2"><?= t('Reward') ?></span>
+                                <h6 class="fw-semibold small"><?= t('Dapatkan TourCash') ?></h6>
+                                <p class="small text-muted mb-2"><?= t('Setiap booking dapat poin reward. Tukarkan untuk diskon tour berikutnya!') ?></p>
+                                <a href="tours.php" class="small fw-semibold text-success text-decoration-none"><?= t('Pelajari') ?> <i class="bi bi-arrow-right"></i></a>
                             </div>
                         </div>
                     </div>
@@ -403,10 +403,10 @@ require_once 'includes/header.php';
                         </div>
                         <div class="col-8">
                             <div class="card-body p-3">
-                                <span class="badge bg-warning text-dark mb-2">Referral</span>
-                                <h6 class="fw-semibold small">Ajak Teman, Dapat Diskon</h6>
-                                <p class="small text-muted mb-2">Ajak teman daftar & booking, kamu dan teman dapat diskon Rp100.000!</p>
-                                <a href="tours.php" class="small fw-semibold text-warning text-decoration-none">Bagikan <i class="bi bi-arrow-right"></i></a>
+                                <span class="badge bg-warning text-dark mb-2"><?= t('Referral') ?></span>
+                                <h6 class="fw-semibold small"><?= t('Ajak Teman, Dapat Diskon') ?></h6>
+                                <p class="small text-muted mb-2"><?= t('Ajak teman daftar & booking, kamu dan teman dapat diskon Rp100.000!') ?></p>
+                                <a href="tours.php" class="small fw-semibold text-warning text-decoration-none"><?= t('Bagikan') ?> <i class="bi bi-arrow-right"></i></a>
                             </div>
                         </div>
                     </div>
@@ -420,35 +420,35 @@ require_once 'includes/header.php';
 <section class="py-5">
     <div class="container">
         <div class="text-center mb-4">
-            <h5 class="fw-bold">Kenapa Pilih <?= SITE_NAME ?>?</h5>
+            <h5 class="fw-bold"><?= t('Kenapa Pilih') ?> <?= SITE_NAME ?>?</h5>
         </div>
         <div class="row g-3">
             <div class="col-6 col-md-3">
                 <div class="card border-0 shadow-sm text-center py-4 h-100">
                     <div class="fs-2 text-primary mb-2"><i class="bi bi-tags-fill"></i></div>
-                    <h6 class="fw-semibold">Harga Transparan</h6>
-                    <small class="text-muted">Tidak ada biaya tersembunyi</small>
+                    <h6 class="fw-semibold"><?= t('Harga Transparan') ?></h6>
+                    <small class="text-muted"><?= t('Tidak ada biaya tersembunyi') ?></small>
                 </div>
             </div>
             <div class="col-6 col-md-3">
                 <div class="card border-0 shadow-sm text-center py-4 h-100">
                     <div class="fs-2 text-primary mb-2"><i class="bi bi-shield-check"></i></div>
-                    <h6 class="fw-semibold">Terpercaya</h6>
-                    <small class="text-muted">7 tahun melayani pelanggan</small>
+                    <h6 class="fw-semibold"><?= t('Terpercaya') ?></h6>
+                    <small class="text-muted">7 <?= t('tahun melayani pelanggan') ?></small>
                 </div>
             </div>
             <div class="col-6 col-md-3">
                 <div class="card border-0 shadow-sm text-center py-4 h-100">
                     <div class="fs-2 text-primary mb-2"><i class="bi bi-headset"></i></div>
                     <h6 class="fw-semibold">CS 24/7</h6>
-                    <small class="text-muted">Siap bantu kapan saja</small>
+                    <small class="text-muted"><?= t('Siap bantu kapan saja') ?></small>
                 </div>
             </div>
             <div class="col-6 col-md-3">
                 <div class="card border-0 shadow-sm text-center py-4 h-100">
                     <div class="fs-2 text-primary mb-2"><i class="bi bi-wallet2"></i></div>
-                    <h6 class="fw-semibold">Mudah Booking</h6>
-                    <small class="text-muted">Proses cepat & praktis</small>
+                    <h6 class="fw-semibold"><?= t('Mudah Booking') ?></h6>
+                    <small class="text-muted"><?= t('Proses cepat & praktis') ?></small>
                 </div>
             </div>
         </div>
@@ -458,9 +458,9 @@ require_once 'includes/header.php';
 <!-- CTA Banner -->
 <section class="py-5" style="background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);">
     <div class="container text-center text-white">
-        <h4 class="fw-bold mb-2">Siap Liburan?</h4>
-        <p class="mb-4 opacity-90">Dapatkan promo spesial untuk pendaftaran hari ini</p>
-        <a href="tours.php" class="btn btn-light btn-lg rounded-pill px-5 fw-semibold">Mulai Sekarang <i class="bi bi-arrow-right ms-1"></i></a>
+        <h4 class="fw-bold mb-2"><?= t('Siap Liburan?') ?></h4>
+        <p class="mb-4 opacity-90"><?= t('Dapatkan promo spesial untuk pendaftaran hari ini') ?></p>
+        <a href="tours.php" class="btn btn-light btn-lg rounded-pill px-5 fw-semibold"><?= t('Mulai Sekarang') ?> <i class="bi bi-arrow-right ms-1"></i></a>
     </div>
 </section>
 

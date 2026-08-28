@@ -8,9 +8,9 @@ $tour = getTourBySlug($slug);
 
 if (!$tour) {
     header('HTTP/1.0 404 Not Found');
-    $pageTitle = 'Tour Tidak Ditemukan';
+    $pageTitle = t('Tour Tidak Ditemukan');
     require_once 'includes/header.php';
-    echo '<div class="container py-5 text-center"><h3>Tour tidak ditemukan</h3><a href="tours.php" class="btn btn-primary mt-3">Kembali ke Catalog</a></div>';
+    echo '<div class="container py-5 text-center"><h3>' . t('Tour tidak ditemukan') . '</h3><a href="tours.php" class="btn btn-primary mt-3">' . t('Kembali ke Catalog') . '</a></div>';
     require_once 'includes/footer.php';
     exit;
 }
@@ -33,21 +33,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
 
     // Validasi
     $errors = [];
-    if (!$name) $errors[] = 'Nama harus diisi';
-    if (!$phone) $errors[] = 'No. WhatsApp harus diisi';
-    if ($participants < 1) $errors[] = 'Jumlah peserta minimal 1';
+    if (!$name) $errors[] = t('Nama harus diisi');
+    if (!$phone) $errors[] = t('No. WhatsApp harus diisi');
+    if ($participants < 1) $errors[] = t('Jumlah peserta minimal 1');
 
     // Validasi slot
     $sisaSlot = getSisaSlot($tourDateId);
     if ($sisaSlot < $participants) {
-        $errors[] = "Maaf, sisa slot hanya $sisaSlot kursi";
+        $errors[] = t('Maaf, sisa slot hanya') . " $sisaSlot " . t('kursi');
     }
 
     // Validasi tanggal
     $stmtDate = db()->prepare("SELECT * FROM tour_dates WHERE id = ? AND tour_id = ?");
     $stmtDate->execute([$tourDateId, $tour['id']]);
     $selectedDate = $stmtDate->fetch();
-    if (!$selectedDate) $errors[] = 'Tanggal keberangkatan tidak valid';
+    if (!$selectedDate) $errors[] = t('Tanggal keberangkatan tidak valid');
 
     // Upload passport
     $passportFile = '';
@@ -105,14 +105,14 @@ require_once 'includes/header.php';
             <h2 class="fw-bold"><?= e($tour['title']) ?></h2>
             <div class="d-flex flex-wrap gap-3 mb-3">
                 <span class="badge bg-primary"><?= e($tour['category']) ?></span>
-                <span class="text-muted"><i class="bi bi-people-fill me-1"></i> Max <?= $tour['max_participants'] ?> peserta</span>
-                <span class="text-muted"><?= renderStars($tour['rating']) ?> <?= $tour['rating'] ?> (<?= $tour['total_reviews'] ?> ulasan)</span>
+                <span class="text-muted"><i class="bi bi-people-fill me-1"></i> <?= t('Max') ?> <?= $tour['max_participants'] ?> <?= t('peserta') ?></span>
+                <span class="text-muted"><?= renderStars($tour['rating']) ?> <?= $tour['rating'] ?> (<?= $tour['total_reviews'] ?> <?= t('ulasan') ?>)</span>
             </div>
             <p class="lead"><?= nl2br(e($tour['description'])) ?></p>
 
             <!-- Gallery -->
             <?php $galleryImages = getTourGalleryUrls($tour); ?>
-            <h5 class="fw-bold mt-4 mb-3"><i class="bi bi-images me-2"></i>Galeri Foto</h5>
+            <h5 class="fw-bold mt-4 mb-3"><i class="bi bi-images me-2"></i><?= t('Galeri Foto') ?></h5>
             <div class="row g-2 mb-4">
                 <?php foreach ($galleryImages as $i => $galleryUrl):
                     $thumbUrl = str_contains($galleryUrl, 'loremflickr.com') ? str_replace('800/600', '320/240', $galleryUrl) : $galleryUrl;
@@ -159,7 +159,7 @@ require_once 'includes/header.php';
             </div>
 
             <!-- Fasilitas -->
-            <h5 class="fw-bold mt-4 mb-3"><i class="bi bi-check2-square me-2"></i>Fasilitas Termasuk</h5>
+            <h5 class="fw-bold mt-4 mb-3"><i class="bi bi-check2-square me-2"></i><?= t('Fasilitas Termasuk') ?></h5>
             <div class="row g-2 mb-4">
                 <?php foreach (getTourFacilities() as $f): ?>
                 <div class="col-6 col-md-4">
@@ -172,7 +172,7 @@ require_once 'includes/header.php';
             </div>
 
             <!-- Peta -->
-            <h5 class="fw-bold mt-4 mb-3"><i class="bi bi-geo-alt me-2"></i>Lokasi</h5>
+            <h5 class="fw-bold mt-4 mb-3"><i class="bi bi-geo-alt me-2"></i><?= t('Lokasi') ?></h5>
             <div class="rounded-3 overflow-hidden mb-4 border">
                 <?php
                     $mapKw = urlencode(preg_replace('/\d+[dD]\d+[nN]?/i', '', $tour['title']));
@@ -184,7 +184,7 @@ require_once 'includes/header.php';
 
             <!-- Itinerary -->
             <?php if (count($itineraries) > 0): ?>
-            <h4 class="fw-bold mt-5 mb-3"><i class="bi bi-journal-text me-2"></i>Itinerary</h4>
+            <h4 class="fw-bold mt-5 mb-3"><i class="bi bi-journal-text me-2"></i><?= t('Itinerary') ?></h4>
             <div class="timeline">
                 <?php foreach ($itineraries as $it): ?>
                 <div class="card border-0 shadow-sm mb-3 itinerary-card">
@@ -196,7 +196,7 @@ require_once 'includes/header.php';
                                 </div>
                             </div>
                             <div class="flex-grow-1">
-                                <h5 class="fw-semibold">Hari <?= $it['day_number'] ?>: <?= e($it['title']) ?></h5>
+                                <h5 class="fw-semibold"><?= t('Hari') ?> <?= $it['day_number'] ?>: <?= e($it['title']) ?></h5>
                                 <p class="mb-2"><?= nl2br(e($it['description'])) ?></p>
                                 <?php if ($it['meals']): ?>
                                     <span class="badge bg-success me-1"><i class="bi bi-cup-hot"></i> <?= e($it['meals']) ?></span>
@@ -214,9 +214,9 @@ require_once 'includes/header.php';
 
             <!-- Reviews -->
             <?php if (isset($_GET['review']) && $_GET['review'] === 'success'): ?>
-                <div class="alert alert-success py-2">Ulasan berhasil dikirim, terima kasih!</div>
+                <div class="alert alert-success py-2"><?= t('Ulasan berhasil dikirim, terima kasih!') ?></div>
             <?php endif; ?>
-            <h5 class="fw-bold mt-5 mb-3"><i class="bi bi-chat-square-text me-2"></i>Ulasan</h5>
+            <h5 class="fw-bold mt-5 mb-3"><i class="bi bi-chat-square-text me-2"></i><?= t('Ulasan') ?></h5>
             <?php
                 $reviews = getTourReviews($tour['id']);
                 $realRating = getRealRating($tour['id']);
@@ -226,7 +226,7 @@ require_once 'includes/header.php';
                 <div class="d-flex align-items-center gap-2 mb-3">
                     <span class="fs-4 fw-bold text-warning"><?= $realRating ?></span>
                     <span class="text-warning"><?= renderStars($realRating) ?></span>
-                    <span class="text-muted small">dari <?= $realCount ?> ulasan</span>
+                    <span class="text-muted small"><?= t('dari') ?> <?= $realCount ?> <?= t('ulasan') ?></span>
                 </div>
                 <div class="row g-3 mb-4">
                 <?php foreach ($reviews as $r): ?>
@@ -245,19 +245,19 @@ require_once 'includes/header.php';
                 <?php endforeach; ?>
                 </div>
             <?php else: ?>
-                <p class="text-muted small mb-4">Belum ada ulasan untuk tour ini.</p>
+                <p class="text-muted small mb-4"><?= t('Belum ada ulasan untuk tour ini.') ?></p>
             <?php endif; ?>
 
             <!-- Review Form -->
             <?php if (isLoggedIn() && canReview($_SESSION['user_id'], $tour['id'])): ?>
                 <div class="card border-0 shadow-sm mb-4 bg-light">
                     <div class="card-body p-3">
-                        <h6 class="fw-semibold mb-2">Tulis Ulasan</h6>
+                        <h6 class="fw-semibold mb-2"><?= t('Tulis Ulasan') ?></h6>
                         <form method="POST" action="review-submit.php">
                             <input type="hidden" name="tour_id" value="<?= $tour['id'] ?>">
                             <input type="hidden" name="slug" value="<?= e($tour['slug']) ?>">
                             <div class="mb-2">
-                                <label class="form-label small">Rating</label>
+                                <label class="form-label small"><?= t('Rating') ?></label>
                                 <div class="rating-input">
                                     <?php for ($i = 5; $i >= 1; $i--): ?>
                                     <input type="radio" name="rating" value="<?= $i ?>" id="star<?= $i ?>" <?= $i === 5 ? 'checked' : '' ?>>
@@ -266,9 +266,9 @@ require_once 'includes/header.php';
                                 </div>
                             </div>
                             <div class="mb-2">
-                                <textarea name="comment" class="form-control form-control-sm" rows="3" placeholder="Bagikan pengalaman Anda..." required></textarea>
+                                <textarea name="comment" class="form-control form-control-sm" rows="3" placeholder="<?= t('Bagikan pengalaman Anda...') ?>" required></textarea>
                             </div>
-                            <button type="submit" class="btn btn-primary btn-sm">Kirim Ulasan</button>
+                            <button type="submit" class="btn btn-primary btn-sm"><?= t('Kirim Ulasan') ?></button>
                         </form>
                     </div>
                 </div>
@@ -283,7 +283,7 @@ require_once 'includes/header.php';
                 <div class="card-body">
                     <div class="d-flex align-items-center gap-2 small mb-2">
                         <?= renderStars($tour['rating']) ?>
-                        <span class="text-muted">(<?= $tour['total_reviews'] ?> ulasan)</span>
+                        <span class="text-muted">(<?= $tour['total_reviews'] ?> <?= t('ulasan') ?>)</span>
                     </div>
                     <?php $diskon = getDiskonPersen($tour); ?>
                     <h4 class="fw-bold text-primary mb-0"><?= formatCurrencySpan($tour['price'], $tour['price_currency'] ?? 'IDR') ?></h4>
@@ -291,12 +291,12 @@ require_once 'includes/header.php';
                         <small class="text-decoration-line-through text-muted"><?= formatCurrencySpan($tour['original_price']) ?></small>
                         <span class="badge bg-danger ms-1">-<?= $diskon ?>%</span>
                     <?php endif; ?>
-                    <p class="text-muted">/ orang</p>
+                    <p class="text-muted">/ <?= t('orang') ?></p>
 
                     <!-- Pilih Tanggal -->
                     <?php if (count($tourDates) > 0): ?>
                     <hr>
-                    <h6 class="fw-semibold">Jadwal Keberangkatan</h6>
+                    <h6 class="fw-semibold"><?= t('Jadwal Keberangkatan') ?></h6>
                     <div class="mb-3">
                         <?php foreach ($tourDates as $td): ?>
                             <?php $sisa = getSisaSlot($td['id']); ?>
@@ -306,7 +306,7 @@ require_once 'includes/header.php';
                                     <span class="d-block small text-muted"><?= tglIndonesia($td['return_date']) ?></span>
                                 </div>
                                 <span class="badge <?= $sisa > 0 ? 'bg-success' : 'bg-danger' ?>">
-                                    <?= $sisa > 0 ? "$sisa slot" : 'Penuh' ?>
+                                    <?= $sisa > 0 ? "$sisa " . t('slot') : t('Penuh') ?>
                                 </span>
                             </div>
                         <?php endforeach; ?>
@@ -314,7 +314,7 @@ require_once 'includes/header.php';
 
                     <!-- Form Booking -->
                     <hr>
-                    <h6 class="fw-semibold">Booking Sekarang</h6>
+                    <h6 class="fw-semibold"><?= t('Booking Sekarang') ?></h6>
                     <?php if ($bookingError): ?>
                         <div class="alert alert-danger py-2 small"><?= $bookingError ?></div>
                     <?php endif; ?>
@@ -324,40 +324,40 @@ require_once 'includes/header.php';
                     <form method="POST" enctype="multipart/form-data">
                         <input type="hidden" name="form_submitted" value="1">
                         <div class="mb-2">
-                            <label class="form-label small">Pilih Tanggal</label>
+                            <label class="form-label small"><?= t('Pilih Tanggal') ?></label>
                             <select name="tour_date_id" class="form-select form-select-sm" required>
-                                <option value="">-- Pilih Tanggal --</option>
+                                <option value=""><?= t('-- Pilih Tanggal --') ?></option>
                                 <?php foreach ($tourDates as $td): ?>
                                     <?php $sisa = getSisaSlot($td['id']); ?>
                                     <?php if ($sisa > 0): ?>
-                                    <option value="<?= $td['id'] ?>"><?= tglIndonesia($td['departure_date']) ?> (<?= $sisa ?> slot)</option>
+                                    <option value="<?= $td['id'] ?>"><?= tglIndonesia($td['departure_date']) ?> (<?= $sisa ?> <?= t('slot') ?>)</option>
                                     <?php endif; ?>
                                 <?php endforeach; ?>
                             </select>
                         </div>
                         <div class="mb-2">
-                            <label class="form-label small">Nama Lengkap</label>
+                            <label class="form-label small"><?= t('Nama Lengkap') ?></label>
                             <input type="text" name="name" class="form-control form-control-sm" required>
                         </div>
                         <div class="mb-2">
-                            <label class="form-label small">Email (opsional)</label>
+                            <label class="form-label small"><?= t('Email (opsional)') ?></label>
                             <input type="email" name="email" class="form-control form-control-sm" placeholder="email@contoh.com">
                         </div>
                         <div class="mb-2">
-                            <label class="form-label small">No. WhatsApp</label>
+                            <label class="form-label small"><?= t('No. WhatsApp') ?></label>
                             <input type="text" name="phone" class="form-control form-control-sm" placeholder="0812xxxx" required>
                         </div>
                         <div class="mb-2">
-                            <label class="form-label small">Jumlah Peserta</label>
+                            <label class="form-label small"><?= t('Jumlah Peserta') ?></label>
                             <input type="number" name="participants" class="form-control form-control-sm" min="1" value="1" required>
                         </div>
                         <div class="mb-2">
-                            <label class="form-label small">Upload Foto Paspor</label>
+                            <label class="form-label small"><?= t('Upload Foto Paspor') ?></label>
                             <input type="file" name="passport_photo" class="form-control form-control-sm" accept="image/jpeg,image/png,image/webp" required>
-                            <div class="form-text">Format JPG/PNG/WebP, max 2MB</div>
+                            <div class="form-text"><?= t('Format JPG/PNG/WebP, max 2MB') ?></div>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label small">Catatan (opsional)</label>
+                            <label class="form-label small"><?= t('Catatan (opsional)') ?></label>
                             <textarea name="notes" class="form-control form-control-sm" rows="2"></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary w-100 fw-semibold" id="bookingSubmitBtn" onclick="var btn=this;btn.disabled=true;btn.innerHTML='<span class=\'spinner-border spinner-border-sm me-2\'></span>Memproses...';setTimeout(function(){btn.form.submit();},100);return false;">Pesan Sekarang</button>
