@@ -79,8 +79,9 @@
                         <i class="bi bi-translate"></i> <?= strtoupper(getCurrentLang()) ?>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item <?= getCurrentLang() === 'id' ? 'active' : '' ?>" href="?lang=id">🇮🇩 Indonesia</a></li>
-                        <li><a class="dropdown-item <?= getCurrentLang() === 'en' ? 'active' : '' ?>" href="?lang=en">🇬🇧 English</a></li>
+                        <?php $langParams = $_GET; ?>
+                        <li><a class="dropdown-item <?= getCurrentLang() === 'id' ? 'active' : '' ?>" href="?<?= http_build_query(array_merge($langParams, ['lang' => 'id'])) ?>">🇮🇩 Indonesia</a></li>
+                        <li><a class="dropdown-item <?= getCurrentLang() === 'en' ? 'active' : '' ?>" href="?<?= http_build_query(array_merge($langParams, ['lang' => 'en'])) ?>">🇬🇧 English</a></li>
                     </ul>
                 </li>
         </div>
