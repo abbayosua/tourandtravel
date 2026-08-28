@@ -131,9 +131,11 @@ function formatCurrency($amount, $currency = null) {
 /**
  * Format currency with <span> tags for JS currency switcher
  * Wraps the numeric value in data attributes for client-side conversion
+ * $sourceCurrency: the currency the price is stored in (default: from DB setting)
  */
-function formatCurrencySpan($amountInIDR, $extraClass = '') {
-    return '<span class="currency-price ' . $extraClass . '" data-price-idr="' . htmlspecialchars($amountInIDR) . '">' . formatCurrency($amountInIDR) . '</span>';
+function formatCurrencySpan($amount, $sourceCurrency = null, $extraClass = '') {
+    if (!$sourceCurrency) $sourceCurrency = getDefaultCurrency();
+    return '<span class="currency-price ' . $extraClass . '" data-price="' . htmlspecialchars($amount) . '" data-from-currency="' . htmlspecialchars($sourceCurrency) . '">' . formatCurrency($amount, $sourceCurrency) . '</span>';
 }
 
 /**

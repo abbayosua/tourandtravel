@@ -1,6 +1,6 @@
 /**
  * Currency Switcher JS
- * Converts prices displayed with data-price-idr attribute
+ * Converts prices from any source currency to the user's selected currency
  */
 const CurrencySwitcher = {
     currentCurrency: localStorage.getItem('currency') || 'IDR',
@@ -23,11 +23,9 @@ const CurrencySwitcher = {
             const resp = await fetch('https://api.frankfurter.app/latest?from=EUR&to=IDR,SGD,USD');
             const data = await resp.json();
             this.rates = data.rates;
-            // Cache for 1 hour
             localStorage.setItem('currency_rates', JSON.stringify(this.rates));
             localStorage.setItem('currency_rates_time', Date.now());
         } catch (e) {
-            // Try cache
             const cached = localStorage.getItem('currency_rates');
             if (cached) {
                 this.rates = JSON.parse(cached);
@@ -37,19 +35,21 @@ const CurrencySwitcher = {
         }
     },
 
-    convert(amountIDR, toCurrency) {
-        if (toCurrency === 'IDR' || !this.rates) return amountIDR;
-        const eurAmount = amountIDR / (this.rates.IDR || 17000);
+    /**
+     * Convert amount from one currency to another using EUR as pivot
+     */
+    convert(amount, fromCurrency, toCurrency) {
+        if (fromCurrency === toCurrency || !this.rates) return amount;
+        const eurAmount = amount / (this.rates[fromCurrency] || 1);
         return eurAmount * (this.rates[toCurrency] || 1);
     },
 
     format(amount, currency) {
         const cfg = this.currencies[currency] || this.currencies.IDR;
-        const converted = this.convert(amount, currency);
         const formatted = new Intl.NumberFormat('id-ID', {
             minimumFractionDigits: cfg.decimals,
             maximumFractionDigits: cfg.decimals
-        }).format(converted);
+        }).format(amount);
         return cfg.position === 'before'
             ? cfg.symbol + ' ' + formatted
             : formatted + ' ' + cfg.symbol;
@@ -57,12 +57,13 @@ const CurrencySwitcher = {
 
     render() {
         document.querySelectorAll('.currency-price').forEach(el => {
-            const priceIDR = parseFloat(el.dataset.priceIdr);
-            if (!isNaN(priceIDR)) {
-                el.textContent = this.format(priceIDR, this.currentCurrency);
+            const price = parseFloat(el.dataset.price);
+            const fromCurrency = el.dataset.fromCurrency || 'IDR';
+            if (!isNaN(price)) {
+                const converted = this.convert(price, fromCurrency, this.currentCurrency);
+                el.textContent = this.format(converted, this.currentCurrency);
             }
         });
-        // Update switcher buttons
         document.querySelectorAll('.currency-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.currency === this.currentCurrency);
         });

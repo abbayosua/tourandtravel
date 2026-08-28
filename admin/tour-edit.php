@@ -20,6 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $category = trim($_POST['category'] ?? '');
     $description = trim($_POST['description'] ?? '');
     $price = (float)($_POST['price'] ?? 0);
+    $priceCurrency = in_array($_POST['price_currency'] ?? '', ['IDR', 'SGD', 'USD']) ? $_POST['price_currency'] : 'IDR';
     $maxParticipants = (int)($_POST['max_participants'] ?? 1);
     $isActive = isset($_POST['is_active']) ? 1 : 0;
 
@@ -50,8 +51,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $slug .= '-' . time();
         }
 
-        $stmt = db()->prepare("UPDATE tours SET title=?, slug=?, category=?, description=?, price=?, max_participants=?, cover_image=?, is_active=? WHERE id=?");
-        $stmt->execute([$title, $slug, $category, $description, $price, $maxParticipants, $coverImage, $isActive, $id]);
+        $stmt = db()->prepare("UPDATE tours SET title=?, slug=?, category=?, description=?, price=?, price_currency=?, max_participants=?, cover_image=?, is_active=? WHERE id=?");
+        $stmt->execute([$title, $slug, $category, $description, $price, $priceCurrency, $maxParticipants, $coverImage, $isActive, $id]);
 
         header('Location: tours.php?msg=updated');
         exit;
@@ -199,8 +200,15 @@ require_once 'includes/admin-header.php';
                         <input type="text" name="category" class="form-control" value="<?= e($tour['category']) ?>" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Harga (Rp)</label>
-                        <input type="number" name="price" class="form-control" min="0" value="<?= $tour['price'] ?>" required>
+                        <label class="form-label fw-semibold">Harga</label>
+                        <div class="input-group">
+                            <select name="price_currency" class="form-select" style="max-width: 100px;">
+                                <?php foreach (['IDR' => 'Rp (IDR)', 'SGD' => 'S$ (SGD)', 'USD' => '$ (USD)'] as $code => $label): ?>
+                                    <option value="<?= $code ?>" <?= ($tour['price_currency'] ?? 'IDR') === $code ? 'selected' : '' ?>><?= $label ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <input type="number" name="price" class="form-control" min="0" value="<?= $tour['price'] ?>" required>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Max Peserta</label>

@@ -140,7 +140,7 @@ require_once 'includes/header.php';
                                     </div>
                                     <h6 class="fw-semibold small mb-1 text-dark"><?= e($promo['title']) ?></h6>
                                     <?php if ($promo['price'] > 0): ?>
-                                        <span class="fw-bold text-primary small"><?= formatCurrencySpan($promo['price']) ?></span>
+                                        <span class="fw-bold text-primary small"><?= formatCurrencySpan($promo['price'], $promo['price_currency'] ?? 'IDR') ?></span>
                                     <?php else: ?>
                                         <span class="badge bg-info">Hubungi Kami</span>
                                     <?php endif; ?>

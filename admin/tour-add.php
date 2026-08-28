@@ -13,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $category = trim($_POST['category'] ?? '');
     $description = trim($_POST['description'] ?? '');
     $price = (float)($_POST['price'] ?? 0);
+    $priceCurrency = in_array($_POST['price_currency'] ?? '', ['IDR', 'SGD', 'USD']) ? $_POST['price_currency'] : 'IDR';
     $maxParticipants = (int)($_POST['max_participants'] ?? 1);
     $isActive = isset($_POST['is_active']) ? 1 : 0;
 
@@ -42,8 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $slug .= '-' . time();
         }
 
-        $stmt = db()->prepare("INSERT INTO tours (title, slug, category, description, price, max_participants, cover_image, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$title, $slug, $category, $description, $price, $maxParticipants, $coverImage ?: null, $isActive]);
+        $stmt = db()->prepare("INSERT INTO tours (title, slug, category, description, price, price_currency, max_participants, cover_image, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$title, $slug, $category, $description, $price, $priceCurrency, $maxParticipants, $coverImage ?: null, $isActive]);
 
         header('Location: tours.php?msg=added');
         exit;
@@ -89,8 +90,15 @@ require_once 'includes/admin-header.php';
                         <input type="text" name="category" class="form-control" placeholder="Domestik / Internasional" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Harga (Rp)</label>
-                        <input type="number" name="price" class="form-control" min="0" required>
+                        <label class="form-label fw-semibold">Harga</label>
+                        <div class="input-group">
+                            <select name="price_currency" class="form-select" style="max-width: 100px;">
+                                <option value="IDR">Rp (IDR)</option>
+                                <option value="SGD">S$ (SGD)</option>
+                                <option value="USD">$ (USD)</option>
+                            </select>
+                            <input type="number" name="price" class="form-control" min="0" required>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Max Peserta</label>

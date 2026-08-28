@@ -123,7 +123,7 @@ require_once 'includes/header.php';
                         <p class="small text-muted flex-grow-1 mb-2"><?= substr(e($tour['description']), 0, 100) ?>...</p>
                         <div class="d-flex justify-content-between align-items-center pt-2 border-top">
                             <div>
-                                <span class="fw-bold text-primary"><?= formatCurrencySpan($tour['price']) ?></span>
+                                <span class="fw-bold text-primary"><?= formatCurrencySpan($tour['price'], $tour['price_currency'] ?? 'IDR') ?></span>
                                 <?php if ($diskon > 0): ?>
                                     <small class="text-decoration-line-through text-muted ms-1"><?= formatCurrencySpan($tour['original_price']) ?></small>
                                 <?php endif; ?>
