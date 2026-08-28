@@ -57,7 +57,7 @@ require_once 'includes/header.php';
             </div>
             <div class="col-6 col-md">
                 <select name="durasi" class="form-select form-select-sm" onchange="this.form.submit()">
-                    <option value="">Durasi</option>
+                    <option value=""><?= t('Durasi') ?></option>
                     <?php foreach ($durasiOptions as $k => $v): ?>
                         <option value="<?= $k ?>" <?= $duration === $k ? 'selected' : '' ?>><?= $v ?></option>
                     <?php endforeach; ?>
@@ -65,7 +65,7 @@ require_once 'includes/header.php';
             </div>
             <div class="col-6 col-md">
                 <select name="harga" class="form-select form-select-sm" onchange="this.form.submit()">
-                    <option value="">Harga</option>
+                    <option value=""><?= t('Harga') ?></option>
                     <?php foreach ($hargaOptions as $k => $v): ?>
                         <option value="<?= $k ?>" <?= $priceRange === $k ? 'selected' : '' ?>><?= $v ?></option>
                     <?php endforeach; ?>
@@ -73,7 +73,7 @@ require_once 'includes/header.php';
             </div>
             <div class="col-6 col-md">
                 <select name="rating" class="form-select form-select-sm" onchange="this.form.submit()">
-                    <option value="">Rating</option>
+                    <option value=""><?= t('Rating') ?></option>
                     <?php foreach ($ratingOptions as $k => $v): ?>
                         <option value="<?= $k ?>" <?= $rating === $k ? 'selected' : '' ?>><?= $v ?></option>
                     <?php endforeach; ?>
@@ -81,7 +81,7 @@ require_once 'includes/header.php';
             </div>
             <div class="col-6 col-md">
                 <select name="sort" class="form-select form-select-sm" onchange="this.form.submit()">
-                    <option value="">Urutkan</option>
+                    <option value=""><?= t('Urutkan') ?></option>
                     <?php foreach ($sortOptions as $k => $v): ?>
                         <option value="<?= $k ?>" <?= $sort === $k ? 'selected' : '' ?>><?= $v ?></option>
                     <?php endforeach; ?>
@@ -89,7 +89,7 @@ require_once 'includes/header.php';
             </div>
             <div class="col-6 col-md">
                 <div class="search-wrapper input-group input-group-sm">
-                    <input type="text" name="search" class="form-control" placeholder="Cari..." id="catalogSearch" autocomplete="off" value="<?= e($search ?? '') ?>">
+                    <input type="text" name="search" class="form-control" placeholder="<?= t('Cari...') ?>" id="catalogSearch" autocomplete="off" value="<?= e($search ?? '') ?>">
                     <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i></button>
                     <div class="search-dropdown" id="catalogSearchDropdown"></div>
                 </div>
@@ -127,9 +127,9 @@ require_once 'includes/header.php';
                                 <?php if ($diskon > 0): ?>
                                     <small class="text-decoration-line-through text-muted ms-1"><?= formatCurrencySpan($tour['original_price']) ?></small>
                                 <?php endif; ?>
-                                <small class="d-block text-muted">/orang</small>
+                                <small class="d-block text-muted">/<?= t('orang') ?></small>
                             </div>
-                            <a href="tour-detail.php?slug=<?= e($tour['slug']) ?>" class="btn btn-sm btn-primary rounded-pill px-3">Detail</a>
+                            <a href="tour-detail.php?slug=<?= e($tour['slug']) ?>" class="btn btn-sm btn-primary rounded-pill px-3"><?= t('Detail') ?></a>
                         </div>
                     </div>
                 </div>
@@ -159,8 +159,8 @@ require_once 'includes/header.php';
         <?php else: ?>
         <div class="text-center py-5">
             <i class="bi bi-search fs-1 text-muted"></i>
-            <p class="mt-2 text-muted">Tidak ada tour ditemukan</p>
-            <a href="tours.php" class="btn btn-primary rounded-pill px-4">Reset Filter</a>
+            <p class="mt-2 text-muted"><?= t('Tidak ada tour ditemukan') ?></p>
+            <a href="tours.php" class="btn btn-primary rounded-pill px-4"><?= t('Reset Filter') ?></a>
         </div>
         <?php endif; ?>
     </div>

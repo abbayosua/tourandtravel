@@ -4,3 +4,5 @@ SERVER.md
 uploads/passports/
 includes/wa-config.json
 includes/config.php
+node_modules/
+test-results/
