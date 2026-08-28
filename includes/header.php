@@ -64,6 +64,16 @@
                     <a class="nav-link py-2" href="login.php"><i class="bi bi-person me-1"></i>Masuk</a>
                 </li>
                 <?php endif; ?>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle py-2 small" href="#" data-bs-toggle="dropdown" id="currencyDropdown">
+                        <i class="bi bi-currency-exchange"></i> <span id="currencyLabel">IDR</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="currencyDropdown">
+                        <li><a class="dropdown-item currency-btn" href="#" data-currency="IDR">🇮🇩 IDR (Rp)</a></li>
+                        <li><a class="dropdown-item currency-btn" href="#" data-currency="SGD">🇸🇬 SGD (S$)</a></li>
+                        <li><a class="dropdown-item currency-btn" href="#" data-currency="USD">🇺🇸 USD ($)</a></li>
+                    </ul>
+                </li>
             </ul>
         </div>
     </div>

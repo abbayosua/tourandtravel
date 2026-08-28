@@ -7,6 +7,136 @@ function formatRupiah($angka) {
 }
 
 /**
+ * Supported currencies config
+ */
+function getSupportedCurrencies() {
+    return [
+        'IDR' => ['symbol' => 'Rp', 'name' => 'Indonesian Rupiah', 'decimals' => 0, 'position' => 'before'],
+        'SGD' => ['symbol' => 'S$', 'name' => 'Singapore Dollar', 'decimals' => 2, 'position' => 'before'],
+        'USD' => ['symbol' => '$', 'name' => 'US Dollar', 'decimals' => 2, 'position' => 'before'],
+    ];
+}
+
+/**
+ * Get currency symbol
+ */
+function getCurrencySymbol($code) {
+    $currencies = getSupportedCurrencies();
+    return $currencies[$code]['symbol'] ?? $code;
+}
+
+/**
+ * Get default currency from DB settings
+ */
+function getDefaultCurrency() {
+    try {
+        $stmt = db()->prepare("SELECT setting_value FROM settings WHERE setting_key = 'default_currency'");
+        $stmt->execute();
+        $row = $stmt->fetch();
+        $code = $row['setting_value'] ?? 'IDR';
+        return in_array($code, ['IDR', 'SGD', 'USD']) ? $code : 'IDR';
+    } catch (Throwable $e) { return 'IDR'; }
+}
+
+/**
+ * Set default currency in DB
+ */
+function setDefaultCurrency($code) {
+    $code = in_array($code, ['IDR', 'SGD', 'USD']) ? $code : 'IDR';
+    $stmt = db()->prepare("INSERT INTO settings (setting_key, setting_value) VALUES ('default_currency', ?) ON DUPLICATE KEY setting_value = ?");
+    $stmt->execute([$code, $code]);
+}
+
+/**
+ * Fetch exchange rates from Frankfurter API (EUR base) + store in DB
+ */
+function fetchFrankfurterRates() {
+    $url = 'https://api.frankfurter.app/latest?from=EUR&to=IDR,SGD,USD';
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 10,
+        CURLOPT_SSL_VERIFYPEER => false,
+    ]);
+    $json = curl_exec($ch);
+    curl_close($ch);
+    if (!$json) return null;
+
+    $data = json_decode($json, true);
+    if (!isset($data['rates'])) return null;
+
+    try {
+        $stmt = db()->prepare("INSERT INTO currency_rates (base_currency, rates) VALUES ('EUR', ?)");
+        $stmt->execute([json_encode($data['rates'])]);
+    } catch (Throwable $e) {}
+
+    return $data['rates'];
+}
+
+/**
+ * Get cached exchange rates (refresh if older than 24h)
+ */
+function getExchangeRates() {
+    try {
+        $stmt = db()->prepare("SELECT rates, fetched_at FROM currency_rates WHERE base_currency = 'EUR' ORDER BY id DESC LIMIT 1");
+        $stmt->execute();
+        $row = $stmt->fetch();
+
+        if ($row && strtotime($row['fetched_at']) > strtotime('-24 hours')) {
+            return json_decode($row['rates'], true);
+        }
+    } catch (Throwable $e) {}
+
+    return fetchFrankfurterRates();
+}
+
+/**
+ * Convert amount between currencies (EUR-based rates)
+ * IDR is stored as the primary price in DB
+ * Rates from Frankfurter: EUR->IDR, EUR->SGD, EUR->USD
+ */
+function convertCurrency($amount, $from, $to) {
+    if ($from === $to) return $amount;
+
+    $rates = getExchangeRates();
+    if (!$rates) return $amount;
+
+    $idr = $rates['IDR'] ?? 1;
+    $sgd = $rates['SGD'] ?? 1;
+    $usd = $rates['USD'] ?? 1;
+
+    // Convert to EUR first
+    $eurMap = ['IDR' => 1/$idr, 'SGD' => 1/$sgd, 'USD' => 1/$usd];
+    $eurAmount = $amount * ($eurMap[$from] ?? 1);
+
+    // Convert from EUR to target
+    $toMap = ['IDR' => $idr, 'SGD' => $sgd, 'USD' => $usd];
+    return $eurAmount * ($toMap[$to] ?? 1);
+}
+
+/**
+ * Format price with currency code
+ */
+function formatCurrency($amount, $currency = null) {
+    if (!$currency) $currency = getDefaultCurrency();
+    $converted = convertCurrency($amount, 'IDR', $currency);
+    $config = getSupportedCurrencies()[$currency] ?? getSupportedCurrencies()['IDR'];
+
+    $formatted = number_format($converted, $config['decimals'], ',', '.');
+    return $config['position'] === 'before'
+        ? $config['symbol'] . ' ' . $formatted
+        : $formatted . ' ' . $config['symbol'];
+}
+
+/**
+ * Format currency with <span> tags for JS currency switcher
+ * Wraps the numeric value in data attributes for client-side conversion
+ */
+function formatCurrencySpan($amountInIDR, $extraClass = '') {
+    return '<span class="currency-price ' . $extraClass . '" data-price-idr="' . htmlspecialchars($amountInIDR) . '">' . formatCurrency($amountInIDR) . '</span>';
+}
+
+/**
  * Format tanggal Indonesia
  */
 function tglIndonesia($date) {

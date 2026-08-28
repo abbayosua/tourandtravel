@@ -36,6 +36,23 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="<?= BASE_URL ?>/assets/js/script.js"></script>
+<script src="<?= BASE_URL ?>/assets/js/currency.js"></script>
+<script>
+// Update currency label in navbar
+document.addEventListener('DOMContentLoaded', function() {
+    var current = localStorage.getItem('currency') || 'IDR';
+    var label = document.getElementById('currencyLabel');
+    if (label) label.textContent = current;
+    document.querySelectorAll('.currency-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            setTimeout(function() {
+                var c = localStorage.getItem('currency') || 'IDR';
+                if (label) label.textContent = c;
+            }, 50);
+        });
+    });
+});
+</script>
 <script>
 function toggleWishlist(btn, tourId) {
     <?php if (!isLoggedIn()): ?>

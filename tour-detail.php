@@ -286,9 +286,9 @@ require_once 'includes/header.php';
                         <span class="text-muted">(<?= $tour['total_reviews'] ?> ulasan)</span>
                     </div>
                     <?php $diskon = getDiskonPersen($tour); ?>
-                    <h4 class="fw-bold text-primary mb-0"><?= formatRupiah($tour['price']) ?></h4>
+                    <h4 class="fw-bold text-primary mb-0"><?= formatCurrencySpan($tour['price']) ?></h4>
                     <?php if ($diskon > 0): ?>
-                        <small class="text-decoration-line-through text-muted"><?= formatRupiah($tour['original_price']) ?></small>
+                        <small class="text-decoration-line-through text-muted"><?= formatCurrencySpan($tour['original_price']) ?></small>
                         <span class="badge bg-danger ms-1">-<?= $diskon ?>%</span>
                     <?php endif; ?>
                     <p class="text-muted">/ orang</p>

@@ -103,6 +103,9 @@
                 <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'wa-settings.php' ? 'active' : '' ?>" href="wa-settings.php">
                     <i class="bi bi-whatsapp text-success"></i> Pengaturan WA
                 </a>
+                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'currency-settings.php' ? 'active' : '' ?>" href="currency-settings.php">
+                    <i class="bi bi-currency-exchange text-warning"></i> Mata Uang
+                </a>
                 <hr class="border-secondary">
                 <a class="nav-link" href="../index.php" target="_blank">
                     <i class="bi bi-globe"></i> Lihat Website
