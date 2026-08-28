@@ -16,7 +16,11 @@ session_start();
 if (isset($_GET['lang']) && in_array($_GET['lang'], ['id', 'en'])) {
     $_SESSION['lang'] = $_GET['lang'];
     setcookie('lang', $_GET['lang'], time() + (86400 * 365), '/');
-    header('Location: ' . strtok($_SERVER['REQUEST_URI'], '?'));
+    $params = $_GET;
+    unset($params['lang']);
+    $redirect = strtok($_SERVER['REQUEST_URI'], '?');
+    if (!empty($params)) $redirect .= '?' . http_build_query($params);
+    header('Location: ' . $redirect);
     exit;
 }
 if (!isset($_SESSION['lang']) && isset($_COOKIE['lang'])) {
