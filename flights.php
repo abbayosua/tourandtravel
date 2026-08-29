@@ -5,7 +5,7 @@ require_once 'includes/functions.php';
 require_once 'includes/duffel.php';
 require_once 'includes/flightlist.php';
 
-$pageTitle = 'Pesawat';
+$pageTitle = t('Pesawat');
 $from = trim($_GET['from'] ?? '');
 $to = trim($_GET['to'] ?? '');
 $date = $_GET['date'] ?? date('Y-m-d', strtotime('+3 days'));
@@ -97,13 +97,13 @@ require_once 'includes/header.php';
     <div class="container">
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-body p-3 p-md-4">
-                <h5 class="fw-bold mb-3"><i class="bi bi-airplane me-2"></i>Cari Penerbangan <small class="text-muted fw-normal" style="font-size:12px">(Live: FlightList → Duffel → Lokal)</small></h5>
+                <h5 class="fw-bold mb-3"><i class="bi bi-airplane me-2"></i><?= t('Cari Penerbangan') ?> <small class="text-muted fw-normal" style="font-size:12px">(Live: FlightList → Duffel → Lokal)</small></h5>
                 <?php if ($duffelError): ?>
                     <div class="alert alert-warning py-2 small"><?= e($duffelError) ?></div>
                 <?php endif; ?>
                 <form method="GET" class="row g-2 align-items-end" id="flightSearchForm">
                     <div class="col-md-3">
-                        <label class="form-label small fw-semibold text-muted">Dari</label>
+                        <label class="form-label small fw-semibold text-muted"><?= t('Dari') ?></label>
                         <div class="search-wrapper">
                             <div class="input-group">
                                 <span class="input-group-text bg-white"><i class="bi bi-geo-alt text-primary"></i></span>
@@ -113,7 +113,7 @@ require_once 'includes/header.php';
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label small fw-semibold text-muted">Ke</label>
+                        <label class="form-label small fw-semibold text-muted"><?= t('Ke') ?></label>
                         <div class="search-wrapper">
                             <div class="input-group">
                                 <span class="input-group-text bg-white"><i class="bi bi-geo-alt text-danger"></i></span>
@@ -123,26 +123,26 @@ require_once 'includes/header.php';
                         </div>
                     </div>
                     <div class="col-6 col-md-2">
-                        <label class="form-label small fw-semibold text-muted">Tanggal</label>
+                        <label class="form-label small fw-semibold text-muted"><?= t('Tanggal') ?></label>
                         <input type="date" name="date" class="form-control" value="<?= e($date) ?>" min="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d', strtotime('+360 days')) ?>">
                     </div>
                     <div class="col-3 col-md-1">
-                        <label class="form-label small fw-semibold text-muted">Penumpang</label>
+                        <label class="form-label small fw-semibold text-muted"><?= t('Penumpang') ?></label>
                         <select name="passengers" class="form-select">
                             <?php for($p=1;$p<=9;$p++): ?><option value="<?= $p ?>" <?= $passengers===$p?'selected':'' ?>><?= $p ?></option><?php endfor; ?>
                         </select>
                     </div>
                     <div class="col-3 col-md-1">
-                        <label class="form-label small fw-semibold text-muted">Kelas</label>
+                        <label class="form-label small fw-semibold text-muted"><?= t('Kelas') ?></label>
                         <select name="class" class="form-select">
-                            <option value="">Semua</option>
+                            <option value=""><?= t('Semua') ?></option>
                             <option value="economy" <?= $class === 'economy' ? 'selected' : '' ?>>Ekonomi</option>
                             <option value="business" <?= $class === 'business' ? 'selected' : '' ?>>Bisnis</option>
                             <option value="first" <?= $class === 'first' ? 'selected' : '' ?>>First</option>
                         </select>
                     </div>
                     <div class="col-6 col-md-2 d-grid">
-                        <button class="btn btn-primary" type="submit" name="search" value="1"><i class="bi bi-search me-1"></i>Cari</button>
+                        <button class="btn btn-primary" type="submit" name="search" value="1"><i class="bi bi-search me-1"></i><?= t('Cari') ?></button>
                     </div>
                 </form>
                 <?php if (count($allDates) > 0): ?>
@@ -207,13 +207,13 @@ require_once 'includes/header.php';
                                 <div class="col-md-4">
                                     <div class="d-flex align-items-center justify-content-center gap-2">
                                         <div class="text-center" style="min-width:70px;"><div class="fs-5 fw-bold"><?= $dep ?></div><small class="text-muted"><?= e($isFL ? $fromCode : ($seg['origin']['iata_code'] ?? '')) ?></small></div>
-                                        <div class="flex-grow-1 text-center px-2"><div class="border-top border-2 border-primary position-relative"><i class="bi bi-airplane-fill text-primary position-absolute top-0 start-50 translate-middle" style="font-size:12px;"></i></div><small class="text-muted d-block mt-1"><?= e($duration) ?></small><?php if ($stops>0): ?><small class="text-warning" style="font-size:11px"><?= $stops ?> transit</small><?php else: ?><small class="text-success" style="font-size:11px">Langsung</small><?php endif; ?></div>
+                                        <div class="flex-grow-1 text-center px-2"><div class="border-top border-2 border-primary position-relative"><i class="bi bi-airplane-fill text-primary position-absolute top-0 start-50 translate-middle" style="font-size:12px;"></i></div><small class="text-muted d-block mt-1"><?= e($duration) ?></small><?php if ($stops>0): ?><small class="text-warning" style="font-size:11px"><?= $stops ?> <?= t('transit') ?></small><?php else: ?><small class="text-success" style="font-size:11px"><?= t('Langsung') ?></small><?php endif; ?></div>
                                         <div class="text-center" style="min-width:70px;"><div class="fs-5 fw-bold"><?= $arr ?></div><small class="text-muted"><?= e($isFL ? $toCode : ($seg['destination']['iata_code'] ?? '')) ?></small></div>
                                     </div>
                                 </div>
                                 <div class="col-md-2 text-center"><span class="badge bg-<?= $cc==='economy'?'success':($cc==='business'?'warning text-dark':'danger') ?> rounded-pill"><?= ucfirst($cc) ?></span><small class="d-block text-muted mt-1" style="font-size:11px"><?php foreach($baggages as $bg) echo e($bg['quantity'].' '.($bg['type']==='checked'?'bagasi':'kabin')).' '; ?></small></div>
-                                <div class="col-md-2 text-center"><div class="fs-6 fw-bold text-primary"><?= $isFL ? flightlistFormatPrice($o['price'] ?? $o['conversion']['USD'] ?? 0) : duffelFormatPrice($o['total_amount'], $o['total_currency']) ?></div><small class="text-muted">/orang</small></div>
-                                <div class="col-md-2 text-md-end"><a href="flight-detail.php?<?= $isFL ? "fl_offer_id=".e($offerId) : "offer_id=".e($offerId) ?>" class="btn btn-primary rounded-pill px-4 fw-semibold w-100">Pilih</a></div>
+                                <div class="col-md-2 text-center"><div class="fs-6 fw-bold text-primary"><?= $isFL ? flightlistFormatPrice($o['price'] ?? $o['conversion']['USD'] ?? 0) : duffelFormatPrice($o['total_amount'], $o['total_currency']) ?></div><small class="text-muted">/ <?= t('orang') ?></small></div>
+                                <div class="col-md-2 text-md-end"><a href="flight-detail.php?<?= $isFL ? "fl_offer_id=".e($offerId) : "offer_id=".e($offerId) ?>" class="btn btn-primary rounded-pill px-4 fw-semibold w-100"><?= t('Pilih') ?></a></div>
                             </div>
                         </div>
                     </div>
@@ -221,20 +221,20 @@ require_once 'includes/header.php';
                 <?php endforeach; ?>
             </div>
             <?php elseif (!empty($localSchedules)): ?>
-            <div class="alert alert-info py-2 small">Hasil live tidak tersedia, menampilkan jadwal lokal.</div>
+            <div class="alert alert-info py-2 small"><?= t('Hasil live tidak tersedia, menampilkan jadwal lokal.') ?></div>
             <div class="row g-3">
                 <?php foreach ($localSchedules as $s): $dep = date('H:i', strtotime($s['departure_time'])); $arr = date('H:i', strtotime($s['arrival_time'])); $airlineCode = substr($s['airline'], 0, 2); $fromShort = explode('(', $s['from_city'])[0]; $toShort = explode('(', $s['to_city'])[0]; ?>
                 <div class="col-12"><div class="card border-0 shadow-sm flight-card"><div class="card-body p-3 p-md-4"><div class="row align-items-center g-3">
                     <div class="col-md-2 d-flex align-items-center gap-2"><div class="flight-logo d-flex align-items-center justify-content-center bg-secondary bg-opacity-10 text-secondary fw-bold rounded-2" style="width:44px;height:44px;"><?= $airlineCode ?></div><div><div class="fw-semibold small"><?= e($s['airline']) ?></div><small class="text-muted" style="font-size:11px;"><?= e($s['flight_number']) ?></small></div></div>
                     <div class="col-md-4"><div class="d-flex align-items-center justify-content-center gap-2"><div class="text-center" style="min-width:70px;"><div class="fs-5 fw-bold"><?= $dep ?></div><small class="text-muted"><?= e(trim($fromShort)) ?></small></div><div class="flex-grow-1 text-center px-2"><div class="border-top border-2 border-secondary position-relative"><i class="bi bi-airplane-fill text-secondary position-absolute top-0 start-50 translate-middle" style="font-size:12px;"></i></div><small class="text-muted d-block mt-1"><?= e($s['duration']) ?></small></div><div class="text-center" style="min-width:70px;"><div class="fs-5 fw-bold"><?= $arr ?></div><small class="text-muted"><?= e(trim($toShort)) ?></small></div></div></div>
-                    <div class="col-md-2 text-center"><span class="badge bg-secondary rounded-pill"><?= ucfirst($s['class']) ?></span><small class="d-block text-muted mt-1">Sisa <?= $s['available_seats'] ?> kursi</small></div>
-                    <div class="col-md-2 text-center"><div class="fs-5 fw-bold text-primary"><?= formatCurrencySpan($s['price']) ?></div><small class="text-muted">/orang</small></div>
-                    <div class="col-md-2 text-md-end"><a href="flight-detail.php?schedule_id=<?= $s['id'] ?>" class="btn btn-outline-primary rounded-pill px-4 w-100">Pilih (Lokal)</a></div>
+                    <div class="col-md-2 text-center"><span class="badge bg-secondary rounded-pill"><?= ucfirst($s['class']) ?></span><small class="d-block text-muted mt-1"><?= t('Sisa') ?> <?= $s['available_seats'] ?> <?= t('kursi') ?></small></div>
+                    <div class="col-md-2 text-center"><div class="fs-5 fw-bold text-primary"><?= formatCurrencySpan($s['price']) ?></div><small class="text-muted">/ <?= t('orang') ?></small></div>
+                    <div class="col-md-2 text-md-end"><a href="flight-detail.php?schedule_id=<?= $s['id'] ?>" class="btn btn-outline-primary rounded-pill px-4 w-100"><?= t('Pilih (Lokal)') ?></a></div>
                 </div></div></div></div>
                 <?php endforeach; ?>
             </div>
             <?php else: ?>
-            <div class="text-center py-5" id="noResults"><i class="bi bi-airplane fs-1 text-muted"></i><p class="mt-2 text-muted">Tidak ada penerbangan untuk rute/tanggal tersebut.</p><p class="small text-muted">Coba: CGK → DPS, SIN → CGK, atau ubah tanggal. Test mode hanya mendukung rute Duffel Airways.</p><a href="flights.php" class="btn btn-primary rounded-pill px-4">Reset</a></div>
+            <div class="text-center py-5" id="noResults"><i class="bi bi-airplane fs-1 text-muted"></i><p class="mt-2 text-muted"><?= t('Tidak ada penerbangan untuk rute/tanggal tersebut.') ?></p><p class="small text-muted"><?= t('Coba: CGK → DPS, SIN → CGK, atau ubah tanggal.') ?></p><a href="flights.php" class="btn btn-primary rounded-pill px-4"><?= t('Reset') ?></a></div>
             <?php endif; ?>
         <?php else: ?>
             <?php if (count($localSchedules) > 0): ?><p class="small text-muted mb-2">Jadwal lokal (contoh). Gunakan pencarian di atas untuk hasil live Duffel.</p><div class="row g-3"><?php foreach ($localSchedules as $s): $dep = date('H:i', strtotime($s['departure_time'])); $arr = date('H:i', strtotime($s['arrival_time'])); $airlineCode = substr($s['airline'], 0, 2); ?>

@@ -3,7 +3,7 @@ require_once 'includes/config.php';
 require_once 'includes/db.php';
 require_once 'includes/functions.php';
 
-$pageTitle = 'Ferry';
+$pageTitle = t('Ferry');
 $route = $_GET['route'] ?? '';
 $routes = db()->query("SELECT DISTINCT CONCAT(route_from, ' - ', route_to) as route FROM ferries WHERE is_active = 1")->fetchAll(PDO::FETCH_COLUMN);
 
@@ -19,11 +19,11 @@ require_once 'includes/header.php';
 ?>
 <section class="py-4">
     <div class="container">
-        <h4 class="fw-bold mb-3">Ferry</h4>
+        <h4 class="fw-bold mb-3"><?= t('Ferry') ?></h4>
         <form method="GET" class="row g-2 mb-3">
             <div class="col-md-4">
                 <select name="route" class="form-select form-select-sm" onchange="this.form.submit()">
-                    <option value="">Semua Rute</option>
+                    <option value=""><?= t('Semua Rute') ?></option>
                     <?php foreach ($routes as $r): ?>
                         <option value="<?= e($r) ?>" <?= $route === $r ? 'selected' : '' ?>><?= e($r) ?></option>
                     <?php endforeach; ?>
@@ -40,7 +40,7 @@ require_once 'includes/header.php';
                                 <h6 class="fw-semibold mb-0"><?= e($f['company']) ?></h6>
                                 <small class="text-muted"><?= e($f['vessel_name']) ?></small>
                             </div>
-                            <span class="fw-bold text-primary"><?= formatRupiah($f['price']) ?></span>
+                            <span class="fw-bold text-primary"><?= formatCurrencySpan($f['price']) ?></span>
                         </div>
                         <div class="d-flex align-items-center gap-3 mt-2">
                             <div class="text-center">
@@ -57,7 +57,7 @@ require_once 'includes/header.php';
                 </div>
             </div>
             <?php endforeach; ?>
-            <?php if (empty($ferries)): ?><div class="col-12 text-center py-5 text-muted">Tidak ada jadwal ferry.</div><?php endif; ?>
+            <?php if (empty($ferries)): ?><div class="col-12 text-center py-5 text-muted"><?= t('Tidak ada jadwal ferry.') ?></div><?php endif; ?>
         </div>
     </div>
 </section>

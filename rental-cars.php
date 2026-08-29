@@ -3,7 +3,7 @@ require_once 'includes/config.php';
 require_once 'includes/db.php';
 require_once 'includes/functions.php';
 
-$pageTitle = 'Rental Mobil';
+$pageTitle = t('Rental Mobil');
 $city = $_GET['city'] ?? '';
 $type = $_GET['type'] ?? '';
 $cities = db()->query("SELECT DISTINCT city FROM rental_cars WHERE is_active = 1 ORDER BY city")->fetchAll(PDO::FETCH_COLUMN);
@@ -22,11 +22,11 @@ require_once 'includes/header.php';
 ?>
 <section class="py-4">
     <div class="container">
-        <h4 class="fw-bold mb-3">Rental Mobil</h4>
+        <h4 class="fw-bold mb-3"><?= t('Rental Mobil') ?></h4>
         <form method="GET" class="row g-2 mb-3">
             <div class="col-md-3">
                 <select name="city" class="form-select form-select-sm" onchange="this.form.submit()">
-                    <option value="">Semua Kota</option>
+                    <option value=""><?= t('Semua Kota') ?></option>
                     <?php foreach ($cities as $c): ?>
                         <option value="<?= e($c) ?>" <?= $city === $c ? 'selected' : '' ?>><?= e($c) ?></option>
                     <?php endforeach; ?>
@@ -34,7 +34,7 @@ require_once 'includes/header.php';
             </div>
             <div class="col-md-3">
                 <select name="type" class="form-select form-select-sm" onchange="this.form.submit()">
-                    <option value="">Semua Tipe</option>
+                    <option value=""><?= t('Semua Tipe') ?></option>
                     <?php foreach ($types as $t): ?>
                         <option value="<?= e($t) ?>" <?= $type === $t ? 'selected' : '' ?>><?= e($t) ?></option>
                     <?php endforeach; ?>
@@ -53,18 +53,18 @@ require_once 'includes/header.php';
                         <h6 class="fw-semibold mb-1"><?= e($car['name']) ?></h6>
                         <div class="d-flex gap-2 small text-muted mb-2">
                             <span><i class="bi bi-geo-alt me-1"></i><?= e($car['city']) ?></span>
-                            <span><i class="bi bi-people me-1"></i><?= $car['passenger_capacity'] ?> kursi</span>
+                            <span><i class="bi bi-people me-1"></i><?= $car['passenger_capacity'] ?> <?= t('kursi') ?></span>
                             <span><i class="bi bi-gear me-1"></i><?= ucfirst($car['transmission']) ?></span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center mt-auto pt-2 border-top">
-                            <span class="fw-bold text-primary"><?= formatRupiah($car['price_per_day']) ?><small class="fw-normal text-muted">/hari</small></span>
-                            <a href="rental-car-detail.php?slug=<?= e($car['slug']) ?>" class="btn btn-sm btn-primary rounded-pill px-3">Sewa</a>
+                            <span class="fw-bold text-primary"><?= formatCurrencySpan($car['price_per_day']) ?><small class="fw-normal text-muted">/ <?= t('hari') ?></small></span>
+                            <a href="rental-car-detail.php?slug=<?= e($car['slug']) ?>" class="btn btn-sm btn-primary rounded-pill px-3"><?= t('Sewa') ?></a>
                         </div>
                     </div>
                 </div>
             </div>
             <?php endforeach; ?>
-            <?php if (empty($cars)): ?><div class="col-12 text-center py-5 text-muted">Tidak ada mobil.</div><?php endif; ?>
+            <?php if (empty($cars)): ?><div class="col-12 text-center py-5 text-muted"><?= t('Tidak ada mobil.') ?></div><?php endif; ?>
         </div>
     </div>
 </section>
