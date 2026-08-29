@@ -108,7 +108,7 @@ require_once 'includes/header.php';
                 <span class="text-muted"><i class="bi bi-people-fill me-1"></i> <?= t('Max') ?> <?= $tour['max_participants'] ?> <?= t('peserta') ?></span>
                 <span class="text-muted"><?= renderStars($tour['rating']) ?> <?= $tour['rating'] ?> (<?= $tour['total_reviews'] ?> <?= t('ulasan') ?>)</span>
             </div>
-            <p class="lead"><?= nl2br(e(t($tour['description'], null, $tour['content_language'] ?? 'id'))) ?></p>
+            <p class="lead"><?= nl2br(e(str_replace('\\n', "\n", t($tour['description'], null, $tour['content_language'] ?? 'id')))) ?></p>
 
             <!-- Gallery -->
             <?php $galleryImages = getTourGalleryUrls($tour); ?>
