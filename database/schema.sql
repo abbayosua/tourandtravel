@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS tours (
     description TEXT,
     price DECIMAL(12,2) NOT NULL,
     price_currency VARCHAR(5) NOT NULL DEFAULT 'IDR',
+    content_language VARCHAR(5) NOT NULL DEFAULT 'id',
     original_price DECIMAL(12,2) DEFAULT NULL,
     max_participants INT NOT NULL DEFAULT 20,
     rating DECIMAL(2,1) DEFAULT 4.8,

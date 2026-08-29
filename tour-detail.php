@@ -102,13 +102,13 @@ require_once 'includes/header.php';
             </div>
 
             <!-- Info Tour -->
-            <h2 class="fw-bold"><?= e($tour['title']) ?></h2>
+            <h2 class="fw-bold"><?= e(t($tour['title'])) ?></h2>
             <div class="d-flex flex-wrap gap-3 mb-3">
                 <span class="badge bg-primary"><?= e($tour['category']) ?></span>
                 <span class="text-muted"><i class="bi bi-people-fill me-1"></i> <?= t('Max') ?> <?= $tour['max_participants'] ?> <?= t('peserta') ?></span>
                 <span class="text-muted"><?= renderStars($tour['rating']) ?> <?= $tour['rating'] ?> (<?= $tour['total_reviews'] ?> <?= t('ulasan') ?>)</span>
             </div>
-            <p class="lead"><?= nl2br(e($tour['description'])) ?></p>
+            <p class="lead"><?= nl2br(e(t($tour['description']))) ?></p>
 
             <!-- Gallery -->
             <?php $galleryImages = getTourGalleryUrls($tour); ?>

@@ -23,6 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $priceCurrency = in_array($_POST['price_currency'] ?? '', ['IDR', 'SGD', 'USD']) ? $_POST['price_currency'] : 'IDR';
     $maxParticipants = (int)($_POST['max_participants'] ?? 1);
     $isActive = isset($_POST['is_active']) ? 1 : 0;
+    $contentLanguage = in_array($_POST['content_language'] ?? '', ['id', 'en']) ? $_POST['content_language'] : 'id';
 
     if (!$title) $error = 'Judul tour harus diisi';
     elseif (!$category) $error = 'Kategori harus diisi';
@@ -51,8 +52,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $slug .= '-' . time();
         }
 
-        $stmt = db()->prepare("UPDATE tours SET title=?, slug=?, category=?, description=?, price=?, price_currency=?, max_participants=?, cover_image=?, is_active=? WHERE id=?");
-        $stmt->execute([$title, $slug, $category, $description, $price, $priceCurrency, $maxParticipants, $coverImage, $isActive, $id]);
+        $stmt = db()->prepare("UPDATE tours SET title=?, slug=?, category=?, description=?, price=?, price_currency=?, content_language=?, max_participants=?, cover_image=?, is_active=? WHERE id=?");
+        $stmt->execute([$title, $slug, $category, $description, $price, $priceCurrency, $contentLanguage, $maxParticipants, $coverImage, $isActive, $id]);
+
+        // Auto-translate tour content
+        $targetLang = $contentLanguage === 'id' ? 'en' : 'id';
+        translateAndCache($title, $contentLanguage, $targetLang);
+        if (strlen($description) > 10) {
+            $translated = translateMyMemory($description, $contentLanguage, $targetLang);
+            if ($translated !== $description) saveTranslation($description, $targetLang, $translated);
+        }
 
         header('Location: tours.php?msg=updated');
         exit;
@@ -211,6 +220,15 @@ require_once 'includes/admin-header.php';
                         </div>
                     </div>
                     <div class="mb-3">
+                        <label class="form-label fw-semibold">Bahasa Konten</label>
+                        <select name="content_language" class="form-select">
+                            <option value="id" <?= ($tour['content_language'] ?? 'id') === 'id' ? 'selected' : '' ?>>🇮🇩 Indonesia (asli)</option>
+                            <option value="en" <?= ($tour['content_language'] ?? 'id') === 'en' ? 'selected' : '' ?>>🇬🇧 English (asli)</option>
+                        </select>
+                        <div class="form-text">Konten akan otomatis diterjemahkan ke bahasa lain</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Max Peserta</label>
                         <label class="form-label fw-semibold">Max Peserta</label>
                         <input type="number" name="max_participants" class="form-control" min="1" value="<?= $tour['max_participants'] ?>">
                     </div>
