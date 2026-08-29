@@ -115,7 +115,7 @@ require_once 'includes/header.php';
                         <span class="badge bg-white text-dark position-absolute top-0 start-0 m-2 shadow-sm" style="margin-top: 40px !important;"><?= e($tour['category']) ?></span>
                     </div>
                     <div class="card-body p-3 d-flex flex-column">
-                        <h6 class="fw-semibold mb-1"><?= e(t($tour['title'])) ?></h6>
+                        <h6 class="fw-semibold mb-1"><?= e(t($tour['title'], null, $tour['content_language'] ?? 'id')) ?></h6>
                         <div class="d-flex align-items-center gap-2 small mb-1">
                             <?= renderStars($tour['rating']) ?>
                             <span class="text-muted">(<?= $tour['total_reviews'] ?>)</span>

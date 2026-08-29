@@ -169,14 +169,14 @@ function setLang($lang) {
 /**
  * Get translation from DB cache (with fallback to key)
  */
-function t($key, $fallback = null) {
+function t($key, $fallback = null, $sourceLang = 'id') {
     static $cache = [];
     $lang = getCurrentLang();
-    $cacheKey = $lang . ':' . $key;
+    $cacheKey = $lang . ':' . $sourceLang . ':' . $key;
 
     if (isset($cache[$cacheKey])) return $cache[$cacheKey];
 
-    if ($lang === 'id') {
+    if ($lang === $sourceLang) {
         $cache[$cacheKey] = $fallback ?? $key;
         return $cache[$cacheKey];
     }

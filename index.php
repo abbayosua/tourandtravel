@@ -138,7 +138,7 @@ require_once 'includes/header.php';
                                         <span class="badge bg-danger small"><?= t('HOT') ?></span>
                                         <small class="text-muted"><?= t('Promo') ?></small>
                                     </div>
-                                    <h6 class="fw-semibold small mb-1 text-dark"><?= e(t($promo['title'])) ?></h6>
+                                    <h6 class="fw-semibold small mb-1 text-dark"><?= e(t($promo['title'], null, $promo['content_language'] ?? 'id')) ?></h6>
                                     <?php if ($promo['price'] > 0): ?>
                                         <span class="fw-bold text-primary small"><?= formatCurrencySpan($promo['price'], $promo['price_currency'] ?? 'IDR') ?></span>
                                     <?php else: ?>
@@ -224,7 +224,7 @@ require_once 'includes/header.php';
                         <span class="badge bg-white text-dark position-absolute top-0 end-0 m-2 shadow-sm"><?= e($tour['category']) ?></span>
                     </div>
                     <div class="card-body p-3">
-                        <h6 class="fw-semibold mb-1 text-truncate"><?= e(t($tour['title'])) ?></h6>
+                        <h6 class="fw-semibold mb-1 text-truncate"><?= e(t($tour['title'], null, $tour['content_language'] ?? 'id')) ?></h6>
                         <div class="d-flex align-items-center gap-2 small mb-1">
                             <?= renderStars($tour['rating']) ?>
                             <span class="text-muted">(<?= $tour['total_reviews'] ?>)</span>
