@@ -201,7 +201,7 @@ function t($key, $fallback = null, $sourceLang = 'id') {
 function translateMyMemory($text, $from = 'id', $to = 'en') {
     if (empty($text) || $from === $to) return $text;
 
-    $url = 'https://api.mymemory.translated.net/get?q=' . urlencode($text) . '&langpair=' . $from . '|' . $to;
+    $url = 'https://api.mymemory.translated.net/get?q=' . urlencode($text) . '&langpair=' . $from . '|' . $to . '&de=tourandtravel@web.id';
     $ch = curl_init($url);
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
