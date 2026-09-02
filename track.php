@@ -17,7 +17,8 @@ $stmt->execute([$code]);
 $booking = $stmt->fetch();
 
 $pageTitle = $booking ? 'Tracking: ' . $booking['booking_code'] : 'Tracking Booking';
-require_once 'includes/header.php';
+require_once 'includes/components/breadcrumb.php';
+require_once 'includes/header-klook.php';
 ?>
 
 <section class="py-5 bg-light" style="min-height: 70vh;">
@@ -31,7 +32,7 @@ require_once 'includes/header.php';
                         <div class="fs-3 fw-bold text-primary my-2"><?= e($booking['booking_code']) ?></div>
 
                         <!-- Status Timeline -->
-                        <div class="d-flex justify-content-center gap-4 my-4">
+                        <div class="d-flex justify-content-center align-items-center my-4 klook-tracker">
                             <div class="text-center">
                                 <div class="rounded-circle bg-<?= $booking['status'] === 'pending' || $booking['status'] === 'confirmed' ? 'success' : 'secondary' ?> d-flex align-items-center justify-content-center mx-auto mb-1" style="width: 40px; height: 40px;">
                                     <i class="bi bi-check-lg text-white"></i>
@@ -39,23 +40,34 @@ require_once 'includes/header.php';
                                 <small class="d-block" style="font-size: 10px;">Booking</small>
                                 <small style="font-size: 10px;" class="text-muted"><?= date('d/m', strtotime($booking['created_at'])) ?></small>
                             </div>
+                            <div class="d-flex align-items-center" style="width: 50px;"><div class="border-top border-2 <?= $booking['status'] === 'confirmed' ? 'border-success' : 'border-secondary' ?> w-100"></div></div>
                             <div class="text-center">
                                 <div class="rounded-circle bg-<?= $booking['status'] === 'confirmed' ? 'success' : ($booking['status'] === 'pending' ? 'warning' : 'secondary') ?> d-flex align-items-center justify-content-center mx-auto mb-1" style="width: 40px; height: 40px;">
                                     <i class="bi bi-clock text-white"></i>
                                 </div>
                                 <small class="d-block" style="font-size: 10px;">Konfirmasi</small>
                             </div>
+                            <div class="d-flex align-items-center" style="width: 50px;"><div class="border-top border-2 <?= $booking['status'] === 'confirmed' ? 'border-success' : 'border-secondary' ?> w-100"></div></div>
                             <div class="text-center">
                                 <div class="rounded-circle bg-<?= $booking['status'] === 'confirmed' ? 'success' : 'secondary' ?> d-flex align-items-center justify-content-center mx-auto mb-1" style="width: 40px; height: 40px;">
                                     <i class="bi bi-credit-card text-white"></i>
                                 </div>
                                 <small class="d-block" style="font-size: 10px;">Pembayaran</small>
                             </div>
+                            <div class="d-flex align-items-center" style="width: 50px;"><div class="border-top border-2 border-secondary w-100"></div></div>
                             <div class="text-center">
                                 <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto mb-1" style="width: 40px; height: 40px;">
                                     <i class="bi bi-check2-all text-white"></i>
                                 </div>
                                 <small class="d-block" style="font-size: 10px;">Selesai</small>
+                            </div>
+                        </div>
+
+                        <!-- QR Code placeholder -->
+                        <div class="d-flex justify-content-center mb-3">
+                            <div class="bg-white border rounded-3 p-3 text-center" style="width: 140px;">
+                                <div style="width: 100px; height: 100px; margin: 0 auto; background: repeating-linear-gradient(45deg, #212529 0 6px, #fff 6px 12px); border-radius: 4px;"></div>
+                                <small class="d-block text-muted mt-2" style="font-size: 10px;">Scan voucher</small>
                             </div>
                         </div>
 
@@ -116,4 +128,4 @@ require_once 'includes/header.php';
     </div>
 </section>
 
-<?php require_once 'includes/footer.php'; ?>
+<?php require_once 'includes/footer-klook.php'; ?>

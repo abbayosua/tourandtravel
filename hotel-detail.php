@@ -17,10 +17,6 @@ $guests = (int)($_GET['guests'] ?? 2);
 $bookingSuccess = '';
 $bookingError = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!isLoggedIn()) {
-        header('Location: login.php?redirect=' . urlencode($_SERVER['REQUEST_URI']));
-        exit;
-    }
     $ci = $_POST['checkin'] ?? $checkin;
     $co = $_POST['checkout'] ?? $checkout;
     $rooms = (int)($_POST['rooms'] ?? 1);
@@ -28,7 +24,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name'] ?? '');
     $phone = trim($_POST['phone'] ?? '');
     if ($ci && $co && $name && $phone) {
-        // Cek overlap: ada booking lain utk hotel ini yg tanggalnya bentrok
         $overlapStmt = db()->prepare("SELECT COUNT(*) FROM hotel_bookings WHERE hotel_id = ? AND ? < checkout AND checkin < ?");
         $overlapStmt->execute([$hotel['id'], $ci, $co]);
         if ($overlapStmt->fetchColumn() > 0) {
@@ -36,8 +31,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $nights = max(1, (strtotime($co) - strtotime($ci)) / 86400);
             $total = $hotel['price_per_night'] * $nights * $rooms;
+            $walletDeduct = 0;
+            if (!empty($_SESSION['user_id']) && !empty($_POST['use_wallet'])) {
+                require_once 'includes/wallet.php';
+                $balance = getWalletBalance($_SESSION['user_id']);
+                if ($balance > 0) {
+                    $walletDeduct = min($balance, $total);
+                    $total -= $walletDeduct;
+                }
+            }
             $insert = db()->prepare("INSERT INTO hotel_bookings (hotel_id, user_id, checkin, checkout, rooms, guests, name, phone, total_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $insert->execute([$hotel['id'], $userId ?? ($_SESSION['user_id'] ?? null), $ci, $co, $rooms, $g, $name, $phone, $total]);
+            $insert->execute([$hotel['id'], $_SESSION['user_id'] ?? null, $ci, $co, $rooms, $g, $name, $phone, $total]);
+            $bookingId = (int)db()->lastInsertId();
+            if ($walletDeduct > 0 && !empty($_SESSION['user_id'])) {
+                require_once 'includes/wallet.php';
+                spendWallet($_SESSION['user_id'], $walletDeduct, 'hotel_booking', $bookingId);
+            }
             $bookingSuccess = "Booking berhasil! Total: " . formatRupiah($total);
         }
     }
@@ -51,18 +60,19 @@ $similar = $similar->fetchAll();
 $nights = max(1, (strtotime($checkout) - strtotime($checkin)) / 86400);
 $totalPrice = $hotel['price_per_night'] * $nights;
 
-require_once 'includes/header.php';
+require_once 'includes/components/breadcrumb.php';
+require_once 'includes/header-klook.php';
 ?>
 <section class="py-4 bg-light">
     <div class="container">
-        <nav aria-label="breadcrumb"><ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="hotels.php">Hotel</a></li>
-            <li class="breadcrumb-item"><a href="hotels.php?city=<?= urlencode($hotel['city']) ?>"><?= e($hotel['city']) ?></a></li>
-            <li class="breadcrumb-item active"><?= e($hotel['name']) ?></li>
-        </ol></nav>
+        <?php renderBreadcrumb([
+            ['label' => t('Hotel'), 'url' => 'hotels.php'],
+            ['label' => $hotel['city'], 'url' => 'hotels.php?city=' . urlencode($hotel['city'])],
+            ['label' => $hotel['name'], 'url' => null],
+        ]); ?>
 
         <div class="row">
-            <!-- Gallery -->
+            <!-- Gallery Grid -->
             <div class="col-12 mb-3">
                 <div class="row g-2">
                     <div class="col-md-8">
@@ -111,6 +121,19 @@ require_once 'includes/header.php';
                     </div>
                 </div>
 
+                <!-- Map -->
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-body p-4">
+                        <h6 class="fw-semibold mb-3"><i class="bi bi-geo-alt me-2"></i>Lokasi</h6>
+                        <div class="rounded-3 overflow-hidden border">
+                            <iframe width="100%" height="250" frameborder="0" style="border:0;" 
+                                src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=<?= urlencode($hotel['name'] . ' ' . $hotel['city']) ?>&center=<?= $hotel['lat'] ?? '-6.2' ?>,<?= $hotel['lng'] ?? '106.8' ?>&zoom=14" 
+                                allowfullscreen loading="lazy">
+                            </iframe>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Similar Hotels -->
                 <?php if (count($similar) > 0): ?>
                 <h5 class="fw-bold mb-3">Hotel Lain di <?= e($hotel['city']) ?></h5>
@@ -147,12 +170,17 @@ require_once 'includes/header.php';
                         <?php endif; ?>
 
                         <?php if (!isLoggedIn()): ?>
-                            <div class="text-center py-3">
-                                <p class="fw-semibold mb-2">Login untuk Booking</p>
-                                <a href="login.php?redirect=<?= urlencode($_SERVER['REQUEST_URI']) ?>" class="btn btn-primary w-100">Masuk / Daftar</a>
-                            </div>
-                        <?php else: ?>
+                            <div class="alert alert-warning py-2 small mb-2"><i class="bi bi-info-circle me-1"></i><?= t('Anda dapat booking sebagai tamu.') ?></div>
+                        <?php endif; ?>
                         <form method="POST">
+                            <div class="mb-2">
+                                <label class="form-label small"><?= t('Kode Promo (opsional)') ?></label>
+                                <div class="input-group input-group-sm">
+                                    <input type="text" name="promo_code" class="form-control klook-promo-input" placeholder="HEMAT10" id="promoCodeHotel" autocomplete="off">
+                                    <button type="button" class="btn btn-outline-primary klook-promo-btn" onclick="applyPromo('promoCodeHotel','promoResultHotel',<?= (float)$hotel['price_per_night'] ?>)"><?= t('Pakai') ?></button>
+                                </div>
+                                <div class="klook-promo-result small mt-1" id="promoResultHotel"></div>
+                            </div>
                             <div class="mb-2">
                                 <label class="form-label small">Check-in</label>
                                 <input type="date" name="checkin" class="form-control" value="<?= e($checkin) ?>" onchange="updateTotal()">
@@ -200,6 +228,14 @@ require_once 'includes/header.php';
                                 <label class="form-label small">No. Telepon</label>
                                 <input type="text" name="phone" class="form-control" value="<?= e(getUser()['phone'] ?? '') ?>" required>
                             </div>
+                            <?php if (!empty($_SESSION['user_id'])): require_once 'includes/wallet.php'; $walletBal = getWalletBalance($_SESSION['user_id']); ?>
+                                <?php if ($walletBal > 0): ?>
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" name="use_wallet" value="1" id="useWalletHotel">
+                                    <label class="form-check-label small" for="useWalletHotel"><?= t('Gunakan KlookCash') ?> <strong><?= formatRupiah($walletBal) ?></strong></label>
+                                </div>
+                                <?php endif; ?>
+                            <?php endif; ?>
                             <button type="submit" class="btn btn-primary w-100 fw-semibold py-2">Pesan Sekarang</button>
                         </form>
 
@@ -220,11 +256,10 @@ require_once 'includes/header.php';
                             document.getElementById('totalDisplay').textContent = 'Rp ' + total.toLocaleString('id-ID');
                         }
                         </script>
-                        <?php endif; ?>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
-<?php require_once 'includes/footer.php'; ?>
+<?php require_once 'includes/footer-klook.php'; ?>

@@ -12,7 +12,7 @@ test.describe('Destinasi - happy path', () => {
     expect(body).not.toMatch(PHP_ERROR);
     expect(body).toMatch(/Paket Tour ke China/i);
     expect(body).toMatch(/China|Zhangjiajie|Shanghai|Hunan/i);
-    const cards = await page.locator('h6.fw-semibold').count();
+    const cards = await page.locator('.tour-card-klook h6.fw-semibold').count();
     expect(cards).toBeGreaterThanOrEqual(3); // 4 China tours
   });
 
@@ -69,7 +69,7 @@ test.describe('Destinasi - sad path / edge', () => {
     expect(body).not.toMatch(PHP_ERROR);
     expect(body).toMatch(/Belum ada paket tour/i);
     expect(body).toMatch(/Lihat Semua Tour/i);
-    const cards = await page.locator('h6.fw-semibold').count();
+    const cards = await page.locator('.tour-card-klook h6.fw-semibold').count();
     expect(cards).toBe(0);
   });
 

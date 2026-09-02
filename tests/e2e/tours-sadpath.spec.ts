@@ -24,7 +24,7 @@ test.describe('Tours listing - sad path / edge cases', () => {
     const body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
     // Invalid value falls through to default (no filter) — shows all tours
-    const cards = await page.locator('h6.fw-semibold').count();
+    const cards = await page.locator('.tour-card-klook h6.fw-semibold').count();
     expect(cards).toBeGreaterThan(0);
   });
 
@@ -37,7 +37,7 @@ test.describe('Tours listing - sad path / edge cases', () => {
     // Should show empty state or first page — but definitely no PHP error
     // With 8 tours / 12 perPage, lastPage=1, page gets clamped to 1
     // So it should show tours
-    const cards = await page.locator('h6.fw-semibold').count();
+    const cards = await page.locator('.tour-card-klook h6.fw-semibold').count();
     expect(cards).toBeGreaterThan(0);
   });
 
@@ -48,7 +48,7 @@ test.describe('Tours listing - sad path / edge cases', () => {
     const body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
     // (int)"abc" = 0, max(1,0) = 1, so page 1
-    const cards = await page.locator('h6.fw-semibold').count();
+    const cards = await page.locator('.tour-card-klook h6.fw-semibold').count();
     expect(cards).toBeGreaterThan(0);
   });
 
@@ -70,7 +70,7 @@ test.describe('Tours listing - sad path / edge cases', () => {
     const body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
     // Falls back to default sort (created_at DESC) — shows all tours
-    const cards = await page.locator('h6.fw-semibold').count();
+    const cards = await page.locator('.tour-card-klook h6.fw-semibold').count();
     expect(cards).toBeGreaterThan(0);
   });
 
@@ -80,7 +80,7 @@ test.describe('Tours listing - sad path / edge cases', () => {
 
     const body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
-    const cards = await page.locator('h6.fw-semibold').count();
+    const cards = await page.locator('.tour-card-klook h6.fw-semibold').count();
     expect(cards).toBeGreaterThanOrEqual(8); // minimal 8 tour (bisa lebih jika test lain menambah)
   });
 });

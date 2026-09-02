@@ -5,24 +5,37 @@ require_once '../includes/functions.php';
 require_once '../includes/auth.php';
 cekLogin();
 
-// Update status
+$adminId = $_SESSION['user_id'] ?? 0;
+
+// Update status (with table/type mapping)
+$tableMap = [
+    'tour' => 'bookings',
+    'attraction' => 'attraction_bookings',
+    'transfer' => 'transfer_bookings',
+    'train' => 'train_bookings',
+    'esim' => 'connectivity_bookings',
+];
+
 if (isset($_GET['update_status'])) {
     $id = (int)$_GET['update_status'];
     $status = $_GET['status'] ?? 'pending';
-    if (in_array($status, ['pending', 'confirmed', 'cancelled'])) {
-        $stmt = db()->prepare("UPDATE bookings SET status = ? WHERE id = ?");
-        $stmt->execute([$status, $id]);
-        header('Location: bookings.php?msg=updated');
-        exit;
+    $type = $_GET['type'] ?? 'tour';
+    if (in_array($status, ['pending', 'confirmed', 'cancelled']) && isset($tableMap[$type])) {
+        $table = $tableMap[$type];
+        db()->prepare("UPDATE `$table` SET status = ? WHERE id = ?")->execute([$status, $id]);
+        header('Location: bookings.php?msg=updated'); exit;
     }
 }
 
 // Hapus booking
 if (isset($_GET['delete'])) {
     $id = (int)$_GET['delete'];
-    db()->prepare("DELETE FROM bookings WHERE id = ?")->execute([$id]);
-    header('Location: bookings.php?msg=deleted');
-    exit;
+    $type = $_GET['type'] ?? 'tour';
+    if (isset($tableMap[$type])) {
+        $table = $tableMap[$type];
+        db()->prepare("DELETE FROM `$table` WHERE id = ?")->execute([$id]);
+    }
+    header('Location: bookings.php?msg=deleted'); exit;
 }
 
 $msg = '';
@@ -31,23 +44,71 @@ if (isset($_GET['msg'])) {
     if ($_GET['msg'] === 'deleted') $msg = 'Booking berhasil dihapus';
 }
 
-// Filter status
+// Filter
 $statusFilter = $_GET['status'] ?? '';
-$sql = "SELECT b.*, t.title as tour_title, td.departure_date, td.return_date
-        FROM bookings b
-        JOIN tours t ON b.tour_id = t.id
-        JOIN tour_dates td ON b.tour_date_id = td.id";
-$params = [];
+$typeFilter = $_GET['type'] ?? '';
 
-if ($statusFilter) {
-    $sql .= " WHERE b.status = ?";
-    $params[] = $statusFilter;
+$all = [];
+
+// Tours
+if (!$typeFilter || $typeFilter === 'tour') {
+    $sql = "SELECT b.*, t.title as item_title, td.departure_date, 'tour' AS btype, CONCAT(b.participants, ' org') AS qty_label
+            FROM bookings b JOIN tours t ON b.tour_id = t.id JOIN tour_dates td ON b.tour_date_id = td.id";
+    $params = [];
+    if ($statusFilter) { $sql .= " WHERE b.status = ?"; $params[] = $statusFilter; }
+    $sql .= " ORDER BY b.created_at DESC";
+    $st = db()->prepare($sql); $st->execute($params);
+    foreach ($st->fetchAll() as $r) { $r['date_label'] = $r['departure_date']; $all[] = $r; }
 }
-$sql .= " ORDER BY b.created_at DESC";
 
-$stmt = db()->prepare($sql);
-$stmt->execute($params);
-$bookings = $stmt->fetchAll();
+// Attractions
+if (!$typeFilter || $typeFilter === 'attraction') {
+    $sql = "SELECT ab.*, a.name as item_title, 'attraction' AS btype, CONCAT(ab.quantity, ' tiket') AS qty_label, ab.visit_date AS date_label
+            FROM attraction_bookings ab JOIN attractions a ON ab.attraction_id = a.id";
+    $params = [];
+    if ($statusFilter) { $sql .= " WHERE ab.status = ?"; $params[] = $statusFilter; }
+    $sql .= " ORDER BY ab.created_at DESC";
+    $st = db()->prepare($sql); $st->execute($params);
+    $all = array_merge($all, $st->fetchAll());
+}
+
+// Transfers
+if (!$typeFilter || $typeFilter === 'transfer') {
+    $sql = "SELECT tb.*, tr.name as item_title, 'transfer' AS btype, CONCAT(tb.passengers, ' pax') AS qty_label, tb.pickup_date AS date_label
+            FROM transfer_bookings tb JOIN transfers tr ON tb.transfer_id = tr.id";
+    $params = [];
+    if ($statusFilter) { $sql .= " WHERE tb.status = ?"; $params[] = $statusFilter; }
+    $sql .= " ORDER BY tb.created_at DESC";
+    $st = db()->prepare($sql); $st->execute($params);
+    $all = array_merge($all, $st->fetchAll());
+}
+
+// Trains
+if (!$typeFilter || $typeFilter === 'train') {
+    $sql = "SELECT tb.*, tr.name as item_title, 'train' AS btype, CONCAT(tb.seats, ' kursi') AS qty_label, tb.travel_date AS date_label
+            FROM train_bookings tb JOIN trains tr ON tb.train_id = tr.id";
+    $params = [];
+    if ($statusFilter) { $sql .= " WHERE tb.status = ?"; $params[] = $statusFilter; }
+    $sql .= " ORDER BY tb.created_at DESC";
+    $st = db()->prepare($sql); $st->execute($params);
+    $all = array_merge($all, $st->fetchAll());
+}
+
+// eSIM
+if (!$typeFilter || $typeFilter === 'esim') {
+    $sql = "SELECT cb.*, cp.name as item_title, 'esim' AS btype, CONCAT(cb.quantity, ' pcs') AS qty_label
+            FROM connectivity_bookings cb JOIN connectivity_products cp ON cb.product_id = cp.id";
+    $params = [];
+    if ($statusFilter) { $sql .= " WHERE cb.status = ?"; $params[] = $statusFilter; }
+    $sql .= " ORDER BY cb.created_at DESC";
+    $st = db()->prepare($sql); $st->execute($params);
+    foreach ($st->fetchAll() as $r) { $r['date_label'] = null; $all[] = $r; }
+}
+
+usort($all, function ($a, $b) { return strtotime($b['created_at']) - strtotime($a['created_at']); });
+
+$typeName = ['tour' => 'Tour', 'attraction' => 'Atraksi', 'transfer' => 'Transfer', 'train' => 'Kereta', 'esim' => 'eSIM'];
+$typeBadge = ['tour' => 'primary', 'attraction' => 'info', 'transfer' => 'warning text-dark', 'train' => 'success', 'esim' => 'secondary'];
 
 $pageTitle = 'Kelola Booking';
 require_once 'includes/admin-header.php';
@@ -55,11 +116,20 @@ require_once 'includes/admin-header.php';
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h4 class="fw-bold mb-0">Kelola Booking</h4>
-    <div class="d-flex gap-2">
-        <a href="bookings.php" class="btn btn-sm <?= !$statusFilter ? 'btn-primary' : 'btn-outline-primary' ?>">Semua</a>
-        <a href="bookings.php?status=pending" class="btn btn-sm <?= $statusFilter === 'pending' ? 'btn-warning' : 'btn-outline-warning' ?>">Pending</a>
-        <a href="bookings.php?status=confirmed" class="btn btn-sm <?= $statusFilter === 'confirmed' ? 'btn-success' : 'btn-outline-success' ?>">Confirmed</a>
-        <a href="bookings.php?status=cancelled" class="btn btn-sm <?= $statusFilter === 'cancelled' ? 'btn-danger' : 'btn-outline-danger' ?>">Cancelled</a>
+    <div class="d-flex gap-2 flex-wrap">
+        <a href="bookings.php" class="btn btn-sm <?= !$statusFilter && !$typeFilter ? 'btn-primary' : 'btn-outline-primary' ?>">Semua</a>
+        <?php foreach (['pending', 'confirmed', 'cancelled'] as $st): ?>
+        <a href="bookings.php?status=<?= $st ?><?= $typeFilter ? "&type=$typeFilter" : '' ?>" class="btn btn-sm <?= $statusFilter === $st ? 'btn-primary' : 'btn-outline-primary' ?>"><?= ucfirst($st) ?></a>
+        <?php endforeach; ?>
+        <div class="dropdown">
+            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown"><?= $typeFilter ? $typeName[$typeFilter] : 'Semua Tipe' ?></button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="bookings.php<?= $statusFilter ? "?status=$statusFilter" : '' ?>">Semua Tipe</a></li>
+                <?php foreach ($typeName as $tk => $tn): ?>
+                <li><a class="dropdown-item" href="bookings.php?type=<?= $tk ?><?= $statusFilter ? "&status=$statusFilter" : '' ?>"><?= $tn ?></a></li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
     </div>
 </div>
 
@@ -70,15 +140,16 @@ require_once 'includes/admin-header.php';
 <div class="card border-0 shadow-sm">
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-hover mb-0">
+            <table class="table table-hover mb-0 admin-table">
                 <thead class="table-light">
                     <tr>
                         <th>#</th>
                         <th>Kode</th>
                         <th>Nama</th>
-                        <th>Tour</th>
-                        <th>Berangkat</th>
-                        <th>Peserta</th>
+                        <th>Item</th>
+                        <th>Tipe</th>
+                        <th>Tanggal</th>
+                        <th>Qty</th>
                         <th>Total</th>
                         <th>Kontak</th>
                         <th>Status</th>
@@ -86,18 +157,20 @@ require_once 'includes/admin-header.php';
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($bookings as $b): ?>
+                    <?php foreach ($all as $b): ?>
+                    <?php $btype = $b['btype']; ?>
                     <tr>
                         <td><?= $b['id'] ?></td>
                         <td><strong class="small" style="font-size: 11px;"><?= e($b['booking_code'] ?? '-') ?></strong></td>
                         <td><strong><?= e($b['name']) ?></strong></td>
-                        <td><small><?= e($b['tour_title']) ?></small></td>
-                        <td><small><?= tglIndonesia($b['departure_date']) ?></small></td>
-                        <td><?= $b['participants'] ?> org</td>
+                        <td><small><?= e($b['item_title']) ?></small></td>
+                        <td><span class="badge bg-<?= $typeBadge[$btype] ?>"><?= $typeName[$btype] ?></span></td>
+                        <td><small><?= !empty($b['date_label']) ? tglIndonesia($b['date_label']) : '-' ?></small></td>
+                        <td><?= $b['qty_label'] ?></td>
                         <td><?= formatRupiah($b['total_price']) ?></td>
                         <td>
                             <small>
-                                <?php if ($b['passport_photo']): ?>
+                                <?php if (!empty($b['passport_photo'])): ?>
                                     <a href="../uploads/passports/<?= e($b['passport_photo']) ?>" target="_blank" class="text-primary small">Foto</a><br>
                                 <?php endif; ?>
                                 <a href="https://wa.me/<?= preg_replace('/[^0-9]/', '', $b['phone']) ?>" target="_blank" class="text-success"><?= e($b['phone']) ?></a>
@@ -112,17 +185,17 @@ require_once 'includes/admin-header.php';
                             <div class="dropdown">
                                 <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">Ubah Status</button>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="bookings.php?update_status=<?= $b['id'] ?>&status=pending">Pending</a></li>
-                                    <li><a class="dropdown-item text-success" href="bookings.php?update_status=<?= $b['id'] ?>&status=confirmed">Confirmed</a></li>
-                                    <li><a class="dropdown-item text-danger" href="bookings.php?update_status=<?= $b['id'] ?>&status=cancelled">Cancelled</a></li>
+                                    <li><a class="dropdown-item" href="bookings.php?update_status=<?= $b['id'] ?>&status=pending&type=<?= $btype ?>">Pending</a></li>
+                                    <li><a class="dropdown-item text-success" href="bookings.php?update_status=<?= $b['id'] ?>&status=confirmed&type=<?= $btype ?>">Confirmed</a></li>
+                                    <li><a class="dropdown-item text-danger" href="bookings.php?update_status=<?= $b['id'] ?>&status=cancelled&type=<?= $btype ?>">Cancelled</a></li>
                                 </ul>
                             </div>
-                            <a href="bookings.php?delete=<?= $b['id'] ?>" class="btn btn-sm btn-danger mt-1" onclick="return confirm('Hapus booking ini?')"><i class="bi bi-trash"></i></a>
+                            <a href="bookings.php?delete=<?= $b['id'] ?>&type=<?= $btype ?>" class="btn btn-sm btn-danger mt-1" onclick="return confirm('Hapus booking ini?')"><i class="bi bi-trash"></i></a>
                         </td>
                     </tr>
                     <?php endforeach; ?>
-                    <?php if (empty($bookings)): ?>
-                    <tr><td colspan="10" class="text-center py-4 text-muted">Belum ada booking</td></tr>
+                    <?php if (empty($all)): ?>
+                    <tr><td colspan="11" class="text-center py-4 text-muted">Belum ada booking</td></tr>
                     <?php endif; ?>
                 </tbody>
             </table>

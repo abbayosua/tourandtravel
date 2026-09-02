@@ -20,8 +20,211 @@ $wishlistIds = [];
 if (isLoggedIn()) {
     $wishlistIds = getWishlistIds($_SESSION['user_id']);
 }
-require_once 'includes/header.php';
+
+// Komponen Klook-style
+require_once 'includes/components/tour-card.php';
+require_once 'includes/components/hero-search.php';
+require_once 'includes/components/category-grid.php';
+require_once 'includes/components/dest-card.php';
+require_once 'includes/components/breadcrumb.php';
+require_once 'includes/components/badge.php';
+require_once 'includes/components/price.php';
+require_once 'includes/components/rating-stars.php';
+
+// Hero slides (fallback array; nanti bisa dari tabel hero_slides)
+$heroSlides = [
+    ['image' => 'https://images.unsplash.com/photo-1488085061387-422e29b40080?w=1920&q=80', 'alt' => 'Bali Beach'],
+    ['image' => 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80', 'alt' => 'Beach Paradise'],
+    ['image' => 'https://images.unsplash.com/photo-1530521954074-e64f6810b32d?w=1920&q=80', 'alt' => 'Travel Destination'],
+];
+$heroHeadline = t('Your World of Joy');
+$heroSub = t('Temukan paket tour impian Anda dari ratusan destinasi');
+
+// Collections (Best Sellers dll) dari tabel collections
+$collections = db()->query("SELECT * FROM collections WHERE is_active = 1 ORDER BY sort_order ASC LIMIT 3")->fetchAll();
+$collectionTours = [];
+foreach ($collections as $coll) {
+    $items = db()->prepare("SELECT item_type, item_id FROM collection_items WHERE collection_id = ? ORDER BY sort_order ASC LIMIT 8");
+    $items->execute([$coll['id']]);
+    $ids = [];
+    foreach ($items->fetchAll() as $it) {
+        if ($it['item_type'] === 'tour') $ids[] = (int)$it['item_id'];
+    }
+    if (count($ids)) {
+        $in = implode(',', array_fill(0, count($ids), '?'));
+        $st = db()->prepare("SELECT * FROM tours WHERE id IN ($in) AND is_active = 1");
+        $st->execute($ids);
+        $collectionTours[$coll['id']] = $st->fetchAll();
+    } else {
+        // Fallback: best seller tours
+        $collectionTours[$coll['id']] = db()->query("SELECT * FROM tours WHERE is_active = 1 AND best_seller = 1 LIMIT 4")->fetchAll();
+    }
+}
+
+require_once 'includes/header-klook.php';
 ?>
+<?php if (!isset($_GET['legacy'])): ?>
+<section class="hero-klook klook-hero d-flex align-items-center position-relative overflow-hidden" style="min-height: 65vh;">
+    <div id="heroCarousel" class="carousel slide carousel-fade w-100 h-100 position-absolute" data-bs-ride="carousel" data-bs-interval="5000" style="inset: 0;">
+        <div class="carousel-inner h-100">
+            <?php foreach ($heroSlides as $i => $slide): ?>
+            <div class="carousel-item <?= $i === 0 ? 'active' : '' ?> h-100">
+                <img src="<?= $slide['image'] ?>" class="d-block w-100 h-100" style="object-fit: cover;" alt="<?= e($slide['alt']) ?>">
+            </div>
+            <?php endforeach; ?>
+        </div>
+        <div class="hero-overlay"></div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+
+    <div class="container position-relative" style="z-index: 2;">
+        <div class="row">
+            <div class="col-lg-7 text-white">
+                <h1 class="display-4 fw-bold mb-2 lh-1"><?= $heroHeadline ?></h1>
+                <p class="lead mb-4 text-white-50"><?= $heroSub ?></p>
+                <?php renderHeroSearch($categories); ?>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Bar -->
+<section class="bg-white border-bottom">
+    <div class="container py-3">
+        <div class="row text-center g-2">
+            <div class="col-3"><div class="fw-bold text-primary fs-5">150+</div><small class="text-muted"><?= t('Paket Tour') ?></small></div>
+            <div class="col-3"><div class="fw-bold text-primary fs-5">5.000+</div><small class="text-muted"><?= t('Pelanggan') ?></small></div>
+            <div class="col-3"><div class="fw-bold text-primary fs-5">12+</div><small class="text-muted"><?= t('Destinasi') ?></small></div>
+            <div class="col-3"><div class="fw-bold text-primary fs-5">7</div><small class="text-muted"><?= t('Tahun') ?></small></div>
+        </div>
+    </div>
+</section>
+
+<!-- Category Grid (horizontal scroll) -->
+<?php
+$catIcons = ['Domestik' => '🇮🇩', 'Internasional' => '🌍', 'China' => '🇨🇳', 'Jepang' => '🇯🇵', 'Korea Selatan' => '🇰🇷', 'Vietnam' => '🇻🇳', 'Taiwan' => '🇹🇼', 'Kanada' => '🇨🇦'];
+$catCounts = [];
+foreach ($categories as $cat) {
+    $c = db()->prepare("SELECT COUNT(*) FROM tours WHERE category = ? AND is_active = 1");
+    $c->execute([$cat]);
+    $catCounts[$cat] = (int)$c->fetchColumn();
+}
+renderCategoryGrid($categories, $catIcons, $catCounts);
+?>
+
+<!-- Flash Deals -->
+<?php if (count($promoTours) > 0): ?>
+<section class="py-4 bg-light">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold mb-0"><i class="bi bi-lightning-charge-fill text-warning me-1"></i> <?= t('Flash Deals') ?></h5>
+            <a href="tours.php?category=Promo" class="btn btn-sm btn-outline-danger rounded-pill px-3"><?= t('Lihat Semua') ?></a>
+        </div>
+        <div class="row g-3">
+            <?php foreach (array_slice($promoTours, 0, 3) as $promo): ?>
+            <div class="col-md-4">
+                <a href="tour-detail.php?slug=<?= e($promo['slug']) ?>" class="text-decoration-none">
+                    <div class="card border-0 shadow-sm overflow-hidden promo-card h-100">
+                        <div class="row g-0 h-100">
+                            <div class="col-4">
+                                <img src="<?= getTourImage($promo, 'small') ?>" class="h-100 w-100" style="object-fit: cover;" alt="">
+                            </div>
+                            <div class="col-8">
+                                <div class="card-body py-2 px-3">
+                                    <div class="d-flex align-items-center gap-1 mb-1">
+                                        <span class="badge bg-danger small"><?= t('HOT') ?></span>
+                                        <small class="text-muted"><?= t('Promo') ?></small>
+                                    </div>
+                                    <h6 class="fw-semibold small mb-1 text-dark"><?= e(t($promo['title'], null, $promo['content_language'] ?? 'id')) ?></h6>
+                                    <?php if ($promo['price'] > 0): ?>
+                                        <span class="fw-bold text-primary small"><?= formatCurrencySpan($promo['price'], $promo['price_currency'] ?? 'IDR') ?></span>
+                                    <?php else: ?>
+                                        <span class="badge bg-info"><?= t('Hubungi Kami') ?></span>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
+
+<!-- Destinasi Populer -->
+<section class="py-4">
+    <div class="container">
+        <h5 class="fw-bold mb-3"><?= t('Destinasi Populer') ?></h5>
+        <?php $cityDests = getCityDestinations(); ?>
+        <div class="row g-2">
+            <?php foreach ($cityDests as $category => $cities): ?>
+                <?php foreach ($cities as $dest): ?>
+                    <?php renderDestCard(['city' => $dest['city'], 'count' => countToursByCity($dest['city'])]); ?>
+                <?php endforeach; ?>
+            <?php endforeach; ?>
+        </div>
+        <?php if (count($cityDests) > 0): ?>
+        <div class="mt-3 kategori-scroll d-flex gap-1 overflow-auto pb-1">
+            <?php foreach ($cityDests as $category => $cities): ?>
+                <a href="tours.php?category=<?= urlencode($category) ?>" class="btn btn-sm btn-outline-primary rounded-pill flex-shrink-0"><?= e($category) ?></a>
+            <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
+    </div>
+</section>
+
+<!-- Rekomendasi Paket Tour -->
+<section class="py-4 bg-light">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h5 class="fw-bold mb-1"><?= t('Rekomendasi Paket Tour') ?></h5>
+                <p class="text-muted mb-0 small"><?= t('Pilihan terbaik untuk liburan Anda') ?></p>
+            </div>
+            <a href="tours.php" class="btn btn-outline-primary rounded-pill px-4"><?= t('Lihat Semua') ?> <i class="bi bi-arrow-right ms-1"></i></a>
+        </div>
+        <div class="row g-3">
+            <?php foreach ($featuredTours as $tour): ?>
+                <?php renderTourCard($tour, $wishlistIds); ?>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+
+<?php if (!empty($collectionTours)): ?>
+<?php foreach ($collectionTours as $collId => $collTours): $coll = array_filter($collections, fn($c) => $c['id'] === $collId); $coll = reset($coll); if (!$coll) continue; ?>
+<!-- Collection: <?= e($coll['name']) ?> -->
+<section class="py-4">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h5 class="fw-bold mb-1"><?= e(t($coll['name'])) ?></h5>
+                <?php if ($coll['description']): ?><p class="text-muted mb-0 small"><?= e(t($coll['description'])) ?></p><?php endif; ?>
+            </div>
+            <a href="collection.php?slug=<?= e($coll['slug']) ?>" class="btn btn-outline-primary rounded-pill px-4"><?= t('Lihat Semua') ?> <i class="bi bi-arrow-right ms-1"></i></a>
+        </div>
+        <div class="row g-3">
+            <?php foreach (array_slice($collTours, 0, 4) as $tour): ?>
+                <?php renderTourCard($tour, $wishlistIds); ?>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+<?php endforeach; ?>
+<?php endif; ?>
+
+<?php require_once 'includes/footer-klook.php'; ?>
+<?php else: ?>
+<?php require_once 'includes/header.php'; ?>
 
 <!-- Hero -->
 <section class="hero-klook d-flex align-items-center position-relative overflow-hidden">
@@ -465,3 +668,4 @@ require_once 'includes/header.php';
 </section>
 
 <?php require_once 'includes/footer.php'; ?>
+<?php endif; ?>

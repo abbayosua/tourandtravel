@@ -124,7 +124,7 @@ test.describe('Wishlist', () => {
     const body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
     expect(body).toMatch(/Wishlist Saya|wishlist/i);
-    const cards = await page.locator('h6.fw-semibold').count();
+    const cards = await page.locator('.tour-card-klook h6.fw-semibold').count();
     expect(cards).toBe(0);
   });
 
@@ -146,7 +146,7 @@ test.describe('Wishlist', () => {
     await page.goto(`${BASE}/wishlist.php`, { waitUntil: 'load' });
     const body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
-    const cards = await page.locator('h6.fw-semibold').count();
+    const cards = await page.locator('.tour-card-klook h6.fw-semibold').count();
     expect(cards).toBeGreaterThanOrEqual(1);
   });
 

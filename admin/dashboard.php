@@ -30,45 +30,85 @@ require_once 'includes/admin-header.php';
     <span class="text-muted small">Selamat datang, <?= e($_SESSION['admin_username']) ?></span>
 </div>
 
-<!-- Stat Cards -->
+<!-- Stat Cards with Icons -->
 <div class="row g-3 mb-4">
     <div class="col-6 col-md-4 col-lg-2">
-        <div class="card border-0 shadow-sm stat-card bg-primary text-white">
-            <div class="card-body text-center">
-                <div class="fs-3 fw-bold"><?= $totalTours ?></div>
-                <small>Tour Aktif</small>
+        <div class="card border-0 shadow-sm stat-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small mb-1">Tour Aktif</div>
+                        <div class="fs-3 fw-bold text-dark"><?= $totalTours ?></div>
+                    </div>
+                    <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="bi bi-map fs-4"></i>
+                    </div>
+                </div>
+                <div class="small text-success mt-2"><i class="bi bi-arrow-up"></i> Aktif</div>
             </div>
         </div>
     </div>
     <div class="col-6 col-md-4 col-lg-2">
-        <div class="card border-0 shadow-sm stat-card bg-info text-white">
-            <div class="card-body text-center">
-                <div class="fs-3 fw-bold"><?= $totalBookings ?></div>
-                <small>Total Booking</small>
+        <div class="card border-0 shadow-sm stat-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small mb-1">Total Booking</div>
+                        <div class="fs-3 fw-bold text-dark"><?= $totalBookings ?></div>
+                    </div>
+                    <div class="rounded-circle bg-info bg-opacity-10 text-info d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="bi bi-ticket-perforated fs-4"></i>
+                    </div>
+                </div>
+                <div class="small text-muted mt-2"><i class="bi bi-clock"></i> Semua status</div>
             </div>
         </div>
     </div>
     <div class="col-6 col-md-4 col-lg-2">
-        <div class="card border-0 shadow-sm stat-card bg-warning text-dark">
-            <div class="card-body text-center">
-                <div class="fs-3 fw-bold"><?= $totalPending ?></div>
-                <small>Pending</small>
+        <div class="card border-0 shadow-sm stat-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small mb-1">Pending</div>
+                        <div class="fs-3 fw-bold text-warning"><?= $totalPending ?></div>
+                    </div>
+                    <div class="rounded-circle bg-warning bg-opacity-10 text-warning d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="bi bi-hourglass-split fs-4"></i>
+                    </div>
+                </div>
+                <div class="small text-warning mt-2"><i class="bi bi-arrow-up"></i> Menunggu</div>
             </div>
         </div>
     </div>
     <div class="col-6 col-md-4 col-lg-2">
-        <div class="card border-0 shadow-sm stat-card bg-success text-white">
-            <div class="card-body text-center">
-                <div class="fs-3 fw-bold"><?= $totalConfirmed ?></div>
-                <small>Confirmed</small>
+        <div class="card border-0 shadow-sm stat-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small mb-1">Confirmed</div>
+                        <div class="fs-3 fw-bold text-success"><?= $totalConfirmed ?></div>
+                    </div>
+                    <div class="rounded-circle bg-success bg-opacity-10 text-success d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="bi bi-check-circle fs-4"></i>
+                    </div>
+                </div>
+                <div class="small text-success mt-2"><i class="bi bi-arrow-up"></i> Terkonfirmasi</div>
             </div>
         </div>
     </div>
     <div class="col-6 col-md-4 col-lg-2">
-        <div class="card border-0 shadow-sm stat-card bg-dark text-white">
-            <div class="card-body text-center">
-                <div class="fs-3 fw-bold"><?= formatRupiah($totalRevenue) ?></div>
-                <small>Revenue</small>
+        <div class="card border-0 shadow-sm stat-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small mb-1">Revenue</div>
+                        <div class="fs-5 fw-bold text-primary"><?= formatRupiah($totalRevenue) ?></div>
+                    </div>
+                    <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="bi bi-currency-dollar fs-4"></i>
+                    </div>
+                </div>
+                <div class="small text-success mt-2"><i class="bi bi-arrow-up"></i> Pendapatan</div>
             </div>
         </div>
     </div>

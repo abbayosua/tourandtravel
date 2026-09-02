@@ -20,7 +20,7 @@ require_once 'includes/admin-header.php';
 </div>
 <?php if ($msg): ?><div class="alert alert-success py-2"><?= $msg ?></div><?php endif; ?>
 <div class="card border-0 shadow-sm"><div class="card-body p-0">
-<table class="table table-hover mb-0">
+<table class="table table-hover mb-0 admin-table">
 <thead class="table-light"><tr><th>#</th><th>Nama</th><th>Kota</th><th>Bintang</th><th>Harga</th><th>Aksi</th></tr></thead>
 <tbody><?php foreach ($items as $i): ?><tr>
 <td><?=$i['id']?></td><td><?=e($i['name'])?></td><td><?=e($i['city'])?></td>

@@ -19,16 +19,16 @@ async function registerUser(page, tag) {
 
 test.describe('Rental Car Detail - happy path', () => {
 
-  test('slug valid: nama, harga/hari render + login prompt (guest)', async ({ page }) => {
+  test('slug valid: nama, harga/hari render + guest checkout form', async ({ page }) => {
     const resp = await page.goto(`${BASE}/rental-car-detail.php?slug=${SLUG}`, { waitUntil: 'load' });
     expect([200, null]).toContain(resp?.status());
     const body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
     expect(body).toMatch(/Toyota Avanza/i);
     expect(body).toMatch(/350\.000|Rp/i);
-    // Guest: login prompt, bukan form
-    await expect(page.locator('a:has-text("Masuk / Daftar")')).toBeVisible();
-    expect(body).toMatch(/Login untuk Booking/i);
+    // Guest checkout: form tetap tampil + warning
+    await expect(page.locator('input[name="days"]')).toBeVisible();
+    expect(body).toMatch(/booking sebagai tamu|Sewa Sekarang/i);
   });
 
   test('POST valid (days=3): register dulu, baru submit', async ({ page }) => {
@@ -100,23 +100,19 @@ test.describe('Rental Car Detail - sad path / edge', () => {
     expect(body).not.toMatch(/alert\(1\)/);
   });
 
-  test('POST tanpa login: redirect ke login.php', async ({ page }) => {
-    // Guest (belum login)
+  test('POST tanpa login: guest booking sukses (200)', async ({ page }) => {
     const resp = await page.request.post(`${BASE}/rental-car-detail.php?slug=${SLUG}`, {
-      form: { days: '3', name: 'Budi', phone: '0812' },
-      maxRedirects: 0,
+      form: { days: '3', name: 'Guest', phone: '0812' },
     });
-    expect(resp.status()).toBe(302);
-    expect(resp.headers()['location']).toContain('login.php');
+    expect(resp.status()).toBe(200);
+    const body = await resp.text();
+    expect(body).toMatch(/Booking berhasil|Sewa Sekarang/i);
   });
 
-  test('guest lihat "Login untuk Booking" + link redirect', async ({ page }) => {
+  test('guest lihat form booking + warning guest checkout', async ({ page }) => {
     await page.goto(`${BASE}/rental-car-detail.php?slug=${SLUG}`, { waitUntil: 'load' });
     const body = await page.textContent('body');
-    expect(body).toMatch(/Login untuk Booking/i);
-    const loginLink = page.locator('a[href*="login.php?redirect="]').first();
-    const href = await loginLink.getAttribute('href');
-    expect(href).toContain('redirect=');
-    expect(href).toContain('rental-car-detail');
+    expect(body).toMatch(/booking sebagai tamu|Sewa Sekarang/i);
+    await expect(page.locator('input[name="days"]')).toBeVisible();
   });
 });

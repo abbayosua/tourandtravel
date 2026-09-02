@@ -8,8 +8,8 @@ test.describe('Navbar & Footer Crawl', () => {
   test('link nav utama: semua HTTP 200', async ({ page }) => {
     await page.goto(`${BASE}/index.php`, { waitUntil: 'load' });
 
-    // Nav utama: link di navigasi BOTTOM (bukan dropdown) dgn href eksplisit
-    const navBottom = page.locator('nav').last();
+    // Navbar: link di dalam #navbarNav
+    const nav = page.locator('#navbarNav').first();
     const checks = [
       { label: 'Beranda', href: ['index.php', '/'] },
       { label: 'Tour', href: ['tours.php'] },
@@ -19,37 +19,48 @@ test.describe('Navbar & Footer Crawl', () => {
     ];
 
     for (const link of checks) {
-      const anchor = navBottom.locator(`a[href*="${link.href[0]}"]`).first();
+      const anchor = nav.locator(`a[href*="${link.href[0]}"]`).first();
       if (await anchor.count()) {
-        await anchor.click();
-        await page.waitForLoadState('load');
-        const ok = link.href.some(u => page.url().includes(u));
-        expect(ok, `nav ${link.label} -> ${page.url()}`).toBeTruthy();
-        // Kembali ke home untuk iterasi berikutnya
+        const href = await anchor.getAttribute('href');
+        const url = href.startsWith('http') ? href : `${BASE}/${href}`;
+        const resp = await page.request.get(url);
+        expect(resp.status(), `nav ${link.label} -> ${url}`).toBe(200);
+        // Kembali ke home
         await page.goto(`${BASE}/index.php`, { waitUntil: 'load' });
       }
     }
   });
 
-  test('dropdown Layanan: submenu links 200', async ({ page }) => {
+  test('produk links (flat nav): semua href benar + 200', async ({ page }) => {
     await page.goto(`${BASE}/index.php`, { waitUntil: 'load' });
 
-    // Buka dropdown Layanan
-    const services = page.locator('a:has-text("Layanan")').first();
-    await services.hover();
-    await page.waitForTimeout(500);
-
+    // Klook-style navbar: link produk flat (tanpa dropdown "Layanan")
+    // Cari di dalam #navbarNav (navbar items) — hindari footer heading
+    const nav = page.locator('#navbarNav').first();
     const subLinks = [
-      { text: 'Paket Tour', url: 'tours.php' },
+      { text: 'Tour', url: 'tours.php' },
+      { text: 'Hotel', url: 'hotels.php' },
       { text: 'Pesawat', url: 'flights.php' },
       { text: 'Ferry', url: 'ferries.php' },
-      { text: 'Rental Mobil', url: 'rental-cars.php' },
+      { text: 'Rental', url: 'rental-cars.php' },
     ];
     for (const sub of subLinks) {
-      const loc = page.locator('.dropdown-menu a:has-text("' + sub.text + '")').first();
-      if (await loc.count()) {
+      const loc = nav.locator(`a:has-text("${sub.text}")`).first();
+      const count = await loc.count();
+      if (count) {
         const href = await loc.getAttribute('href');
-        expect(href, sub.text).toContain(sub.url);
+        expect(href, `${sub.text} link`).toContain(sub.url);
+        // href bisa full URL (BASE_URL + path) atau relatif
+        const url = href.startsWith('http') ? href : `${BASE}/${href}`;
+        const resp = await page.request.get(url);
+        expect(resp.status(), `${sub.text} -> ${url}`).toBe(200);
+      } else {
+        // Fallback: cek href eksplisit di halaman
+        const anyLink = page.locator(`a[href*="${sub.url}"]`).first();
+        const anyCount = await anyLink.count();
+        expect(anyCount, `link ${sub.url} ada di halaman`).toBeGreaterThan(0);
+        const resp = await page.request.get(`${BASE}/${sub.url}`);
+        expect(resp.status(), sub.url).toBe(200);
       }
     }
   });

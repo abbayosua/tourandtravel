@@ -13,7 +13,7 @@ test.describe('Tours listing - filter & search', () => {
     expect(body).not.toMatch(PHP_ERROR);
     expect(body).toContain('China');
     // Should contain China tours, not Japan
-    const cards = await page.locator('h6.fw-semibold').allTextContents();
+    const cards = await page.locator('.tour-card-klook h6.fw-semibold').allTextContents();
     expect(cards.length).toBeGreaterThan(0);
     for (const c of cards) {
       expect(c).toMatch(/China|Shanghai|Hunan|Zhangjiajie|Yichun/i);
@@ -36,7 +36,7 @@ test.describe('Tours listing - filter & search', () => {
     const body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
     // Should show empty state, not crash
-    const cards = await page.locator('h6.fw-semibold').count();
+    const cards = await page.locator('.tour-card-klook h6.fw-semibold').count();
     expect(cards).toBe(0);
   });
 
@@ -47,7 +47,7 @@ test.describe('Tours listing - filter & search', () => {
     const body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
     // Tours under 5M IDR (~359 SGD) — cheapest tour is 998 SGD, so 0 tours
-    const cards = await page.locator('h6.fw-semibold').count();
+    const cards = await page.locator('.tour-card-klook h6.fw-semibold').count();
     expect(cards).toBe(0);
   });
 
@@ -58,7 +58,7 @@ test.describe('Tours listing - filter & search', () => {
     const body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
     // >20jt IDR (~1435 SGD) — 6 tours exceed this (998 & 1059 SGD tours don't)
-    const cards = await page.locator('h6.fw-semibold').count();
+    const cards = await page.locator('.tour-card-klook h6.fw-semibold').count();
     expect(cards).toBe(6);
   });
 
@@ -69,7 +69,7 @@ test.describe('Tours listing - filter & search', () => {
     const body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
     // Should match some tours
-    const cards = await page.locator('h6.fw-semibold').count();
+    const cards = await page.locator('.tour-card-klook h6.fw-semibold').count();
     // At least some should match 6-8 day tours
     expect(cards).toBeGreaterThanOrEqual(0);
   });
@@ -80,7 +80,7 @@ test.describe('Tours listing - filter & search', () => {
 
     const body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
-    const cards = await page.locator('h6.fw-semibold').count();
+    const cards = await page.locator('.tour-card-klook h6.fw-semibold').count();
     expect(cards).toBeGreaterThan(0);
   });
 
@@ -91,7 +91,7 @@ test.describe('Tours listing - filter & search', () => {
     const body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
     // First card should be cheapest (998.00 - Shanghai)
-    const firstCard = await page.locator('h6.fw-semibold').first().textContent();
+    const firstCard = await page.locator('.tour-card-klook h6.fw-semibold').first().textContent();
     expect(firstCard).toMatch(/Shanghai|998|SHANGHAI/i);
   });
 
@@ -102,7 +102,7 @@ test.describe('Tours listing - filter & search', () => {
     const body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
     // First card should be most expensive (5078.00 - New Zealand)
-    const firstCard = await page.locator('h6.fw-semibold').first().textContent();
+    const firstCard = await page.locator('.tour-card-klook h6.fw-semibold').first().textContent();
     expect(firstCard).toMatch(/New Zealand|5078|ZEALAND|SELANDIA BARU|BARU YANG/i);
   });
 
@@ -112,7 +112,7 @@ test.describe('Tours listing - filter & search', () => {
 
     const body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
-    const cards = await page.locator('h6.fw-semibold').count();
+    const cards = await page.locator('.tour-card-klook h6.fw-semibold').count();
     expect(cards).toBeGreaterThan(0);
   });
 
@@ -135,7 +135,7 @@ test.describe('Tours listing - filter & search', () => {
 
     const body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
-    const cards = await page.locator('h6.fw-semibold').allTextContents();
+    const cards = await page.locator('.tour-card-klook h6.fw-semibold').allTextContents();
     expect(cards.length).toBeGreaterThan(0);
     for (const c of cards) {
       expect(c).toMatch(/Tokyo|Japan|Hokkaido/i);

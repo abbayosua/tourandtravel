@@ -30,14 +30,12 @@ test.describe('Hotel Detail - happy path', () => {
     expect(body).toMatch(/2\.500\.000.*malam|malam/i);
   });
 
-  test('guest: login prompt muncul, redirect param ada', async ({ page }) => {
+  test('guest: form booking tampil + guest checkout warning', async ({ page }) => {
     await page.goto(`${BASE}/hotel-detail.php?slug=${SLUG}`, { waitUntil: 'load' });
     const body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
-    expect(body).toMatch(/Login untuk Booking|Masuk \/ Daftar/i);
-    const loginLink = page.locator('a[href*="login.php?redirect="]').first();
-    const href = await loginLink.getAttribute('href');
-    expect(href).toContain('redirect=');
+    expect(body).toMatch(/booking sebagai tamu|Check-in|Pesan Sekarang/i);
+    await expect(page.locator('input[name="checkin"]')).toBeVisible();
   });
 
   test('similar hotels section (guest)', async ({ page }) => {

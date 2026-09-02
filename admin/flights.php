@@ -9,7 +9,7 @@ $pageTitle='Kelola Pesawat'; require_once 'includes/admin-header.php';
 <a href="flight-add.php" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Tambah</a></div>
 <?php if($msg):?><div class="alert alert-success py-2"><?=$msg?></div><?php endif;?>
 <div class="card border-0 shadow-sm"><div class="card-body p-0">
-<table class="table table-hover mb-0"><thead class="table-light"><tr><th>#</th><th>Maskapai</th><th>No.</th><th>Rute</th><th>Jam</th><th>Harga</th><th>Kelas</th><th>Aksi</th></tr></thead>
+<table class="table table-hover mb-0 admin-table"><thead class="table-light"><tr><th>#</th><th>Maskapai</th><th>No.</th><th>Rute</th><th>Jam</th><th>Harga</th><th>Kelas</th><th>Aksi</th></tr></thead>
 <tbody><?php foreach($items as $i):?><tr>
 <td><?=$i['id']?></td><td><?=e($i['airline'])?></td><td><?=e($i['flight_number'])?></td>
 <td><?=e(substr($i['from_city'],0,10))?> → <?=e(substr($i['to_city'],0,10))?></td>

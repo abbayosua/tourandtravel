@@ -19,12 +19,12 @@ test.describe('Booking Success - happy path', () => {
     expect(body).toMatch(/5\.000\.000|Rp/i);
   });
 
-  test('kode valid: tombol Tracking & Lihat Tour Lainnya', async ({ page }) => {
+  test('kode valid: tombol Tracking & Lihat Detail', async ({ page }) => {
     await page.goto(`${BASE}/booking-success.php?code=TAT-FIX02`, { waitUntil: 'load' });
     const body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
     await expect(page.locator('a:has-text("Tracking Booking")')).toBeVisible();
-    await expect(page.locator('a:has-text("Lihat Tour Lainnya")')).toBeVisible();
+    await expect(page.locator('a:has-text("Lihat Detail")')).toBeVisible();
     const trackLink = page.locator('a:has-text("Tracking Booking")');
     const href = await trackLink.getAttribute('href');
     expect(href).toContain('track.php?code=TAT-FIX02');

@@ -24,10 +24,6 @@ $bookingMessage = '';
 $bookingError = '';
 $bookingCode = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
-    if (!isLoggedIn()) {
-        header('Location: login.php?redirect=' . urlencode($_SERVER['REQUEST_URI']));
-        exit;
-    }
     $tourDateId = (int)($_POST['tour_date_id'] ?? 0);
     $name = trim($_POST['name'] ?? '');
     $email = trim($_POST['email'] ?? '');
@@ -35,25 +31,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
     $participants = (int)($_POST['participants'] ?? 0);
     $notes = trim($_POST['notes'] ?? '');
 
-    // Validasi
     $errors = [];
     if (!$name) $errors[] = t('Nama harus diisi');
     if (!$phone) $errors[] = t('No. WhatsApp harus diisi');
     if ($participants < 1) $errors[] = t('Jumlah peserta minimal 1');
 
-    // Validasi slot
     $sisaSlot = getSisaSlot($tourDateId);
     if ($sisaSlot < $participants) {
         $errors[] = t('Maaf, sisa slot hanya') . " $sisaSlot " . t('kursi');
     }
 
-    // Validasi tanggal
     $stmtDate = db()->prepare("SELECT * FROM tour_dates WHERE id = ? AND tour_id = ?");
     $stmtDate->execute([$tourDateId, $tour['id']]);
     $selectedDate = $stmtDate->fetch();
     if (!$selectedDate) $errors[] = t('Tanggal keberangkatan tidak valid');
 
-    // Upload passport
     $passportFile = '';
     if (empty($errors) && isset($_FILES['passport_photo']) && $_FILES['passport_photo']['error'] !== UPLOAD_ERR_NO_FILE) {
         $upload = uploadWebP($_FILES['passport_photo'], __DIR__ . '/uploads/passports');
@@ -70,10 +62,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
         $totalPrice = $tour['price'] * $participants;
         $bookingCode = generateBookingCode();
 
-        $stmt = db()->prepare("INSERT INTO bookings (booking_code, tour_id, tour_date_id, name, email, phone, participants, total_price, notes, passport_photo, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
-        $stmt->execute([$bookingCode, $tour['id'], $tourDateId, $name, $email, $phone, $participants, $totalPrice, $notes, $passportFile]);
+        // KlookCash: kurangi total jika user memakai saldo
+        $walletDeduct = 0;
+        if (!empty($_SESSION['user_id']) && !empty($_POST['use_wallet'])) {
+            require_once 'includes/wallet.php';
+            $balance = getWalletBalance($_SESSION['user_id']);
+            if ($balance > 0) {
+                $walletDeduct = min($balance, $totalPrice);
+                $totalPrice -= $walletDeduct;
+            }
+        }
 
-        // Kirim notifikasi WhatsApp ke admin
+        $stmt = db()->prepare("INSERT INTO bookings (booking_code, tour_id, tour_date_id, name, email, phone, participants, total_price, notes, passport_photo, user_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
+        $stmt->execute([$bookingCode, $tour['id'], $tourDateId, $name, $email, $phone, $participants, $totalPrice, $notes, $passportFile, $_SESSION['user_id'] ?? null]);
+        $bookingId = (int)db()->lastInsertId();
+
+        // Process wallet spend
+        if ($walletDeduct > 0 && !empty($_SESSION['user_id'])) {
+            require_once 'includes/wallet.php';
+            spendWallet($_SESSION['user_id'], $walletDeduct, 'booking', $bookingId);
+        }
+
         require_once 'includes/send-wa.php';
         sendBookingNotification($tour, $bookingCode, $name, $phone, $participants, $totalPrice, tglIndonesia($selectedDate['departure_date']));
 
@@ -84,50 +93,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
     }
 }
 
-require_once 'includes/header.php';
+require_once 'includes/components/breadcrumb.php';
+require_once 'includes/header-klook.php';
 ?>
-
 <div class="container py-4">
-    <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb" class="mb-3">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index.php">Beranda</a></li>
-            <li class="breadcrumb-item"><a href="tours.php">Paket Tour</a></li>
-            <li class="breadcrumb-item active"><?= e($tour['title']) ?></li>
-        </ol>
-    </nav>
+    <?php renderBreadcrumb([
+        ['label' => t('Beranda'), 'url' => 'index.php'],
+        ['label' => t('Paket Tour'), 'url' => 'tours.php'],
+        ['label' => $tour['title'], 'url' => null],
+    ]); ?>
 
     <div class="row">
         <!-- Main Content -->
         <div class="col-lg-8">
-            <!-- Gambar -->
-            <div class="card border-0 shadow-sm mb-4">
-                <img src="<?= getTourImage($tour, 'large') ?>" onerror="this.src='<?= getTourImageFallback($tour, 'large') ?>'" class="card-img-top" style="max-height: 450px; object-fit: cover; cursor: pointer;" alt="<?= e($tour['title']) ?>" onclick="openGallery(0)">
-            </div>
-
-            <!-- Info Tour -->
-            <h2 class="fw-bold"><?= e(t($tour['title'], null, $tour['content_language'] ?? 'id')) ?></h2>
-            <div class="d-flex flex-wrap gap-3 mb-3">
-                <span class="badge bg-primary"><?= e($tour['category']) ?></span>
-                <span class="text-muted"><i class="bi bi-people-fill me-1"></i> <?= t('Max') ?> <?= $tour['max_participants'] ?> <?= t('peserta') ?></span>
-                <span class="text-muted"><?= renderStars($tour['rating']) ?> <?= $tour['rating'] ?> (<?= $tour['total_reviews'] ?> <?= t('ulasan') ?>)</span>
-            </div>
-            <p class="lead"><?= nl2br(e(str_replace('\\n', "\n", t($tour['description'], null, $tour['content_language'] ?? 'id')))) ?></p>
-
-            <!-- Gallery -->
+            <!-- Gallery Grid: 1 large + thumbs row -->
             <?php $galleryImages = getTourGalleryUrls($tour); ?>
-            <h5 class="fw-bold mt-4 mb-3"><i class="bi bi-images me-2"></i><?= t('Galeri Foto') ?></h5>
             <div class="row g-2 mb-4">
-                <?php foreach ($galleryImages as $i => $galleryUrl):
-                    $thumbUrl = str_contains($galleryUrl, 'loremflickr.com') ? str_replace('800/600', '320/240', $galleryUrl) : $galleryUrl;
-                ?>
-                <div class="col-4 col-md-2">
-                    <img src="<?= e($thumbUrl) ?>" class="w-100 rounded-3 gallery-thumb" style="height: 100px; object-fit: cover; cursor: pointer;" alt="<?= e($tour['title']) ?>" loading="lazy" onerror="this.remove()" data-index="<?= $i ?>" onclick="openGallery(<?= $i ?>)">
+                <?php if (count($galleryImages) > 0): ?>
+                <div class="col-12">
+                    <img src="<?= getTourImage($tour, 'large') ?>" onerror="this.src='<?= getTourImageFallback($tour, 'large') ?>'" class="w-100 rounded-4" style="max-height: 450px; object-fit: cover; cursor: pointer;" alt="<?= e($tour['title']) ?>" onclick="openGallery(0)">
                 </div>
-                <?php endforeach; ?>
+                <?php if (count($galleryImages) > 1): ?>
+                <div class="col-12">
+                    <div class="row g-2">
+                        <?php foreach (array_slice($galleryImages, 0, 4) as $i => $galleryUrl):
+                            $thumbUrl = str_contains($galleryUrl, 'loremflickr.com') ? str_replace('800/600', '320/240', $galleryUrl) : $galleryUrl;
+                        ?>
+                        <div class="col-3">
+                            <img src="<?= e($thumbUrl) ?>" class="w-100 rounded-3 gallery-thumb" style="height: 100px; object-fit: cover; cursor: pointer;" alt="<?= e($tour['title']) ?>" loading="lazy" onerror="this.remove()" data-index="<?= $i ?>" onclick="openGallery(<?= $i ?>)">
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+                <?php endif; ?>
+                <?php endif; ?>
             </div>
 
-            <!-- Gallery Modal -->
+            <!-- Gallery Modal (dipertahankan) -->
             <div class="modal fade" id="galleryModal" tabindex="-1">
                 <div class="modal-dialog modal-xl modal-dialog-centered">
                     <div class="modal-content bg-dark border-0">
@@ -162,6 +164,15 @@ require_once 'includes/header.php';
                 </div>
             </div>
 
+            <!-- Info Tour -->
+            <h2 class="fw-bold"><?= e(t($tour['title'], null, $tour['content_language'] ?? 'id')) ?></h2>
+            <div class="d-flex flex-wrap gap-3 mb-3">
+                <span class="badge bg-primary"><?= e($tour['category']) ?></span>
+                <span class="text-muted"><i class="bi bi-people-fill me-1"></i> <?= t('Max') ?> <?= $tour['max_participants'] ?> <?= t('peserta') ?></span>
+                <span class="text-muted"><?= renderStars($tour['rating']) ?> <?= $tour['rating'] ?> (<?= $tour['total_reviews'] ?> <?= t('ulasan') ?>)</span>
+            </div>
+            <p class="lead"><?= nl2br(e(str_replace('\\n', "\n", t($tour['description'], null, $tour['content_language'] ?? 'id')))) ?></p>
+
             <!-- Fasilitas -->
             <h5 class="fw-bold mt-4 mb-3"><i class="bi bi-check2-square me-2"></i><?= t('Fasilitas Termasuk') ?></h5>
             <div class="row g-2 mb-4">
@@ -186,29 +197,26 @@ require_once 'includes/header.php';
                 <img src="https://maps.googleapis.com/maps/api/staticmap?center=<?= $mapKw ?>&zoom=5&size=800x200&maptype=roadmap&markers=color:red|<?= $mapKw ?>&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="Peta <?= e($tour['title']) ?>" class="w-100" style="height: 200px; object-fit: cover;" onerror="this.style.display='none'">
             </div>
 
-            <!-- Itinerary -->
+            <!-- Itinerary Accordion -->
             <?php if (count($itineraries) > 0): ?>
             <h4 class="fw-bold mt-5 mb-3"><i class="bi bi-journal-text me-2"></i><?= t('Itinerary') ?></h4>
-            <div class="timeline">
-                <?php foreach ($itineraries as $it): ?>
-                <div class="card border-0 shadow-sm mb-3 itinerary-card">
-                    <div class="card-body">
-                        <div class="d-flex">
-                            <div class="itinerary-day me-3 text-center">
-                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                                    <strong><?= $it['day_number'] ?></strong>
-                                </div>
-                            </div>
-                            <div class="flex-grow-1">
-                                <h5 class="fw-semibold"><?= t('Hari') ?> <?= $it['day_number'] ?>: <?= e($it['title']) ?></h5>
-                                <p class="mb-2"><?= nl2br(e($it['description'])) ?></p>
-                                <?php if ($it['meals']): ?>
-                                    <span class="badge bg-success me-1"><i class="bi bi-cup-hot"></i> <?= e($it['meals']) ?></span>
-                                <?php endif; ?>
-                                <?php if ($it['accommodation']): ?>
-                                    <span class="badge bg-info"><i class="bi bi-building"></i> <?= e($it['accommodation']) ?></span>
-                                <?php endif; ?>
-                            </div>
+            <div class="accordion mb-4" id="itineraryAccordion">
+                <?php foreach ($itineraries as $idx => $it): ?>
+                <div class="accordion-item border-0 shadow-sm mb-3 rounded-3">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button <?= $idx > 0 ? 'collapsed' : '' ?>" type="button" data-bs-toggle="collapse" data-bs-target="#itineraryDay<?= $idx ?>">
+                            <strong><?= $it['day_number'] ?>. <?= e($it['title']) ?></strong>
+                        </button>
+                    </h2>
+                    <div id="itineraryDay<?= $idx ?>" class="accordion-collapse collapse <?= $idx === 0 ? 'show' : '' ?>" data-bs-parent="#itineraryAccordion">
+                        <div class="accordion-body">
+                            <p><?= nl2br(e($it['description'])) ?></p>
+                            <?php if ($it['meals']): ?>
+                                <span class="badge bg-success me-1"><i class="bi bi-cup-hot"></i> <?= e($it['meals']) ?></span>
+                            <?php endif; ?>
+                            <?php if ($it['accommodation']): ?>
+                                <span class="badge bg-info"><i class="bi bi-building"></i> <?= e($it['accommodation']) ?></span>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -277,12 +285,10 @@ require_once 'includes/header.php';
                     </div>
                 </div>
             <?php endif; ?>
-
         </div>
 
-        <!-- Sidebar -->
+        <!-- Sidebar Booking -->
         <div class="col-lg-4">
-            <!-- Harga -->
             <div class="card border-0 shadow-sm mb-4 sticky-top" style="top: 80px; z-index: 100;">
                 <div class="card-body">
                     <div class="d-flex align-items-center gap-2 small mb-2">
@@ -328,6 +334,14 @@ require_once 'includes/header.php';
                     <form method="POST" enctype="multipart/form-data">
                         <input type="hidden" name="form_submitted" value="1">
                         <div class="mb-2">
+                            <label class="form-label small"><?= t('Kode Promo (opsional)') ?></label>
+                            <div class="input-group input-group-sm">
+                                <input type="text" name="promo_code" class="form-control klook-promo-input" placeholder="HEMAT10" id="promoCodeTour" autocomplete="off">
+                                <button type="button" class="btn btn-outline-primary klook-promo-btn" onclick="applyPromo('promoCodeTour','promoResultTour',<?= (float)$tour['price'] ?>)"><?= t('Pakai') ?></button>
+                            </div>
+                            <div class="klook-promo-result small mt-1" id="promoResultTour"></div>
+                        </div>
+                        <div class="mb-2">
                             <label class="form-label small"><?= t('Pilih Tanggal') ?></label>
                             <select name="tour_date_id" class="form-select form-select-sm" required>
                                 <option value=""><?= t('-- Pilih Tanggal --') ?></option>
@@ -364,7 +378,20 @@ require_once 'includes/header.php';
                             <label class="form-label small"><?= t('Catatan (opsional)') ?></label>
                             <textarea name="notes" class="form-control form-control-sm" rows="2"></textarea>
                         </div>
+                        <?php if (!empty($_SESSION['user_id'])): require_once 'includes/wallet.php'; $walletBal = getWalletBalance($_SESSION['user_id']); ?>
+                            <?php if ($walletBal > 0): ?>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="use_wallet" value="1" id="useWalletTour">
+                                <label class="form-check-label small" for="useWalletTour">
+                                    <?= t('Gunakan KlookCash') ?> <strong><?= formatRupiah($walletBal) ?></strong>
+                                </label>
+                            </div>
+                            <?php endif; ?>
+                        <?php endif; ?>
                         <button type="submit" class="btn btn-primary w-100 fw-semibold" id="bookingSubmitBtn" onclick="var btn=this;btn.disabled=true;btn.innerHTML='<span class=\'spinner-border spinner-border-sm me-2\'></span>Memproses...';setTimeout(function(){btn.form.submit();},100);return false;">Pesan Sekarang</button>
+                        <?php if (!isLoggedIn()): ?>
+                        <div class="alert alert-warning py-2 small mt-2 mb-0"><i class="bi bi-info-circle me-1"></i><?= t('Anda booking sebagai tamu. Masuk akun untuk melacak booking.') ?></div>
+                        <?php endif; ?>
                     </form>
                     <?php else: ?>
                     <div class="alert alert-warning py-2 small mb-0">
@@ -376,9 +403,7 @@ require_once 'includes/header.php';
         </div>
     </div>
 </div>
-
-<?php require_once 'includes/footer.php'; ?>
-
+<?php require_once 'includes/footer-klook.php'; ?>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof bootstrap === 'undefined') return;
@@ -391,20 +416,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-
 function openGallery(index) {
     if (!window._galleryCarousel) return;
     window._galleryCarousel.to(index);
     window._galleryModal.show();
     updateDots(index);
 }
-
 function slideTo(index) {
     if (!window._galleryCarousel) return;
     window._galleryCarousel.to(index);
     updateDots(index);
 }
-
 function updateDots(index) {
     document.querySelectorAll('.gallery-dot').forEach(function(el, i) {
         el.style.opacity = i === index ? '1' : '0.6';

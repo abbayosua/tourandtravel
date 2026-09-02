@@ -93,10 +93,12 @@ if ($doSearch && $from && $to) {
     $localSchedules=$st->fetchAll();
 }
 $allDates = db()->query("SELECT DISTINCT departure_date FROM flight_schedules WHERE is_active=1 AND departure_date>=CURDATE() ORDER BY departure_date LIMIT 14")->fetchAll(PDO::FETCH_COLUMN);
-require_once 'includes/header.php';
+require_once 'includes/components/breadcrumb.php';
+require_once 'includes/header-klook.php';
 ?>
 <section class="py-4 bg-light" style="min-height: 80vh;">
     <div class="container">
+        <?php renderBreadcrumb([['label' => t('Pesawat'), 'url' => null]]); ?>
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-body p-3 p-md-4">
                 <h5 class="fw-bold mb-3"><i class="bi bi-airplane me-2"></i><?= t('Cari Penerbangan') ?></h5>
@@ -261,7 +263,7 @@ require_once 'includes/header.php';
         <?php endif; ?>
     </div>
 </section>
-<?php require_once 'includes/footer.php'; ?>
+<?php require_once 'includes/footer-klook.php'; ?>
 <script>
 document.querySelectorAll('.city-search').forEach(function(input) {
     var dropdownId = input.getAttribute('data-target');

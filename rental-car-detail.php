@@ -13,27 +13,37 @@ $pageTitle = $car['name'];
 
 $bookingSuccess = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!isLoggedIn()) {
-        header('Location: login.php?redirect=' . urlencode($_SERVER['REQUEST_URI']));
-        exit;
-    }
     $days = (int)($_POST['days'] ?? 1);
     $name = trim($_POST['name'] ?? '');
     $phone = trim($_POST['phone'] ?? '');
     if ($name && $phone && $days > 0) {
         $total = $car['price_per_day'] * $days;
+        $walletDeduct = 0;
+        if (!empty($_SESSION['user_id']) && !empty($_POST['use_wallet'])) {
+            require_once 'includes/wallet.php';
+            $balance = getWalletBalance($_SESSION['user_id']);
+            if ($balance > 0) {
+                $walletDeduct = min($balance, $total);
+                $total -= $walletDeduct;
+            }
+        }
+        if ($walletDeduct > 0 && !empty($_SESSION['user_id'])) {
+            require_once 'includes/wallet.php';
+            spendWallet($_SESSION['user_id'], $walletDeduct, 'rental_booking', 0);
+        }
         $bookingSuccess = "Booking berhasil! Total: " . formatRupiah($total) . " ($days hari)";
     }
 }
 
-require_once 'includes/header.php';
+require_once 'includes/components/breadcrumb.php';
+require_once 'includes/header-klook.php';
 ?>
 <section class="py-4">
     <div class="container">
-        <nav aria-label="breadcrumb"><ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="rental-cars.php">Rental Mobil</a></li>
-            <li class="breadcrumb-item active"><?= e($car['name']); ?></li>
-        </ol></nav>
+        <?php renderBreadcrumb([
+            ['label' => t('Rental Mobil'), 'url' => 'rental-cars.php'],
+            ['label' => $car['name'], 'url' => null],
+        ]); ?>
         <div class="row">
             <div class="col-lg-8">
                 <img src="https://placehold.co/800x400?text=<?= urlencode($car['name']) ?>" class="w-100 rounded-4 shadow-sm mb-3" style="max-height: 400px; object-fit: cover;" alt="">
@@ -58,22 +68,33 @@ require_once 'includes/header.php';
                         <h5 class="fw-bold text-primary"><?= formatRupiah($car['price_per_day']) ?> <small class="fw-normal text-muted">/hari</small></h5>
                         <?php if ($bookingSuccess): ?><div class="alert alert-success py-2 small"><?= $bookingSuccess ?></div><?php endif; ?>
                         <?php if (!isLoggedIn()): ?>
-                            <div class="text-center py-3">
-                                <p class="fw-semibold mb-2">Login untuk Booking</p>
-                                <a href="login.php?redirect=<?= urlencode($_SERVER['REQUEST_URI']) ?>" class="btn btn-primary w-100">Masuk / Daftar</a>
-                            </div>
-                        <?php else: ?>
+                            <div class="alert alert-warning py-2 small mb-2"><i class="bi bi-info-circle me-1"></i><?= t('Anda dapat booking sebagai tamu.') ?></div>
+                        <?php endif; ?>
                         <form method="POST">
+                            <div class="mb-2"><label class="form-label small"><?= t('Kode Promo (opsional)') ?></label>
+                                <div class="input-group input-group-sm">
+                                    <input type="text" name="promo_code" class="form-control klook-promo-input" placeholder="HEMAT10" id="promoCodeRental" autocomplete="off">
+                                    <button type="button" class="btn btn-outline-primary klook-promo-btn" onclick="applyPromo('promoCodeRental','promoResultRental',<?= (float)$car['price_per_day'] ?>)"><?= t('Pakai') ?></button>
+                                </div>
+                                <div class="klook-promo-result small mt-1" id="promoResultRental"></div>
+                            </div>
                             <div class="mb-2"><label class="form-label small">Jumlah Hari</label><input type="number" name="days" class="form-control form-control-sm" min="1" value="1" required></div>
                             <div class="mb-2"><label class="form-label small">Nama</label><input type="text" name="name" class="form-control form-control-sm" required></div>
                             <div class="mb-2"><label class="form-label small">No. Telepon</label><input type="text" name="phone" class="form-control form-control-sm" required></div>
                             <button type="submit" class="btn btn-primary w-100 mt-2">Sewa Sekarang</button>
+                            <?php if (!empty($_SESSION['user_id'])): require_once 'includes/wallet.php'; $walletBal = getWalletBalance($_SESSION['user_id']); ?>
+                                <?php if ($walletBal > 0): ?>
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" type="checkbox" name="use_wallet" value="1" id="useWalletRental">
+                                    <label class="form-check-label small" for="useWalletRental"><?= t('Gunakan KlookCash') ?> <strong><?= formatRupiah($walletBal) ?></strong></label>
+                                </div>
+                                <?php endif; ?>
+                            <?php endif; ?>
                         </form>
-                        <?php endif; ?>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
-<?php require_once 'includes/footer.php'; ?>
+<?php require_once 'includes/footer-klook.php'; ?>

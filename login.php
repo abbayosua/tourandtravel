@@ -25,16 +25,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $pageTitle = 'Login';
-require_once 'includes/header.php';
+require_once 'includes/header-klook.php';
 ?>
 
 <section class="py-5">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-5">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <h5 class="fw-bold text-center mb-3">Masuk</h5>
+                <div class="card border-0 shadow-sm klook-auth-card">
+                    <div class="card-body p-4 p-md-5">
+                        <div class="text-center mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary bg-opacity-10 text-primary mb-3" style="width: 64px; height: 64px;"><i class="bi bi-person-circle fs-2"></i></div>
+                            <h5 class="fw-bold mb-1">Masuk</h5>
+                            <p class="text-muted small mb-0">Selamat datang kembali!</p>
+                        </div>
                         <?php if ($error): ?>
                             <div class="alert alert-danger py-2 small"><?= $error ?></div>
                         <?php endif; ?>
@@ -47,10 +51,10 @@ require_once 'includes/header.php';
                                 <label class="form-label small fw-semibold">Password</label>
                                 <input type="password" name="password" class="form-control" required>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100 fw-semibold">Masuk</button>
+                            <button type="submit" class="btn btn-primary w-100 fw-semibold py-2">Masuk</button>
                         </form>
                         <p class="text-center mt-3 small">
-                            Belum punya akun? <a href="register.php" class="text-decoration-none">Daftar</a>
+                            Belum punya akun? <a href="register.php" class="text-decoration-none fw-semibold">Daftar</a>
                         </p>
                     </div>
                 </div>
@@ -62,4 +66,4 @@ require_once 'includes/header.php';
     </div>
 </section>
 
-<?php require_once 'includes/footer.php'; ?>
+<?php require_once 'includes/footer-klook.php'; ?>

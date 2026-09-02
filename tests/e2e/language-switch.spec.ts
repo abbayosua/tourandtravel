@@ -18,21 +18,21 @@ test.describe('Language switch (id/en)', () => {
     await page.goto(`${BASE}/index.php`, { waitUntil: 'load' });
     let body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
-    expect(body).toMatch(/Siap Liburan|Mudah Booking|Harga Transparan|Lihat Semua/i);
+    expect(body).toMatch(/Rekomendasi Paket Tour|Destinasi Populer|Flash Deals|Lihat Semua/i);
 
     await switchLang(page, 'English');
     body = await page.textContent('body');
-    expect(body).toMatch(/Holiday Ready|Easy Booking|Transparent Pricing|View All/i);
+    expect(body).toMatch(/Activities|Destination|View All|Recommended Tour|Popular Destinations/i);
   });
 
   test('homepage: en -> id via dropdown (teks berubah)', async ({ page }) => {
     await page.goto(`${BASE}/index.php?lang=en`, { waitUntil: 'load' });
     let body = await page.textContent('body');
-    expect(body).toMatch(/Holiday Ready|Easy Booking/i);
+    expect(body).toMatch(/Activities|Destination|View All|Recommended Tour|Popular Destinations/i);
 
     await switchLang(page, 'Indonesia');
     body = await page.textContent('body');
-    expect(body).toMatch(/Siap Liburan|Mudah Booking|Harga Transparan/i);
+    expect(body).toMatch(/Rekomendasi Paket Tour|Destinasi Populer|Flash Deals|Lihat Semua/i);
   });
 
   test('tours listing: filter preserved setelah switch en->id', async ({ page }) => {
@@ -84,7 +84,7 @@ test.describe('Language switch (id/en)', () => {
     await page.goto(`${BASE}/index.php?lang=xx`, { waitUntil: 'load' });
     const body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
-    expect(body).toMatch(/Siap Liburan|Mudah Booking|Harga Transparan/i);
+    expect(body).toMatch(/Rekomendasi Paket Tour|Destinasi Populer|Flash Deals|Lihat Semua/i);
   });
 
   test('lang persist via cookie antar halaman', async ({ page }) => {

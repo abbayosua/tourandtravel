@@ -90,7 +90,7 @@ require_once 'includes/admin-header.php';
 <div class="card border-0 shadow-sm">
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-hover mb-0 table-tour">
+            <table class="table table-hover mb-0 table-tour admin-table">
                 <thead class="table-light">
                     <tr>
                         <th><input type="checkbox" id="checkAll" class="form-check-input"></th>

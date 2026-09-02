@@ -7,7 +7,7 @@ $pageTitle='Kelola Rental Mobil'; require_once 'includes/admin-header.php';
 ?>
 <div class="d-flex justify-content-between align-items-center mb-3"><h4 class="fw-bold mb-0">Rental Mobil</h4></div>
 <div class="card border-0 shadow-sm"><div class="card-body p-0">
-<table class="table table-hover mb-0"><thead class="table-light"><tr><th>#</th><th>Nama</th><th>Tipe</th><th>Kota</th><th>Harga/Hari</th><th>Transmisi</th><th>Kursi</th><th>Aksi</th></tr></thead>
+<table class="table table-hover mb-0 admin-table"><thead class="table-light"><tr><th>#</th><th>Nama</th><th>Tipe</th><th>Kota</th><th>Harga/Hari</th><th>Transmisi</th><th>Kursi</th><th>Aksi</th></tr></thead>
 <tbody><?php foreach($items as $i):?><tr>
 <td><?=$i['id']?></td><td><?=e($i['name'])?></td><td><?=e($i['car_type'])?></td><td><?=e($i['city'])?></td>
 <td><?=formatRupiah($i['price_per_day'])?></td><td><?=ucfirst($i['transmission'])?></td><td><?=$i['passenger_capacity']?></td>

@@ -19,6 +19,27 @@
     width: 0;
     padding: 0;
 }
+/* Icon-only mode (desktop): 64px, labels hidden */
+@media (min-width: 768px) {
+    #adminSidebar.icon-only {
+        width: 64px;
+        padding: 1rem 0.5rem;
+    }
+    #adminSidebar.icon-only .nav-link {
+        justify-content: center;
+        padding: 10px 0;
+    }
+    #adminSidebar.icon-only .nav-link span.nav-label {
+        display: none;
+    }
+    #adminSidebar.icon-only .nav-link i {
+        margin-right: 0;
+        width: auto;
+    }
+    #adminSidebar.icon-only hr {
+        margin: 0.5rem 0;
+    }
+}
 #adminSidebar.collapsed .nav-link {
     white-space: nowrap;
 }
@@ -80,35 +101,59 @@
         <div class="bg-dark sidebar p-3" id="adminSidebar">
             <nav class="nav flex-column">
                 <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'dashboard.php' ? 'active' : '' ?>" href="dashboard.php">
-                    <i class="bi bi-speedometer2"></i> Dashboard
+                    <i class="bi bi-speedometer2"></i><span class="nav-label"> Dashboard</span>
                 </a>
                 <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'tours.php' ? 'active' : '' ?>" href="tours.php">
-                    <i class="bi bi-map"></i> Kelola Tour
+                    <i class="bi bi-map"></i><span class="nav-label"> Kelola Tour</span>
                 </a>
                 <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'hotels.php' || basename($_SERVER['PHP_SELF']) === 'hotel-edit.php' ? 'active' : '' ?>" href="hotels.php">
-                    <i class="bi bi-building"></i> Kelola Hotel
+                    <i class="bi bi-building"></i><span class="nav-label"> Kelola Hotel</span>
                 </a>
                 <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'flights.php' || basename($_SERVER['PHP_SELF']) === 'flight-edit.php' ? 'active' : '' ?>" href="flights.php">
-                    <i class="bi bi-airplane"></i> Kelola Pesawat
+                    <i class="bi bi-airplane"></i><span class="nav-label"> Kelola Pesawat</span>
                 </a>
                 <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'ferries.php' || basename($_SERVER['PHP_SELF']) === 'ferry-edit.php' ? 'active' : '' ?>" href="ferries.php">
-                    <i class="bi bi-ship"></i> Kelola Ferry
+                    <i class="bi bi-ship"></i><span class="nav-label"> Kelola Ferry</span>
                 </a>
                 <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'rental-cars.php' || basename($_SERVER['PHP_SELF']) === 'rental-car-edit.php' ? 'active' : '' ?>" href="rental-cars.php">
-                    <i class="bi bi-car-front"></i> Kelola Rental
+                    <i class="bi bi-car-front"></i><span class="nav-label"> Kelola Rental</span>
                 </a>
                 <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'bookings.php' ? 'active' : '' ?>" href="bookings.php">
-                    <i class="bi bi-ticket-perforated"></i> Kelola Booking
+                    <i class="bi bi-ticket-perforated"></i><span class="nav-label"> Kelola Booking</span>
+                </a>
+                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'attractions.php' || basename($_SERVER['PHP_SELF']) === 'attraction-edit.php' ? 'active' : '' ?>" href="attractions.php">
+                    <i class="bi bi-signpost-2"></i><span class="nav-label"> Kelola Atraksi</span>
+                </a>
+                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'transfers.php' || basename($_SERVER['PHP_SELF']) === 'transfer-edit.php' ? 'active' : '' ?>" href="transfers.php">
+                    <i class="bi bi-car-front"></i><span class="nav-label"> Kelola Transfer</span>
+                </a>
+                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'trains.php' || basename($_SERVER['PHP_SELF']) === 'train-edit.php' ? 'active' : '' ?>" href="trains.php">
+                    <i class="bi bi-train-front"></i><span class="nav-label"> Kelola Kereta</span>
+                </a>
+                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'esim.php' || basename($_SERVER['PHP_SELF']) === 'esim-edit.php' ? 'active' : '' ?>" href="esim.php">
+                    <i class="bi bi-sim"></i><span class="nav-label"> Kelola eSIM</span>
+                </a>
+                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'promo-codes.php' ? 'active' : '' ?>" href="promo-codes.php">
+                    <i class="bi bi-tag"></i><span class="nav-label"> Kode Promo</span>
+                </a>
+                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'collections.php' ? 'active' : '' ?>" href="collections.php">
+                    <i class="bi bi-collection"></i><span class="nav-label"> Koleksi</span>
+                </a>
+                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'faq.php' || basename($_SERVER['PHP_SELF']) === 'faq-edit.php' || basename($_SERVER['PHP_SELF']) === 'faq-category.php' || basename($_SERVER['PHP_SELF']) === 'faq-category-edit.php' ? 'active' : '' ?>" href="faq.php">
+                    <i class="bi bi-question-circle"></i><span class="nav-label"> Kelola FAQ</span>
+                </a>
+                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'loyalty-settings.php' ? 'active' : '' ?>" href="loyalty-settings.php">
+                    <i class="bi bi-award"></i><span class="nav-label"> Loyalty Settings</span>
                 </a>
                 <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'wa-settings.php' ? 'active' : '' ?>" href="wa-settings.php">
-                    <i class="bi bi-whatsapp text-success"></i> Pengaturan WA
+                    <i class="bi bi-whatsapp text-success"></i><span class="nav-label"> Pengaturan WA</span>
                 </a>
                 <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'currency-settings.php' ? 'active' : '' ?>" href="currency-settings.php">
-                    <i class="bi bi-currency-exchange text-warning"></i> Mata Uang
+                    <i class="bi bi-currency-exchange text-warning"></i><span class="nav-label"> Mata Uang</span>
                 </a>
                 <hr class="border-secondary">
                 <a class="nav-link" href="../index.php" target="_blank">
-                    <i class="bi bi-globe"></i> Lihat Website
+                    <i class="bi bi-globe"></i><span class="nav-label"> Lihat Website</span>
                 </a>
             </nav>
         </div>

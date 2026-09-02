@@ -13,8 +13,14 @@ const body = document.body;
 if (toggleBtn && sidebar) {
     toggleBtn.addEventListener('click', function(e) {
         e.stopPropagation();
-        sidebar.classList.toggle('collapsed');
-        if (overlay) overlay.classList.toggle('show');
+        if (window.innerWidth >= 768) {
+            // Desktop: toggle icon-only mode
+            sidebar.classList.toggle('icon-only');
+        } else {
+            // Mobile: toggle collapsed (off-canvas)
+            sidebar.classList.toggle('collapsed');
+            if (overlay) overlay.classList.toggle('show');
+        }
     });
 
     // Click overlay to close sidebar on mobile

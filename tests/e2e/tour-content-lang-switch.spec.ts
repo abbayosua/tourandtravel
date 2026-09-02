@@ -15,7 +15,7 @@ test.describe('Tour Content Language Switch', () => {
 
         // UI should also be English
         const body = await page.textContent('body');
-        expect(body).toContain('Image Gallery');
+        expect(body).toContain('Included Amenities');
     });
 
     test('tour with content_language=en shows Indonesian when lang=id', async ({ page }) => {
@@ -28,7 +28,7 @@ test.describe('Tour Content Language Switch', () => {
 
         // UI should also be Indonesian
         const body = await page.textContent('body');
-        expect(body).toContain('Galeri Foto');
+        expect(body).toContain('Fasilitas Termasuk');
     });
 
     test('switching lang via navbar updates title', async ({ page }) => {
