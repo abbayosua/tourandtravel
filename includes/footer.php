@@ -36,7 +36,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="<?= BASE_URL ?>/assets/js/script.js"></script>
-<script src="<?= BASE_URL ?>/assets/js/currency.js"></script>
+<script src="<?= BASE_URL ?>/assets/js/currency.js?v=<?= filemtime(__DIR__ . '/../assets/js/currency.js') ?>"></script>
 <script>
 // Update currency label in navbar
 document.addEventListener('DOMContentLoaded', function() {

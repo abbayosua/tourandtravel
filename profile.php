@@ -9,7 +9,6 @@ if (!isLoggedIn()) {
 }
 
 $userId = $_SESSION['user_id'];
-$user = getUser();
 $success = '';
 $error = '';
 
@@ -39,6 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $success = 'Profil berhasil diperbarui';
     }
 }
+
+$user = getUser();
 
 $pageTitle = 'Profil Saya';
 require_once 'includes/header.php';

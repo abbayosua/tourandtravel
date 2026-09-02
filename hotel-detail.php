@@ -15,7 +15,12 @@ $checkout = $_GET['checkout'] ?? date('Y-m-d', strtotime('+2 days'));
 $guests = (int)($_GET['guests'] ?? 2);
 
 $bookingSuccess = '';
+$bookingError = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isLoggedIn()) {
+        header('Location: login.php?redirect=' . urlencode($_SERVER['REQUEST_URI']));
+        exit;
+    }
     $ci = $_POST['checkin'] ?? $checkin;
     $co = $_POST['checkout'] ?? $checkout;
     $rooms = (int)($_POST['rooms'] ?? 1);
@@ -23,9 +28,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name'] ?? '');
     $phone = trim($_POST['phone'] ?? '');
     if ($ci && $co && $name && $phone) {
-        $nights = max(1, (strtotime($co) - strtotime($ci)) / 86400);
-        $total = $hotel['price_per_night'] * $nights * $rooms;
-        $bookingSuccess = "Booking berhasil! Total: " . formatRupiah($total);
+        // Cek overlap: ada booking lain utk hotel ini yg tanggalnya bentrok
+        $overlapStmt = db()->prepare("SELECT COUNT(*) FROM hotel_bookings WHERE hotel_id = ? AND ? < checkout AND checkin < ?");
+        $overlapStmt->execute([$hotel['id'], $ci, $co]);
+        if ($overlapStmt->fetchColumn() > 0) {
+            $bookingError = 'Tanggal sudah dibooking untuk hotel ini. Pilih tanggal lain.';
+        } else {
+            $nights = max(1, (strtotime($co) - strtotime($ci)) / 86400);
+            $total = $hotel['price_per_night'] * $nights * $rooms;
+            $insert = db()->prepare("INSERT INTO hotel_bookings (hotel_id, user_id, checkin, checkout, rooms, guests, name, phone, total_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $insert->execute([$hotel['id'], $userId ?? ($_SESSION['user_id'] ?? null), $ci, $co, $rooms, $g, $name, $phone, $total]);
+            $bookingSuccess = "Booking berhasil! Total: " . formatRupiah($total);
+        }
     }
 }
 
@@ -52,13 +66,13 @@ require_once 'includes/header.php';
             <div class="col-12 mb-3">
                 <div class="row g-2">
                     <div class="col-md-8">
-                        <img src="https://picsum.photos/seed/<?= urlencode($hotel['slug']) ?>/800/400" class="w-100 rounded-4 shadow-sm" style="height: 350px; object-fit: cover;" alt="">
+                        <img src="https://placehold.co/800x400?text=<?= urlencode($hotel['name']) ?>" class="w-100 rounded-4 shadow-sm" style="height: 350px; object-fit: cover;" alt="">
                     </div>
                     <div class="col-md-4">
                         <div class="row g-2">
                             <?php for ($i=1; $i<=2; $i++): ?>
                             <div class="col-6 col-md-12">
-                                <img src="https://picsum.photos/seed/<?= urlencode($hotel['slug']) . $i ?>/400/200" class="w-100 rounded-3 shadow-sm" style="height: 170px; object-fit: cover;" alt="">
+                                <img src="https://placehold.co/400x200?text=Gallery+<?= $i ?>" class="w-100 rounded-3 shadow-sm" style="height: 170px; object-fit: cover;" alt="">
                             </div>
                             <?php endfor; ?>
                         </div>
@@ -105,7 +119,7 @@ require_once 'includes/header.php';
                     <div class="col-md-4">
                         <a href="hotel-detail.php?slug=<?= e($s['slug']) ?>" class="text-decoration-none">
                             <div class="card border-0 shadow-sm h-100">
-                                <img src="https://picsum.photos/seed/<?= urlencode($s['slug']) ?>/400/200" class="card-img-top" style="height: 140px; object-fit: cover;" alt="">
+                                <img src="https://placehold.co/400x200?text=<?= urlencode($s['name']) ?>" class="card-img-top" style="height: 140px; object-fit: cover;" alt="">
                                 <div class="card-body p-2">
                                     <h6 class="fw-semibold small mb-0 text-dark"><?= e($s['name']) ?></h6>
                                     <span class="text-warning" style="font-size: 11px;"><?= str_repeat('★', $s['star_rating']) ?></span>
@@ -127,6 +141,9 @@ require_once 'includes/header.php';
 
                         <?php if ($bookingSuccess): ?>
                             <div class="alert alert-success py-2 small"><?= $bookingSuccess ?></div>
+                        <?php endif; ?>
+                        <?php if ($bookingError): ?>
+                            <div class="alert alert-danger py-2 small"><?= $bookingError ?></div>
                         <?php endif; ?>
 
                         <?php if (!isLoggedIn()): ?>

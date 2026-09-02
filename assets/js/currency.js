@@ -19,12 +19,21 @@ const CurrencySwitcher = {
     },
 
     async fetchRates() {
+        const cacheTime = parseInt(localStorage.getItem('currency_rates_time') || '0');
+        const now = Date.now();
+        if (this.rates && (now - cacheTime) < 1800000) return;
+
         try {
-            const resp = await fetch('https://api.frankfurter.app/latest?from=EUR&to=IDR,SGD,USD');
-            const data = await resp.json();
-            this.rates = data.rates;
-            localStorage.setItem('currency_rates', JSON.stringify(this.rates));
-            localStorage.setItem('currency_rates_time', Date.now());
+            const baseUrl = document.querySelector('meta[name="base-url"]')?.content || '';
+            const resp = await fetch(baseUrl + '/ajax/currency-rates.php');
+            const json = await resp.json();
+            if (json.success) {
+                this.rates = json.rates;
+                localStorage.setItem('currency_rates', JSON.stringify(this.rates));
+                localStorage.setItem('currency_rates_time', now);
+            } else {
+                throw new Error(json.error);
+            }
         } catch (e) {
             const cached = localStorage.getItem('currency_rates');
             if (cached) {

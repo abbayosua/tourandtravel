@@ -172,7 +172,7 @@ require_once 'includes/header.php';
                 <div class="col-4 col-lg-2">
                     <a href="destinasi.php?city=<?= urlencode($dest['city']) ?>" class="text-decoration-none">
                         <div class="card border-0 shadow-sm overflow-hidden dest-card">
-                            <div class="dest-img" style="background-image: url('https://picsum.photos/seed/<?= $dest['img'] ?>/400/300');">
+                            <div class="dest-img" style="background-image: url('<?= getDestinasiImage($dest['city']) ?>');">
                                 <div class="dest-overlay d-flex align-items-end p-2">
                                     <div>
                                         <span class="fw-semibold text-white small d-block"><?= e($dest['city']) ?></span>
@@ -365,7 +365,7 @@ require_once 'includes/header.php';
                 <div class="card border-0 shadow-sm h-100 overflow-hidden">
                     <div class="row g-0">
                         <div class="col-4">
-                            <div style="height: 100%; min-height: 120px; background: url('https://picsum.photos/seed/travelblog/400/400') center/cover no-repeat;"></div>
+                            <div style="height: 100%; min-height: 120px; background: url('https://placehold.co/400x200?text=Blog') center/cover no-repeat;"></div>
                         </div>
                         <div class="col-8">
                             <div class="card-body p-3">
@@ -382,7 +382,7 @@ require_once 'includes/header.php';
                 <div class="card border-0 shadow-sm h-100 overflow-hidden">
                     <div class="row g-0">
                         <div class="col-4">
-                            <div style="height: 100%; min-height: 120px; background: url('https://picsum.photos/seed/reward/400/400') center/cover no-repeat;"></div>
+                            <div style="height: 100%; min-height: 120px; background: url('https://placehold.co/400x200?text=Reward') center/cover no-repeat;"></div>
                         </div>
                         <div class="col-8">
                             <div class="card-body p-3">
@@ -399,7 +399,7 @@ require_once 'includes/header.php';
                 <div class="card border-0 shadow-sm h-100 overflow-hidden">
                     <div class="row g-0">
                         <div class="col-4">
-                            <div style="height: 100%; min-height: 120px; background: url('https://picsum.photos/seed/referral/400/400') center/cover no-repeat;"></div>
+                            <div style="height: 100%; min-height: 120px; background: url('https://placehold.co/400x200?text=Referral') center/cover no-repeat;"></div>
                         </div>
                         <div class="col-8">
                             <div class="card-body p-3">

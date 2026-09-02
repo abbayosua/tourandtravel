@@ -1,6 +1,6 @@
 import { test, expect, Page } from '@playwright/test';
 
-const LOCAL_ADMIN = 'http://localhost:8765/admin';
+const LOCAL_ADMIN = 'http://localhost/tourandtravel/admin';
 
 async function loginAsAdmin(page: Page) {
     await page.goto(`${LOCAL_ADMIN}/login.php`);

@@ -46,7 +46,7 @@ require_once 'includes/header.php';
             <div class="col-md-6 col-lg-4">
                 <div class="card tour-card-klook border-0 shadow-sm h-100">
                     <div class="position-relative overflow-hidden rounded-top" style="height: 180px;">
-                        <img src="https://picsum.photos/seed/<?= urlencode($car['slug']) ?>/640/480" class="w-100 h-100" style="object-fit: cover;" alt="<?= e($car['name']) ?>">
+                        <img src="https://placehold.co/640x480?text=<?= urlencode($car['name']) ?>" class="w-100 h-100" style="object-fit: cover;" alt="<?= e($car['name']) ?>">
                         <span class="badge bg-primary position-absolute top-0 start-0 m-2 shadow-sm"><?= e($car['car_type']) ?></span>
                     </div>
                     <div class="card-body p-3 d-flex flex-column">

@@ -24,6 +24,10 @@ $bookingMessage = '';
 $bookingError = '';
 $bookingCode = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
+    if (!isLoggedIn()) {
+        header('Location: login.php?redirect=' . urlencode($_SERVER['REQUEST_URI']));
+        exit;
+    }
     $tourDateId = (int)($_POST['tour_date_id'] ?? 0);
     $name = trim($_POST['name'] ?? '');
     $email = trim($_POST['email'] ?? '');

@@ -100,7 +100,7 @@ require_once 'includes/header.php';
                     <div class="col-md-6 col-lg-4">
                         <div class="card tour-card-klook border-0 shadow-sm h-100">
                             <div class="position-relative overflow-hidden rounded-top" style="height: 180px;">
-                                <img src="https://picsum.photos/seed/<?= urlencode($h['slug']) ?>/640/480" class="w-100 h-100" style="object-fit: cover;" alt="">
+                                <img src="https://placehold.co/640x480?text=<?= urlencode($h['name']) ?>" class="w-100 h-100" style="object-fit: cover;" alt="">
                                 <span class="position-absolute top-0 start-0 m-2 badge bg-warning text-dark shadow-sm"><?= str_repeat('★', $h['star_rating']) ?></span>
                                 <span class="position-absolute bottom-0 end-0 m-2 badge bg-white text-dark shadow-sm"><i class="bi bi-geo-alt me-1"></i><?= e($h['city']) ?></span>
                             </div>

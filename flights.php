@@ -11,6 +11,8 @@ $to = trim($_GET['to'] ?? '');
 $date = $_GET['date'] ?? date('Y-m-d', strtotime('+3 days'));
 $class = $_GET['class'] ?? '';
 $passengers = max(1, min(9, (int)($_GET['passengers'] ?? 1)));
+$tripType = ($_GET['trip_type'] ?? 'oneway') === 'roundtrip' ? 'roundtrip' : 'oneway';
+$returnDate = $_GET['return_date'] ?? '';
 $doSearch = isset($_GET['search']);
 
 // Keep past dates when searching so Duffel validation shows
@@ -97,11 +99,22 @@ require_once 'includes/header.php';
     <div class="container">
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-body p-3 p-md-4">
-                <h5 class="fw-bold mb-3"><i class="bi bi-airplane me-2"></i><?= t('Cari Penerbangan') ?> <small class="text-muted fw-normal" style="font-size:12px">(Live: FlightList → Duffel → Lokal)</small></h5>
+                <h5 class="fw-bold mb-3"><i class="bi bi-airplane me-2"></i><?= t('Cari Penerbangan') ?></h5>
                 <?php if ($duffelError): ?>
                     <div class="alert alert-warning py-2 small"><?= e($duffelError) ?></div>
                 <?php endif; ?>
-                <form method="GET" class="row g-2 align-items-end" id="flightSearchForm">
+                <form method="GET" id="flightSearchForm">
+                    <div class="d-flex gap-3 mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="trip_type" value="oneway" id="tripOneway" <?= $tripType === 'oneway' ? 'checked' : '' ?>>
+                            <label class="form-check-label fw-semibold small" for="tripOneway"><i class="bi bi-arrow-right me-1"></i><?= t('One Way') ?></label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="trip_type" value="roundtrip" id="tripRoundtrip" <?= $tripType === 'roundtrip' ? 'checked' : '' ?>>
+                            <label class="form-check-label fw-semibold small" for="tripRoundtrip"><i class="bi bi-arrow-left-right me-1"></i><?= t('Round Trip') ?></label>
+                        </div>
+                    </div>
+                    <div class="row g-2 align-items-end">
                     <div class="col-md-3">
                         <label class="form-label small fw-semibold text-muted"><?= t('Dari') ?></label>
                         <div class="search-wrapper">
@@ -123,8 +136,12 @@ require_once 'includes/header.php';
                         </div>
                     </div>
                     <div class="col-6 col-md-2">
-                        <label class="form-label small fw-semibold text-muted"><?= t('Tanggal') ?></label>
+                        <label class="form-label small fw-semibold text-muted"><?= $tripType === 'roundtrip' ? t('Pergi') : t('Tanggal') ?></label>
                         <input type="date" name="date" class="form-control" value="<?= e($date) ?>" min="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d', strtotime('+360 days')) ?>">
+                    </div>
+                    <div class="col-6 col-md-2 return-date-col" style="<?= $tripType === 'roundtrip' ? '' : 'display:none' ?>">
+                        <label class="form-label small fw-semibold text-muted"><?= t('Tanggal Pulang') ?></label>
+                        <input type="date" name="return_date" class="form-control" value="<?= e($returnDate) ?>" min="<?= $date ?>" max="<?= date('Y-m-d', strtotime('+360 days')) ?>">
                     </div>
                     <div class="col-3 col-md-1">
                         <label class="form-label small fw-semibold text-muted"><?= t('Penumpang') ?></label>
@@ -143,6 +160,7 @@ require_once 'includes/header.php';
                     </div>
                     <div class="col-6 col-md-2 d-grid">
                         <button class="btn btn-primary" type="submit" name="search" value="1"><i class="bi bi-search me-1"></i><?= t('Cari') ?></button>
+                    </div>
                     </div>
                 </form>
                 <?php if (count($allDates) > 0): ?>
@@ -276,6 +294,19 @@ document.querySelectorAll('.city-search').forEach(function(input) {
     });
     document.addEventListener('click', function(e) {
         if (!input.closest('.search-wrapper').contains(e.target)) dropdown.classList.remove('show');
+    });
+});
+document.querySelectorAll('input[name="trip_type"]').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+        var returnCol = document.querySelector('.return-date-col');
+        var dateLabel = document.querySelector('input[name="date"]').closest('.col-6').querySelector('.form-label');
+        if (document.getElementById('tripRoundtrip').checked) {
+            returnCol.style.display = '';
+            dateLabel.textContent = '<?= t('Pergi') ?>';
+        } else {
+            returnCol.style.display = 'none';
+            dateLabel.textContent = '<?= t('Tanggal') ?>';
+        }
     });
 });
 </script>

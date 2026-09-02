@@ -29,7 +29,7 @@ require_once 'includes/header.php';
         </nav>
 
         <div class="d-flex align-items-center gap-3 mb-4">
-            <div style="width: 60px; height: 60px; border-radius: 12px; background: url('https://picsum.photos/seed/<?= urlencode(strtolower($cityClean)) ?>/120/120') center/cover no-repeat;" class="shadow-sm flex-shrink-0"></div>
+            <div style="width: 60px; height: 60px; border-radius: 12px; background: url('<?= getDestinasiImage($cityClean) ?>') center/cover no-repeat;" class="shadow-sm flex-shrink-0"></div>
             <div>
                 <h4 class="fw-bold mb-1">Paket Tour ke <?= e($cityClean) ?></h4>
                 <p class="text-muted mb-0 small"><?= $tourCount ?> paket tour tersedia</p>

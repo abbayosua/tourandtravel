@@ -78,17 +78,26 @@ function fetchFrankfurterRates() {
  * Get cached exchange rates (refresh if older than 24h)
  */
 function getExchangeRates() {
+    $ttl = 1800; // 30 minutes
+
     try {
         $stmt = db()->prepare("SELECT rates, fetched_at FROM currency_rates WHERE base_currency = 'EUR' ORDER BY id DESC LIMIT 1");
         $stmt->execute();
         $row = $stmt->fetch();
 
-        if ($row && strtotime($row['fetched_at']) > strtotime('-24 hours')) {
+        if ($row && (time() - strtotime($row['fetched_at'])) < $ttl) {
             return json_decode($row['rates'], true);
         }
     } catch (Throwable $e) {}
 
-    return fetchFrankfurterRates();
+    $fresh = fetchFrankfurterRates();
+    if ($fresh) return $fresh;
+
+    if ($row) {
+        return json_decode($row['rates'], true);
+    }
+
+    return null;
 }
 
 /**
@@ -118,9 +127,10 @@ function convertCurrency($amount, $from, $to) {
 /**
  * Format price with currency code
  */
-function formatCurrency($amount, $currency = null) {
+function formatCurrency($amount, $currency = null, $sourceCurrency = null) {
     if (!$currency) $currency = getDefaultCurrency();
-    $converted = convertCurrency($amount, 'IDR', $currency);
+    if (!$sourceCurrency) $sourceCurrency = getDefaultCurrency();
+    $converted = convertCurrency($amount, $sourceCurrency, $currency);
     $config = getSupportedCurrencies()[$currency] ?? getSupportedCurrencies()['IDR'];
 
     $formatted = number_format($converted, $config['decimals'], ',', '.');
@@ -136,7 +146,7 @@ function formatCurrency($amount, $currency = null) {
  */
 function formatCurrencySpan($amount, $sourceCurrency = null, $extraClass = '') {
     if (!$sourceCurrency) $sourceCurrency = getDefaultCurrency();
-    return '<span class="currency-price ' . $extraClass . '" data-price="' . htmlspecialchars($amount) . '" data-from-currency="' . htmlspecialchars($sourceCurrency) . '">' . formatCurrency($amount, $sourceCurrency) . '</span>';
+    return '<span class="currency-price ' . $extraClass . '" data-price="' . htmlspecialchars($amount) . '" data-from-currency="' . htmlspecialchars($sourceCurrency) . '">' . formatCurrency($amount, getDefaultCurrency(), $sourceCurrency) . '</span>';
 }
 
 /**
@@ -352,11 +362,14 @@ function getTours($category = null, $search = null, $priceRange = null, $duratio
     }
 
     if ($priceRange) {
+        // Convert IDR thresholds to stored currency (SGD/USD) using exchange rates
+        $rates = getExchangeRates();
+        $idrToTarget = fn($idrAmount) => $rates ? round($idrAmount / ($rates['IDR'] ?? 20566) * ($rates['SGD'] ?? 1.48), 2) : $idrAmount;
         $rangeSql = match($priceRange) {
-            '1' => " AND price < 5000000",
-            '2' => " AND price BETWEEN 5000000 AND 10000000",
-            '3' => " AND price BETWEEN 10000000 AND 20000000",
-            '4' => " AND price > 20000000",
+            '1' => " AND price < " . $idrToTarget(5000000),
+            '2' => " AND price BETWEEN " . $idrToTarget(5000000) . " AND " . $idrToTarget(10000000),
+            '3' => " AND price BETWEEN " . $idrToTarget(10000000) . " AND " . $idrToTarget(20000000),
+            '4' => " AND price > " . $idrToTarget(20000000),
             default => ''
         };
         $sql .= $rangeSql;
@@ -383,28 +396,29 @@ function getTours($category = null, $search = null, $priceRange = null, $duratio
 
     // Sort
     $sql .= match($sort) {
-        'price_asc' => " ORDER BY price ASC",
-        'price_desc' => " ORDER BY price DESC",
+        'termurah' => " ORDER BY price ASC",
+        'termahal' => " ORDER BY price DESC",
         'rating' => " ORDER BY rating DESC, total_reviews DESC",
         'popular' => " ORDER BY total_reviews DESC, rating DESC",
         default => " ORDER BY created_at DESC"
     };
 
-    // Pagination
-    $page = max(1, (int)$page);
-    $offset = ($page - 1) * $perPage;
-    $sql .= " LIMIT $perPage OFFSET $offset";
-
-    // Hitung total
+    // Hitung total dulu (untuk clamp pagination)
     $countStmt = db()->prepare($countSql);
     $countStmt->execute($countParams);
     $total = $countStmt->fetchColumn();
+
+    // Pagination: clamp page ke [1, lastPage]
+    $lastPage = max(1, (int)ceil($total / $perPage));
+    $page = max(1, min((int)$page, $lastPage));
+    $offset = ($page - 1) * $perPage;
+    $sql .= " LIMIT $perPage OFFSET $offset";
 
     $stmt = db()->prepare($sql);
     $stmt->execute($params);
     $tours = $stmt->fetchAll();
 
-    return ['tours' => $tours, 'total' => $total, 'page' => $page, 'perPage' => $perPage, 'lastPage' => max(1, (int)ceil($total / $perPage))];
+    return ['tours' => $tours, 'total' => $total, 'page' => $page, 'perPage' => $perPage, 'lastPage' => $lastPage];
 }
 
 /**
@@ -520,14 +534,15 @@ function getTourImage($tour, $size = 'medium') {
  */
 function getTourImageFallback($tour, $size = 'medium') {
     $dimensions = [
-        'small'  => '320/240',
-        'medium' => '640/480',
-        'large'  => '1200/800',
+        'small'  => '320x240',
+        'medium' => '640x480',
+        'large'  => '1200x800',
     ];
-    $dim = $dimensions[$size] ?? '640/480';
-    $seed = strtolower(str_replace([' '], '-', $tour['title']));
-    return "https://picsum.photos/seed/{$seed}/{$dim}";
+    $dim = $dimensions[$size] ?? '640x480';
+    $label = urlencode(substr($tour['title'], 0, 20));
+    return "https://placehold.co/{$dim}?text={$label}";
 }
+
 
 /**
  * Ambil gambar destinasi kota dari cache Wikimedia
@@ -540,8 +555,10 @@ function getDestinasiImage($city) {
             return BASE_URL . '/uploads/' . $cache[$city];
         }
     }
-    return "https://picsum.photos/seed/" . strtolower(str_replace(' ', '-', $city)) . "/400/300";
+    $label = urlencode(substr($city, 0, 15));
+    return "https://placehold.co/400x300?text={$label}";
 }
+
 
 /**
  * Hitung sisa slot

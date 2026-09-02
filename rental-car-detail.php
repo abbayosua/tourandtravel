@@ -13,6 +13,10 @@ $pageTitle = $car['name'];
 
 $bookingSuccess = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isLoggedIn()) {
+        header('Location: login.php?redirect=' . urlencode($_SERVER['REQUEST_URI']));
+        exit;
+    }
     $days = (int)($_POST['days'] ?? 1);
     $name = trim($_POST['name'] ?? '');
     $phone = trim($_POST['phone'] ?? '');
@@ -32,7 +36,7 @@ require_once 'includes/header.php';
         </ol></nav>
         <div class="row">
             <div class="col-lg-8">
-                <img src="https://picsum.photos/seed/<?= urlencode($car['slug']) ?>/800/400" class="w-100 rounded-4 shadow-sm mb-3" style="max-height: 400px; object-fit: cover;" alt="">
+                <img src="https://placehold.co/800x400?text=<?= urlencode($car['name']) ?>" class="w-100 rounded-4 shadow-sm mb-3" style="max-height: 400px; object-fit: cover;" alt="">
                 <h4 class="fw-bold"><?= e($car['name']); ?></h4>
                 <div class="d-flex flex-wrap gap-3 mb-2 small">
                     <span><i class="bi bi-geo-alt text-primary"></i> <?= e($car['city']) ?></span>
@@ -53,12 +57,19 @@ require_once 'includes/header.php';
                     <div class="card-body">
                         <h5 class="fw-bold text-primary"><?= formatRupiah($car['price_per_day']) ?> <small class="fw-normal text-muted">/hari</small></h5>
                         <?php if ($bookingSuccess): ?><div class="alert alert-success py-2 small"><?= $bookingSuccess ?></div><?php endif; ?>
+                        <?php if (!isLoggedIn()): ?>
+                            <div class="text-center py-3">
+                                <p class="fw-semibold mb-2">Login untuk Booking</p>
+                                <a href="login.php?redirect=<?= urlencode($_SERVER['REQUEST_URI']) ?>" class="btn btn-primary w-100">Masuk / Daftar</a>
+                            </div>
+                        <?php else: ?>
                         <form method="POST">
                             <div class="mb-2"><label class="form-label small">Jumlah Hari</label><input type="number" name="days" class="form-control form-control-sm" min="1" value="1" required></div>
                             <div class="mb-2"><label class="form-label small">Nama</label><input type="text" name="name" class="form-control form-control-sm" required></div>
                             <div class="mb-2"><label class="form-label small">No. Telepon</label><input type="text" name="phone" class="form-control form-control-sm" required></div>
                             <button type="submit" class="btn btn-primary w-100 mt-2">Sewa Sekarang</button>
                         </form>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

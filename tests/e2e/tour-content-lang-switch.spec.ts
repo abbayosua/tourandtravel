@@ -1,6 +1,6 @@
 import { test, expect, Page } from '@playwright/test';
 
-const LOCAL = 'http://localhost:8765';
+const LOCAL = 'http://localhost/tourandtravel';
 const TOUR_SLUG = '8d7n-shanghai-jiangnan-highlights-ink-wash-jiangnan-wuzhen-water-town';
 
 test.describe('Tour Content Language Switch', () => {
