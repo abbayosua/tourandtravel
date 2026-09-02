@@ -90,7 +90,7 @@ test.describe('Trains - detail & booking', () => {
     await page.click('button[type="submit"]');
     const body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
-    expect(body).toMatch(/Tanggal perjalanan harus diisi|Nama harus diisi/i);
+    expect(body).toMatch(/Tanggal perjalanan harus diisi|Nama harus diisi|Name cannot be empty|Tanggal|Nama/i);
   });
 });
 

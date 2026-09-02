@@ -190,7 +190,40 @@
     }
 
     /* ============================================================
-       7. Init on DOMContentLoaded
+       7. Flight Search Sticky (Traveloka) — scroll spy
+       ============================================================ */
+    function initFlightSticky() {
+        var form = document.getElementById('flightSearchForm');
+        if (!form) return;
+        var wrap = form.closest('.card');
+        if (!wrap) return;
+        var offset = wrap.offsetTop;
+        var stuck = false;
+        var onScroll = function () {
+            var scrolled = window.scrollY > offset + 40;
+            if (scrolled && !stuck) {
+                stuck = true;
+                wrap.classList.add('traveloka-search-sticky');
+            } else if (!scrolled && stuck) {
+                stuck = false;
+                wrap.classList.remove('traveloka-search-sticky');
+            }
+        };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+    }
+
+    /* ============================================================
+       8. Flight Card Hover (Traveloka) — border primary
+       ============================================================ */
+    function initFlightCardHover() {
+        document.querySelectorAll('.flight-card').forEach(function (card) {
+            card.classList.add('klook-hover-card');
+        });
+    }
+
+    /* ============================================================
+       9. Init on DOMContentLoaded
        ============================================================ */
     document.addEventListener('DOMContentLoaded', function () {
         initHeroCarousel();
@@ -198,6 +231,8 @@
         initNewsletter();
         initConfetti();
         initPriceCalculator();
+        initFlightSticky();
+        initFlightCardHover();
     });
 
 })();

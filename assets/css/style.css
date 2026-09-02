@@ -408,6 +408,55 @@ footer a:hover {
     opacity: 0.8;
 }
 
+/* ===== Traveloka-style search ===== */
+.traveloka-tab {
+    border-bottom: 3px solid transparent;
+    color: #6c757d;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+.traveloka-tab:hover {
+    color: var(--primary);
+}
+.traveloka-tab.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    font-weight: 600;
+}
+.traveloka-search-field {
+    background: var(--bg-light, #f8f9fa);
+    border-radius: 12px;
+    padding: 10px 14px;
+    transition: box-shadow 0.2s ease, background 0.2s ease;
+}
+.traveloka-search-field:focus-within {
+    background: #fff;
+    box-shadow: 0 0 0 2px var(--primary);
+}
+.traveloka-search-field .form-control,
+.traveloka-search-field .form-select {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    padding: 0;
+}
+.traveloka-search-field .form-label {
+    margin-bottom: 4px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #6c757d;
+}
+.traveloka-search-btn {
+    height: 100%;
+    min-height: 52px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 576px) {
     .hero-section {
@@ -415,5 +464,36 @@ footer a:hover {
     }
     .hero-section h1 {
         font-size: 1.75rem;
+    }
+}
+
+/* ===== Flight search sticky (Traveloka) ===== */
+.traveloka-search-sticky {
+    position: sticky;
+    top: 70px;
+    z-index: 1010;
+    box-shadow: 0 6px 20px rgba(13, 110, 253, 0.12) !important;
+}
+
+/* ===== Flight card hover ===== */
+.klook-hover-card {
+    transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+    border: 1px solid transparent;
+    cursor: pointer;
+}
+.klook-hover-card:hover {
+    border-color: rgba(13, 110, 253, 0.5);
+    box-shadow: 0 8px 24px rgba(13, 110, 253, 0.14) !important;
+    transform: translateY(-2px);
+}
+
+/* ===== Responsive fix: overflow horizontal ===== */
+@media (max-width: 576px) {
+    .row.g-3.d-flex,
+    .d-flex.flex-wrap.gap-3 {
+        flex-wrap: wrap !important;
+    }
+    .table-responsive {
+        overflow-x: auto;
     }
 }

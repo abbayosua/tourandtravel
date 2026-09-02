@@ -15,6 +15,16 @@ $tripType = ($_GET['trip_type'] ?? 'oneway') === 'roundtrip' ? 'roundtrip' : 'on
 $returnDate = $_GET['return_date'] ?? '';
 $doSearch = isset($_GET['search']);
 
+// Traveloka-style filters
+$airlineFilter = $_GET['airline'] ?? [];
+$airlineFilter = is_array($airlineFilter) ? array_values(array_filter(array_map('trim', $airlineFilter))) : (trim((string)$airlineFilter) !== '' ? [trim((string)$airlineFilter)] : []);
+$minPrice = trim($_GET['min_price'] ?? '');
+$maxPrice = trim($_GET['max_price'] ?? '');
+$depFilter = trim($_GET['dep'] ?? '');
+$stopsFilter = trim($_GET['stops'] ?? '');
+$sortRaw = trim((string)($_GET['sort'] ?? ''));
+$sort = in_array($sortRaw, ['price', 'duration', 'rating']) ? $sortRaw : 'price';
+
 // Keep past dates when searching so Duffel validation shows
 if (!$doSearch && (!strtotime($date) || $date < date('Y-m-d'))) $date = date('Y-m-d', strtotime('+3 days'));
 
@@ -93,18 +103,90 @@ if ($doSearch && $from && $to) {
     $localSchedules=$st->fetchAll();
 }
 $allDates = db()->query("SELECT DISTINCT departure_date FROM flight_schedules WHERE is_active=1 AND departure_date>=CURDATE() ORDER BY departure_date LIMIT 14")->fetchAll(PDO::FETCH_COLUMN);
+$allAirlines = db()->query("SELECT DISTINCT airline FROM flights WHERE is_active=1 AND airline IS NOT NULL AND airline != '' ORDER BY airline")->fetchAll(PDO::FETCH_COLUMN);
+// Filter live/local schedules by airline/min/max price/departure time/stops
+if (!empty($duffelOffers) && (!empty($airlineFilter) || $minPrice !== '' || $maxPrice !== '' || $depFilter !== '' || $stopsFilter !== '')) {
+    $duffelOffers = array_values(array_filter($duffelOffers, function ($o) use ($airlineFilter, $minPrice, $maxPrice, $depFilter, $stopsFilter) {
+        $isFL = isset($o['route']) && isset($o['flyFrom']);
+        $airline = $isFL ? ($o['airlines'][0] ?? '') : (($o['slices'][0]['segments'][0]['marketing_carrier']['name'] ?? '') ?: ($o['slices'][0]['segments'][0]['marketing_carrier']['iata_code'] ?? ''));
+        if (!empty($airlineFilter)) {
+            $matched = false;
+            foreach ($airlineFilter as $af) {
+                if (stripos($airline, $af) !== false) { $matched = true; break; }
+            }
+            if (!$matched) return false;
+        }
+        $price = (float)($isFL ? ($o['price'] ?? 0) : ($o['total_amount'] ?? 0));
+        if ($minPrice !== '' && $price < (float)$minPrice) return false;
+        if ($maxPrice !== '' && $price > (float)$maxPrice) return false;
+        if ($depFilter !== '') {
+            $depStr = $isFL ? ($o['local_departure'] ?? '') : ($o['slices'][0]['segments'][0]['departing_at'] ?? '');
+            $hour = (int)date('G', strtotime($depStr));
+            $inRange = match ($depFilter) { 'morning' => $hour >= 5 && $hour < 12, 'afternoon' => $hour >= 12 && $hour < 17, 'evening' => $hour >= 17 && $hour < 22, 'night' => $hour >= 22 || $hour < 5, default => true };
+            if (!$inRange) return false;
+        }
+        if ($stopsFilter !== '') {
+            $stops = $isFL ? (count($o['route'] ?? []) > 1 ? count($o['route']) - 1 : 0) : (count($o['slices'][0]['segments'] ?? []) > 1 ? count($o['slices'][0]['segments']) - 1 : 0);
+            if ($stopsFilter === 'direct' && $stops > 0) return false;
+            if ($stopsFilter === 'transit' && $stops === 0) return false;
+        }
+        return true;
+    }));
+}
+if (!empty($localSchedules) && (!empty($airlineFilter) || $minPrice !== '' || $maxPrice !== '')) {
+    $localSchedules = array_values(array_filter($localSchedules, function ($s) use ($airlineFilter, $minPrice, $maxPrice) {
+        if (!empty($airlineFilter)) {
+            $matched = false;
+            foreach ($airlineFilter as $af) {
+                if (stripos($s['airline'] ?? '', $af) !== false) { $matched = true; break; }
+            }
+            if (!$matched) return false;
+        }
+        $price = (float)($s['price'] ?? 0);
+        if ($minPrice !== '' && $price < (float)$minPrice) return false;
+        if ($maxPrice !== '' && $price > (float)$maxPrice) return false;
+        return true;
+    }));
+}
+
+// Sort results (Traveloka: Termurah / Tercepat / Terpopuler)
+function flightDurationMinutes($dur) {
+    if (is_numeric($dur)) return (int)$dur;
+    $s = (string)$dur; $m = 0;
+    if (preg_match('/PT(\d+)H(\d*)M/', $s, $iso)) return (int)$iso[1] * 60 + (int)($iso[2] ?? 0);
+    if (preg_match('/(\d+)\s*h/i', $s, $mh)) $m += (int)$mh[1] * 60;
+    if (preg_match('/(\d+)\s*m/i', $s, $mm)) $m += (int)$mm[1];
+    return $m;
+}
+$sortPriceOf = function ($o) { return isset($o['route']) && isset($o['flyFrom']) ? (float)($o['price'] ?? 0) : (float)($o['total_amount'] ?? 0); };
+$sortDurationOf = function ($o) {
+    if (isset($o['route']) && isset($o['flyFrom'])) return flightDurationMinutes($o['duration']['departure'] ?? $o['duration']['total'] ?? 0);
+    return flightDurationMinutes($o['slices'][0]['duration'] ?? ($o['slices'][0]['segments'][0]['duration'] ?? 0));
+};
+if ($sort === 'price' || $sort === 'rating') {
+    usort($duffelOffers, function ($a, $b) use ($sortPriceOf) { return $sortPriceOf($a) <=> $sortPriceOf($b); });
+    usort($localSchedules, function ($a, $b) { return (float)($a['price'] ?? 0) <=> (float)($b['price'] ?? 0); });
+} elseif ($sort === 'duration') {
+    usort($duffelOffers, function ($a, $b) use ($sortDurationOf) { return $sortDurationOf($a) <=> $sortDurationOf($b); });
+}
 require_once 'includes/components/breadcrumb.php';
 require_once 'includes/header-klook.php';
 ?>
 <section class="py-4 bg-light" style="min-height: 80vh;">
     <div class="container">
         <?php renderBreadcrumb([['label' => t('Pesawat'), 'url' => null]]); ?>
-        <div class="card border-0 shadow-sm mb-4">
+        <div class="card border-0 shadow-sm mb-4 overflow-hidden">
             <div class="card-body p-3 p-md-4">
-                <h5 class="fw-bold mb-3"><i class="bi bi-airplane me-2"></i><?= t('Cari Penerbangan') ?></h5>
                 <?php if ($duffelError): ?>
                     <div class="alert alert-warning py-2 small"><?= e($duffelError) ?></div>
                 <?php endif; ?>
+                <!-- Transport tabs ala Traveloka -->
+                <div class="d-flex gap-3 gap-md-4 mb-3 pb-2 border-bottom overflow-auto">
+                    <a href="flights.php" class="traveloka-tab active"><i class="bi bi-airplane"></i>Pesawat</a>
+                    <a href="trains.php" class="traveloka-tab"><i class="bi bi-train-front"></i>Kereta</a>
+                    <a href="ferries.php" class="traveloka-tab"><i class="bi bi-water"></i>Ferry</a>
+                    <a href="rental-cars.php" class="traveloka-tab"><i class="bi bi-car-front"></i>Rental</a>
+                </div>
                 <form method="GET" id="flightSearchForm">
                     <div class="d-flex gap-3 mb-3">
                         <div class="form-check">
@@ -116,52 +198,58 @@ require_once 'includes/header-klook.php';
                             <label class="form-check-label fw-semibold small" for="tripRoundtrip"><i class="bi bi-arrow-left-right me-1"></i><?= t('Round Trip') ?></label>
                         </div>
                     </div>
-                    <div class="row g-2 align-items-end">
-                    <div class="col-md-3">
-                        <label class="form-label small fw-semibold text-muted"><?= t('Dari') ?></label>
-                        <div class="search-wrapper">
-                            <div class="input-group">
-                                <span class="input-group-text bg-white"><i class="bi bi-geo-alt text-primary"></i></span>
+                    <div class="row g-2 g-md-3">
+                    <div class="col-md">
+                        <div class="traveloka-search-field">
+                            <div class="form-label"><?= t('Dari') ?></div>
+                            <div class="search-wrapper">
                                 <input type="text" name="from" class="form-control city-search" placeholder="Kota asal (CGK)..." value="<?= e($from) ?>" autocomplete="off" data-target="fromDropdown" id="fromInput">
+                                <div class="search-dropdown" id="fromDropdown"></div>
                             </div>
-                            <div class="search-dropdown" id="fromDropdown"></div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label small fw-semibold text-muted"><?= t('Ke') ?></label>
-                        <div class="search-wrapper">
-                            <div class="input-group">
-                                <span class="input-group-text bg-white"><i class="bi bi-geo-alt text-danger"></i></span>
+                    <div class="col-md">
+                        <div class="traveloka-search-field">
+                            <div class="form-label"><?= t('Ke') ?></div>
+                            <div class="search-wrapper">
                                 <input type="text" name="to" class="form-control city-search" placeholder="Kota tujuan (DPS)..." value="<?= e($to) ?>" autocomplete="off" data-target="toDropdown" id="toInput">
+                                <div class="search-dropdown" id="toDropdown"></div>
                             </div>
-                            <div class="search-dropdown" id="toDropdown"></div>
                         </div>
                     </div>
-                    <div class="col-6 col-md-2">
-                        <label class="form-label small fw-semibold text-muted"><?= $tripType === 'roundtrip' ? t('Pergi') : t('Tanggal') ?></label>
-                        <input type="date" name="date" class="form-control" value="<?= e($date) ?>" min="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d', strtotime('+360 days')) ?>">
+                    <div class="col-md return-date-col" style="<?= $tripType === 'roundtrip' ? '' : 'display:none' ?>">
+                        <div class="traveloka-search-field">
+                            <div class="form-label"><?= t('Tanggal Pulang') ?></div>
+                            <input type="date" name="return_date" class="form-control" value="<?= e($returnDate) ?>" min="<?= $date ?>" max="<?= date('Y-m-d', strtotime('+360 days')) ?>">
+                        </div>
                     </div>
-                    <div class="col-6 col-md-2 return-date-col" style="<?= $tripType === 'roundtrip' ? '' : 'display:none' ?>">
-                        <label class="form-label small fw-semibold text-muted"><?= t('Tanggal Pulang') ?></label>
-                        <input type="date" name="return_date" class="form-control" value="<?= e($returnDate) ?>" min="<?= $date ?>" max="<?= date('Y-m-d', strtotime('+360 days')) ?>">
+                    <div class="col-md">
+                        <div class="traveloka-search-field">
+                            <div class="form-label"><?= $tripType === 'roundtrip' ? t('Pergi') : t('Tanggal') ?></div>
+                            <input type="date" name="date" class="form-control" value="<?= e($date) ?>" min="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d', strtotime('+360 days')) ?>">
+                        </div>
                     </div>
-                    <div class="col-3 col-md-1">
-                        <label class="form-label small fw-semibold text-muted"><?= t('Penumpang') ?></label>
-                        <select name="passengers" class="form-select">
-                            <?php for($p=1;$p<=9;$p++): ?><option value="<?= $p ?>" <?= $passengers===$p?'selected':'' ?>><?= $p ?></option><?php endfor; ?>
-                        </select>
+                    <div class="col-md">
+                        <div class="traveloka-search-field">
+                            <div class="form-label"><?= t('Penumpang') ?></div>
+                            <select name="passengers" class="form-select">
+                                <?php for($p=1;$p<=9;$p++): ?><option value="<?= $p ?>" <?= $passengers===$p?'selected':'' ?>><?= $p ?></option><?php endfor; ?>
+                            </select>
+                        </div>
                     </div>
-                    <div class="col-3 col-md-1">
-                        <label class="form-label small fw-semibold text-muted"><?= t('Kelas') ?></label>
-                        <select name="class" class="form-select">
-                            <option value=""><?= t('Semua') ?></option>
-                            <option value="economy" <?= $class === 'economy' ? 'selected' : '' ?>>Ekonomi</option>
-                            <option value="business" <?= $class === 'business' ? 'selected' : '' ?>>Bisnis</option>
-                            <option value="first" <?= $class === 'first' ? 'selected' : '' ?>>First</option>
-                        </select>
+                    <div class="col-md">
+                        <div class="traveloka-search-field">
+                            <div class="form-label"><?= t('Kelas') ?></div>
+                            <select name="class" class="form-select">
+                                <option value=""><?= t('Semua') ?></option>
+                                <option value="economy" <?= $class === 'economy' ? 'selected' : '' ?>>Ekonomi</option>
+                                <option value="business" <?= $class === 'business' ? 'selected' : '' ?>>Bisnis</option>
+                                <option value="first" <?= $class === 'first' ? 'selected' : '' ?>>First</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="col-6 col-md-2 d-grid">
-                        <button class="btn btn-primary" type="submit" name="search" value="1"><i class="bi bi-search me-1"></i><?= t('Cari') ?></button>
+                    <div class="col-md-auto d-grid">
+                        <button class="btn btn-primary traveloka-search-btn px-4" type="submit" name="search" value="1"><i class="bi bi-search me-1"></i><?= t('Cari') ?></button>
                     </div>
                     </div>
                 </form>
@@ -176,6 +264,77 @@ require_once 'includes/header-klook.php';
                 <?php endif; ?>
             </div>
         </div>
+
+        <div class="row">
+            <!-- Sidebar Filter Traveloka -->
+            <div class="col-lg-3 mb-3">
+                <div class="card border-0 shadow-sm klook-filter-sidebar sticky-lg-top" style="top: 80px;">
+                    <div class="card-body p-3">
+                        <button class="btn btn-outline-primary btn-sm w-100 d-lg-none mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#flightFilterCollapse">
+                            <i class="bi bi-funnel me-1"></i><?= t('Filter') ?>
+                        </button>
+                        <div class="collapse d-lg-block" id="flightFilterCollapse">
+                            <form method="GET" id="flightFilterForm">
+                                <?php foreach (['from','to','date','return_date','trip_type','passengers','class','search'] as $hf): if (!isset($_GET[$hf])) continue; ?>
+                                <input type="hidden" name="<?= $hf ?>" value="<?= e(is_array($_GET[$hf]) ? implode(',', $_GET[$hf]) : $_GET[$hf]) ?>">
+                                <?php endforeach; ?>
+
+                                <?php if (count($allAirlines) > 0): ?>
+                                <h6 class="fw-semibold mb-2"><?= t('Maskapai') ?></h6>
+                                <div class="mb-3">
+                                    <?php foreach (array_slice($allAirlines, 0, 8) as $al): ?>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="airline[]" value="<?= e($al) ?>" id="al_<?= e(buatSlug($al)) ?>" <?= in_array($al, $airlineFilter) ? 'checked' : '' ?> onchange="this.form.submit()">
+                                        <label class="form-check-label small" for="al_<?= e(buatSlug($al)) ?>"><?= e($al) ?></label>
+                                    </div>
+                                    <?php endforeach; ?>
+                                </div>
+                                <?php endif; ?>
+
+                                <h6 class="fw-semibold mb-2"><?= t('Jam Berangkat') ?></h6>
+                                <div class="mb-3">
+                                    <?php foreach (['morning' => 'Pagi (05-12)', 'afternoon' => 'Siang (12-17)', 'evening' => 'Sore (17-22)', 'night' => 'Malam (22-05)'] as $dk => $dl): ?>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="dep" value="<?= $dk ?>" id="dep_<?= $dk ?>" <?= $depFilter === $dk ? 'checked' : '' ?> onchange="this.form.submit()">
+                                        <label class="form-check-label small" for="dep_<?= $dk ?>"><?= $dl ?></label>
+                                    </div>
+                                    <?php endforeach; ?>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="dep" value="" id="dep_all" <?= $depFilter === '' ? 'checked' : '' ?> onchange="this.form.submit()">
+                                        <label class="form-check-label small" for="dep_all"><?= t('Semua') ?></label>
+                                    </div>
+                                </div>
+
+                                <h6 class="fw-semibold mb-2"><?= t('Transit') ?></h6>
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="stops" value="direct" id="stops_direct" <?= $stopsFilter === 'direct' ? 'checked' : '' ?> onchange="this.form.submit()">
+                                        <label class="form-check-label small" for="stops_direct"><?= t('Langsung') ?></label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="stops" value="transit" id="stops_transit" <?= $stopsFilter === 'transit' ? 'checked' : '' ?> onchange="this.form.submit()">
+                                        <label class="form-check-label small" for="stops_transit"><?= t('Transit') ?></label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="stops" value="" id="stops_all" <?= $stopsFilter === '' ? 'checked' : '' ?> onchange="this.form.submit()">
+                                        <label class="form-check-label small" for="stops_all"><?= t('Semua') ?></label>
+                                    </div>
+                                </div>
+
+                                <h6 class="fw-semibold mb-2"><?= t('Harga') ?></h6>
+                                <div class="d-flex gap-2 mb-3">
+                                    <input type="number" name="min_price" class="form-control form-control-sm" placeholder="Min" value="<?= e($minPrice) ?>" min="0">
+                                    <input type="number" name="max_price" class="form-control form-control-sm" placeholder="Max" value="<?= e($maxPrice) ?>" min="0">
+                                </div>
+                                <button class="btn btn-primary btn-sm w-100" type="submit"><i class="bi bi-funnel me-1"></i><?= t('Terapkan') ?></button>
+                                <a href="?from=<?= urlencode($from) ?>&to=<?= urlencode($to) ?>&date=<?= urlencode($date) ?>&class=<?= urlencode($class) ?>&passengers=<?= $passengers ?>&trip_type=<?= $tripType ?>&search=1" class="btn btn-outline-secondary btn-sm w-100 mt-2"><?= t('Reset') ?></a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-9">
         <?php if ($doSearch): ?>
             <?php if (!empty($duffelOffers)): ?>
             <?php
@@ -183,8 +342,15 @@ require_once 'includes/header-klook.php';
                 if (($offerSource ?? '') === 'flightlist') { $badge='FlightList (Real)'; $badgeClass='bg-primary'; }
                 elseif (($offerSource ?? '') === 'duffel') { $badge='Live Duffel'; $badgeClass='bg-success'; }
             ?>
-            <div class="d-flex justify-content-between align-items-center mb-3">
+            <!-- Sort bar ala Traveloka -->
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                 <div><h5 class="fw-bold mb-0"><?= count($duffelOffers) ?> Penerbangan <span class="badge <?= $badgeClass ?> ms-1" style="font-size:11px"><?= $badge ?></span></h5><small class="text-muted"><?= tglIndonesia($date) ?> · <?= e($from) ?> → <?= e($to) ?> · <?= $passengers ?> pax</small></div>
+                <div class="d-flex gap-1">
+                    <a href="?<?= e(http_build_query(array_merge($_GET, ['sort' => 'price']))) ?>" class="btn btn-sm <?= $sort === 'price' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Termurah') ?></a>
+                    <a href="?<?= e(http_build_query(array_merge($_GET, ['sort' => 'duration']))) ?>" class="btn btn-sm <?= $sort === 'duration' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Tercepat') ?></a>
+                    <a href="?<?= e(http_build_query(array_merge($_GET, ['sort' => 'rating']))) ?>" class="btn btn-sm <?= $sort === 'rating' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Terpopuler') ?></a>
+                </div>
+            </div>
             </div>
             <div class="row g-3" id="duffelResults">
                 <?php foreach ($duffelOffers as $o):
@@ -231,7 +397,17 @@ require_once 'includes/header-klook.php';
                                         <div class="text-center" style="min-width:70px;"><div class="fs-5 fw-bold"><?= $arr ?></div><small class="text-muted"><?= e($isFL ? $toCode : ($seg['destination']['iata_code'] ?? '')) ?></small></div>
                                     </div>
                                 </div>
-                                <div class="col-md-2 text-center"><span class="badge bg-<?= $cc==='economy'?'success':($cc==='business'?'warning text-dark':'danger') ?> rounded-pill"><?= ucfirst($cc) ?></span><small class="d-block text-muted mt-1" style="font-size:11px"><?php foreach($baggages as $bg) echo e($bg['quantity'].' '.($bg['type']==='checked'?'bagasi':'kabin')).' '; ?></small></div>
+                                <div class="col-md-2 text-center"><span class="badge bg-<?= $cc==='economy'?'success':($cc==='business'?'warning text-dark':'danger') ?> rounded-pill"><?= ucfirst($cc) ?></span><small class="d-block text-muted mt-1" style="font-size:11px"><?php
+$baggageInfo = '';
+if ($isFL) {
+    $baggageInfo = t('Bagasi') . ' ' . ($o['baggage'] ?? '-');
+} else {
+    $baggageText = '';
+    foreach($baggages as $bg) $baggageText .= $bg['quantity'] . ' ' . ($bg['type']==='checked'?t('bagasi'):t('kabin')) . ' ';
+    $baggageInfo = $baggageText ?: ($s['baggage_allowance'] ?? '');
+    if (!empty($o['refundable'])) echo '<span class="badge bg-success-subtle text-success border border-success-subtle d-block mt-1" style="font-size:10px;"><i class="bi bi-arrow-repeat me-1"></i>' . t('Refundable') . '</span>';
+}
+?><?= $baggageInfo ? '<span class="d-block" style="font-size:10px;"><i class="bi bi-briefcase me-1"></i>' . e($baggageInfo) . '</span>' : '' ?></small></div>
                                 <div class="col-md-2 text-center"><div class="fs-6 fw-bold text-primary"><?= $isFL ? flightlistFormatPrice($o['price'] ?? $o['conversion']['USD'] ?? 0) : duffelFormatPrice($o['total_amount'], $o['total_currency']) ?></div><small class="text-muted">/ <?= t('orang') ?></small></div>
                                 <div class="col-md-2 text-md-end"><a href="flight-detail.php?<?= $isFL ? "fl_offer_id=".e($offerId) : "offer_id=".e($offerId) ?>" class="btn btn-primary rounded-pill px-4 fw-semibold w-100"><?= t('Pilih') ?></a></div>
                             </div>
@@ -261,6 +437,8 @@ require_once 'includes/header-klook.php';
                 <div class="col-12"><div class="card border-0 shadow-sm flight-card"><div class="card-body p-3 d-flex justify-content-between align-items-center"><div class="d-flex align-items-center gap-2"><div class="flight-logo bg-light border rounded-2 d-flex align-items-center justify-content-center fw-bold" style="width:36px;height:36px;font-size:12px"><?= $airlineCode ?></div><div><div class="fw-semibold small"><?= e($s['airline']) ?> <?= e($s['flight_number']) ?></div><small class="text-muted"><?= e($s['from_city']) ?> → <?= e($s['to_city']) ?> · <?= e($s['duration']) ?></small></div></div><div class="text-end"><div class="fw-bold text-primary small"><?= formatCurrencySpan($s['price']) ?></div><a href="flight-detail.php?schedule_id=<?= $s['id'] ?>" class="btn btn-sm btn-outline-primary rounded-pill mt-1">Lihat</a></div></div></div></div>
                 <?php endforeach; ?></div><?php endif; ?>
         <?php endif; ?>
+        </div><!-- /.col-lg-9 -->
+        </div><!-- /.row -->
     </div>
 </section>
 <?php require_once 'includes/footer-klook.php'; ?>
@@ -301,7 +479,7 @@ document.querySelectorAll('.city-search').forEach(function(input) {
 document.querySelectorAll('input[name="trip_type"]').forEach(function(radio) {
     radio.addEventListener('change', function() {
         var returnCol = document.querySelector('.return-date-col');
-        var dateLabel = document.querySelector('input[name="date"]').closest('.col-6').querySelector('.form-label');
+        var dateLabel = document.querySelector('input[name="date"]').closest('.traveloka-search-field').querySelector('.form-label');
         if (document.getElementById('tripRoundtrip').checked) {
             returnCol.style.display = '';
             dateLabel.textContent = '<?= t('Pergi') ?>';

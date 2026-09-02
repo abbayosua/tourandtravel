@@ -79,7 +79,7 @@
         <!-- Payment icons -->
         <hr class="border-secondary my-3">
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
-            <div class="d-flex align-items-center gap-3 text-secondary small">
+            <div class="d-flex flex-wrap align-items-center gap-3 text-secondary small">
                 <span><?= t('Metode Pembayaran') ?>:</span>
                 <span class="badge bg-white bg-opacity-10 text-light px-3 py-2 rounded-pill fw-semibold">Visa</span>
                 <span class="badge bg-white bg-opacity-10 text-light px-3 py-2 rounded-pill fw-semibold">Mastercard</span>

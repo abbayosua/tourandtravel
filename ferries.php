@@ -87,7 +87,9 @@ if (empty($ferries)) {
     foreach ($dbFerries as $f) {
         $ferries[] = [
             'company' => $f['company'],
+            'vessel_name' => $f['vessel_name'] ?? '',
             'departure_time' => date('H:i', strtotime($f['departure_time'])),
+            'arrival_time' => $f['arrival_time'] ? date('H:i', strtotime($f['arrival_time'])) : '-',
             'available_seats' => 0,
             'price' => $f['price'],
             'from_terminal' => $f['route_from'],
@@ -103,43 +105,59 @@ require_once 'includes/header-klook.php';
 <section class="py-4 bg-light" style="min-height: 80vh;">
     <div class="container">
         <?php renderBreadcrumb([['label' => t('Ferry'), 'url' => null]]); ?>
-        <div class="card border-0 shadow-sm mb-4">
+        <div class="card border-0 shadow-sm mb-4 overflow-hidden">
             <div class="card-body p-3 p-md-4">
-                <h5 class="fw-bold mb-3"><i class="bi bi-water me-2"></i><?= t('Cari Ferry') ?></h5>
                 <?php if ($easybookError): ?>
                     <div class="alert alert-warning py-2 small"><?= e($easybookError) ?></div>
                 <?php endif; ?>
-                <form method="GET" class="row g-2 align-items-end" id="ferrySearchForm">
+                <!-- Easybook-style 3-step search -->
+                <div class="d-flex gap-3 gap-md-4 mb-3 pb-2 border-bottom overflow-auto">
+                    <a href="ferries.php" class="traveloka-tab active"><i class="bi bi-water"></i>Ferry</a>
+                    <a href="flights.php" class="traveloka-tab"><i class="bi bi-airplane"></i>Pesawat</a>
+                    <a href="trains.php" class="traveloka-tab"><i class="bi bi-train-front"></i>Kereta</a>
+                    <a href="rental-cars.php" class="traveloka-tab"><i class="bi bi-car-front"></i>Rental</a>
+                </div>
+                <form method="GET" class="row g-2 g-md-3 align-items-end" id="ferrySearchForm">
                     <div class="col-md-3">
-                        <label class="form-label small fw-semibold text-muted"><?= t('Dari') ?></label>
-                        <div class="search-wrapper">
-                            <div class="input-group">
-                                <span class="input-group-text bg-white"><i class="bi bi-geo-alt text-primary"></i></span>
+                        <div class="traveloka-search-field">
+                            <div class="form-label"><span class="badge bg-primary rounded-pill me-1" style="font-size:10px;">1</span><?= t('Dari') ?></div>
+                            <div class="search-wrapper">
                                 <input type="text" name="from" class="form-control ferry-search" placeholder="Kota atau terminal..." value="<?= e($from) ?>" autocomplete="off" data-target="fromDropdown" id="fromInput">
+                                <div class="search-dropdown" id="fromDropdown"></div>
                             </div>
-                            <div class="search-dropdown" id="fromDropdown"></div>
                         </div>
                         <input type="hidden" name="from_pid" value="<?= $fromPlaceId ?>">
                         <input type="hidden" name="from_spid" value="<?= $fromSubPlace ?>">
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label small fw-semibold text-muted"><?= t('Ke') ?></label>
-                        <div class="search-wrapper">
-                            <div class="input-group">
-                                <span class="input-group-text bg-white"><i class="bi bi-geo-alt text-danger"></i></span>
+                        <div class="traveloka-search-field">
+                            <div class="form-label"><span class="badge bg-primary rounded-pill me-1" style="font-size:10px;">2</span><?= t('Ke') ?></div>
+                            <div class="search-wrapper">
                                 <input type="text" name="to" class="form-control ferry-search" placeholder="Kota atau terminal..." value="<?= e($to) ?>" autocomplete="off" data-target="toDropdown" id="toInput">
+                                <div class="search-dropdown" id="toDropdown"></div>
                             </div>
-                            <div class="search-dropdown" id="toDropdown"></div>
                         </div>
                         <input type="hidden" name="to_pid" value="<?= $toPlaceId ?>">
                         <input type="hidden" name="to_spid" value="<?= $toSubPlace ?>">
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label small fw-semibold text-muted"><?= t('Tanggal') ?></label>
-                        <input type="date" name="date" class="form-control" value="<?= e($date) ?>" min="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d', strtotime('+360 days')) ?>">
+                        <div class="traveloka-search-field">
+                            <div class="form-label"><?= t('Tanggal') ?></div>
+                            <input type="date" name="date" class="form-control" value="<?= e($date) ?>" min="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d', strtotime('+360 days')) ?>">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="traveloka-search-field">
+                            <div class="form-label"><?= t('Penumpang') ?></div>
+                            <select name="passengers" class="form-select">
+                                <?php for ($p=1; $p<=9; $p++): ?>
+                                <option value="<?= $p ?>" <?= ((int)($_GET['passengers'] ?? 1)) === $p ? 'selected' : '' ?>><?= $p ?> <?= t('orang') ?></option>
+                                <?php endfor; ?>
+                            </select>
+                        </div>
                     </div>
                     <div class="col-md-2 d-grid">
-                        <button class="btn btn-primary" type="submit" name="search" value="1"><i class="bi bi-search me-1"></i><?= t('Cari') ?></button>
+                        <button class="btn btn-primary traveloka-search-btn" type="submit" name="search" value="1"><i class="bi bi-search me-1"></i><?= t('Cari') ?></button>
                     </div>
                 </form>
             </div>
@@ -152,46 +170,49 @@ require_once 'includes/header-klook.php';
                 <small class="text-muted"><?= tglIndonesia($date) ?> · <?= e($from) ?> → <?= e($to) ?></small>
             </div>
         </div>
-        <div class="row g-3">
-            <?php foreach ($ferries as $f): ?>
-            <div class="col-md-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body p-3">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <div>
-                                <h6 class="fw-bold mb-1"><?= e($f['company']) ?></h6>
-                                <?php if ($f['available_seats'] > 0): ?>
-                                    <small class="text-muted"><?= $f['available_seats'] ?> <?= t('kursi tersedia') ?></small>
-                                <?php endif; ?>
-                            </div>
-                            <div class="text-end">
-                                <div class="fw-bold text-primary fs-5"><?= formatCurrencySpan($f['price']) ?></div>
-                                <small class="text-muted">/ <?= t('orang') ?></small>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center gap-3 mt-3 p-3 bg-light rounded">
-                            <div class="text-center flex-grow-1">
-                                <div class="fs-4 fw-bold"><?= e($f['departure_time']) ?></div>
-                                <small class="text-muted fw-semibold"><?= e($f['from_terminal'] ?: $from) ?></small>
-                            </div>
-                            <div class="text-center">
-                                <i class="bi bi-arrow-right fs-4 text-primary"></i>
-                            </div>
-                            <div class="text-center flex-grow-1">
-                                <div class="fs-4 fw-bold">-</div>
-                                <small class="text-muted fw-semibold"><?= e($f['to_terminal'] ?: $to) ?></small>
-                            </div>
-                        </div>
-                        <div class="mt-3">
-                            <a href="https://www.easybook.com/id-id/ferry?fromplace=<?= $fromPlaceId ?>&toplace=<?= $toPlaceId ?>&departtime=<?= e($date) ?>" 
-                               class="btn btn-primary w-100 rounded-pill fw-semibold" target="_blank">
-                                <i class="bi bi-ticket-detailed me-1"></i><?= t('Pilih & Booking') ?>
-                            </a>
-                        </div>
-                    </div>
-                </div>
+        <?php
+        $minPrice = min(array_column($ferries, 'price'));
+        ?>
+        <div class="card border-0 shadow-sm overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle easybook-table">
+                    <thead class="table-light">
+                        <tr>
+                            <th><?= t('Perusahaan') ?></th>
+                            <th><?= t('Kapal') ?></th>
+                            <th><?= t('Berangkat') ?></th>
+                            <th><?= t('Tiba') ?></th>
+                            <th class="text-end"><?= t('Harga') ?></th>
+                            <th class="text-center"><?= t('Aksi') ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($ferries as $f): 
+                            $isCheapest = (float)$f['price'] === (float)$minPrice;
+                        ?>
+                        <tr class="<?= $isCheapest ? 'table-success' : '' ?>">
+                            <td><strong><?= e($f['company']) ?></strong></td>
+                            <td><?= e($f['vessel_name'] ?? '-') ?></td>
+                            <td><span class="fw-semibold"><?= e($f['departure_time']) ?></span><br><small class="text-muted"><?= e($f['from_terminal'] ?: $from) ?></small></td>
+                            <td><span class="fw-semibold"><?= e($f['arrival_time'] ?? '-') ?></span><br><small class="text-muted"><?= e($f['to_terminal'] ?: $to) ?></small></td>
+                            <td class="text-end">
+                                <span class="fw-bold text-primary<?= $isCheapest ? ' fs-5' : '' ?>"><?= formatRupiah($f['price']) ?></span>
+                                <?php if ($isCheapest): ?><span class="badge bg-success ms-1" style="font-size:10px;"><?= t('Hemat') ?></span><?php endif; ?>
+                            </td>
+                            <td class="text-center">
+                                <a href="https://www.easybook.com/id-id/ferry?fromplace=<?= $fromPlaceId ?>&toplace=<?= $toPlaceId ?>&departtime=<?= e($date) ?>" 
+                                   class="btn btn-sm btn-primary rounded-pill px-3" target="_blank">
+                                    <?= t('Pesan') ?>
+                                </a>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
             </div>
-            <?php endforeach; ?>
+        </div>
+        <div class="alert alert-info py-2 mt-3 small" style="border-left: 3px solid var(--primary);">
+            <i class="bi bi-info-circle me-1"></i><?= t('Sesampainya di pelabuhan, tunjukkan e-ticket ke petugas.') ?>
         </div>
         <?php elseif ($search && empty($ferries)): ?>
         <div class="text-center py-5">

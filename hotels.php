@@ -10,6 +10,12 @@ $checkout = $_GET['checkout'] ?? '';
 $guests = (int)($_GET['guests'] ?? 2);
 $stars = $_GET['stars'] ?? '';
 $sort = $_GET['sort'] ?? 'price';
+$minPrice = trim($_GET['min_price'] ?? '');
+$maxPrice = trim($_GET['max_price'] ?? '');
+$amenityFilter = trim($_GET['amenity'] ?? '');
+$freeCancel = (int)($_GET['free_cancel'] ?? 0);
+$instantConf = (int)($_GET['instant'] ?? 0);
+$bestSeller = (int)($_GET['best'] ?? 0);
 
 $cities = db()->query("SELECT DISTINCT city FROM hotels WHERE is_active = 1 ORDER BY city")->fetchAll(PDO::FETCH_COLUMN);
 
@@ -17,6 +23,12 @@ $sql = "SELECT * FROM hotels WHERE is_active = 1";
 $params = [];
 if ($city) { $sql .= " AND city LIKE ?"; $params[] = "%$city%"; }
 if ($stars) { $sql .= " AND star_rating = ?"; $params[] = (int)$stars; }
+if ($minPrice !== '') { $sql .= " AND price_per_night >= ?"; $params[] = (float)$minPrice; }
+if ($maxPrice !== '') { $sql .= " AND price_per_night <= ?"; $params[] = (float)$maxPrice; }
+if ($amenityFilter) { $sql .= " AND amenities LIKE ?"; $params[] = "%$amenityFilter%"; }
+if ($freeCancel) { $sql .= " AND free_cancellation = 1"; }
+if ($instantConf) { $sql .= " AND instant_confirmation = 1"; }
+if ($bestSeller) { $sql .= " AND best_seller = 1"; }
 $sql .= match($sort) {
     'price' => " ORDER BY price_per_night ASC",
     'price_desc' => " ORDER BY price_per_night DESC",
@@ -34,6 +46,45 @@ require_once 'includes/header-klook.php';
     <div class="container">
         <?php renderBreadcrumb([['label' => t('Hotel'), 'url' => null]]); ?>
 
+        <!-- Agoda-style search bar -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-3 p-md-4">
+                <form method="GET" class="row g-2 g-md-3 align-items-end">
+                    <div class="col-md">
+                        <div class="traveloka-search-field">
+                            <div class="form-label"><?= t('Kota') ?></div>
+                            <input type="text" name="city" class="form-control" placeholder="Cari kota..." value="<?= e($city) ?>">
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="traveloka-search-field">
+                            <div class="form-label">Check-in</div>
+                            <input type="date" name="checkin" class="form-control" value="<?= e($checkin ?: date('Y-m-d')) ?>">
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="traveloka-search-field">
+                            <div class="form-label">Check-out</div>
+                            <input type="date" name="checkout" class="form-control" value="<?= e($checkout ?: date('Y-m-d', strtotime('+2 days'))) ?>">
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="traveloka-search-field">
+                            <div class="form-label"><?= t('Tamu') ?></div>
+                            <select name="guests" class="form-select">
+                                <?php for ($g=1; $g<=10; $g++): ?>
+                                <option value="<?= $g ?>" <?= $guests === $g ? 'selected' : '' ?>><?= $g ?> <?= t('Tamu') ?></option>
+                                <?php endfor; ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-auto d-grid">
+                        <button class="btn btn-primary traveloka-search-btn px-4" type="submit"><i class="bi bi-search me-1"></i><?= t('Cari') ?></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <div class="row">
             <!-- Sidebar Filter -->
             <div class="col-lg-3 mb-3">
@@ -44,26 +95,10 @@ require_once 'includes/header-klook.php';
                         </button>
                         <div class="collapse d-lg-block" id="filterCollapse">
                             <form method="GET" class="row g-2 align-items-end">
-                                <div class="col-12">
-                                    <label class="form-label small fw-semibold text-muted"><?= t('Kota') ?></label>
-                                    <input type="text" name="city" class="form-control form-control-sm" placeholder="Cari kota..." value="<?= e($city) ?>">
-                                </div>
-                                <div class="col-6">
-                                    <label class="form-label small fw-semibold text-muted">Check-in</label>
-                                    <input type="date" name="checkin" class="form-control form-control-sm" value="<?= e($checkin ?: date('Y-m-d')) ?>">
-                                </div>
-                                <div class="col-6">
-                                    <label class="form-label small fw-semibold text-muted">Check-out</label>
-                                    <input type="date" name="checkout" class="form-control form-control-sm" value="<?= e($checkout ?: date('Y-m-d', strtotime('+2 days'))) ?>">
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label small fw-semibold text-muted"><?= t('Tamu') ?></label>
-                                    <select name="guests" class="form-select form-select-sm">
-                                        <?php for ($g=1; $g<=6; $g++): ?>
-                                        <option value="<?= $g ?>" <?= $guests === $g ? 'selected' : '' ?>><?= $g ?> Tamu</option>
-                                        <?php endfor; ?>
-                                    </select>
-                                </div>
+                                <input type="hidden" name="city" value="<?= e($city) ?>">
+                                <input type="hidden" name="checkin" value="<?= e($checkin ?: date('Y-m-d')) ?>">
+                                <input type="hidden" name="checkout" value="<?= e($checkout ?: date('Y-m-d', strtotime('+2 days'))) ?>">
+                                <input type="hidden" name="guests" value="<?= $guests ?>">
                                 <div class="col-12">
                                     <label class="form-label small fw-semibold text-muted"><?= t('Bintang') ?></label>
                                     <select name="stars" class="form-select form-select-sm" onchange="this.form.submit()">
@@ -72,6 +107,31 @@ require_once 'includes/header-klook.php';
                                         <option value="<?= $s ?>" <?= $stars == $s ? 'selected' : '' ?>><?= str_repeat('★', $s) ?></option>
                                         <?php endfor; ?>
                                     </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label small fw-semibold text-muted"><?= t('Harga per Malam') ?></label>
+                                    <div class="d-flex gap-2">
+                                        <input type="number" name="min_price" class="form-control form-control-sm" placeholder="Min" value="<?= e($minPrice) ?>" min="0">
+                                        <input type="number" name="max_price" class="form-control form-control-sm" placeholder="Max" value="<?= e($maxPrice) ?>" min="0">
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label small fw-semibold text-muted"><?= t('Fasilitas') ?></label>
+                                    <input type="text" name="amenity" class="form-control form-control-sm" placeholder="WiFi, Parkir, Kolam..." value="<?= e($amenityFilter) ?>">
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="best" value="1" id="fltBest" <?= $bestSeller ? 'checked' : '' ?> onchange="this.form.submit()">
+                                        <label class="form-check-label small" for="fltBest"><?= t('Best Seller') ?></label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="free_cancel" value="1" id="fltCancel" <?= $freeCancel ? 'checked' : '' ?> onchange="this.form.submit()">
+                                        <label class="form-check-label small" for="fltCancel"><?= t('Batal Gratis') ?></label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="instant" value="1" id="fltInstant" <?= $instantConf ? 'checked' : '' ?> onchange="this.form.submit()">
+                                        <label class="form-check-label small" for="fltInstant"><?= t('Konfirmasi Instan') ?></label>
+                                    </div>
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label small fw-semibold text-muted"><?= t('Urutkan') ?></label>
@@ -90,42 +150,59 @@ require_once 'includes/header-klook.php';
                 </div>
             </div>
 
-            <!-- Results -->
+            <!-- Results: Agoda list view -->
             <div class="col-lg-9">
                 <?php if (count($hotels) > 0): ?>
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <small class="text-muted"><?= count($hotels) ?> <?= t('hotel ditemukan') ?></small>
+                    <div class="d-flex gap-1">
+                        <a href="?<?= e(http_build_query(array_merge($_GET, ['sort' => 'price']))) ?>" class="btn btn-sm <?= $sort === 'price' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Harga Termurah') ?></a>
+                        <a href="?<?= e(http_build_query(array_merge($_GET, ['sort' => 'price_desc']))) ?>" class="btn btn-sm <?= $sort === 'price_desc' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Harga Termahal') ?></a>
+                        <a href="?<?= e(http_build_query(array_merge($_GET, ['sort' => 'stars']))) ?>" class="btn btn-sm <?= $sort === 'stars' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Bintang Tertinggi') ?></a>
+                    </div>
                 </div>
-                <div class="row g-3">
-                    <?php foreach ($hotels as $h): ?>
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card tour-card-klook border-0 shadow-sm h-100">
-                            <div class="position-relative overflow-hidden rounded-top" style="height: 180px;">
-                                <img src="https://placehold.co/640x480?text=<?= urlencode($h['name']) ?>" class="w-100 h-100" style="object-fit: cover;" alt="">
-                                <span class="position-absolute top-0 start-0 m-2 badge bg-warning text-dark shadow-sm"><?= str_repeat('★', $h['star_rating']) ?></span>
-                                <?php if (!empty($h['instant_confirmation'])): ?>
-                                <span class="badge bg-success position-absolute top-0 end-0 m-2 shadow-sm" style="font-size: 10px;"><i class="bi bi-lightning-charge-fill me-1"></i>Instan</span>
-                                <?php endif; ?>
-                                <?php if (!empty($h['free_cancellation'])): ?>
-                                <span class="badge bg-info text-white position-absolute top-0 end-0 m-2 shadow-sm" style="font-size: 10px; margin-top: 28px !important;"><i class="bi bi-shield-check me-1"></i>Batal Gratis</span>
-                                <?php endif; ?>
-                                <span class="position-absolute bottom-0 end-0 m-2 badge bg-white text-dark shadow-sm"><i class="bi bi-geo-alt me-1"></i><?= e($h['city']) ?></span>
-                            </div>
-                            <div class="card-body p-3 d-flex flex-column">
-                                <h6 class="fw-semibold mb-1"><?= e($h['name']) ?></h6>
-                                <p class="small text-muted flex-grow-1 mb-2"><?= substr(e($h['description']), 0, 80) ?>...</p>
-                                <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                <?php foreach ($hotels as $h): 
+                    $amenities = array_filter(array_map('trim', explode(',', $h['amenities'] ?? '')));
+                    $linkParams = 'slug=' . e($h['slug']) . '&checkin=' . urlencode($checkin ?: date('Y-m-d')) . '&checkout=' . urlencode($checkout ?: date('Y-m-d', strtotime('+2 days'))) . '&guests=' . $guests;
+                ?>
+                <div class="card border-0 shadow-sm mb-3 overflow-hidden klook-hover-card">
+                    <div class="row g-0">
+                        <div class="col-md-3 col-4" style="min-height: 160px;">
+                            <img src="https://placehold.co/640x480?text=<?= urlencode($h['name']) ?>" class="w-100 h-100" style="object-fit: cover;" alt="<?= e($h['name']) ?>" loading="lazy">
+                        </div>
+                        <div class="col-md-9 col-8">
+                            <div class="card-body p-3 d-flex flex-column h-100">
+                                <div class="d-flex justify-content-between align-items-start">
                                     <div>
-                                        <span class="fw-bold text-primary fs-5"><?= formatRupiah($h['price_per_night']) ?></span>
-                                        <small class="text-muted">/malam</small>
+                                        <h6 class="fw-semibold mb-1"><?= e($h['name']) ?></h6>
+                                        <div class="small text-warning mb-1"><?= str_repeat('★', $h['star_rating']) ?></div>
+                                        <small class="text-muted"><i class="bi bi-geo-alt me-1"></i><?= e($h['city']) ?></small>
                                     </div>
-                                    <a href="hotel-detail.php?slug=<?= e($h['slug']) ?>&checkin=<?= urlencode($checkin ?: date('Y-m-d')) ?>&checkout=<?= urlencode($checkout ?: date('Y-m-d', strtotime('+2 days'))) ?>&guests=<?= $guests ?>" class="btn btn-sm btn-primary rounded-pill px-3">Pesan</a>
+                                    <div class="text-end">
+                                        <span class="fw-bold text-primary fs-5"><?= formatRupiah($h['price_per_night']) ?></span>
+                                        <small class="d-block text-muted" style="font-size: 11px;">/malam termasuk pajak</small>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-wrap gap-1 mt-2">
+                                    <?php if (!empty($h['best_seller'])): ?><span class="badge bg-danger" style="font-size: 10px;">Best Seller</span><?php endif; ?>
+                                    <?php if (!empty($h['instant_confirmation'])): ?><span class="badge bg-success" style="font-size: 10px;"><i class="bi bi-lightning-charge-fill me-1"></i>Instan</span><?php endif; ?>
+                                    <?php if (!empty($h['free_cancellation'])): ?><span class="badge bg-info text-white" style="font-size: 10px;"><i class="bi bi-shield-check me-1"></i>Batal Gratis</span><?php endif; ?>
+                                </div>
+                                <?php if (count($amenities) > 0): ?>
+                                <div class="d-flex flex-wrap gap-1 mt-2">
+                                    <?php foreach (array_slice($amenities, 0, 5) as $am): ?>
+                                    <span class="badge bg-light text-dark border" style="font-size: 10px;"><?= e(trim($am)) ?></span>
+                                    <?php endforeach; ?>
+                                </div>
+                                <?php endif; ?>
+                                <div class="mt-auto pt-2">
+                                    <a href="hotel-detail.php?<?= $linkParams ?>" class="btn btn-primary rounded-pill px-4 py-1" style="font-size: 13px;"><?= t('Pesan') ?></a>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <?php endforeach; ?>
                 </div>
+                <?php endforeach; ?>
                 <?php else: ?>
                 <div class="text-center py-5">
                     <i class="bi bi-building fs-1 text-muted"></i>
