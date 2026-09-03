@@ -134,7 +134,7 @@ renderCategoryGrid($categories, $catIcons, $catCounts);
                     <div class="card border-0 shadow-sm overflow-hidden promo-card h-100">
                         <div class="row g-0 h-100">
                             <div class="col-4">
-                                <img src="<?= getTourImage($promo, 'small') ?>" class="h-100 w-100" style="object-fit: cover;" alt="">
+                                <img src="<?= getTourImage($promo, 'small') ?>" onerror="this.src='https://placehold.co/320x240?text=Promo'" class="h-100 w-100" style="object-fit: cover;" alt="">
                             </div>
                             <div class="col-8">
                                 <div class="card-body py-2 px-3">
