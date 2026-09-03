@@ -71,10 +71,10 @@ require_once 'includes/header-klook.php';
                                     <span class="badge bg-primary position-absolute top-0 start-0 m-2 shadow-sm">Best Seller</span>
                                 <?php endif; ?>
                                 <?php if (!empty($a['instant_confirmation'])): ?>
-                                    <span class="badge bg-success position-absolute top-0 end-0 m-2 shadow-sm" style="font-size: 10px;"><i class="bi bi-lightning-charge-fill me-1"></i>Instan</span>
+                                    <span class="badge bg-success position-absolute top-0 end-0 m-2 shadow-sm" style="font-size: 10px;"><i class="bi bi-lightning-charge-fill me-1"></i><?= t('Instan') ?></span>
                                 <?php endif; ?>
                                 <?php if (!empty($a['free_cancellation'])): ?>
-                                    <span class="badge bg-info text-white position-absolute top-0 end-0 m-2 shadow-sm" style="font-size: 10px; margin-top: 28px !important;"><i class="bi bi-shield-check me-1"></i>Batal Gratis</span>
+                                    <span class="badge bg-info text-white position-absolute top-0 end-0 m-2 shadow-sm" style="font-size: 10px; margin-top: 28px !important;"><i class="bi bi-shield-check me-1"></i><?= t('Batal Gratis') ?></span>
                                 <?php endif; ?>
                                 <?php if ($a['category']): ?>
                                     <span class="badge bg-white text-dark position-absolute top-0 start-0 m-2 shadow-sm" style="margin-top: 38px;"><?= e($a['category']) ?></span>

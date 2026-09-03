@@ -120,7 +120,7 @@ if (!empty($booking['user_id'])) {
     }
 }
 
-$pageTitle = 'Booking Berhasil';
+$pageTitle = t('Booking Berhasil');
 require_once 'includes/header-klook.php';
 ?>
 <div class="container py-5">
@@ -197,8 +197,8 @@ require_once 'includes/header-klook.php';
 
                     <p class="small text-muted mb-3">
                         <i class="bi bi-info-circle me-1"></i>
-                        Simpan kode booking dan link di atas untuk cek status pemesanan.
-                        <br>Kami akan menghubungi Anda via WhatsApp untuk konfirmasi.
+                        <?= t('Simpan kode booking dan link di atas untuk cek status pemesanan.') ?>
+                        <br><?= t('Kami akan menghubungi Anda via WhatsApp untuk konfirmasi.') ?>
                     </p>
 
                     <div class="d-flex gap-2 justify-content-center">

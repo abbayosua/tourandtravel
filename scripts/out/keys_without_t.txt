@@ -1,0 +1,382 @@
+1 Penumpang
+Admin Panel
+Akomodasi
+Aksi
+Aktif
+Aktivitas Akun
+Akun: ${name}
+Automatic
+Bahasa Konten
+Bali Paradise 5D4N
+Bambang S.
+Bandara
+Bank Transfer
+Batal
+Batal Gratis
+Batalkan
+Batas Pemakaian
+Beijing 8D7N
+Belum ada aktivitas webhook.
+Belum ada booking
+Belum ada data kurs. Klik "Refresh" untuk mengambil data terbaru.
+Belum ada foto galeri. Upload untuk mengganti galeri auto (loremflickr).
+Belum ada itinerary.
+Belum ada jadwal keberangkatan tersedia
+Belum ada jadwal keberangkatan.
+Belum ada paket tour ke
+Belum ada pemesanan.
+Belum ada tour
+Belum ada tour yang disimpan
+Belum punya akun?
+Berangkat
+Berlaku
+Berlaku Dari
+Berlaku Sampai
+Best Seller
+Bintang
+Bisnis
+Booking
+Booking Berhasil!
+Booking Sekarang
+Booking Terbaru
+Booking berhasil dibatalkan. KlookCash yang digunakan telah dikembalikan.
+Buat akun untuk mulai berpetualang
+Buka di Kiwi.com
+Bulk Bahasa Konten:
+CS 24/7
+Cakupan
+Cancelled
+Cari
+Cari Booking
+Cari Lagi
+Cari Penerbangan Lain
+Catatan
+Check-in
+Check-out
+Confirmed
+Contoh Konversi dari IDR 10.000.000
+Cover Image (Upload)
+Current:
+Daftar
+Daftar Akun Baru
+Dari
+Dashboard
+Deskripsi
+Deskripsi:
+Detail
+Detail Booking
+Detail Pesanan
+Diterima
+Durasi
+Durasi (contoh: 5j 30m)
+Durasi (hari)
+EUR → IDR
+EUR → SGD
+EUR → USD
+Earning Rate KlookCash
+Edit Ferry
+Edit Hotel
+Edit Pesawat
+Edit Rental Mobil
+Edit Tour:
+Ekonomi
+Email
+Email tidak dapat diubah
+Error: ${e.message}
+Explorer (%)
+Explorer — minimal booking
+FAQ
+Fasilitas Hotel
+Ferry
+First
+FlightList (Real)
+FlightList: klik Pesan menampilkan link Kiwi.com (affiliate).
+Foto
+Foto Paspor
+Frankfurter API
+Gabung Perangkat
+Gagal memuat status: ${data.error || 'Unknown'}
+Gagal: ${data.error || 'Unknown'}
+Galeri Foto
+Gambar
+Gambar Cover
+Ganti Password
+Gold (%)
+Gold — minimal booking
+Harga
+Harga (Rp)
+Harga x
+Harga/Hari
+Harga/Hari (Rp)
+Harga/Malam (Rp)
+Hari
+Hotel
+Hotel Lain di
+Hubungkan Nomor Baru
+Hubungkan Nomor Baru';
+            el.innerHTML = `
+IDR
+Informasi Notifikasi
+Inisialisasi koneksi...
+Instan
+Item
+Itinerary
+Jadwal
+Jadwal Keberangkatan
+Jadwal lokal (contoh). Gunakan pencarian di atas untuk hasil live Duffel.
+Jam
+Jawaban
+Jelajahi Tour
+Jl. Merdeka No. 123, Jakarta
+Joy+ (%)
+Joy+ — minimal booking
+Judul
+Judul Tour
+Jumlah
+Jumlah FAQ
+Jumlah Hari
+Jumlah Peserta
+Kamar
+Kami akan menghubungi Anda via WhatsApp untuk konfirmasi.
+Kapal
+Kapasitas
+Kategori
+Kategori FAQ
+Keberangkatan
+Kelas
+Kelola Atraksi
+Kelola Booking
+Kelola FAQ
+Kelola Ferry
+Kelola Hotel
+Kelola Kereta
+Kelola Pesawat
+Kelola Rental
+Kelola Tour
+Kelola Transfer
+Kelola eSIM
+Keluar
+Kembali
+Kembali ke Website
+Kembali ke halaman tour
+Kendaraan
+Kereta
+Kereta Api
+Kirim Test
+KlookCash
+KlookCash Saya
+Kode
+Kode Booking
+Kode Promo
+Koleksi
+Koleksi Tour
+Koneksi Pengirim WA
+Konfigurasi
+Konfirmasi
+Konfirmasi Instan
+Konfirmasi Password
+Kontak
+Konten akan otomatis diterjemahkan ke bahasa lain
+Korea Tour 7D6N
+Kosongkan jika tidak diubah.
+Kosongkan jika tidak ingin mengubah gambar
+Kota
+Kuota
+Kuota Data
+Kurs Terkini (EUR Base)
+Kursi
+Kursi penuh untuk jadwal ini.
+Langsung
+Lihat
+Lihat Detail
+Lihat Semua
+Lihat Semua Tour
+Lihat Website
+Link Tracking
+Live via Duffel (Test Mode)
+Log Webhook
+Login Admin -
+Login untuk Memesan
+Logout
+Lokasi
+Loyalty Settings
+Makan
+Manual
+Maskapai
+Mastercard
+Masuk
+Masuk / Daftar
+Masukkan kode booking untuk cek status pemesanan
+Mata Uang
+Mata Uang Default
+Mata uang yang ditampilkan ke pengunjung
+Max
+Max 2MB. Format: JPG, PNG, WebP
+Max Pax
+Max Penumpang
+Max Peserta
+Max. Diskon
+Memuat status...
+Menghubungkan...';
+
+    el.innerHTML = '
+Menunggu
+Menunggu Konfirmasi
+Menunggu QR code...
+Min. Beli
+Min. Pembelian
+Minggu: 09:00 - 15:00
+Nama
+Nama & No. WA Pemesan
+Nama Hotel
+Nama Kategori
+Nama Kereta
+Nama Lengkap
+Nama Mobil
+Nama Produk
+Nama Tiket
+Nama Tour
+Nama Transfer
+Negara
+Next
+Nikmati perjalanan Anda dengan
+Nilai
+No.
+No. Penerbangan
+No. Telepon
+Nominal (Rp)
+Nomor Tujuan
+Nomor WA Admin/Supplier
+Nomor WhatsApp yang digunakan untuk mengirim notifikasi ke supplier.
+Nomor tujuan notifikasi booking baru. Diawali 62, tanpa + atau spasi.
+Nonaktif
+Order ID:
+Paket
+Paket Tour
+Paket Tour ke
+Pasangan
+Password
+Password Baru
+PayPal
+Pelabuhan
+Pemakaian
+Pembayaran
+Pendapatan
+Pending
+Penerbangan
+Pengaturan Loyalty & KlookCash
+Pengaturan Mata Uang
+Pengaturan WA
+Pengaturan WhatsApp
+Penumpang
+Persentase (%)
+Persentase dari total booking yang menjadi KlookCash reward.
+Pertanyaan
+Perusahaan
+Pesan
+Pesan Penerbangan
+Pesan Sekarang
+Pesawat
+Peserta
+Pilih Gambar (bisa banyak)
+Pilih Tour (centang untuk menambahkan)
+Pocket WiFi
+Previous
+Profil Saya
+Putuskan Koneksi
+Qty
+Rate
+Referral
+Referral Program
+Refresh
+Refresh QR
+Rental
+Rental Mobil
+Revenue
+Reward
+Rina A.
+Riwayat Booking
+Rp (IDR)
+Rp 50.000
+Rute
+S$ (SGD)
+SIM
+Saat ada booking baru, notifikasi otomatis dikirim ke nomor WA Admin/Supplier:
+Salin
+Sari Dewi
+Scan QR code dengan WhatsApp Anda.
+Scan QR ini dengan WhatsApp Anda
+Scan voucher
+Selamat datang kembali!
+Selamat datang,
+Selesai
+Semua
+Semua Tipe
+Semua status
+Senin - Sabtu: 08:00 - 20:00
+Server URL
+Sewa Sekarang
+Siap mengirim notifikasi ke nomor supplier.
+Silver (%)
+Silver — minimal booking
+Simpan
+Simpan Pengaturan
+Simpan Perubahan
+Simpan Tour
+Simpan tour favorit Anda dengan menekan ikon hati
+Sisa
+Slot
+Slug
+Stasiun Asal
+Stasiun Tujuan
+Status
+Sudah punya akun?
+Sumber:
+Tambah
+Tambah Koleksi
+Tambah Tour
+Tambah Tour Baru
+Tamu
+Tanggal
+Tanggal Berangkat
+Tanggal Keberangkatan
+Tanggal Kembali
+Terapkan
+Terima kasih, pemesanan Anda telah diterima.
+Terkonfirmasi
+Termasuk
+Test Kirim WA
+Test mode: booking akan membuat order Duffel Airways dummy.
+Tiba
+Tidak
+Tier Threshold (Jumlah Booking)
+Tiket Tempat Wisata
+Tipe
+Tipe Asal
+Tipe Diskon
+Tipe Kendaraan
+Tipe Tujuan
+Token Akun WUZAPI
+Token akun pengirim WA. Kosongkan jika tidak diubah.
+Total
+Total Booking
+Total Harga
+Tour
+Tour Aktif
+Tracking Booking
+Transfer
+Transfer Bandara
+Transmisi
+Ubah Status
+Update Tour
+Upload Galeri
+Upload beberapa gambar (JPG/PNG/WebP, max 2MB)
+Urutan
+Username
+Visa
+WUZAPI Server
+WhatsApp
+Wishlist
+Wishlist Saya
+· #
+· Ref:

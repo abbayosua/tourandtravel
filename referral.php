@@ -49,7 +49,7 @@ require_once 'includes/header-klook.php';
 ?>
 <section class="py-4">
     <div class="container">
-        <h4 class="fw-bold mb-3"><i class="bi bi-people text-primary me-2"></i>Referral Program</h4>
+        <h4 class="fw-bold mb-3"><i class="bi bi-people text-primary me-2"></i><?= t('Referral Program') ?></h4>
 
         <!-- Hero card -->
         <div class="card border-0 shadow-sm mb-4 overflow-hidden" style="background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);">

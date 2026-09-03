@@ -182,10 +182,10 @@ require_once 'includes/header-klook.php';
                 <?php endif; ?>
                 <!-- Transport tabs ala Traveloka -->
                 <div class="d-flex gap-3 gap-md-4 mb-3 pb-2 border-bottom overflow-auto">
-                    <a href="flights.php" class="traveloka-tab active"><i class="bi bi-airplane"></i>Pesawat</a>
-                    <a href="trains.php" class="traveloka-tab"><i class="bi bi-train-front"></i>Kereta</a>
-                    <a href="ferries.php" class="traveloka-tab"><i class="bi bi-water"></i>Ferry</a>
-                    <a href="rental-cars.php" class="traveloka-tab"><i class="bi bi-car-front"></i>Rental</a>
+                    <a href="flights.php" class="traveloka-tab active"><i class="bi bi-airplane"></i><?= t('Pesawat') ?></a>
+                    <a href="trains.php" class="traveloka-tab"><i class="bi bi-train-front"></i><?= t('Kereta') ?></a>
+                    <a href="ferries.php" class="traveloka-tab"><i class="bi bi-water"></i><?= t('Ferry') ?></a>
+                    <a href="rental-cars.php" class="traveloka-tab"><i class="bi bi-car-front"></i><?= t('Rental') ?></a>
                 </div>
                 <form method="GET" id="flightSearchForm">
                     <div class="d-flex gap-3 mb-3">
@@ -242,9 +242,9 @@ require_once 'includes/header-klook.php';
                             <div class="form-label"><?= t('Kelas') ?></div>
                             <select name="class" class="form-select">
                                 <option value=""><?= t('Semua') ?></option>
-                                <option value="economy" <?= $class === 'economy' ? 'selected' : '' ?>>Ekonomi</option>
-                                <option value="business" <?= $class === 'business' ? 'selected' : '' ?>>Bisnis</option>
-                                <option value="first" <?= $class === 'first' ? 'selected' : '' ?>>First</option>
+                                <option value="economy" <?= $class === 'economy' ? 'selected' : '' ?>><?= t('Ekonomi') ?></option>
+                                <option value="business" <?= $class === 'business' ? 'selected' : '' ?>><?= t('Bisnis') ?></option>
+                                <option value="first" <?= $class === 'first' ? 'selected' : '' ?>><?= t('First') ?></option>
                             </select>
                         </div>
                     </div>
@@ -293,7 +293,7 @@ require_once 'includes/header-klook.php';
 
                                 <h6 class="fw-semibold mb-2"><?= t('Jam Berangkat') ?></h6>
                                 <div class="mb-3">
-                                    <?php foreach (['morning' => 'Pagi (05-12)', 'afternoon' => 'Siang (12-17)', 'evening' => 'Sore (17-22)', 'night' => 'Malam (22-05)'] as $dk => $dl): ?>
+                                    <?php foreach (['morning' => t('Pagi (05-12)'), 'afternoon' => t('Siang (12-17)'), 'evening' => t('Sore (17-22)'), 'night' => t('Malam (22-05)')] as $dk => $dl): ?>
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="dep" value="<?= $dk ?>" id="dep_<?= $dk ?>" <?= $depFilter === $dk ? 'checked' : '' ?> onchange="this.form.submit()">
                                         <label class="form-check-label small" for="dep_<?= $dk ?>"><?= $dl ?></label>

@@ -180,13 +180,13 @@ require_once 'includes/header-klook.php';
                                     </div>
                                     <div class="text-end">
                                         <span class="fw-bold text-primary fs-5"><?= formatRupiah($h['price_per_night']) ?></span>
-                                        <small class="d-block text-muted" style="font-size: 11px;">/malam termasuk pajak</small>
+                                        <small class="d-block text-muted" style="font-size: 11px;"><?= t('/malam termasuk pajak') ?></small>
                                     </div>
                                 </div>
                                 <div class="d-flex flex-wrap gap-1 mt-2">
-                                    <?php if (!empty($h['best_seller'])): ?><span class="badge bg-danger" style="font-size: 10px;">Best Seller</span><?php endif; ?>
-                                    <?php if (!empty($h['instant_confirmation'])): ?><span class="badge bg-success" style="font-size: 10px;"><i class="bi bi-lightning-charge-fill me-1"></i>Instan</span><?php endif; ?>
-                                    <?php if (!empty($h['free_cancellation'])): ?><span class="badge bg-info text-white" style="font-size: 10px;"><i class="bi bi-shield-check me-1"></i>Batal Gratis</span><?php endif; ?>
+                                    <?php if (!empty($h['best_seller'])): ?><span class="badge bg-danger" style="font-size: 10px;"><?= t('Best Seller') ?></span><?php endif; ?>
+                                    <?php if (!empty($h['instant_confirmation'])): ?><span class="badge bg-success" style="font-size: 10px;"><i class="bi bi-lightning-charge-fill me-1"></i><?= t('Instan') ?></span><?php endif; ?>
+                                    <?php if (!empty($h['free_cancellation'])): ?><span class="badge bg-info text-white" style="font-size: 10px;"><i class="bi bi-shield-check me-1"></i><?= t('Batal Gratis') ?></span><?php endif; ?>
                                 </div>
                                 <?php if (count($amenities) > 0): ?>
                                 <div class="d-flex flex-wrap gap-1 mt-2">

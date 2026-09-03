@@ -3,7 +3,7 @@ require_once 'includes/config.php';
 require_once 'includes/db.php';
 require_once 'includes/functions.php';
 
-$pageTitle = 'Transfer Bandara';
+$pageTitle = t('Transfer Bandara');
 $fromCity = $_GET['from'] ?? '';
 $toCity = $_GET['to'] ?? '';
 $vehicleType = $_GET['vehicle'] ?? '';
@@ -80,10 +80,10 @@ require_once 'includes/header-klook.php';
                                 <img src="https://placehold.co/640x400?text=Transfer" class="w-100 h-100" style="object-fit: cover;" alt="<?= e($t['name']) ?>">
                                 <span class="badge bg-primary position-absolute top-0 start-0 m-2 shadow-sm"><?= e($t['vehicle_type'] ?? 'Transfer') ?></span>
                                 <?php if (!empty($t['instant_confirmation'])): ?>
-                                    <span class="badge bg-success position-absolute top-0 end-0 m-2 shadow-sm" style="font-size: 10px;"><i class="bi bi-lightning-charge-fill me-1"></i>Instan</span>
+                                    <span class="badge bg-success position-absolute top-0 end-0 m-2 shadow-sm" style="font-size: 10px;"><i class="bi bi-lightning-charge-fill me-1"></i><?= t('Instan') ?></span>
                                 <?php endif; ?>
                                 <?php if (!empty($t['free_cancellation'])): ?>
-                                    <span class="badge bg-info text-white position-absolute top-0 end-0 m-2 shadow-sm" style="font-size: 10px; margin-top: 28px !important;"><i class="bi bi-shield-check me-1"></i>Batal Gratis</span>
+                                    <span class="badge bg-info text-white position-absolute top-0 end-0 m-2 shadow-sm" style="font-size: 10px; margin-top: 28px !important;"><i class="bi bi-shield-check me-1"></i><?= t('Batal Gratis') ?></span>
                                 <?php endif; ?>
                             </div>
                             <div class="card-body p-3 d-flex flex-column">

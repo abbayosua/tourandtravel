@@ -12,16 +12,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
     $confirm = $_POST['confirm_password'] ?? '';
 
-    if (!$name) $error = 'Nama harus diisi';
-    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) $error = 'Email tidak valid';
-    elseif (strlen($password) < 6) $error = 'Password minimal 6 karakter';
-    elseif ($password !== $confirm) $error = 'Konfirmasi password tidak cocok';
+    if (!$name) $error = t('Nama harus diisi');
+    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) $error = t('Email tidak valid');
+    elseif (strlen($password) < 6) $error = t('Password minimal 6 karakter');
+    elseif ($password !== $confirm) $error = t('Konfirmasi password tidak cocok');
 
     if (!$error) {
         $stmt = db()->prepare("SELECT COUNT(*) FROM users WHERE email = ?");
         $stmt->execute([$email]);
         if ($stmt->fetchColumn() > 0) {
-            $error = 'Email sudah terdaftar';
+            $error = t('Email sudah terdaftar');
         } else {
             $hash = password_hash($password, PASSWORD_DEFAULT);
             $stmt = db()->prepare("INSERT INTO users (name, email, phone, password_hash) VALUES (?, ?, ?, ?)");
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = 'Daftar';
+$pageTitle = t('Daftar');
 require_once 'includes/header-klook.php';
 ?>
 

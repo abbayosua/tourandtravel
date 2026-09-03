@@ -110,11 +110,11 @@ require_once 'includes/header-klook.php';
                         <div class="row text-center g-2">
                             <div class="col-3">
                                 <div class="fw-bold text-primary fs-4"><?= $totalBookings ?></div>
-                                <small class="text-muted">Booking</small>
+                                <small class="text-muted"><?= t('Booking') ?></small>
                             </div>
                             <div class="col-3">
                                 <div class="fw-bold text-danger fs-4"><?= $totalWishlist ?></div>
-                                <small class="text-muted">Wishlist</small>
+                                <small class="text-muted"><?= t('Wishlist') ?></small>
                             </div>
                             <div class="col-3">
                                 <a href="wallet.php" class="text-decoration-none">
@@ -175,15 +175,15 @@ require_once 'includes/header-klook.php';
                         <div class="d-flex gap-4 mt-3">
                             <a href="my-bookings.php" class="text-decoration-none text-center">
                                 <div class="fs-4 text-primary"><i class="bi bi-ticket-perforated"></i></div>
-                                <small>Booking</small>
+                                <small><?= t('Booking') ?></small>
                             </a>
                             <a href="wishlist.php" class="text-decoration-none text-center">
                                 <div class="fs-4 text-danger"><i class="bi bi-heart"></i></div>
-                                <small>Wishlist</small>
+                                <small><?= t('Wishlist') ?></small>
                             </a>
                             <a href="logout.php" class="text-decoration-none text-center">
                                 <div class="fs-4 text-muted"><i class="bi bi-box-arrow-right"></i></div>
-                                <small>Keluar</small>
+                                <small><?= t('Keluar') ?></small>
                             </a>
                         </div>
                     </div>
@@ -192,25 +192,25 @@ require_once 'includes/header-klook.php';
                 <!-- Referral Card -->
                 <div class="card border-0 shadow-sm mt-3">
                     <div class="card-body p-4">
-                        <h6 class="fw-semibold mb-0"><i class="bi bi-people text-primary me-1"></i>Referral Program</h6>
+                        <h6 class="fw-semibold mb-0"><i class="bi bi-people text-primary me-1"></i><?= t('Referral Program') ?></h6>
                         <div class="d-flex align-items-center gap-3 mt-3">
                             <div class="text-center">
                                 <div class="fw-bold text-primary fs-5"><?= $totalRef ?></div>
-                                <small class="text-muted">Referral</small>
+                                <small class="text-muted"><?= t('Referral') ?></small>
                             </div>
                             <div class="text-center">
                                 <div class="fw-bold text-success fs-5"><?= formatRupiah($refReward) ?></div>
-                                <small class="text-muted">Reward</small>
+                                <small class="text-muted"><?= t('Reward') ?></small>
                             </div>
                             <div class="flex-grow-1">
                                 <?php if ($refLink): ?>
                                 <div class="input-group input-group-sm">
                                     <input type="text" class="form-control" id="profileRefLink" value="<?= e($refLink) ?>" readonly>
-                                    <button class="btn btn-outline-primary" type="button" onclick="navigator.clipboard.writeText(document.getElementById('profileRefLink').value);this.textContent='OK';setTimeout(()=>this.textContent='Salin',1500);">Salin</button>
+                                    <button class="btn btn-outline-primary" type="button" onclick="navigator.clipboard.writeText(document.getElementById('profileRefLink').value);this.textContent='OK';setTimeout(()=>this.textContent='<?= t('Salin') ?>',1500);"><?= t('Salin') ?></button>
                                 </div>
                                 <?php endif; ?>
                             </div>
-                            <a href="referral.php" class="btn btn-sm btn-outline-primary rounded-pill px-3">Detail</a>
+                            <a href="referral.php" class="btn btn-sm btn-outline-primary rounded-pill px-3"><?= t('Detail') ?></a>
                         </div>
                     </div>
                 </div>

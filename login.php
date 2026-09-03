@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location: $redirect");
         exit;
     } else {
-        $error = 'Email atau password salah';
+        $error = t('Email atau password salah');
     }
 }
 

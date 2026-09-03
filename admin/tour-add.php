@@ -47,13 +47,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = db()->prepare("INSERT INTO tours (title, slug, category, description, price, price_currency, content_language, max_participants, cover_image, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->execute([$title, $slug, $category, $description, $price, $priceCurrency, $contentLanguage, $maxParticipants, $coverImage ?: null, $isActive]);
 
-        // Auto-translate tour content
+        // Simpan konten tour untuk kedua bahasa (tanpa API — fallback konten asli)
         $tourId = db()->lastInsertId();
         $targetLang = $contentLanguage === 'id' ? 'en' : 'id';
-        translateAndCache($title, $contentLanguage, $targetLang);
+        saveTranslation($title, $targetLang, $title);
         if (strlen($description) > 10) {
-            $translated = translateMyMemory($description, $contentLanguage, $targetLang);
-            if ($translated !== $description) saveTranslation($description, $targetLang, $translated);
+            saveTranslation($description, $targetLang, $description);
         }
 
         header('Location: tours.php?msg=added');

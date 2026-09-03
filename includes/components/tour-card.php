@@ -33,20 +33,20 @@ function renderTourCard($tour, $wishlistIds = [], $options = []) {
                 <?php if ($diskon > 0): ?>
                     <span class="badge bg-danger position-absolute top-0 start-0 m-2 shadow-sm">-<?= $diskon ?>%</span>
                 <?php elseif (!empty($tour['best_seller'])): ?>
-                    <span class="badge bg-primary position-absolute top-0 start-0 m-2 shadow-sm">Best Seller</span>
+                    <span class="badge bg-primary position-absolute top-0 start-0 m-2 shadow-sm"><?= t('Best Seller') ?></span>
                 <?php endif; ?>
 
                 <!-- Badge Instant Confirmation -->
                 <?php if (!empty($tour['instant_confirmation'])): ?>
                     <span class="badge bg-success position-absolute top-0 end-0 m-2 shadow-sm" style="font-size: 10px;">
-                        <i class="bi bi-lightning-charge-fill me-1"></i>Instan
+                        <i class="bi bi-lightning-charge-fill me-1"></i><?= t('Instan') ?>
                     </span>
                 <?php endif; ?>
 
                 <!-- Badge Free Cancellation -->
                 <?php if (!empty($tour['free_cancellation'])): ?>
                     <span class="badge bg-info text-white position-absolute top-0 end-0 m-2 shadow-sm" style="font-size: 10px; margin-top: 28px !important;">
-                        <i class="bi bi-shield-check me-1"></i>Batal Gratis
+                        <i class="bi bi-shield-check me-1"></i><?= t('Batal Gratis') ?>
                     </span>
                 <?php endif; ?>
 

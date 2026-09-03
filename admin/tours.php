@@ -31,10 +31,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bulk_set_lang'])) {
             $tour->execute([$tourId]);
             $t = $tour->fetch();
             if ($t) {
-                translateAndCache($t['title'], $lang, $targetLang);
+                saveTranslation($t['title'], $targetLang, $t['title']);
                 if (strlen($t['description']) > 10) {
-                    $translated = translateMyMemory($t['description'], $lang, $targetLang);
-                    if ($translated !== $t['description']) saveTranslation($t['description'], $targetLang, $translated);
+                    saveTranslation($t['description'], $targetLang, $t['description']);
                 }
             }
         }

@@ -112,10 +112,10 @@ require_once 'includes/header-klook.php';
                 <?php endif; ?>
                 <!-- Easybook-style 3-step search -->
                 <div class="d-flex gap-3 gap-md-4 mb-3 pb-2 border-bottom overflow-auto">
-                    <a href="ferries.php" class="traveloka-tab active"><i class="bi bi-water"></i>Ferry</a>
-                    <a href="flights.php" class="traveloka-tab"><i class="bi bi-airplane"></i>Pesawat</a>
-                    <a href="trains.php" class="traveloka-tab"><i class="bi bi-train-front"></i>Kereta</a>
-                    <a href="rental-cars.php" class="traveloka-tab"><i class="bi bi-car-front"></i>Rental</a>
+                    <a href="ferries.php" class="traveloka-tab active"><i class="bi bi-water"></i><?= t('Ferry') ?></a>
+                    <a href="flights.php" class="traveloka-tab"><i class="bi bi-airplane"></i><?= t('Pesawat') ?></a>
+                    <a href="trains.php" class="traveloka-tab"><i class="bi bi-train-front"></i><?= t('Kereta') ?></a>
+                    <a href="rental-cars.php" class="traveloka-tab"><i class="bi bi-car-front"></i><?= t('Rental') ?></a>
                 </div>
                 <form method="GET" class="row g-2 g-md-3 align-items-end" id="ferrySearchForm">
                     <div class="col-md-3">

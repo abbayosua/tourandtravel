@@ -32,7 +32,7 @@ foreach (getWalletTransactions($userId, 1000) as $t) {
     if (isset($summary[$t['type']])) $summary[$t['type']] += (float)$t['amount'];
 }
 
-$pageTitle = 'KlookCash Saya';
+$pageTitle = t('KlookCash Saya');
 require_once 'includes/header-klook.php';
 ?>
 <section class="py-4">
