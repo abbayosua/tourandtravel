@@ -6,22 +6,22 @@ require_once '../includes/auth.php';
 cekLogin();
 
 $msg = '';
-if (isset($_GET['msg'])) $msg = match($_GET['msg']) { 'added' => 'Berhasil ditambahkan', 'updated' => 'Berhasil diperbarui', 'deleted' => 'Berhasil dihapus', default => '' };
+if (isset($_GET['msg'])) $msg = match($_GET['msg']) { 'added' => t('Berhasil ditambahkan'), 'updated' => t('Berhasil diperbarui'), 'deleted' => t('Berhasil dihapus'), default => '' };
 if (isset($_GET['delete'])) { $id=(int)$_GET['delete']; db()->prepare("DELETE FROM attractions WHERE id=?")->execute([$id]); header('Location: attractions.php?msg=deleted'); exit; }
 
 $items = db()->query("SELECT * FROM attractions ORDER BY created_at DESC")->fetchAll();
 
-$pageTitle = 'Kelola Tiket Wisata';
+$pageTitle = t('Kelola Tiket Wisata');
 require_once 'includes/admin-header.php';
 ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="fw-bold mb-0">Tiket Tempat Wisata</h4>
-    <a href="attraction-edit.php" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Tambah</a>
+    <h4 class="fw-bold mb-0"><?= t('Tiket Tempat Wisata') ?></h4>
+    <a href="attraction-edit.php" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> <?= t('Tambah') ?></a>
 </div>
 <?php if ($msg): ?><div class="alert alert-success py-2"><?= $msg ?></div><?php endif; ?>
 <div class="card border-0 shadow-sm"><div class="card-body p-0">
 <table class="table table-hover mb-0 admin-table">
-<thead class="table-light"><tr><th>#</th><th>Nama</th><th>Kota</th><th>Kategori</th><th>Harga</th><th>Best Seller</th><th>Status</th><th>Aksi</th></tr></thead>
+<thead class="table-light"><tr><th>#</th><th><?= t('Nama') ?></th><th><?= t('Kota') ?></th><th><?= t('Kategori') ?></th><th><?= t('Harga') ?></th><th><?= t('Best Seller') ?></th><th><?= t('Status') ?></th><th><?= t('Aksi') ?></th></tr></thead>
 <tbody><?php foreach ($items as $i): ?><tr>
 <td><?=$i['id']?></td><td><?=e($i['name'])?></td><td><?=e($i['city'])?></td>
 <td><?=e($i['category'] ?? '-')?></td>

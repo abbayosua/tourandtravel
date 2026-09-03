@@ -40,8 +40,8 @@ if (isset($_GET['delete'])) {
 
 $msg = '';
 if (isset($_GET['msg'])) {
-    if ($_GET['msg'] === 'updated') $msg = 'Status booking berhasil diperbarui';
-    if ($_GET['msg'] === 'deleted') $msg = 'Booking berhasil dihapus';
+    if ($_GET['msg'] === 'updated') $msg = t('Status booking berhasil diperbarui');
+    if ($_GET['msg'] === 'deleted') $msg = t('Booking berhasil dihapus');
 }
 
 // Filter
@@ -110,23 +110,23 @@ usort($all, function ($a, $b) { return strtotime($b['created_at']) - strtotime($
 $typeName = ['tour' => 'Tour', 'attraction' => 'Atraksi', 'transfer' => 'Transfer', 'train' => 'Kereta', 'esim' => 'eSIM'];
 $typeBadge = ['tour' => 'primary', 'attraction' => 'info', 'transfer' => 'warning text-dark', 'train' => 'success', 'esim' => 'secondary'];
 
-$pageTitle = 'Kelola Booking';
+$pageTitle = t('Kelola Booking');
 require_once 'includes/admin-header.php';
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="fw-bold mb-0">Kelola Booking</h4>
+    <h4 class="fw-bold mb-0"><?= t('Kelola Booking') ?></h4>
     <div class="d-flex gap-2 flex-wrap">
-        <a href="bookings.php" class="btn btn-sm <?= !$statusFilter && !$typeFilter ? 'btn-primary' : 'btn-outline-primary' ?>">Semua</a>
+        <a href="bookings.php" class="btn btn-sm <?= !$statusFilter && !$typeFilter ? 'btn-primary' : 'btn-outline-primary' ?>"><?= t('Semua') ?></a>
         <?php foreach (['pending', 'confirmed', 'cancelled'] as $st): ?>
-        <a href="bookings.php?status=<?= $st ?><?= $typeFilter ? "&type=$typeFilter" : '' ?>" class="btn btn-sm <?= $statusFilter === $st ? 'btn-primary' : 'btn-outline-primary' ?>"><?= ucfirst($st) ?></a>
+        <a href="bookings.php?status=<?= $st ?><?= $typeFilter ? "&type=$typeFilter" : '' ?>" class="btn btn-sm <?= $statusFilter === $st ? 'btn-primary' : 'btn-outline-primary' ?>"><?= t(ucfirst($st)) ?></a>
         <?php endforeach; ?>
         <div class="dropdown">
-            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown"><?= $typeFilter ? $typeName[$typeFilter] : 'Semua Tipe' ?></button>
+            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown"><?= $typeFilter ? t($typeName[$typeFilter]) : t('Semua Tipe') ?></button>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="bookings.php<?= $statusFilter ? "?status=$statusFilter" : '' ?>">Semua Tipe</a></li>
+                <li><a class="dropdown-item" href="bookings.php<?= $statusFilter ? "?status=$statusFilter" : '' ?>"><?= t('Semua Tipe') ?></a></li>
                 <?php foreach ($typeName as $tk => $tn): ?>
-                <li><a class="dropdown-item" href="bookings.php?type=<?= $tk ?><?= $statusFilter ? "&status=$statusFilter" : '' ?>"><?= $tn ?></a></li>
+                <li><a class="dropdown-item" href="bookings.php?type=<?= $tk ?><?= $statusFilter ? "&status=$statusFilter" : '' ?>"><?= t($tn) ?></a></li>
                 <?php endforeach; ?>
             </ul>
         </div>
@@ -144,16 +144,16 @@ require_once 'includes/admin-header.php';
                 <thead class="table-light">
                     <tr>
                         <th>#</th>
-                        <th>Kode</th>
-                        <th>Nama</th>
-                        <th>Item</th>
-                        <th>Tipe</th>
-                        <th>Tanggal</th>
-                        <th>Qty</th>
-                        <th>Total</th>
-                        <th>Kontak</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
+                        <th><?= t('Kode') ?></th>
+                        <th><?= t('Nama') ?></th>
+                        <th><?= t('Item') ?></th>
+                        <th><?= t('Tipe') ?></th>
+                        <th><?= t('Tanggal') ?></th>
+                        <th><?= t('Qty') ?></th>
+                        <th><?= t('Total') ?></th>
+                        <th><?= t('Kontak') ?></th>
+                        <th><?= t('Status') ?></th>
+                        <th><?= t('Aksi') ?></th>
                     </tr>
                 </thead>
                 <tbody>

@@ -16,20 +16,20 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
         header('Location: ferries.php?msg=updated');exit;
     } else $error='Isi semua field';
 }
-$pageTitle='Edit Ferry'; require_once 'includes/admin-header.php';
+$pageTitle=t('Edit Ferry'); require_once 'includes/admin-header.php';
 ?>
-<h4 class="fw-bold mb-3">Edit Ferry</h4>
+<h4 class="fw-bold mb-3"><?= t('Edit Ferry') ?></h4>
 <?php if($error):?><div class="alert alert-danger py-2"><?=$error?></div><?php endif;?>
 <form method="POST">
 <div class="card border-0 shadow-sm mb-3"><div class="card-body">
-<div class="row g-2"><div class="col-md-4"><label class="form-label">Perusahaan</label><input name="company" class="form-control" value="<?=e($item['company'])?>" required></div>
-<div class="col-md-4"><label class="form-label">Kapal</label><input name="vessel_name" class="form-control" value="<?=e($item['vessel_name']??'')?>"></div>
-<div class="col-md-4"><label class="form-label">Harga (Rp)</label><input name="price" type="number" class="form-control" value="<?=$item['price']?>" required></div></div>
-<div class="row g-2 mt-2"><div class="col-md-4"><label class="form-label">Dari</label><input name="route_from" class="form-control" value="<?=e($item['route_from'])?>" required></div>
-<div class="col-md-4"><label class="form-label">Ke</label><input name="route_to" class="form-control" value="<?=e($item['route_to'])?>" required></div></div>
-<div class="row g-2 mt-2"><div class="col-md-4"><label class="form-label">Berangkat</label><input name="departure_time" type="time" class="form-control" value="<?=$item['departure_time']?>" required></div>
-<div class="col-md-4"><label class="form-label">Tiba</label><input name="arrival_time" type="time" class="form-control" value="<?=$item['arrival_time']?>" required></div></div>
+<div class="row g-2"><div class="col-md-4"><label class="form-label"><?= t('Perusahaan') ?></label><input name="company" class="form-control" value="<?=e($item['company'])?>" required></div>
+<div class="col-md-4"><label class="form-label"><?= t('Kapal') ?></label><input name="vessel_name" class="form-control" value="<?=e($item['vessel_name']??'')?>"></div>
+<div class="col-md-4"><label class="form-label"><?= t('Harga (Rp)') ?></label><input name="price" type="number" class="form-control" value="<?=$item['price']?>" required></div></div>
+<div class="row g-2 mt-2"><div class="col-md-4"><label class="form-label"><?= t('Dari') ?></label><input name="route_from" class="form-control" value="<?=e($item['route_from'])?>" required></div>
+<div class="col-md-4"><label class="form-label"><?= t('Ke') ?></label><input name="route_to" class="form-control" value="<?=e($item['route_to'])?>" required></div></div>
+<div class="row g-2 mt-2"><div class="col-md-4"><label class="form-label"><?= t('Berangkat') ?></label><input name="departure_time" type="time" class="form-control" value="<?=$item['departure_time']?>" required></div>
+<div class="col-md-4"><label class="form-label"><?= t('Tiba') ?></label><input name="arrival_time" type="time" class="form-control" value="<?=$item['arrival_time']?>" required></div></div>
 </div></div>
-<button type="submit" class="btn btn-primary">Simpan</button>
-<a href="ferries.php" class="btn btn-outline-secondary">Batal</a></form>
+<button type="submit" class="btn btn-primary"><?= t('Simpan') ?></button>
+<a href="ferries.php" class="btn btn-outline-secondary"><?= t('Batal') ?></a></form>
 <?php require_once 'includes/admin-footer.php';?>

@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $categoryId = (int)($_POST['category_id'] ?? 0);
     $isActive = (int)($_POST['is_active'] ?? 1);
 
-    if (!$question || !$answer || !$categoryId) $error = 'Pertanyaan, jawaban, dan kategori wajib diisi';
+    if (!$question || !$answer || !$categoryId) $error = t('Pertanyaan, jawaban, dan kategori wajib diisi');
 
     if (!$error) {
         if ($isAdd) {
@@ -40,11 +40,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = $isAdd ? 'Tambah FAQ' : 'Edit FAQ';
+$pageTitle = $isAdd ? t('Tambah FAQ') : t('Edit FAQ');
 require_once 'includes/admin-header.php';
 ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="fw-bold mb-0"><?= $isAdd ? 'Tambah' : 'Edit' ?> FAQ</h4>
+    <h4 class="fw-bold mb-0"><?= $isAdd ? t('Tambah') : t('Edit') ?> FAQ</h4>
     <a href="faq.php" class="btn btn-outline-secondary btn-sm">&larr; Kembali</a>
 </div>
 <?php if ($error): ?><div class="alert alert-danger py-2"><?=$error?></div><?php endif; ?>
@@ -52,14 +52,14 @@ require_once 'includes/admin-header.php';
 <div class="row">
 <div class="col-md-8">
 <div class="card border-0 shadow-sm mb-3"><div class="card-body">
-    <div class="mb-3"><label class="form-label">Pertanyaan</label><input name="question" class="form-control" value="<?=e($item['question']??'')?>" required></div>
-    <div class="mb-3"><label class="form-label">Jawaban</label><textarea name="answer" class="form-control" rows="6"><?=e($item['answer']??'')?></textarea></div>
+    <div class="mb-3"><label class="form-label"><?= t('Pertanyaan') ?></label><input name="question" class="form-control" value="<?=e($item['question']??'')?>" required></div>
+    <div class="mb-3"><label class="form-label"><?= t('Jawaban') ?></label><textarea name="answer" class="form-control" rows="6"><?=e($item['answer']??'')?></textarea></div>
 </div></div>
 </div>
 <div class="col-md-4">
 <div class="card border-0 shadow-sm mb-3"><div class="card-body">
     <div class="mb-3">
-        <label class="form-label">Kategori</label>
+        <label class="form-label"><?= t('Kategori') ?></label>
         <select name="category_id" class="form-select" required>
             <option value="">-- Pilih --</option>
             <?php foreach ($categories as $c): ?>
@@ -68,11 +68,11 @@ require_once 'includes/admin-header.php';
         </select>
     </div>
     <div class="mb-3">
-        <label class="form-label">Status</label>
+        <label class="form-label"><?= t('Status') ?></label>
         <select name="is_active" class="form-select"><option value="1" <?=($item['is_active']??1)?'selected':''?>>Aktif</option><option value="0" <?=empty($item['is_active'])?'selected':''?>>Nonaktif</option></select>
     </div>
 </div></div>
-<button type="submit" class="btn btn-primary w-100"><?= $isAdd ? 'Tambah' : 'Simpan' ?></button>
-<a href="faq.php" class="btn btn-outline-secondary w-100 mt-2">Batal</a>
+<button type="submit" class="btn btn-primary w-100"><?= $isAdd ? t('Tambah') : t('Simpan') ?></button>
+<a href="faq.php" class="btn btn-outline-secondary w-100 mt-2"><?= t('Batal') ?></a>
 </div></div></form>
 <?php require_once 'includes/admin-footer.php'; ?>

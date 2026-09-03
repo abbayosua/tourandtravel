@@ -26,8 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $contentLanguage = in_array($_POST['content_language'] ?? '', ['id', 'en']) ? $_POST['content_language'] : 'id';
 
     if (!$title) $error = 'Judul tour harus diisi';
-    elseif (!$category) $error = 'Kategori harus diisi';
-    elseif ($price <= 0) $error = 'Harga harus diisi';
+    elseif (!$category) $error = t('Kategori harus diisi');
+    elseif ($price <= 0) $error = t('Harga harus diisi');
 
     $coverImage = $tour['cover_image'];
     if (empty($error) && isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] !== UPLOAD_ERR_NO_FILE) {
@@ -160,7 +160,7 @@ if (isset($_GET['msg'])) {
     $msg = $msgs[$_GET['msg']] ?? '';
 }
 
-$pageTitle = 'Edit Tour';
+$pageTitle = t('Edit Tour');
 require_once 'includes/admin-header.php';
 ?>
 
@@ -180,22 +180,22 @@ require_once 'includes/admin-header.php';
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-body">
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Judul Tour</label>
+                        <label class="form-label fw-semibold"><?= t('Judul Tour') ?></label>
                         <input type="text" name="title" class="form-control" value="<?= e($tour['title']) ?>" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Deskripsi</label>
+                        <label class="form-label fw-semibold"><?= t('Deskripsi') ?></label>
                         <textarea name="description" class="form-control" rows="5"><?= e($tour['description']) ?></textarea>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Gambar Cover</label>
+                        <label class="form-label fw-semibold"><?= t('Gambar Cover') ?></label>
                         <?php if ($tour['cover_image']): ?>
                             <div class="mb-2">
                                 <img src="../uploads/<?= e($tour['cover_image']) ?>" style="max-height: 100px; border-radius: 8px;">
                             </div>
                         <?php endif; ?>
                         <input type="file" name="cover_image" class="form-control" accept="image/jpeg,image/png,image/webp">
-                        <div class="form-text">Kosongkan jika tidak ingin mengubah gambar</div>
+                        <div class="form-text"><?= t('Kosongkan jika tidak ingin mengubah gambar') ?></div>
                     </div>
                 </div>
             </div>
@@ -204,11 +204,11 @@ require_once 'includes/admin-header.php';
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-body">
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Kategori</label>
+                        <label class="form-label fw-semibold"><?= t('Kategori') ?></label>
                         <input type="text" name="category" class="form-control" value="<?= e($tour['category']) ?>" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Harga</label>
+                        <label class="form-label fw-semibold"><?= t('Harga') ?></label>
                         <div class="input-group">
                             <select name="price_currency" class="form-select" style="max-width: 100px;">
                                 <?php foreach (['IDR' => 'Rp (IDR)', 'SGD' => 'S$ (SGD)', 'USD' => '$ (USD)'] as $code => $label): ?>
@@ -219,25 +219,25 @@ require_once 'includes/admin-header.php';
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Bahasa Konten</label>
+                        <label class="form-label fw-semibold"><?= t('Bahasa Konten') ?></label>
                         <select name="content_language" class="form-select">
                             <option value="id" <?= ($tour['content_language'] ?? 'id') === 'id' ? 'selected' : '' ?>>🇮🇩 Indonesia (asli)</option>
                             <option value="en" <?= ($tour['content_language'] ?? 'id') === 'en' ? 'selected' : '' ?>>🇬🇧 English (asli)</option>
                         </select>
-                        <div class="form-text">Konten akan otomatis diterjemahkan ke bahasa lain</div>
+                        <div class="form-text"><?= t('Konten akan otomatis diterjemahkan ke bahasa lain') ?></div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Max Peserta</label>
-                        <label class="form-label fw-semibold">Max Peserta</label>
+                        <label class="form-label fw-semibold"><?= t('Max Peserta') ?></label>
+                        <label class="form-label fw-semibold"><?= t('Max Peserta') ?></label>
                         <input type="number" name="max_participants" class="form-control" min="1" value="<?= $tour['max_participants'] ?>">
                     </div>
                     <div class="mb-3 form-check">
                         <input type="checkbox" name="is_active" class="form-check-input" id="isActive" <?= $tour['is_active'] ? 'checked' : '' ?>>
-                        <label class="form-check-label" for="isActive">Aktif</label>
+                        <label class="form-check-label" for="isActive"><?= t('Aktif') ?></label>
                     </div>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary w-100">Update Tour</button>
+            <button type="submit" class="btn btn-primary w-100"><?= t('Update Tour') ?></button>
             <a href="tours.php" class="btn btn-outline-secondary w-100 mt-2">Kembali</a>
         </div>
     </div>
@@ -253,15 +253,15 @@ require_once 'includes/admin-header.php';
         <div class="collapse mb-3" id="addDateForm">
             <form method="POST" class="row g-2 bg-light p-3 rounded">
                 <div class="col-md-4">
-                    <label class="form-label small">Tanggal Berangkat</label>
+                    <label class="form-label small"><?= t('Tanggal Berangkat') ?></label>
                     <input type="date" name="departure_date" class="form-control form-control-sm" required>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label small">Tanggal Kembali</label>
+                    <label class="form-label small"><?= t('Tanggal Kembali') ?></label>
                     <input type="date" name="return_date" class="form-control form-control-sm" required>
                 </div>
                 <div class="col-md-2">
-                    <label class="form-label small">Slot</label>
+                    <label class="form-label small"><?= t('Slot') ?></label>
                     <input type="number" name="slots" class="form-control form-control-sm" min="1" value="20" required>
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
@@ -309,23 +309,23 @@ require_once 'includes/admin-header.php';
         <div class="collapse mb-3" id="addItineraryForm">
             <form method="POST" class="row g-2 bg-light p-3 rounded">
                 <div class="col-md-1">
-                    <label class="form-label small">Hari</label>
+                    <label class="form-label small"><?= t('Hari') ?></label>
                     <input type="number" name="day" class="form-control form-control-sm" min="1" required>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label small">Judul</label>
+                    <label class="form-label small"><?= t('Judul') ?></label>
                     <input type="text" name="it_title" class="form-control form-control-sm" required>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label small">Deskripsi</label>
+                    <label class="form-label small"><?= t('Deskripsi') ?></label>
                     <textarea name="it_desc" class="form-control form-control-sm" rows="1"></textarea>
                 </div>
                 <div class="col-md-2">
-                    <label class="form-label small">Makan</label>
+                    <label class="form-label small"><?= t('Makan') ?></label>
                     <input type="text" name="meals" class="form-control form-control-sm" placeholder="Sarapan, makan siang">
                 </div>
                 <div class="col-md-1">
-                    <label class="form-label small">Akomodasi</label>
+                    <label class="form-label small"><?= t('Akomodasi') ?></label>
                     <input type="text" name="accommodation" class="form-control form-control-sm" placeholder="Hotel">
                 </div>
                 <div class="col-md-1 d-flex align-items-end">
@@ -382,7 +382,7 @@ require_once 'includes/admin-header.php';
         <form method="POST" enctype="multipart/form-data" class="mb-3">
             <div class="row g-2 align-items-end">
                 <div class="col-md-9">
-                    <label class="form-label small">Pilih Gambar (bisa banyak)</label>
+                    <label class="form-label small"><?= t('Pilih Gambar (bisa banyak)') ?></label>
                     <input type="file" name="gallery_images[]" class="form-control form-control-sm" accept="image/jpeg,image/png,image/webp" multiple required>
                 </div>
                 <div class="col-md-3 d-grid">

@@ -32,9 +32,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_settings'])) {
             if ($serverUrl) $current['server_url'] = rtrim($serverUrl, '/');
 
             if (file_put_contents($configFile, json_encode($current, JSON_PRETTY_PRINT), LOCK_EX)) {
-                $message = 'Pengaturan WhatsApp berhasil disimpan';
+                $message = t('Pengaturan WhatsApp berhasil disimpan');
             } else {
-                $error = 'Gagal menyimpan file config';
+                $error = t('Gagal menyimpan file config');
             }
         }
     }
@@ -79,7 +79,7 @@ if (file_exists($logFile)) {
     $lastLog = array_slice($lines, -5);
 }
 
-$pageTitle = 'Pengaturan WhatsApp';
+$pageTitle = t('Pengaturan WhatsApp');
 require_once 'includes/admin-header.php';
 ?>
 
@@ -92,7 +92,7 @@ require_once 'includes/admin-header.php';
 
 <div class="row">
         <div class="col-12">
-            <h4 class="fw-bold mb-4"><i class="bi bi-whatsapp me-2 text-success"></i>Pengaturan WhatsApp</h4>
+            <h4 class="fw-bold mb-4"><i class="bi bi-whatsapp me-2 text-success"></i><?= t('Pengaturan WhatsApp') ?></h4>
         </div>
     </div>
 
@@ -109,13 +109,13 @@ require_once 'includes/admin-header.php';
         <div class="col-md-6">
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
-                    <h6 class="fw-semibold mb-3"><i class="bi bi-phone me-2"></i>Koneksi Pengirim WA</h6>
-                    <p class="small text-muted mb-2">Nomor WhatsApp yang digunakan untuk mengirim notifikasi ke supplier.</p>
+                    <h6 class="fw-semibold mb-3"><i class="bi bi-phone me-2"></i><?= t('Koneksi Pengirim WA') ?></h6>
+                    <p class="small text-muted mb-2"><?= t('Nomor WhatsApp yang digunakan untuk mengirim notifikasi ke supplier.') ?></p>
 
                     <div id="connectionStatus" class="mb-3">
                         <div class="text-center py-3">
                             <div class="spinner-border spinner-border-sm text-primary me-2"></div>
-                            <span class="text-muted small">Memuat status...</span>
+                            <span class="text-muted small"><?= t('Memuat status...') ?></span>
                         </div>
                     </div>
 
@@ -149,12 +149,12 @@ require_once 'includes/admin-header.php';
             <!-- Konfigurasi -->
             <div class="card border-0 shadow-sm mt-4">
                 <div class="card-body">
-                    <h6 class="fw-semibold mb-3"><i class="bi bi-gear me-2"></i>Konfigurasi</h6>
+                    <h6 class="fw-semibold mb-3"><i class="bi bi-gear me-2"></i><?= t('Konfigurasi') ?></h6>
 
                     <div class="mb-3">
                         <div class="d-flex align-items-center gap-2 mb-2">
                             <span class="badge bg-<?= $waStatus === 'ok' ? 'success' : 'danger' ?>">
-                                <?= $waStatus === 'ok' ? 'Server Terhubung' : 'Server Tidak Terhubung' ?>
+                                <?= $waStatus === 'ok' ? t('Server Terhubung') : t('Server Tidak Terhubung') ?>
                             </span>
                             <small class="text-muted">WUZAPI Server</small>
                         </div>
@@ -163,22 +163,22 @@ require_once 'includes/admin-header.php';
                     <form method="POST">
                         <input type="hidden" name="save_settings" value="1">
                         <div class="mb-3">
-                            <label class="form-label small fw-semibold">Nomor WA Admin/Supplier <span class="text-danger">*</span></label>
+                            <label class="form-label small fw-semibold"><?= t('Nomor WA Admin/Supplier') ?> <span class="text-danger">*</span></label>
                             <input type="text" name="admin_phone" class="form-control" value="<?= e($wa_settings['admin_phone']) ?>" placeholder="6285174488415" required>
-                            <div class="form-text">Nomor tujuan notifikasi booking baru. Diawali 62, tanpa + atau spasi.</div>
+                            <div class="form-text"><?= t('Nomor tujuan notifikasi booking baru. Diawali 62, tanpa + atau spasi.') ?></div>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label small fw-semibold">Token Akun WUZAPI</label>
+                            <label class="form-label small fw-semibold"><?= t('Token Akun WUZAPI') ?></label>
                             <input type="text" name="token" class="form-control" value="<?= e($wa_settings['token']) ?>" placeholder="abbayosua">
-                            <div class="form-text">Token akun pengirim WA. Kosongkan jika tidak diubah.</div>
+                            <div class="form-text"><?= t('Token akun pengirim WA. Kosongkan jika tidak diubah.') ?></div>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label small fw-semibold">Server URL</label>
+                            <label class="form-label small fw-semibold"><?= t('Server URL') ?></label>
                             <input type="text" name="server_url" class="form-control" value="<?= e($wa_settings['server_url']) ?>" placeholder="http://45.158.126.130:48499">
                             <div class="form-text">Kosongkan jika tidak diubah.</div>
                         </div>
                         <button type="submit" class="btn btn-success w-100">
-                            <i class="bi bi-check2 me-1"></i> Simpan Pengaturan
+                            <i class="bi bi-check2 me-1"></i> <?= t('Simpan Pengaturan') ?>
                         </button>
                     </form>
                 </div>
@@ -187,14 +187,14 @@ require_once 'includes/admin-header.php';
             <!-- Test Send -->
             <div class="card border-0 shadow-sm mt-4">
                 <div class="card-body">
-                    <h6 class="fw-semibold mb-3"><i class="bi bi-send me-2"></i>Test Kirim WA</h6>
+                    <h6 class="fw-semibold mb-3"><i class="bi bi-send me-2"></i><?= t('Test Kirim WA') ?></h6>
                     <form method="POST" action="wa-test.php">
                         <div class="mb-2">
-                            <label class="form-label small">Nomor Tujuan</label>
+                            <label class="form-label small"><?= t('Nomor Tujuan') ?></label>
                             <input type="text" name="test_phone" class="form-control form-control-sm" value="<?= e($wa_settings['admin_phone']) ?>">
                         </div>
                         <button type="submit" class="btn btn-sm btn-outline-success">
-                            <i class="bi bi-whatsapp me-1"></i> Kirim Test
+                            <i class="bi bi-whatsapp me-1"></i> <?= t('Kirim Test') ?>
                         </button>
                     </form>
                 </div>
@@ -205,8 +205,8 @@ require_once 'includes/admin-header.php';
         <div class="col-md-6">
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
-                    <h6 class="fw-semibold mb-3"><i class="bi bi-info-circle me-2"></i>Informasi Notifikasi</h6>
-                    <p class="small text-muted mb-2">Saat ada booking baru, notifikasi otomatis dikirim ke nomor WA Admin/Supplier:</p>
+                    <h6 class="fw-semibold mb-3"><i class="bi bi-info-circle me-2"></i><?= t('Informasi Notifikasi') ?></h6>
+                    <p class="small text-muted mb-2"><?= t('Saat ada booking baru, notifikasi otomatis dikirim ke nomor WA Admin/Supplier:') ?></p>
                     <ul class="small">
                         <li>Kode Booking</li>
                         <li>Nama Tour</li>
@@ -217,11 +217,11 @@ require_once 'includes/admin-header.php';
                         <li>Link Tracking</li>
                     </ul>
                     <hr>
-                    <h6 class="fw-semibold mb-2"><i class="bi bi-terminal me-2"></i>Log Webhook</h6>
+                    <h6 class="fw-semibold mb-2"><i class="bi bi-terminal me-2"></i><?= t('Log Webhook') ?></h6>
                     <?php if ($lastLog): ?>
                         <pre class="bg-dark text-light p-2 rounded small" style="max-height: 200px; overflow-y: auto; font-size: 11px;"><?php foreach ($lastLog as $l): ?><?= e($l) ?><?php endforeach; ?></pre>
                     <?php else: ?>
-                        <p class="text-muted small mb-0">Belum ada aktivitas webhook.</p>
+                        <p class="text-muted small mb-0"><?= t('Belum ada aktivitas webhook.') ?></p>
                     <?php endif; ?>
                 </div>
             </div>

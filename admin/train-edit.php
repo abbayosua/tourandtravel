@@ -46,11 +46,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = $isAdd ? 'Tambah Kereta' : 'Edit Kereta';
+$pageTitle = $isAdd ? t('Tambah Kereta') : t('Edit Kereta');
 require_once 'includes/admin-header.php';
 ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="fw-bold mb-0"><?= $isAdd ? 'Tambah' : 'Edit' ?> Kereta</h4>
+    <h4 class="fw-bold mb-0"><?= $isAdd ? t('Tambah') : t('Edit') ?> Kereta</h4>
     <a href="trains.php" class="btn btn-outline-secondary btn-sm">&larr; Kembali</a>
 </div>
 <?php if ($error): ?><div class="alert alert-danger py-2"><?=$error?></div><?php endif; ?>
@@ -58,24 +58,24 @@ require_once 'includes/admin-header.php';
 <div class="row">
 <div class="col-md-8">
 <div class="card border-0 shadow-sm mb-3"><div class="card-body">
-    <div class="mb-3"><label class="form-label">Nama Kereta</label><input name="name" class="form-control" value="<?=e($item['name']??'')?>" required></div>
-    <div class="mb-3"><label class="form-label">Durasi (contoh: 5j 30m)</label><input name="duration" class="form-control" value="<?=e($item['duration']??'')?>" placeholder="5j 30m"></div>
+    <div class="mb-3"><label class="form-label"><?= t('Nama Kereta') ?></label><input name="name" class="form-control" value="<?=e($item['name']??'')?>" required></div>
+    <div class="mb-3"><label class="form-label"><?= t('Durasi (contoh: 5j 30m)') ?></label><input name="duration" class="form-control" value="<?=e($item['duration']??'')?>" placeholder="5j 30m"></div>
 </div></div>
 </div>
 <div class="col-md-4">
 <div class="card border-0 shadow-sm mb-3"><div class="card-body">
-    <div class="mb-3"><label class="form-label">Stasiun Asal</label><input name="route_from" class="form-control" value="<?=e($item['route_from']??'')?>" required></div>
-    <div class="mb-3"><label class="form-label">Stasiun Tujuan</label><input name="route_to" class="form-control" value="<?=e($item['route_to']??'')?>" required></div>
-    <div class="mb-3"><label class="form-label">Keberangkatan</label><input name="departure_time" type="time" class="form-control" value="<?=e($item['departure_time']??'')?>" required></div>
-    <div class="mb-3"><label class="form-label">Tiba</label><input name="arrival_time" type="time" class="form-control" value="<?=e($item['arrival_time']??'')?>" required></div>
-    <div class="mb-3"><label class="form-label">Harga (Rp)</label><input name="price" type="number" class="form-control" value="<?=$item['price']??0?>" required></div>
-    <div class="mb-3"><label class="form-label">Kelas</label><input name="class" class="form-control" value="<?=e($item['class']??'')?>" placeholder="Eksekutif, Bisnis, ..."></div>
+    <div class="mb-3"><label class="form-label"><?= t('Stasiun Asal') ?></label><input name="route_from" class="form-control" value="<?=e($item['route_from']??'')?>" required></div>
+    <div class="mb-3"><label class="form-label"><?= t('Stasiun Tujuan') ?></label><input name="route_to" class="form-control" value="<?=e($item['route_to']??'')?>" required></div>
+    <div class="mb-3"><label class="form-label"><?= t('Keberangkatan') ?></label><input name="departure_time" type="time" class="form-control" value="<?=e($item['departure_time']??'')?>" required></div>
+    <div class="mb-3"><label class="form-label"><?= t('Tiba') ?></label><input name="arrival_time" type="time" class="form-control" value="<?=e($item['arrival_time']??'')?>" required></div>
+    <div class="mb-3"><label class="form-label"><?= t('Harga (Rp)') ?></label><input name="price" type="number" class="form-control" value="<?=$item['price']??0?>" required></div>
+    <div class="mb-3"><label class="form-label"><?= t('Kelas') ?></label><input name="class" class="form-control" value="<?=e($item['class']??'')?>" placeholder="Eksekutif, Bisnis, ..."></div>
     <div class="mb-3">
-        <label class="form-label">Status</label>
+        <label class="form-label"><?= t('Status') ?></label>
         <select name="is_active" class="form-select"><option value="1" <?=($item['is_active']??1)?'selected':''?>>Aktif</option><option value="0" <?=empty($item['is_active'])?'selected':''?>>Nonaktif</option></select>
     </div>
 </div></div>
-<button type="submit" class="btn btn-primary w-100"><?= $isAdd ? 'Tambah' : 'Simpan' ?></button>
-<a href="trains.php" class="btn btn-outline-secondary w-100 mt-2">Batal</a>
+<button type="submit" class="btn btn-primary w-100"><?= $isAdd ? t('Tambah') : t('Simpan') ?></button>
+<a href="trains.php" class="btn btn-outline-secondary w-100 mt-2"><?= t('Batal') ?></a>
 </div></div></form>
 <?php require_once 'includes/admin-footer.php'; ?>

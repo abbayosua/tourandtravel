@@ -57,7 +57,7 @@ $pageTitle = $isAdd ? 'Tambah Tiket Wisata' : 'Edit Tiket Wisata';
 require_once 'includes/admin-header.php';
 ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="fw-bold mb-0"><?= $isAdd ? 'Tambah' : 'Edit' ?> Tiket Tempat Wisata</h4>
+    <h4 class="fw-bold mb-0"><?= $isAdd ? t('Tambah') : t('Edit') ?> <?= t('Tiket Tempat Wisata') ?></h4>
     <a href="attractions.php" class="btn btn-outline-secondary btn-sm">&larr; Kembali</a>
 </div>
 <?php if ($error): ?><div class="alert alert-danger py-2"><?=$error?></div><?php endif; ?>
@@ -65,9 +65,9 @@ require_once 'includes/admin-header.php';
 <div class="row">
 <div class="col-md-8">
 <div class="card border-0 shadow-sm mb-3"><div class="card-body">
-    <div class="mb-3"><label class="form-label">Nama Tiket</label><input name="name" class="form-control" value="<?=e($item['name']??'')?>" required></div>
-    <div class="mb-3"><label class="form-label">Deskripsi</label><textarea name="description" class="form-control" rows="5"><?=e($item['description']??'')?></textarea></div>
-    <div class="mb-3"><label class="form-label">Cover Image (Upload)</label>
+    <div class="mb-3"><label class="form-label"><?= t('Nama Tiket') ?></label><input name="name" class="form-control" value="<?=e($item['name']??'')?>" required></div>
+    <div class="mb-3"><label class="form-label"><?= t('Deskripsi') ?></label><textarea name="description" class="form-control" rows="5"><?=e($item['description']??'')?></textarea></div>
+    <div class="mb-3"><label class="form-label"><?= t('Cover Image (Upload)') ?></label>
         <input type="file" name="cover_image" class="form-control" accept="image/jpeg,image/png,image/webp">
         <?php if (!empty($item['cover_image'])): ?><small class="text-muted">Current: <?=e($item['cover_image'])?></small><?php endif; ?>
     </div>
@@ -75,24 +75,24 @@ require_once 'includes/admin-header.php';
 </div>
 <div class="col-md-4">
 <div class="card border-0 shadow-sm mb-3"><div class="card-body">
-    <div class="mb-3"><label class="form-label">Kota</label><input name="city" class="form-control" value="<?=e($item['city']??'')?>" required></div>
-    <div class="mb-3"><label class="form-label">Kategori</label><input name="category" class="form-control" value="<?=e($item['category']??'')?>" placeholder="Taman & Hiburan, Landmark, ..."></div>
-    <div class="mb-3"><label class="form-label">Harga (Rp)</label><input name="price" type="number" class="form-control" value="<?=$item['price']??0?>" required></div>
-    <div class="mb-3"><label class="form-label">Durasi</label><input name="duration" class="form-control" value="<?=e($item['duration']??'')?>" placeholder="1 hari, 2-3 jam, ..."></div>
+    <div class="mb-3"><label class="form-label"><?= t('Kota') ?></label><input name="city" class="form-control" value="<?=e($item['city']??'')?>" required></div>
+    <div class="mb-3"><label class="form-label"><?= t('Kategori') ?></label><input name="category" class="form-control" value="<?=e($item['category']??'')?>" placeholder="Taman & Hiburan, Landmark, ..."></div>
+    <div class="mb-3"><label class="form-label"><?= t('Harga (Rp)') ?></label><input name="price" type="number" class="form-control" value="<?=$item['price']??0?>" required></div>
+    <div class="mb-3"><label class="form-label"><?= t('Durasi') ?></label><input name="duration" class="form-control" value="<?=e($item['duration']??'')?>" placeholder="1 hari, 2-3 jam, ..."></div>
     <div class="mb-3">
-        <label class="form-label">Best Seller</label>
+        <label class="form-label"><?= t('Best Seller') ?></label>
         <select name="best_seller" class="form-select"><option value="0" <?=empty($item['best_seller'])?'selected':''?>>Tidak</option><option value="1" <?=!empty($item['best_seller'])?'selected':''?>>Ya</option></select>
     </div>
     <div class="mb-3">
-        <label class="form-label">Konfirmasi Instan</label>
+        <label class="form-label"><?= t('Konfirmasi Instan') ?></label>
         <select name="instant_confirmation" class="form-select"><option value="1" <?=($item['instant_confirmation']??1)?'selected':''?>>Ya</option><option value="0" <?=empty($item['instant_confirmation'])?'selected':''?>>Tidak</option></select>
     </div>
     <div class="mb-3">
-        <label class="form-label">Batal Gratis</label>
+        <label class="form-label"><?= t('Batal Gratis') ?></label>
         <select name="free_cancellation" class="form-select"><option value="0" <?=empty($item['free_cancellation'])?'selected':''?>>Tidak</option><option value="1" <?=!empty($item['free_cancellation'])?'selected':''?>>Ya</option></select>
     </div>
     <div class="mb-3">
-        <label class="form-label">Status</label>
+        <label class="form-label"><?= t('Status') ?></label>
         <select name="is_active" class="form-select"><option value="1" <?=($item['is_active']??1)?'selected':''?>>Aktif</option><option value="0" <?=empty($item['is_active'])?'selected':''?>>Nonaktif</option></select>
     </div>
 </div></div>

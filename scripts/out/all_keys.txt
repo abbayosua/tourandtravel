@@ -1,10 +1,15 @@
 -- Pilih Tanggal --
+/malam
+/malam termasuk pajak
 AC
 Admin
+Admin Panel
 Ajak Teman, Dapat Diskon
 Ajak Teman, Dapatkan KlookCash!
 Ajak teman daftar & booking, kamu dan teman dapat diskon Rp100.000!
+Akomodasi
 Aksi
+Aktif
 Aktivasi instan setelah pembayaran
 Alamat / terminal / hotel
 Alamat email Anda
@@ -20,11 +25,16 @@ Bagikan
 Bagikan link di bawah — Anda & teman dapat reward Rp50.000 saat teman berhasil daftar.
 Bagikan pengalaman Anda...
 Bahan bakar
+Bahasa Konten
 Bangku reclining
 Bantuan
 Bantuan 24 jam
+Batal
 Batal Gratis
 Beli Sekarang
+Belum ada aktivitas webhook.
+Belum ada booking
+Belum ada data kurs. Klik "Refresh" untuk mengambil data terbaru.
 Belum ada item di collection ini.
 Belum ada pertanyaan.
 Belum ada referral. Bagikan link Anda!
@@ -33,15 +43,23 @@ Belum ada ulasan untuk tour ini.
 Beranda
 Berangkat
 Berhasil Daftar
+Berhasil dihapus
+Berhasil diperbarui
+Berhasil ditambahkan
 Berlangganan
 Berlangganan newsletter kami untuk promo eksklusif & tips perjalanan.
 Best Seller
 Bintang
 Bintang Tertinggi
+Bisnis
 Blog
 Bonus
+Booking
+Booking Berhasil
 Booking Saya
 Booking Sekarang
+Booking Terbaru
+Booking berhasil dihapus
 Booking untuk dapat KlookCash
 Cakupan
 Cari
@@ -55,7 +73,10 @@ Coba: CGK → DPS, SIN → CGK, atau ubah tanggal.
 Collection Tidak Ditemukan
 Collection tidak ditemukan
 Colokan listrik
+Confirmed
+Contoh Konversi dari IDR 10.000.000
 Contoh: Batam → Singapore, Johor → Batam.
+Cover Image (Upload)
 Daftar
 Daftar Referral
 Dapatkan Penawaran Terbaik
@@ -63,48 +84,96 @@ Dapatkan TourCash
 Dapatkan promo spesial untuk pendaftaran hari ini
 Dari
 Dari 2.000+ ulasan
+Dashboard
+Deskripsi
 Destinasi
 Destinasi Populer
 Detail
 Detail Produk
 Driver profesional
 Durasi
+Durasi (contoh: 5j 30m)
+Durasi (hari)
 Earn
+Earning Rate KlookCash
+Edit
+Edit FAQ
+Edit Ferry
+Edit Hotel
+Edit Kategori
+Edit Kereta
+Edit Pesawat
+Edit Rental Mobil
+Edit Tour
+Edit Transfer
+Edit eSIM
+Ekonomi
 Email
 Email (opsional)
+Email atau password salah
+Email sudah terdaftar
+Email tidak valid
+Explorer (%)
+Explorer — minimal booking
+FAQ
 FAQ / Bantuan
 Fasilitas
 Fasilitas Termasuk
 Ferry
 Filter
+First
 Flash Deals
 Format JPG/PNG/WebP, max 2MB
+Gagal mengambil kurs dari Frankfurter API
+Gagal menyimpan file config
+Gambar
+Gambar Cover
+Gold (%)
+Gold — minimal booking
 Gunakan KlookCash
 Gunakan untuk potongan booking berikutnya
 HOT
+Hapus?
 Harga
+Harga (Rp)
 Harga Terendah
 Harga Termahal
 Harga Termurah
 Harga Tertinggi
 Harga Transparan
+Harga harus diisi
 Harga per Malam
+Harga/Hari
+Harga/Hari (Rp)
+Harga/Malam (Rp)
+Hari
 Hasil live tidak tersedia, menampilkan jadwal lokal.
 Hemat
 Hotel
 Hubungi Kami
 Ikuti Kami
 Ikuti tren travel, itinerary ideas, dan tips traveling terbaru.
+Informasi Notifikasi
+Instan
+Item
 Itinerary
+Jadwal
 Jadwal Ferry
 Jadwal Keberangkatan
 Jadwal keberangkatan pukul
+Jam
 Jam Berangkat
 Jam Operasional
 Jam Penjemputan
 Jam penjemputan harus diisi
+Jawaban
 Jelajahi Tour
+Joy+ (%)
+Joy+ — minimal booking
+Judul
+Judul Tour
 Jumlah
+Jumlah FAQ
 Jumlah Kursi
 Jumlah Penumpang
 Jumlah Peserta
@@ -114,80 +183,166 @@ Jumlah minimal 1
 Jumlah penumpang minimal 1
 Jumlah peserta minimal 1
 Jumlah tiket minimal 1
+Kami akan menghubungi Anda via WhatsApp untuk konfirmasi.
 Kapal
+Kapasitas
 Kategori
+Kategori FAQ
 Kategori Wisata
+Kategori harus diisi
 Ke
+Keberangkatan
 Kelas
+Kelola Atraksi
+Kelola Booking
+Kelola FAQ
+Kelola Ferry
+Kelola Hotel
+Kelola Kereta
+Kelola Kereta Api
+Kelola Pesawat
+Kelola Rental
+Kelola Rental Mobil
+Kelola Tiket Wisata
+Kelola Tour
+Kelola Transfer
+Kelola eSIM
 Keluar
+Kembali
 Kembali ke Beranda
 Kembali ke Catalog
 Kembali ke Katalog
+Kembali ke Website
 Kenapa Pilih
+Kendaraan
 Kepuasan
 Kereta
 Kereta Api
 Kereta Lain
 Kereta Tidak Ditemukan
 Kereta tidak ditemukan
+Kirim Test
 Kirim Ulasan
+KlookCash Saya
+Kode
+Kode Promo
 Kode Promo (opsional)
+Kode promo sudah ada
+Kode promo wajib diisi
+Koleksi
+Koleksi Tour
+Koneksi Pengirim WA
+Konfigurasi
 Konfirmasi Instan
 Konfirmasi instan via WhatsApp
+Konfirmasi password tidak cocok
 Kontak
+Konten akan otomatis diterjemahkan ke bahasa lain
+Kosongkan jika tidak ingin mengubah gambar
 Kota
 Kuota
+Kuota Data
+Kurs Terkini (EUR Base)
+Kursi
 Lacak Booking
 Langsung
 Layanan
 Lihat Semua
+Lihat Website
+Log Webhook
 Login
+Login Admin
 Login untuk Booking
 Lokasi
 Lokasi Penjemputan
 Lokasi penjemputan harus diisi
+Loyalty Settings
 Maaf, sisa slot hanya
+Makan
 Maksimal
+Malam (22-05)
 Masa aktif
 Masih butuh bantuan?
 Maskapai
 Masuk
 Masuk / Daftar
 Masukkan kota asal dan tujuan untuk mencari jadwal ferry.
+Mata Uang
+Mata uang yang ditampilkan ke pengunjung
 Max
+Max 2MB. Format: JPG, PNG, WebP
+Max Pax
+Max Penumpang
+Max Peserta
+Memuat status...
+Menunggu
 Metode Pembayaran
 Mudah Booking
 Mulai Sekarang
 Nama
+Nama & kota wajib diisi
+Nama Hotel
+Nama Kategori
+Nama Kereta
 Nama Lengkap
+Nama Mobil
+Nama Tiket
+Nama Transfer
 Nama harus diisi
+Nama kategori wajib diisi
 Negara
 Nikmati perjalanan
+Nilai
+No.
+No. Penerbangan
 No. Penerbangan (opsional)
 No. WhatsApp
 No. WhatsApp harus diisi
+Nomor Tujuan
+Nomor WA Admin/Supplier
+Nomor WhatsApp yang digunakan untuk mengirim notifikasi ke supplier.
+Nomor tujuan notifikasi booking baru. Diawali 62, tanpa + atau spasi.
 One Way
+Pagi (05-12)
 Pakai
 Paket Tour
 Partner perjalanan terpercaya Anda. Kami menyediakan paket wisata domestik & internasional dengan harga terbaik.
+Pasangan
+Password
+Password minimal 6 karakter
 Pelajari
 Pelanggan
 Pelanggan Puas
 Pelanggan merekomendasikan kami
 Pembayaran aman & terenkripsi
 Pencarian
+Pendapatan
+Pending
 Pengalaman pelanggan yang sudah traveling bersama kami
+Pengaturan Loyalty
+Pengaturan Loyalty & KlookCash
+Pengaturan Mata Uang
+Pengaturan WA
+Pengaturan WhatsApp
+Pengaturan WhatsApp berhasil disimpan
+Pengaturan loyalty berhasil disimpan
 Penuh
 Penumpang
 Pergi
+Persentase dari total booking yang menjadi KlookCash reward.
+Pertanyaan
+Pertanyaan, jawaban, dan kategori wajib diisi
 Perusahaan
 Pesan
 Pesan Tiket
 Pesan Transfer
 Pesawat
+Peserta
 Pilih
 Pilih (Lokal)
+Pilih Gambar (bisa banyak)
 Pilih Tanggal
+Pilih minimal 1 tour
 Pilihan terbaik untuk liburan Anda
 Pramusaji
 Produk Tidak Ditemukan
@@ -196,9 +351,13 @@ Profil
 Promo
 Proses cepat & praktis
 Pusat Bantuan
+Qty
+Rate
 Rating
 Rating Pelanggan
 Referral
+Referral Program
+Refresh
 Refund
 Refundable
 Rekomendasi Paket Tour
@@ -206,12 +365,16 @@ Rental
 Rental Mobil
 Reset
 Reset Filter
+Revenue
 Reward
 Reward 5% dari total booking — bisa dipakai untuk booking berikutnya
 Riwayat Transaksi
 Round Trip
+Rute
+Saat ada booking baru, notifikasi otomatis dikirim ke nomor WA Admin/Supplier:
 Saldo KlookCash
 Salin
+Selamat datang
 Selimut
 Semua
 Semua Bintang
@@ -225,16 +388,44 @@ Semua Negara
 Semua Rating
 Semua Tipe
 Semua Tujuan
+Semua status
+Server Terhubung
+Server Tidak Terhubung
+Server URL
 Sesampainya di pelabuhan, tunjukkan e-ticket ke petugas.
 Setiap booking dapat poin reward. Tukarkan untuk diskon tour berikutnya!
 Sewa
+Siang (12-17)
 Siap Liburan?
 Siap bantu kapan saja
+Silver (%)
+Silver — minimal booking
+Simpan
+Simpan Pengaturan
+Simpan Tour
+Simpan kode booking dan link di atas untuk cek status pemesanan.
 Sisa
+Slot
+Sore (17-22)
 Spend
+Stasiun Asal
+Stasiun Tujuan
+Status
+Status booking berhasil diperbarui
+Sumber
 Tahun
+Tambah
+Tambah FAQ
+Tambah Kategori
+Tambah Kereta
+Tambah Koleksi
+Tambah Tour
+Tambah Transfer
+Tambah eSIM
 Tamu
 Tanggal
+Tanggal Berangkat
+Tanggal Kembali
 Tanggal Kunjungan
 Tanggal Penjemputan
 Tanggal Perjalanan
@@ -247,12 +438,15 @@ Temukan jawaban atas pertanyaan yang sering diajukan
 Temukan paket tour impian Anda dari ratusan destinasi
 Terapkan
 Tercepat
+Terkonfirmasi
 Termasuk
 Termurah
 Terpercaya
 Terpopuler
 Tersebar di 12+ destinasi
+Test Kirim WA
 Tiba
+Tidak
 Tidak ada biaya tersembunyi
 Tidak ada hotel ditemukan.
 Tidak ada jadwal ferry untuk rute/tanggal ini.
@@ -263,17 +457,26 @@ Tidak ada produk ditemukan.
 Tidak ada tiket ditemukan.
 Tidak ada tour ditemukan
 Tidak ada transfer ditemukan.
+Tier Threshold (Jumlah Booking)
 Tiket Lain di
 Tiket Tempat Wisata
 Tiket Tidak Ditemukan
 Tiket tidak ditemukan
 Tipe
+Tipe Asal
+Tipe Diskon
 Tipe Kendaraan
 Tipe Mobil
+Tipe Tujuan
 Toilet
+Token Akun WUZAPI
+Token akun pengirim WA. Kosongkan jika tidak diubah.
+Total
+Total Booking
 Total Referral
 Total Reward
 Tour
+Tour Aktif
 Tour Tidak Ditemukan
 Tour tidak ditemukan
 Transfer
@@ -282,12 +485,18 @@ Transfer Lain
 Transfer Tidak Ditemukan
 Transfer tidak ditemukan
 Transit
+Transmisi
 Tulis Ulasan
 Ulasan
 Ulasan berhasil dikirim, terima kasih!
+Update Tour
 Upload Foto Paspor
+Urutan
 Urutkan
+Username
+Username atau password salah
 Wishlist
+Ya
 Your World of Joy
 bagasi
 dan tiba pukul
@@ -319,3 +528,4 @@ tour ditemukan
 transfer ditemukan
 transit
 ulasan
+update setiap 24 jam

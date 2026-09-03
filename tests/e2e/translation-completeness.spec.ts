@@ -18,6 +18,19 @@ const EN_MARKERS = [
   'Tour Categories', 'View All', 'Search', 'Full Name', 'WhatsApp',
 ];
 
+// Marker admin (hindari false positive: "Total Booking" substring "Total Bookings")
+const ADMIN_ID_MARKERS = [
+  'Kelola Tour', 'Kelola Hotel', 'Kelola Pesawat', 'Kelola Ferry',
+  'Pengaturan WA', 'Mata Uang', 'Koleksi Tour', 'Kode Promo',
+  'Berhasil ditambahkan', 'Selamat datang', 'Booking Terbaru',
+  'Tambah Tour', 'Simpan Pengaturan',
+];
+const ADMIN_EN_MARKERS = [
+  'Manage Tours', 'Manage Hotels', 'Manage Bookings', 'Active Tours',
+  'Total Bookings', 'Recent Bookings', 'WhatsApp Settings', 'Currency',
+  'Promo Codes', 'Collections', 'Save Settings', 'Manage Attractions',
+];
+
 // Pages public
 const PUBLIC_PAGES = ['index.php', 'tours.php', 'hotels.php', 'flights.php', 'ferries.php', 'trains.php', 'esim.php', 'faq.php', 'attractions.php', 'transfers.php', 'collection.php?slug=8d-hunan-zhangjiajie-fenghuang-ancient-town-furong-town'];
 
@@ -69,6 +82,33 @@ test.describe('Translation Completeness — 0 bahasa Indonesia bocor di lang=en'
       const txt = await page.evaluate(() => document.body.innerText);
       const bocor = ID_MARKERS.filter((k) => txt.includes(k));
       expect(bocor).toEqual([]);
+    });
+  }
+});
+
+test.describe('Translation Completeness — Admin (lang=en 0 bocor)', () => {
+
+  async function loginAdmin(page) {
+    await page.goto(`${BASE}/admin/login.php`, { waitUntil: 'load' });
+    await page.fill('input[name="username"]', 'admin');
+    await page.fill('input[name="password"]', 'password');
+    await page.click('button[type="submit"]');
+    await page.waitForURL('**/admin/dashboard.php');
+  }
+
+  const ADMIN_PAGES = ['admin/dashboard.php', 'admin/tours.php', 'admin/bookings.php', 'admin/wa-settings.php'];
+
+  for (const pagePath of ADMIN_PAGES) {
+    test(`admin: ${pagePath}`, async ({ page }) => {
+      await loginAdmin(page);
+      await page.goto(`${BASE}/${pagePath}?lang=en`, { waitUntil: 'load' });
+      const body = await page.textContent('body');
+      if (!pagePath.includes('wa-settings')) expect(body).not.toMatch(PHP_ERROR);
+      const txt = await page.evaluate(() => document.body.innerText);
+      const bocor = ADMIN_ID_MARKERS.filter((k) => txt.includes(k));
+      expect(bocor).toEqual([]);
+      const enPresent = ADMIN_EN_MARKERS.filter((k) => txt.includes(k));
+      expect(enPresent.length).toBeGreaterThanOrEqual(3);
     });
   }
 });

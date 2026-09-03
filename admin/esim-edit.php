@@ -44,11 +44,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = $isAdd ? 'Tambah eSIM' : 'Edit eSIM';
+$pageTitle = $isAdd ? t('Tambah eSIM') : t('Edit eSIM');
 require_once 'includes/admin-header.php';
 ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="fw-bold mb-0"><?= $isAdd ? 'Tambah' : 'Edit' ?> eSIM</h4>
+    <h4 class="fw-bold mb-0"><?= $isAdd ? t('Tambah') : t('Edit') ?> eSIM</h4>
     <a href="esim.php" class="btn btn-outline-secondary btn-sm">&larr; Kembali</a>
 </div>
 <?php if ($error): ?><div class="alert alert-danger py-2"><?=$error?></div><?php endif; ?>
@@ -62,22 +62,22 @@ require_once 'includes/admin-header.php';
 </div>
 <div class="col-md-4">
 <div class="card border-0 shadow-sm mb-3"><div class="card-body">
-    <div class="mb-3"><label class="form-label">Tipe</label><select name="type" class="form-select">
+    <div class="mb-3"><label class="form-label"><?= t('Tipe') ?></label><select name="type" class="form-select">
         <option value="esim" <?=($item['type']??'esim')==='esim'?'selected':''?>>eSIM</option>
         <option value="sim" <?=($item['type']??'')==='sim'?'selected':''?>>SIM</option>
         <option value="wifi" <?=($item['type']??'')==='wifi'?'selected':''?>>Pocket WiFi</option>
     </select></div>
-    <div class="mb-3"><label class="form-label">Negara</label><input name="country" class="form-control" value="<?=e($item['country']??'')?>" required></div>
-    <div class="mb-3"><label class="form-label">Cakupan</label><input name="coverage" class="form-control" value="<?=e($item['coverage']??'')?>" placeholder="Nasional, Regional, ..."></div>
-    <div class="mb-3"><label class="form-label">Kuota Data</label><input name="data_quota" class="form-control" value="<?=e($item['data_quota']??'')?>" placeholder="5GB, 10GB, ..." required></div>
-    <div class="mb-3"><label class="form-label">Durasi (hari)</label><input name="duration_days" type="number" class="form-control" value="<?=$item['duration_days']??7?>" min="1"></div>
-    <div class="mb-3"><label class="form-label">Harga (Rp)</label><input name="price" type="number" class="form-control" value="<?=$item['price']??0?>" required></div>
+    <div class="mb-3"><label class="form-label"><?= t('Negara') ?></label><input name="country" class="form-control" value="<?=e($item['country']??'')?>" required></div>
+    <div class="mb-3"><label class="form-label"><?= t('Cakupan') ?></label><input name="coverage" class="form-control" value="<?=e($item['coverage']??'')?>" placeholder="Nasional, Regional, ..."></div>
+    <div class="mb-3"><label class="form-label"><?= t('Kuota Data') ?></label><input name="data_quota" class="form-control" value="<?=e($item['data_quota']??'')?>" placeholder="5GB, 10GB, ..." required></div>
+    <div class="mb-3"><label class="form-label"><?= t('Durasi (hari)') ?></label><input name="duration_days" type="number" class="form-control" value="<?=$item['duration_days']??7?>" min="1"></div>
+    <div class="mb-3"><label class="form-label"><?= t('Harga (Rp)') ?></label><input name="price" type="number" class="form-control" value="<?=$item['price']??0?>" required></div>
     <div class="mb-3">
-        <label class="form-label">Status</label>
+        <label class="form-label"><?= t('Status') ?></label>
         <select name="is_active" class="form-select"><option value="1" <?=($item['is_active']??1)?'selected':''?>>Aktif</option><option value="0" <?=empty($item['is_active'])?'selected':''?>>Nonaktif</option></select>
     </div>
 </div></div>
-<button type="submit" class="btn btn-primary w-100"><?= $isAdd ? 'Tambah' : 'Simpan' ?></button>
-<a href="esim.php" class="btn btn-outline-secondary w-100 mt-2">Batal</a>
+<button type="submit" class="btn btn-primary w-100"><?= $isAdd ? t('Tambah') : t('Simpan') ?></button>
+<a href="esim.php" class="btn btn-outline-secondary w-100 mt-2"><?= t('Batal') ?></a>
 </div></div></form>
 <?php require_once 'includes/admin-footer.php'; ?>

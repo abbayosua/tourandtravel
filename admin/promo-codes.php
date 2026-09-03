@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save'])) {
     $isActive = (int)($_POST['is_active'] ?? 1);
 
     $error = '';
-    if (!$code) $error = 'Kode promo wajib diisi';
+    if (!$code) $error = t('Kode promo wajib diisi');
     elseif ($discountValue <= 0) $error = 'Nilai diskon harus > 0';
 
     if (!$error) {
@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save'])) {
             $st = db()->prepare("SELECT COUNT(*) FROM promo_codes WHERE code = ?");
             $st->execute([$code]);
             if ($st->fetchColumn() > 0) {
-                $error = 'Kode promo sudah ada';
+                $error = t('Kode promo sudah ada');
             } else {
                 $st = db()->prepare("INSERT INTO promo_codes (code, description, discount_type, discount_value, min_purchase, max_discount, usage_limit, valid_from, valid_until, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                 $st->execute([$code, $desc, $discountType, $discountValue, $minPurchase, $maxDiscount, $usageLimit, $validFrom, $validUntil, $isActive]);
@@ -63,12 +63,12 @@ if ($editId > 0) {
 
 $items = db()->query("SELECT * FROM promo_codes ORDER BY created_at DESC")->fetchAll();
 
-$pageTitle = 'Kode Promo';
+$pageTitle = t('Kode Promo');
 require_once 'includes/admin-header.php';
 ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="fw-bold mb-0">Kode Promo</h4>
-    <a href="?edit=0" class="btn btn-primary btn-sm <?= $editId === 0 && !isset($_POST['save']) ? 'd-none' : '' ?>"><i class="bi bi-plus-lg"></i> Tambah</a>
+    <h4 class="fw-bold mb-0"><?= t('Kode Promo') ?></h4>
+    <a href="?edit=0" class="btn btn-primary btn-sm <?= $editId === 0 && !isset($_POST['save']) ? 'd-none' : '' ?>"><i class="bi bi-plus-lg"></i> <?= t('Tambah') ?></a>
 </div>
 
 <?php if ($msg): ?><div class="alert alert-success py-2"><?= $msg ?></div><?php endif; ?>
@@ -77,22 +77,22 @@ require_once 'includes/admin-header.php';
 <?php if ($editId >= 0 && ($editItem || $editId === 0)): ?>
 <div class="card border-0 shadow-sm mb-3">
     <div class="card-body p-3">
-        <h5 class="fw-semibold mb-3"><?= $editId > 0 ? 'Edit' : 'Tambah' ?> Kode Promo</h5>
+        <h5 class="fw-semibold mb-3"><?= $editId > 0 ? t('Edit') : t('Tambah') ?> Kode Promo</h5>
         <form method="POST" class="row g-2">
             <input type="hidden" name="id" value="<?= $editId ?>">
             <div class="col-md-3">
-                <label class="form-label small">Kode</label>
+                <label class="form-label small"><?= t('Kode') ?></label>
                 <input name="code" class="form-control form-control-sm" value="<?= e($editItem['code'] ?? '') ?>" required>
             </div>
             <div class="col-md-3">
-                <label class="form-label small">Tipe Diskon</label>
+                <label class="form-label small"><?= t('Tipe Diskon') ?></label>
                 <select name="discount_type" class="form-select form-select-sm">
                     <option value="percentage" <?= ($editItem['discount_type'] ?? '') === 'percentage' ? 'selected' : '' ?>>Persentase (%)</option>
                     <option value="fixed" <?= ($editItem['discount_type'] ?? '') === 'fixed' ? 'selected' : '' ?>>Nominal (Rp)</option>
                 </select>
             </div>
             <div class="col-md-2">
-                <label class="form-label small">Nilai</label>
+                <label class="form-label small"><?= t('Nilai') ?></label>
                 <input name="discount_value" type="number" class="form-control form-control-sm" value="<?= $editItem['discount_value'] ?? 0 ?>" required>
             </div>
             <div class="col-md-2">
@@ -116,15 +116,15 @@ require_once 'includes/admin-header.php';
                 <input name="valid_until" type="date" class="form-control form-control-sm" value="<?= $editItem['valid_until'] ?? date('Y-m-d', strtotime('+1 year')) ?>">
             </div>
             <div class="col-md-2">
-                <label class="form-label small">Aktif</label>
+                <label class="form-label small"><?= t('Aktif') ?></label>
                 <select name="is_active" class="form-select form-select-sm">
-                    <option value="1" <?= ($editItem['is_active'] ?? 1) ? 'selected' : '' ?>>Ya</option>
-                    <option value="0" <?= empty($editItem['is_active']) ? 'selected' : '' ?>>Tidak</option>
+                    <option value="1" <?= ($editItem['is_active'] ?? 1) ? 'selected' : '' ?>><?= t('Ya') ?></option>
+                    <option value="0" <?= empty($editItem['is_active']) ? 'selected' : '' ?>><?= t('Tidak') ?></option>
                 </select>
             </div>
             <div class="col-md-2 d-flex align-items-end gap-1">
-                <button type="submit" name="save" class="btn btn-primary btn-sm">Simpan</button>
-                <a href="promo-codes.php" class="btn btn-outline-secondary btn-sm">Batal</a>
+                <button type="submit" name="save" class="btn btn-primary btn-sm"><?= t('Simpan') ?></button>
+                <a href="promo-codes.php" class="btn btn-outline-secondary btn-sm"><?= t('Batal') ?></a>
             </div>
             <div class="col-12">
                 <small class="text-muted">Deskripsi: <input name="description" class="form-control form-control-sm mt-1" value="<?= e($editItem['description'] ?? '') ?>" placeholder="Deskripsi (opsional)"></small>

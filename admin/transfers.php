@@ -6,22 +6,22 @@ require_once '../includes/auth.php';
 cekLogin();
 
 $msg = '';
-if (isset($_GET['msg'])) $msg = match($_GET['msg']) { 'added' => 'Berhasil ditambahkan', 'updated' => 'Berhasil diperbarui', 'deleted' => 'Berhasil dihapus', default => '' };
+if (isset($_GET['msg'])) $msg = match($_GET['msg']) { 'added' => t('Berhasil ditambahkan'), 'updated' => t('Berhasil diperbarui'), 'deleted' => t('Berhasil dihapus'), default => '' };
 if (isset($_GET['delete'])) { $id=(int)$_GET['delete']; db()->prepare("DELETE FROM transfers WHERE id=?")->execute([$id]); header('Location: transfers.php?msg=deleted'); exit; }
 
 $items = db()->query("SELECT * FROM transfers ORDER BY created_at DESC")->fetchAll();
 
-$pageTitle = 'Kelola Transfer';
+$pageTitle = t('Kelola Transfer');
 require_once 'includes/admin-header.php';
 ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="fw-bold mb-0">Transfer Bandara</h4>
-    <a href="transfer-edit.php" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Tambah</a>
+    <h4 class="fw-bold mb-0"><?= t('Transfer Bandara') ?></h4>
+    <a href="transfer-edit.php" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> <?= t('Tambah') ?></a>
 </div>
 <?php if ($msg): ?><div class="alert alert-success py-2"><?= $msg ?></div><?php endif; ?>
 <div class="card border-0 shadow-sm"><div class="card-body p-0">
 <table class="table table-hover mb-0 admin-table">
-<thead class="table-light"><tr><th>#</th><th>Nama</th><th>Rute</th><th>Kendaraan</th><th>Max Pax</th><th>Harga</th><th>Status</th><th>Aksi</th></tr></thead>
+<thead class="table-light"><tr><th>#</th><th><?= t('Nama') ?></th><th><?= t('Rute') ?></th><th><?= t('Kendaraan') ?></th><th><?= t('Max Pax') ?></th><th><?= t('Harga') ?></th><th><?= t('Status') ?></th><th><?= t('Aksi') ?></th></tr></thead>
 <tbody><?php foreach ($items as $i): ?><tr>
 <td><?=$i['id']?></td><td><?=e($i['name'])?></td><td><?=e($i['from_city'])?> → <?=e($i['to_city'])?></td>
 <td><?=e($i['vehicle_type'] ?? '-')?></td><td><?=$i['max_passengers']?></td>

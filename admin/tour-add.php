@@ -20,8 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Validasi
     if (!$title) $error = 'Judul tour harus diisi';
-    elseif (!$category) $error = 'Kategori harus diisi';
-    elseif ($price <= 0) $error = 'Harga harus diisi';
+    elseif (!$category) $error = t('Kategori harus diisi');
+    elseif ($price <= 0) $error = t('Harga harus diisi');
     elseif ($maxParticipants < 1) $error = 'Max peserta minimal 1';
 
     // Upload gambar
@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = 'Tambah Tour';
+$pageTitle = t('Tambah Tour');
 require_once 'includes/admin-header.php';
 ?>
 
@@ -76,17 +76,17 @@ require_once 'includes/admin-header.php';
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-body">
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Judul Tour</label>
+                        <label class="form-label fw-semibold"><?= t('Judul Tour') ?></label>
                         <input type="text" name="title" class="form-control" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Deskripsi</label>
+                        <label class="form-label fw-semibold"><?= t('Deskripsi') ?></label>
                         <textarea name="description" class="form-control" rows="5"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Gambar Cover</label>
+                        <label class="form-label fw-semibold"><?= t('Gambar Cover') ?></label>
                         <input type="file" name="cover_image" class="form-control" accept="image/jpeg,image/png,image/webp">
-                        <div class="form-text">Max 2MB. Format: JPG, PNG, WebP</div>
+                        <div class="form-text"><?= t('Max 2MB. Format: JPG, PNG, WebP') ?></div>
                     </div>
                 </div>
             </div>
@@ -95,11 +95,11 @@ require_once 'includes/admin-header.php';
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-body">
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Kategori</label>
+                        <label class="form-label fw-semibold"><?= t('Kategori') ?></label>
                         <input type="text" name="category" class="form-control" placeholder="Domestik / Internasional" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Harga</label>
+                        <label class="form-label fw-semibold"><?= t('Harga') ?></label>
                         <div class="input-group">
                             <select name="price_currency" class="form-select" style="max-width: 100px;">
                                 <option value="IDR">Rp (IDR)</option>
@@ -110,26 +110,26 @@ require_once 'includes/admin-header.php';
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Bahasa Konten</label>
+                        <label class="form-label fw-semibold"><?= t('Bahasa Konten') ?></label>
                         <select name="content_language" class="form-select">
                             <option value="id">🇮🇩 Indonesia (asli)</option>
                             <option value="en">🇬🇧 English (asli)</option>
                         </select>
-                        <div class="form-text">Konten akan otomatis diterjemahkan ke bahasa lain</div>
+                        <div class="form-text"><?= t('Konten akan otomatis diterjemahkan ke bahasa lain') ?></div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Max Peserta</label>
-                        <label class="form-label fw-semibold">Max Peserta</label>
+                        <label class="form-label fw-semibold"><?= t('Max Peserta') ?></label>
+                        <label class="form-label fw-semibold"><?= t('Max Peserta') ?></label>
                         <input type="number" name="max_participants" class="form-control" min="1" value="20">
                     </div>
                     <div class="mb-3 form-check">
                         <input type="checkbox" name="is_active" class="form-check-input" id="isActive" checked>
-                        <label class="form-check-label" for="isActive">Aktif</label>
+                        <label class="form-check-label" for="isActive"><?= t('Aktif') ?></label>
                     </div>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary w-100">Simpan Tour</button>
-            <a href="tours.php" class="btn btn-outline-secondary w-100 mt-2">Batal</a>
+            <button type="submit" class="btn btn-primary w-100"><?= t('Simpan Tour') ?></button>
+            <a href="tours.php" class="btn btn-outline-secondary w-100 mt-2"><?= t('Batal') ?></a>
         </div>
     </div>
 </form>

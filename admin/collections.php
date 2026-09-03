@@ -78,12 +78,12 @@ $allTours = db()->query("SELECT id, title FROM tours WHERE is_active = 1 ORDER B
 
 $items = db()->query("SELECT * FROM collections ORDER BY sort_order ASC")->fetchAll();
 
-$pageTitle = 'Koleksi Tour';
+$pageTitle = t('Koleksi Tour');
 require_once 'includes/admin-header.php';
 ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="fw-bold mb-0">Koleksi Tour</h4>
-    <a href="?edit=new" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Tambah Koleksi</a>
+    <h4 class="fw-bold mb-0"><?= t('Koleksi Tour') ?></h4>
+    <a href="?edit=new" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> <?= t('Tambah Koleksi') ?></a>
 </div>
 
 <?php if ($msg): ?><div class="alert alert-success py-2"><?= $msg ?></div><?php endif; ?>
@@ -92,28 +92,28 @@ require_once 'includes/admin-header.php';
 <?php if ($editId >= 0 && ($editItem || $editId === 0)): ?>
 <div class="card border-0 shadow-sm mb-3">
     <div class="card-body p-3">
-        <h5 class="fw-semibold mb-3"><?= $editId > 0 ? 'Edit' : 'Tambah' ?> Koleksi</h5>
+        <h5 class="fw-semibold mb-3"><?= $editId > 0 ? t('Edit') : t('Tambah') ?> Koleksi</h5>
         <form method="POST">
             <input type="hidden" name="id" value="<?= $editId ?>">
             <div class="row g-2">
                 <div class="col-md-4">
-                    <label class="form-label small">Nama</label>
+                    <label class="form-label small"><?= t('Nama') ?></label>
                     <input name="name" class="form-control form-control-sm" value="<?= e($editItem['name'] ?? '') ?>" required>
                 </div>
                 <div class="col-md-2">
-                    <label class="form-label small">Urutan</label>
+                    <label class="form-label small"><?= t('Urutan') ?></label>
                     <input name="sort_order" type="number" class="form-control form-control-sm" value="<?= $editItem['sort_order'] ?? 0 ?>">
                 </div>
                 <div class="col-md-2">
-                    <label class="form-label small">Aktif</label>
+                    <label class="form-label small"><?= t('Aktif') ?></label>
                     <select name="is_active" class="form-select form-select-sm">
                         <option value="1" <?= ($editItem['is_active'] ?? 1) ? 'selected' : '' ?>>Ya</option>
                         <option value="0" <?= empty($editItem['is_active']) ? 'selected' : '' ?>>Tidak</option>
                     </select>
                 </div>
                 <div class="col-md-4 d-flex align-items-end gap-1">
-                    <button type="submit" name="save" class="btn btn-primary btn-sm">Simpan</button>
-                    <a href="collections.php" class="btn btn-outline-secondary btn-sm">Batal</a>
+                    <button type="submit" name="save" class="btn btn-primary btn-sm"><?= t('Simpan') ?></button>
+                    <a href="collections.php" class="btn btn-outline-secondary btn-sm"><?= t('Batal') ?></a>
                 </div>
             </div>
             <div class="mt-2">

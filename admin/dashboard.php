@@ -21,13 +21,13 @@ $recentBookings = db()->query("
     LIMIT 5
 ")->fetchAll();
 
-$pageTitle = 'Dashboard';
+$pageTitle = t('Dashboard');
 require_once 'includes/admin-header.php';
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h4 class="fw-bold mb-0">Dashboard</h4>
-    <span class="text-muted small">Selamat datang, <?= e($_SESSION['admin_username']) ?></span>
+    <h4 class="fw-bold mb-0"><?= t('Dashboard') ?></h4>
+    <span class="text-muted small"><?= t('Selamat datang') ?>, <?= e($_SESSION['admin_username']) ?></span>
 </div>
 
 <!-- Stat Cards with Icons -->
@@ -37,14 +37,14 @@ require_once 'includes/admin-header.php';
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <div class="text-muted small mb-1">Tour Aktif</div>
+                        <div class="text-muted small mb-1"><?= t('Tour Aktif') ?></div>
                         <div class="fs-3 fw-bold text-dark"><?= $totalTours ?></div>
                     </div>
                     <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
                         <i class="bi bi-map fs-4"></i>
                     </div>
                 </div>
-                <div class="small text-success mt-2"><i class="bi bi-arrow-up"></i> Aktif</div>
+                <div class="small text-success mt-2"><i class="bi bi-arrow-up"></i> <?= t('Aktif') ?></div>
             </div>
         </div>
     </div>
@@ -53,14 +53,14 @@ require_once 'includes/admin-header.php';
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <div class="text-muted small mb-1">Total Booking</div>
+                        <div class="text-muted small mb-1"><?= t('Total Booking') ?></div>
                         <div class="fs-3 fw-bold text-dark"><?= $totalBookings ?></div>
                     </div>
                     <div class="rounded-circle bg-info bg-opacity-10 text-info d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
                         <i class="bi bi-ticket-perforated fs-4"></i>
                     </div>
                 </div>
-                <div class="small text-muted mt-2"><i class="bi bi-clock"></i> Semua status</div>
+                <div class="small text-muted mt-2"><i class="bi bi-clock"></i> <?= t('Semua status') ?></div>
             </div>
         </div>
     </div>
@@ -69,14 +69,14 @@ require_once 'includes/admin-header.php';
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <div class="text-muted small mb-1">Pending</div>
+                        <div class="text-muted small mb-1"><?= t('Pending') ?></div>
                         <div class="fs-3 fw-bold text-warning"><?= $totalPending ?></div>
                     </div>
                     <div class="rounded-circle bg-warning bg-opacity-10 text-warning d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
                         <i class="bi bi-hourglass-split fs-4"></i>
                     </div>
                 </div>
-                <div class="small text-warning mt-2"><i class="bi bi-arrow-up"></i> Menunggu</div>
+                <div class="small text-warning mt-2"><i class="bi bi-arrow-up"></i> <?= t('Menunggu') ?></div>
             </div>
         </div>
     </div>
@@ -85,14 +85,14 @@ require_once 'includes/admin-header.php';
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <div class="text-muted small mb-1">Confirmed</div>
+                        <div class="text-muted small mb-1"><?= t('Confirmed') ?></div>
                         <div class="fs-3 fw-bold text-success"><?= $totalConfirmed ?></div>
                     </div>
                     <div class="rounded-circle bg-success bg-opacity-10 text-success d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
                         <i class="bi bi-check-circle fs-4"></i>
                     </div>
                 </div>
-                <div class="small text-success mt-2"><i class="bi bi-arrow-up"></i> Terkonfirmasi</div>
+                <div class="small text-success mt-2"><i class="bi bi-arrow-up"></i> <?= t('Terkonfirmasi') ?></div>
             </div>
         </div>
     </div>
@@ -101,14 +101,14 @@ require_once 'includes/admin-header.php';
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <div class="text-muted small mb-1">Revenue</div>
+                        <div class="text-muted small mb-1"><?= t('Revenue') ?></div>
                         <div class="fs-5 fw-bold text-primary"><?= formatRupiah($totalRevenue) ?></div>
                     </div>
                     <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
                         <i class="bi bi-currency-dollar fs-4"></i>
                     </div>
                 </div>
-                <div class="small text-success mt-2"><i class="bi bi-arrow-up"></i> Pendapatan</div>
+                <div class="small text-success mt-2"><i class="bi bi-arrow-up"></i> <?= t('Pendapatan') ?></div>
             </div>
         </div>
     </div>
@@ -117,8 +117,8 @@ require_once 'includes/admin-header.php';
 <!-- Recent Bookings -->
 <div class="card border-0 shadow-sm">
     <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
-        <h6 class="fw-bold mb-0">Booking Terbaru</h6>
-        <a href="bookings.php" class="btn btn-sm btn-outline-primary">Lihat Semua</a>
+        <h6 class="fw-bold mb-0"><?= t('Booking Terbaru') ?></h6>
+        <a href="bookings.php" class="btn btn-sm btn-outline-primary"><?= t('Lihat Semua') ?></a>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
@@ -126,12 +126,12 @@ require_once 'includes/admin-header.php';
                 <thead class="table-light">
                     <tr>
                         <th>#</th>
-                        <th>Nama</th>
-                        <th>Tour</th>
-                        <th>Peserta</th>
-                        <th>Total</th>
-                        <th>Status</th>
-                        <th>Tanggal</th>
+                        <th><?= t('Nama') ?></th>
+                        <th><?= t('Tour') ?></th>
+                        <th><?= t('Peserta') ?></th>
+                        <th><?= t('Total') ?></th>
+                        <th><?= t('Status') ?></th>
+                        <th><?= t('Tanggal') ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -151,7 +151,7 @@ require_once 'includes/admin-header.php';
                     </tr>
                     <?php endforeach; ?>
                     <?php if (empty($recentBookings)): ?>
-                    <tr><td colspan="7" class="text-center text-muted py-3">Belum ada booking</td></tr>
+                    <tr><td colspan="7" class="text-center text-muted py-3"><?= t('Belum ada booking') ?></td></tr>
                     <?php endif; ?>
                 </tbody>
             </table>

@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bulk_set_lang'])) {
         }
         $bulkMsg = count($ids) . ' tour berhasil diatur ke bahasa ' . strtoupper($lang);
     } else {
-        $bulkMsg = 'Pilih minimal 1 tour';
+        $bulkMsg = t('Pilih minimal 1 tour');
     }
     header('Location: tours.php?msg=bulk_lang&detail=' . urlencode($bulkMsg));
     exit;
@@ -55,13 +55,13 @@ if (isset($_GET['msg'])) {
 
 $tours = db()->query("SELECT * FROM tours ORDER BY created_at DESC")->fetchAll();
 
-$pageTitle = 'Kelola Tour';
+$pageTitle = t('Kelola Tour');
 require_once 'includes/admin-header.php';
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="fw-bold mb-0">Kelola Tour</h4>
-    <a href="tour-add.php" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Tambah Tour</a>
+    <h4 class="fw-bold mb-0"><?= t('Kelola Tour') ?></h4>
+    <a href="tour-add.php" class="btn btn-primary"><i class="bi bi-plus-lg"></i> <?= t('Tambah Tour') ?></a>
 </div>
 
 <?php if ($msg): ?>
@@ -93,13 +93,13 @@ require_once 'includes/admin-header.php';
                 <thead class="table-light">
                     <tr>
                         <th><input type="checkbox" id="checkAll" class="form-check-input"></th>
-                        <th>Gambar</th>
-                        <th>Judul</th>
-                        <th>Kategori</th>
-                        <th>Harga</th>
-                        <th>Max Peserta</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
+                        <th><?= t('Gambar') ?></th>
+                        <th><?= t('Judul') ?></th>
+                        <th><?= t('Kategori') ?></th>
+                        <th><?= t('Harga') ?></th>
+                        <th><?= t('Max Peserta') ?></th>
+                        <th><?= t('Status') ?></th>
+                        <th><?= t('Aksi') ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -156,7 +156,7 @@ document.querySelectorAll('.tour-check').forEach(cb => {
 });
 document.getElementById('bulkLangForm').addEventListener('submit', function(e) {
     const checked = document.querySelectorAll('.tour-check:checked');
-    if (checked.length === 0) { e.preventDefault(); alert('Pilih minimal 1 tour!'); return; }
+    if (checked.length === 0) { e.preventDefault(); alert('<?= t('Pilih minimal 1 tour') ?>!'); return; }
     checked.forEach(cb => {
         const input = document.createElement('input');
         input.type = 'hidden';

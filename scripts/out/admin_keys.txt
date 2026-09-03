@@ -1,0 +1,290 @@
+Admin Panel
+Akomodasi
+Aksi
+Aktif
+Akun: ${name}
+Automatic
+Bahasa Konten
+Bandara
+Batal
+Batal Gratis
+Batas Pemakaian
+Belum ada aktivitas webhook.
+Belum ada booking
+Belum ada data kurs. Klik "Refresh" untuk mengambil data terbaru.
+Belum ada foto galeri. Upload untuk mengganti galeri auto (loremflickr).
+Belum ada itinerary.
+Belum ada jadwal keberangkatan.
+Belum ada tour
+Berangkat
+Berhasil dihapus
+Berhasil diperbarui
+Berhasil ditambahkan
+Berlaku
+Berlaku Dari
+Berlaku Sampai
+Best Seller
+Bintang
+Bisnis
+Booking Terbaru
+Bulk Bahasa Konten:
+Cakupan
+Cancelled
+Confirmed
+Contoh Konversi dari IDR 10.000.000
+Cover Image (Upload)
+Current:
+Dari
+Dashboard
+Deskripsi
+Deskripsi:
+Durasi
+Durasi (contoh: 5j 30m)
+Durasi (hari)
+EUR → IDR
+EUR → SGD
+EUR → USD
+Earning Rate KlookCash
+Edit
+Edit FAQ
+Edit Ferry
+Edit Hotel
+Edit Kategori
+Edit Kereta
+Edit Pesawat
+Edit Rental Mobil
+Edit Tiket Wisata
+Edit Tour
+Edit Tour:
+Edit Transfer
+Edit eSIM
+Ekonomi
+Error: ${e.message}
+Explorer (%)
+Explorer — minimal booking
+FAQ
+Ferry
+First
+Foto
+Frankfurter API
+Gabung Perangkat
+Gagal memuat status: ${data.error || 'Unknown'}
+Gagal memutuskan koneksi.
+Gagal mengambil kurs dari Frankfurter API
+Gagal menyimpan file config
+Gagal: ${data.error || 'Unknown'}
+Galeri Foto
+Gambar
+Gambar Cover
+Gold (%)
+Gold — minimal booking
+Hapus booking ini?
+Hapus gambar ini?
+Hapus itinerary ini?
+Hapus kode promo?
+Hapus koleksi?
+Hapus tanggal ini?
+Hapus?
+Harga
+Harga (Rp)
+Harga/Hari
+Harga/Hari (Rp)
+Harga/Malam (Rp)
+Hari
+Hotel
+Hubungkan Nomor Baru
+Hubungkan Nomor Baru';
+            el.innerHTML = `
+Informasi Notifikasi
+Inisialisasi koneksi...
+Item
+Itinerary
+Jadwal
+Jadwal Keberangkatan
+Jam
+Jawaban
+Joy+ (%)
+Joy+ — minimal booking
+Judul
+Judul Tour
+Jumlah FAQ
+Jumlah Peserta
+Kapal
+Kapasitas
+Kategori
+Kategori FAQ
+Keberangkatan
+Kelas
+Kelola Booking
+Kelola FAQ
+Kelola Ferry
+Kelola Hotel
+Kelola Kereta Api
+Kelola Pesawat
+Kelola Rental Mobil
+Kelola Tiket Wisata
+Kelola Tour
+Kelola Transfer
+Kelola eSIM
+Kembali
+Kembali ke Website
+Kendaraan
+Kereta
+Kereta Api
+Kirim Test
+Kode
+Kode Booking
+Kode Promo
+Koleksi
+Koleksi Tour
+Koneksi Pengirim WA
+Konfigurasi
+Konfirmasi Instan
+Kontak
+Konten akan otomatis diterjemahkan ke bahasa lain
+Kosongkan jika tidak diubah.
+Kosongkan jika tidak ingin mengubah gambar
+Kota
+Kuota
+Kuota Data
+Kurs Terkini (EUR Base)
+Kurs berhasil diperbarui: IDR=
+Kursi
+Lihat Semua
+Link Tracking
+Log Webhook
+Login Admin -
+Makan
+Manual
+Maskapai
+Masuk
+Mata Uang Default
+Mata uang yang ditampilkan ke pengunjung
+Max 2MB. Format: JPG, PNG, WebP
+Max Pax
+Max Penumpang
+Max Peserta
+Max. Diskon
+Memuat status...
+Menghubungkan...';
+
+    el.innerHTML = '
+Menunggu
+Menunggu QR code...
+Min. Beli
+Min. Pembelian
+Nama
+Nama & No. WA Pemesan
+Nama Hotel
+Nama Kategori
+Nama Kereta
+Nama Mobil
+Nama Produk
+Nama Tiket
+Nama Tour
+Nama Transfer
+Negara
+Nilai
+No.
+No. Penerbangan
+Nominal (Rp)
+Nomor Tujuan
+Nomor WA Admin/Supplier
+Nomor WhatsApp yang digunakan untuk mengirim notifikasi ke supplier.
+Nomor tujuan notifikasi booking baru. Diawali 62, tanpa + atau spasi.
+Nonaktif
+Pasangan
+Password
+Pelabuhan
+Pemakaian
+Pendapatan
+Pending
+Pengaturan Loyalty
+Pengaturan Loyalty & KlookCash
+Pengaturan Mata Uang
+Pengaturan WhatsApp
+Persentase (%)
+Persentase dari total booking yang menjadi KlookCash reward.
+Pertanyaan
+Perusahaan
+Pesawat
+Peserta
+Pilih Gambar (bisa banyak)
+Pilih Tour (centang untuk menambahkan)
+Pilih minimal 1 tour
+Pilih minimal 1 tour!
+Pocket WiFi
+Putuskan Koneksi
+Qty
+Rate
+Refresh
+Refresh QR
+Rental Mobil
+Revenue
+Rp (IDR)
+Rute
+S$ (SGD)
+SIM
+Saat ada booking baru, notifikasi otomatis dikirim ke nomor WA Admin/Supplier:
+Scan QR code dengan WhatsApp Anda.
+Scan QR ini dengan WhatsApp Anda
+Selamat datang,
+Semua
+Semua Tipe
+Semua status
+Server URL
+Siap mengirim notifikasi ke nomor supplier.
+Silver (%)
+Silver — minimal booking
+Simpan
+Simpan Pengaturan
+Simpan Tour
+Slot
+Slug
+Stasiun Asal
+Stasiun Tujuan
+Status
+Sumber:
+Tambah
+Tambah FAQ
+Tambah Kategori
+Tambah Kereta
+Tambah Koleksi
+Tambah Tiket Wisata
+Tambah Tour
+Tambah Tour Baru
+Tambah Transfer
+Tambah eSIM
+Tanggal
+Tanggal Berangkat
+Tanggal Keberangkatan
+Tanggal Kembali
+Terapkan
+Terkonfirmasi
+Test Kirim WA
+Tiba
+Tidak
+Tier Threshold (Jumlah Booking)
+Tiket Tempat Wisata
+Tipe
+Tipe Asal
+Tipe Diskon
+Tipe Kendaraan
+Tipe Tujuan
+Token Akun WUZAPI
+Token akun pengirim WA. Kosongkan jika tidak diubah.
+Total
+Total Booking
+Total Harga
+Tour
+Tour Aktif
+Transfer
+Transfer Bandara
+Transmisi
+Ubah Status
+Update Tour
+Upload Galeri
+Upload beberapa gambar (JPG/PNG/WebP, max 2MB)
+Urutan
+Username
+WUZAPI Server

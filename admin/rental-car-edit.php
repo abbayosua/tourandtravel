@@ -16,17 +16,17 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
 }
 $pageTitle='Edit Rental Mobil'; require_once 'includes/admin-header.php';
 ?>
-<h4 class="fw-bold mb-3">Edit Rental Mobil</h4>
+<h4 class="fw-bold mb-3"><?= t('Edit Rental Mobil') ?></h4>
 <?php if($error):?><div class="alert alert-danger py-2"><?=$error?></div><?php endif;?>
 <form method="POST">
 <div class="card border-0 shadow-sm mb-3"><div class="card-body">
-<div class="row g-2"><div class="col-md-6"><label class="form-label">Nama Mobil</label><input name="name" class="form-control" value="<?=e($item['name'])?>" required></div>
-<div class="col-md-3"><label class="form-label">Tipe</label><input name="car_type" class="form-control" value="<?=e($item['car_type'])?>" required></div>
-<div class="col-md-3"><label class="form-label">Kota</label><input name="city" class="form-control" value="<?=e($item['city'])?>" required></div></div>
-<div class="row g-2 mt-2"><div class="col-md-4"><label class="form-label">Harga/Hari (Rp)</label><input name="price" type="number" class="form-control" value="<?=$item['price_per_day']?>" required></div>
-<div class="col-md-4"><label class="form-label">Transmisi</label><select name="transmission" class="form-select"><option value="automatic" <?=$item['transmission']=='automatic'?'selected':''?>>Automatic</option><option value="manual" <?=$item['transmission']=='manual'?'selected':''?>>Manual</option></select></div>
-<div class="col-md-4"><label class="form-label">Kapasitas</label><input name="seats" type="number" class="form-control" value="<?=$item['passenger_capacity']?>" min="2" max="20"></div></div>
+<div class="row g-2"><div class="col-md-6"><label class="form-label"><?= t('Nama Mobil') ?></label><input name="name" class="form-control" value="<?=e($item['name'])?>" required></div>
+<div class="col-md-3"><label class="form-label"><?= t('Tipe') ?></label><input name="car_type" class="form-control" value="<?=e($item['car_type'])?>" required></div>
+<div class="col-md-3"><label class="form-label"><?= t('Kota') ?></label><input name="city" class="form-control" value="<?=e($item['city'])?>" required></div></div>
+<div class="row g-2 mt-2"><div class="col-md-4"><label class="form-label"><?= t('Harga/Hari (Rp)') ?></label><input name="price" type="number" class="form-control" value="<?=$item['price_per_day']?>" required></div>
+<div class="col-md-4"><label class="form-label"><?= t('Transmisi') ?></label><select name="transmission" class="form-select"><option value="automatic" <?=$item['transmission']=='automatic'?'selected':''?>>Automatic</option><option value="manual" <?=$item['transmission']=='manual'?'selected':''?>>Manual</option></select></div>
+<div class="col-md-4"><label class="form-label"><?= t('Kapasitas') ?></label><input name="seats" type="number" class="form-control" value="<?=$item['passenger_capacity']?>" min="2" max="20"></div></div>
 </div></div>
-<button type="submit" class="btn btn-primary">Simpan</button>
-<a href="rental-cars.php" class="btn btn-outline-secondary">Batal</a></form>
+<button type="submit" class="btn btn-primary"><?= t('Simpan') ?></button>
+<a href="rental-cars.php" class="btn btn-outline-secondary"><?= t('Batal') ?></a></form>
 <?php require_once 'includes/admin-footer.php';?>
