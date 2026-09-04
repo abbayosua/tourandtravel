@@ -76,11 +76,11 @@ require_once 'includes/header-klook.php';
         <div class="hero-overlay"></div>
         <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
+            <span class="visually-hidden"><?= t('Previous') ?></span>
         </button>
         <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
             <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
+            <span class="visually-hidden"><?= t('Next') ?></span>
         </button>
     </div>
 
@@ -440,20 +440,20 @@ renderCategoryGrid($categories, $catIcons, $catCounts);
                                 $nextDate = $stmt->fetch();
                             ?>
                             <?php if ($nextDate && $nextDate['next']): ?>
-                                <?= tglIndonesia($nextDate['next']) ?>
+                                <?= formatDate($nextDate['next']) ?>
                             <?php else: ?>
-                                Segera
+                                <?= t('Segera') ?>
                             <?php endif; ?>
                         </div>
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <span class="fw-bold text-primary"><?= formatRupiah($tour['price']) ?></span>
-                                <small class="text-muted">/org</small>
+                                <small class="text-muted">/<?= t('org') ?></small>
                                 <?php if ($diskon > 0): ?>
                                     <br><small class="text-decoration-line-through text-muted"><?= formatRupiah($tour['original_price']) ?></small>
                                 <?php endif; ?>
                             </div>
-                            <a href="tour-detail.php?slug=<?= e($tour['slug']) ?>" class="btn btn-sm btn-primary rounded-pill px-3">Pesan</a>
+                            <a href="tour-detail.php?slug=<?= e($tour['slug']) ?>" class="btn btn-sm btn-primary rounded-pill px-3"><?= t('Pesan') ?></a>
                         </div>
                     </div>
                 </div>
@@ -511,14 +511,14 @@ renderCategoryGrid($categories, $catIcons, $catCounts);
                         <div class="d-flex align-items-center mb-2">
                             <img src="https://i.pravatar.cc/80?img=1" class="rounded-circle me-3" width="48" height="48" alt="">
                             <div>
-                                <h6 class="fw-semibold mb-0">Sari Dewi</h6>
-                                <small class="text-muted">Bali Paradise 5D4N</small>
+                                <h6 class="fw-semibold mb-0"><?= t('Sari Dewi') ?></h6>
+                                <small class="text-muted"><?= t('Bali Paradise 5D4N') ?></small>
                             </div>
                         </div>
                         <div class="text-warning small mb-2">
                             <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
                         </div>
-                        <p class="mb-0 small text-muted">"Liburan ke Bali bareng TourAndTravel puas banget! Hotelnya enak, guide-nya ramah, itinerary-nya lengkap. Recommended!"</p>
+                        <p class="mb-0 small text-muted"><?= t('"Liburan ke Bali bareng TourAndTravel puas banget! Hotelnya enak, guide-nya ramah, itinerary-nya lengkap. Recommended!"') ?></p>
                     </div>
                 </div>
             </div>
@@ -528,14 +528,14 @@ renderCategoryGrid($categories, $catIcons, $catCounts);
                         <div class="d-flex align-items-center mb-2">
                             <img src="https://i.pravatar.cc/80?img=12" class="rounded-circle me-3" width="48" height="48" alt="">
                             <div>
-                                <h6 class="fw-semibold mb-0">Bambang S.</h6>
-                                <small class="text-muted">Beijing 8D7N</small>
+                                <h6 class="fw-semibold mb-0"><?= t('Bambang S.') ?></h6>
+                                <small class="text-muted"><?= t('Beijing 8D7N') ?></small>
                             </div>
                         </div>
                         <div class="text-warning small mb-2">
                             <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
                         </div>
-                        <p class="mb-0 small text-muted">"Pertama kali ke China, awalnya khawatir tapi ternyata lancar semua. Guide lokalnya speak Indonesian,很棒!"</p>
+                        <p class="mb-0 small text-muted"><?= t('"Pertama kali ke China, awalnya khawatir tapi ternyata lancar semua. Guide lokalnya speak Indonesian,很棒!"') ?></p>
                     </div>
                 </div>
             </div>
@@ -545,14 +545,14 @@ renderCategoryGrid($categories, $catIcons, $catCounts);
                         <div class="d-flex align-items-center mb-2">
                             <img src="https://i.pravatar.cc/80?img=5" class="rounded-circle me-3" width="48" height="48" alt="">
                             <div>
-                                <h6 class="fw-semibold mb-0">Rina A.</h6>
-                                <small class="text-muted">Korea Tour 7D6N</small>
+                                <h6 class="fw-semibold mb-0"><?= t('Rina A.') ?></h6>
+                                <small class="text-muted"><?= t('Korea Tour 7D6N') ?></small>
                             </div>
                         </div>
                         <div class="text-warning small mb-2">
                             <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
                         </div>
-                        <p class="mb-0 small text-muted">"Dari Seoul sampai Busan semua kece! Makin seru sama temen-temen satu grup. Next mau ke Jepang bareng sini lagi!"</p>
+                        <p class="mb-0 small text-muted"><?= t('"Dari Seoul sampai Busan semua kece! Makin seru sama temen-temen satu grup. Next mau ke Jepang bareng sini lagi!"') ?></p>
                     </div>
                 </div>
             </div>
@@ -643,7 +643,7 @@ renderCategoryGrid($categories, $catIcons, $catCounts);
             <div class="col-6 col-md-3">
                 <div class="card border-0 shadow-sm text-center py-4 h-100">
                     <div class="fs-2 text-primary mb-2"><i class="bi bi-headset"></i></div>
-                    <h6 class="fw-semibold">CS 24/7</h6>
+                    <h6 class="fw-semibold"><?= t('CS 24/7') ?></h6>
                     <small class="text-muted"><?= t('Siap bantu kapan saja') ?></small>
                 </div>
             </div>
