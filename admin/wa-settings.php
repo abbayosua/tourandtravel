@@ -121,27 +121,23 @@ require_once 'includes/admin-header.php';
 
                     <div id="qrContainer" class="text-center mb-3" style="display:none;">
                         <div class="bg-light rounded p-3 d-inline-block border">
-                            <p class="small fw-semibold mb-2">Scan QR ini dengan WhatsApp Anda</p>
+                            <p class="small fw-semibold mb-2"><?= t('Scan QR ini dengan WhatsApp Anda') ?></p>
                             <img id="qrImage" src="" alt="QR Code">
-                            <p class="text-muted small mt-2 mb-0">Buka WhatsApp > Menu > Perangkat Tertaut > Gabung Perangkat</p>
+                            <p class="text-muted small mt-2 mb-0">Buka WhatsApp > Menu > Perangkat Tertaut ><?= t('Gabung Perangkat') ?></p>
                         </div>
                         <div class="mt-2">
                             <button class="btn btn-sm btn-outline-secondary" onclick="refreshQR()">
-                                <i class="bi bi-arrow-clockwise"></i> Refresh QR
-                            </button>
+                                <i class="bi bi-arrow-clockwise"></i><?= t('Refresh QR') ?></button>
                         </div>
                     </div>
 
                     <div class="d-flex gap-2">
                         <button id="btnConnect" class="btn btn-sm btn-success" onclick="connectWA()" style="display:none;">
-                            <i class="bi bi-qr-code me-1"></i> Hubungkan Nomor Baru
-                        </button>
+                            <i class="bi bi-qr-code me-1"></i><?= t('Hubungkan Nomor Baru') ?></button>
                         <button id="btnDisconnect" class="btn btn-sm btn-danger" onclick="disconnectWA()" style="display:none;">
-                            <i class="bi bi-plug me-1"></i> Putuskan Koneksi
-                        </button>
+                            <i class="bi bi-plug me-1"></i><?= t('Putuskan Koneksi') ?></button>
                         <button class="btn btn-sm btn-outline-secondary" onclick="loadStatus()">
-                            <i class="bi bi-arrow-clockwise"></i> Refresh
-                        </button>
+                            <i class="bi bi-arrow-clockwise"></i><?= t('Refresh') ?></button>
                     </div>
                 </div>
             </div>
@@ -156,7 +152,7 @@ require_once 'includes/admin-header.php';
                             <span class="badge bg-<?= $waStatus === 'ok' ? 'success' : 'danger' ?>">
                                 <?= $waStatus === 'ok' ? t('Server Terhubung') : t('Server Tidak Terhubung') ?>
                             </span>
-                            <small class="text-muted">WUZAPI Server</small>
+                            <small class="text-muted"><?= t('WUZAPI Server') ?></small>
                         </div>
                     </div>
 
@@ -175,7 +171,7 @@ require_once 'includes/admin-header.php';
                         <div class="mb-3">
                             <label class="form-label small fw-semibold"><?= t('Server URL') ?></label>
                             <input type="text" name="server_url" class="form-control" value="<?= e($wa_settings['server_url']) ?>" placeholder="http://45.158.126.130:48499">
-                            <div class="form-text">Kosongkan jika tidak diubah.</div>
+                            <div class="form-text"><?= t('Kosongkan jika tidak diubah.') ?></div>
                         </div>
                         <button type="submit" class="btn btn-success w-100">
                             <i class="bi bi-check2 me-1"></i> <?= t('Simpan Pengaturan') ?>
@@ -208,13 +204,13 @@ require_once 'includes/admin-header.php';
                     <h6 class="fw-semibold mb-3"><i class="bi bi-info-circle me-2"></i><?= t('Informasi Notifikasi') ?></h6>
                     <p class="small text-muted mb-2"><?= t('Saat ada booking baru, notifikasi otomatis dikirim ke nomor WA Admin/Supplier:') ?></p>
                     <ul class="small">
-                        <li>Kode Booking</li>
-                        <li>Nama Tour</li>
-                        <li>Tanggal Keberangkatan</li>
-                        <li>Nama & No. WA Pemesan</li>
-                        <li>Jumlah Peserta</li>
-                        <li>Total Harga</li>
-                        <li>Link Tracking</li>
+                        <li><?= t('Kode Booking') ?></li>
+                        <li><?= t('Nama Tour') ?></li>
+                        <li><?= t('Tanggal Keberangkatan') ?></li>
+                        <li><?= t('Nama & No. WA Pemesan') ?></li>
+                        <li><?= t('Jumlah Peserta') ?></li>
+                        <li><?= t('Total Harga') ?></li>
+                        <li><?= t('Link Tracking') ?></li>
                     </ul>
                     <hr>
                     <h6 class="fw-semibold mb-2"><i class="bi bi-terminal me-2"></i><?= t('Log Webhook') ?></h6>
@@ -235,7 +231,7 @@ let qrPollInterval = null;
 
 function loadStatus() {
     const el = document.getElementById('connectionStatus');
-    el.innerHTML = '<div class="text-center py-3"><div class="spinner-border spinner-border-sm text-primary me-2"></div><span class="text-muted small">Memuat status...</span></div>';
+    el.innerHTML = '<div class="text-center py-3"><div class="spinner-border spinner-border-sm text-primary me-2"></div><span class="text-muted small"><?= t('Memuat status...') ?></span></div>';
 
     fetch(WA_AJAX + '?action=status')
         .then(r => r.json())
@@ -260,11 +256,9 @@ function loadStatus() {
                     </div>
                     ${connected ? `
                     <div class="small text-muted">
-                        <i class="bi bi-info-circle me-1"></i> Siap mengirim notifikasi ke nomor supplier.
-                    </div>` : `
+                        <i class="bi bi-info-circle me-1"></i><?= t('Siap mengirim notifikasi ke nomor supplier.') ?></div>` : `
                     <div class="small text-warning">
-                        <i class="bi bi-exclamation-triangle me-1"></i> Belum terhubung. Klik "Hubungkan Nomor Baru" untuk scan QR.
-                    </div>`}
+                        <i class="bi bi-exclamation-triangle me-1"></i><?= t('Belum terhubung. Klik \"Hubungkan Nomor Baru\" untuk scan QR.') ?></div>`}
                 `;
 
                 document.getElementById('btnConnect').style.display = connected ? 'none' : 'inline-block';
@@ -274,11 +268,11 @@ function loadStatus() {
                     if (qrPollInterval) clearInterval(qrPollInterval);
                 }
             } else {
-                el.innerHTML = `<div class="alert alert-danger py-2 mb-0">Gagal memuat status: ${data.error || 'Unknown'}</div>`;
+                el.innerHTML = `<div class="alert alert-danger py-2 mb-0"><?= t('Gagal memuat status: ') ?>${data.error || 'Unknown'}</div>`;
             }
         })
         .catch(e => {
-            el.innerHTML = `<div class="alert alert-danger py-2 mb-0">Error: ${e.message}</div>`;
+                el.innerHTML = `<div class="alert alert-danger py-2 mb-0"><?= t('Error: ') ?>${e.message}</div>`;
         });
 }
 
@@ -286,9 +280,9 @@ function connectWA() {
     const btn = document.getElementById('btnConnect');
     const el = document.getElementById('connectionStatus');
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Menghubungkan...';
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span><?= t('Menghubungkan...') ?>';
 
-    el.innerHTML = '<div class="text-center py-3"><div class="spinner-border spinner-border-sm text-primary me-2"></div><span class="text-muted small">Inisialisasi koneksi...</span></div>';
+    el.innerHTML = '<div class="text-center py-3"><div class="spinner-border spinner-border-sm text-primary me-2"></div><span class="text-muted small"><?= t('Inisialisasi koneksi...') ?></span></div>';
 
     const formData = new FormData();
     formData.append('action', 'connect');
@@ -302,7 +296,7 @@ function connectWA() {
             if (data.success && data.qrcode) {
                 document.getElementById('qrImage').src = data.qrcode;
                 document.getElementById('qrContainer').style.display = 'block';
-                el.innerHTML = '<div class="alert alert-info py-2 mb-0"><i class="bi bi-qr-code me-1"></i> Scan QR code dengan WhatsApp Anda.</div>';
+                el.innerHTML = '<div class="alert alert-info py-2 mb-0"><i class="bi bi-qr-code me-1"></i><?= t('Scan QR code dengan WhatsApp Anda.') ?></div>';
                 document.getElementById('btnDisconnect').style.display = 'none';
                 document.getElementById('btnConnect').style.display = 'inline-block';
                 btn.innerHTML = '<i class="bi bi-arrow-clockwise me-1"></i> QR Baru';
@@ -324,16 +318,16 @@ function connectWA() {
                 }, 3000);
             } else if (data.qrcode === '') {
                 // Maybe connecting
-                el.innerHTML = '<div class="alert alert-warning py-2 mb-0"><i class="bi bi-hourglass me-1"></i> Menunggu QR code...</div>';
+                el.innerHTML = '<div class="alert alert-warning py-2 mb-0"><i class="bi bi-hourglass me-1"></i><?= t('Menunggu QR code...') ?></div>';
                 setTimeout(() => refreshQR(), 2000);
             } else {
-                el.innerHTML = `<div class="alert alert-danger py-2 mb-0">Gagal: ${data.error || 'Unknown'}</div>`;
+                el.innerHTML = `<div class="alert alert-danger py-2 mb-0"><?= t('Gagal: ') ?>${data.error || 'Unknown'}</div>`;
             }
         })
         .catch(e => {
             btn.disabled = false;
-            btn.innerHTML = '<i class="bi bi-qr-code me-1"></i> Hubungkan Nomor Baru';
-            el.innerHTML = `<div class="alert alert-danger py-2 mb-0">Error: ${e.message}</div>`;
+            btn.innerHTML = '<i class="bi bi-qr-code me-1"></i><?= t('Hubungkan Nomor Baru') ?>';
+            el.innerHTML = `<div class="alert alert-danger py-2 mb-0"><?= t('Error: ') ?>${e.message}</div>`;
         });
 }
 
@@ -378,7 +372,7 @@ function disconnectWA() {
         .catch(e => {
             btn.disabled = false;
             btn.innerHTML = '<i class="bi bi-plug me-1"></i> Putuskan Koneksi';
-            showAlert('Error: ' + e.message, 'danger');
+            showAlert('<?= t('Error: ') ?>' + e.message, 'danger');
         });
 }
 

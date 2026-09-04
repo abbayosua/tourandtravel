@@ -56,16 +56,16 @@ require_once 'includes/admin-header.php';
 <div class="row">
 <div class="col-md-8">
 <div class="card border-0 shadow-sm mb-3"><div class="card-body">
-    <div class="mb-3"><label class="form-label">Nama Produk</label><input name="name" class="form-control" value="<?=e($item['name']??'')?>" required></div>
-    <div class="mb-3"><label class="form-label">Deskripsi</label><textarea name="description" class="form-control" rows="5"><?=e($item['description']??'')?></textarea></div>
+    <div class="mb-3"><label class="form-label"><?= t('Nama Produk') ?></label><input name="name" class="form-control" value="<?=e($item['name']??'')?>" required></div>
+    <div class="mb-3"><label class="form-label"><?= t('Deskripsi') ?></label><textarea name="description" class="form-control" rows="5"><?=e($item['description']??'')?></textarea></div>
 </div></div>
 </div>
 <div class="col-md-4">
 <div class="card border-0 shadow-sm mb-3"><div class="card-body">
     <div class="mb-3"><label class="form-label"><?= t('Tipe') ?></label><select name="type" class="form-select">
         <option value="esim" <?=($item['type']??'esim')==='esim'?'selected':''?>>eSIM</option>
-        <option value="sim" <?=($item['type']??'')==='sim'?'selected':''?>>SIM</option>
-        <option value="wifi" <?=($item['type']??'')==='wifi'?'selected':''?>>Pocket WiFi</option>
+        <option value="sim" <?=($item['type']??'')==='sim'?'selected':''?>><?= t('SIM') ?></option>
+        <option value="wifi" <?=($item['type']??'')==='wifi'?'selected':''?>><?= t('Pocket WiFi') ?></option>
     </select></div>
     <div class="mb-3"><label class="form-label"><?= t('Negara') ?></label><input name="country" class="form-control" value="<?=e($item['country']??'')?>" required></div>
     <div class="mb-3"><label class="form-label"><?= t('Cakupan') ?></label><input name="coverage" class="form-control" value="<?=e($item['coverage']??'')?>" placeholder="Nasional, Regional, ..."></div>
@@ -74,7 +74,7 @@ require_once 'includes/admin-header.php';
     <div class="mb-3"><label class="form-label"><?= t('Harga (Rp)') ?></label><input name="price" type="number" class="form-control" value="<?=$item['price']??0?>" required></div>
     <div class="mb-3">
         <label class="form-label"><?= t('Status') ?></label>
-        <select name="is_active" class="form-select"><option value="1" <?=($item['is_active']??1)?'selected':''?>>Aktif</option><option value="0" <?=empty($item['is_active'])?'selected':''?>>Nonaktif</option></select>
+        <select name="is_active" class="form-select"><option value="1" <?=($item['is_active']??1)?'selected':''?>><?= t('Aktif') ?></option><option value="0" <?=empty($item['is_active'])?'selected':''?>><?= t('Nonaktif') ?></option></select>
     </div>
 </div></div>
 <button type="submit" class="btn btn-primary w-100"><?= $isAdd ? t('Tambah') : t('Simpan') ?></button>

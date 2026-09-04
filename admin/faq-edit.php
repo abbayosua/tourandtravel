@@ -44,7 +44,7 @@ $pageTitle = $isAdd ? t('Tambah FAQ') : t('Edit FAQ');
 require_once 'includes/admin-header.php';
 ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="fw-bold mb-0"><?= $isAdd ? t('Tambah') : t('Edit') ?> FAQ</h4>
+    <h4 class="fw-bold mb-0"><?= $isAdd ? t('Tambah') : t('Edit') ?><?= t('FAQ') ?></h4>
     <a href="faq.php" class="btn btn-outline-secondary btn-sm">&larr; Kembali</a>
 </div>
 <?php if ($error): ?><div class="alert alert-danger py-2"><?=$error?></div><?php endif; ?>
@@ -69,7 +69,7 @@ require_once 'includes/admin-header.php';
     </div>
     <div class="mb-3">
         <label class="form-label"><?= t('Status') ?></label>
-        <select name="is_active" class="form-select"><option value="1" <?=($item['is_active']??1)?'selected':''?>>Aktif</option><option value="0" <?=empty($item['is_active'])?'selected':''?>>Nonaktif</option></select>
+        <select name="is_active" class="form-select"><option value="1" <?=($item['is_active']??1)?'selected':''?>><?= t('Aktif') ?></option><option value="0" <?=empty($item['is_active'])?'selected':''?>><?= t('Nonaktif') ?></option></select>
     </div>
 </div></div>
 <button type="submit" class="btn btn-primary w-100"><?= $isAdd ? t('Tambah') : t('Simpan') ?></button>

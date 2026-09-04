@@ -24,7 +24,7 @@ $pageTitle='Edit Rental Mobil'; require_once 'includes/admin-header.php';
 <div class="col-md-3"><label class="form-label"><?= t('Tipe') ?></label><input name="car_type" class="form-control" value="<?=e($item['car_type'])?>" required></div>
 <div class="col-md-3"><label class="form-label"><?= t('Kota') ?></label><input name="city" class="form-control" value="<?=e($item['city'])?>" required></div></div>
 <div class="row g-2 mt-2"><div class="col-md-4"><label class="form-label"><?= t('Harga/Hari (Rp)') ?></label><input name="price" type="number" class="form-control" value="<?=$item['price_per_day']?>" required></div>
-<div class="col-md-4"><label class="form-label"><?= t('Transmisi') ?></label><select name="transmission" class="form-select"><option value="automatic" <?=$item['transmission']=='automatic'?'selected':''?>>Automatic</option><option value="manual" <?=$item['transmission']=='manual'?'selected':''?>>Manual</option></select></div>
+<div class="col-md-4"><label class="form-label"><?= t('Transmisi') ?></label><select name="transmission" class="form-select"><option value="automatic" <?=$item['transmission']=='automatic'?'selected':''?>><?= t('Automatic') ?></option><option value="manual" <?=$item['transmission']=='manual'?'selected':''?>><?= t('Manual') ?></option></select></div>
 <div class="col-md-4"><label class="form-label"><?= t('Kapasitas') ?></label><input name="seats" type="number" class="form-control" value="<?=$item['passenger_capacity']?>" min="2" max="20"></div></div>
 </div></div>
 <button type="submit" class="btn btn-primary"><?= t('Simpan') ?></button>

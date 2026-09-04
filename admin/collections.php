@@ -6,7 +6,7 @@ require_once '../includes/auth.php';
 cekLogin();
 
 $msg = '';
-if (isset($_GET['msg'])) $msg = match($_GET['msg']) { 'added' => 'Berhasil ditambahkan', 'updated' => 'Berhasil diperbarui', 'deleted' => 'Berhasil dihapus', default => '' };
+if (isset($_GET['msg'])) $msg = match($_GET['msg']) { 'added' => t('Berhasil ditambahkan'), 'updated' => t('Berhasil diperbarui'), 'deleted' => t('Berhasil dihapus'), default => '' };
 
 // Handle delete
 if (isset($_GET['delete'])) {
@@ -92,7 +92,7 @@ require_once 'includes/admin-header.php';
 <?php if ($editId >= 0 && ($editItem || $editId === 0)): ?>
 <div class="card border-0 shadow-sm mb-3">
     <div class="card-body p-3">
-        <h5 class="fw-semibold mb-3"><?= $editId > 0 ? t('Edit') : t('Tambah') ?> Koleksi</h5>
+        <h5 class="fw-semibold mb-3"><?= $editId > 0 ? t('Edit') : t('Tambah') ?><?= t('Koleksi') ?></h5>
         <form method="POST">
             <input type="hidden" name="id" value="<?= $editId ?>">
             <div class="row g-2">
@@ -107,8 +107,8 @@ require_once 'includes/admin-header.php';
                 <div class="col-md-2">
                     <label class="form-label small"><?= t('Aktif') ?></label>
                     <select name="is_active" class="form-select form-select-sm">
-                        <option value="1" <?= ($editItem['is_active'] ?? 1) ? 'selected' : '' ?>>Ya</option>
-                        <option value="0" <?= empty($editItem['is_active']) ? 'selected' : '' ?>>Tidak</option>
+                        <option value="1" <?= ($editItem['is_active'] ?? 1) ? 'selected' : '' ?>><?= t('Ya') ?></option>
+                        <option value="0" <?= empty($editItem['is_active']) ? 'selected' : '' ?>><?= t('Tidak') ?></option>
                     </select>
                 </div>
                 <div class="col-md-4 d-flex align-items-end gap-1">
@@ -117,11 +117,11 @@ require_once 'includes/admin-header.php';
                 </div>
             </div>
             <div class="mt-2">
-                <label class="form-label small">Deskripsi</label>
+                <label class="form-label small"><?= t('Deskripsi') ?></label>
                 <input name="description" class="form-control form-control-sm" value="<?= e($editItem['description'] ?? '') ?>">
             </div>
             <div class="mt-3">
-                <label class="form-label small fw-semibold">Pilih Tour (centang untuk menambahkan)</label>
+                <label class="form-label small fw-semibold"><?= t('Pilih Tour (centang untuk menambahkan)') ?></label>
                 <div class="row g-1" style="max-height: 200px; overflow-y: auto;">
                     <?php foreach ($allTours as $t): ?>
                     <div class="col-6 col-md-4 col-lg-3">
@@ -141,7 +141,7 @@ require_once 'includes/admin-header.php';
 
 <div class="card border-0 shadow-sm"><div class="card-body p-0">
 <table class="table table-hover mb-0 admin-table">
-<thead class="table-light"><tr><th>#</th><th>Nama</th><th>Slug</th><th>Item</th><th>Status</th><th>Aksi</th></tr></thead>
+<thead class="table-light"><tr><th>#</th><th><?= t('Nama') ?></th><th><?= t('Slug') ?></th><th><?= t('Item') ?></th><th><?= t('Status') ?></th><th><?= t('Aksi') ?></th></tr></thead>
 <tbody><?php foreach ($items as $i): 
     $cnt = db()->prepare("SELECT COUNT(*) FROM collection_items WHERE collection_id = ?");
     $cnt->execute([$i['id']]);

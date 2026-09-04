@@ -73,14 +73,13 @@ require_once 'includes/admin-header.php';
     <div class="card-body py-2">
         <form method="POST" class="d-flex align-items-center gap-2 flex-wrap" id="bulkLangForm">
             <input type="hidden" name="bulk_set_lang" value="1">
-            <strong class="small">Bulk Bahasa Konten:</strong>
+            <strong class="small"><?= t('Bulk Bahasa Konten:') ?></strong>
             <select name="bulk_lang" class="form-select form-select-sm" style="width: auto;">
-                <option value="id">🇮🇩 Indonesia</option>
-                <option value="en">🇬🇧 English</option>
+                <option value="id"><?= t('🇮🇩 Indonesia') ?></option>
+                <option value="en"><?= t('🇬🇧 English') ?></option>
             </select>
             <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('Set bahasa konten untuk tour yang dipilih?')">
-                <i class="bi bi-translate me-1"></i>Terapkan
-            </button>
+                <i class="bi bi-translate me-1"></i><?= t('Terapkan') ?></button>
             <span class="text-muted small" id="bulkCount"></span>
         </form>
     </div>
@@ -130,7 +129,7 @@ require_once 'includes/admin-header.php';
                     </tr>
                     <?php endforeach; ?>
                     <?php if (empty($tours)): ?>
-                    <tr><td colspan="8" class="text-center py-4 text-muted">Belum ada tour</td></tr>
+                    <tr><td colspan="8" class="text-center py-4 text-muted"><?= t('Belum ada tour') ?></td></tr>
                     <?php endif; ?>
                 </tbody>
             </table>

@@ -64,7 +64,7 @@ $pageTitle = t('Tambah Tour');
 require_once 'includes/admin-header.php';
 ?>
 
-<h4 class="fw-bold mb-3">Tambah Tour Baru</h4>
+<h4 class="fw-bold mb-3"><?= t('Tambah Tour Baru') ?></h4>
 
 <?php if ($error): ?>
     <div class="alert alert-danger py-2"><?= $error ?></div>
@@ -102,8 +102,8 @@ require_once 'includes/admin-header.php';
                         <label class="form-label fw-semibold"><?= t('Harga') ?></label>
                         <div class="input-group">
                             <select name="price_currency" class="form-select" style="max-width: 100px;">
-                                <option value="IDR">Rp (IDR)</option>
-                                <option value="SGD">S$ (SGD)</option>
+                                <option value="IDR"><?= t('Rp (IDR)') ?></option>
+                                <option value="SGD"><?= t('S$ (SGD)') ?></option>
                                 <option value="USD">$ (USD)</option>
                             </select>
                             <input type="number" name="price" class="form-control" min="0" required>
@@ -112,8 +112,8 @@ require_once 'includes/admin-header.php';
                     <div class="mb-3">
                         <label class="form-label fw-semibold"><?= t('Bahasa Konten') ?></label>
                         <select name="content_language" class="form-select">
-                            <option value="id">🇮🇩 Indonesia (asli)</option>
-                            <option value="en">🇬🇧 English (asli)</option>
+                            <option value="id"><?= t('🇮🇩 Indonesia (asli)') ?></option>
+                            <option value="en"><?= t('🇬🇧 English (asli)') ?></option>
                         </select>
                         <div class="form-text"><?= t('Konten akan otomatis diterjemahkan ke bahasa lain') ?></div>
                     </div>

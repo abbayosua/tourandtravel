@@ -107,7 +107,7 @@ if (!$typeFilter || $typeFilter === 'esim') {
 
 usort($all, function ($a, $b) { return strtotime($b['created_at']) - strtotime($a['created_at']); });
 
-$typeName = ['tour' => 'Tour', 'attraction' => 'Atraksi', 'transfer' => 'Transfer', 'train' => 'Kereta', 'esim' => 'eSIM'];
+$typeName = ['tour' => t('Tour'), 'attraction' => t('Atraksi'), 'transfer' => t('Transfer'), 'train' => t('Kereta'), 'esim' => 'eSIM'];
 $typeBadge = ['tour' => 'primary', 'attraction' => 'info', 'transfer' => 'warning text-dark', 'train' => 'success', 'esim' => 'secondary'];
 
 $pageTitle = t('Kelola Booking');
@@ -171,7 +171,7 @@ require_once 'includes/admin-header.php';
                         <td>
                             <small>
                                 <?php if (!empty($b['passport_photo'])): ?>
-                                    <a href="../uploads/passports/<?= e($b['passport_photo']) ?>" target="_blank" class="text-primary small">Foto</a><br>
+                                    <a href="../uploads/passports/<?= e($b['passport_photo']) ?>" target="_blank" class="text-primary small"><?= t('Foto') ?></a><br>
                                 <?php endif; ?>
                                 <a href="https://wa.me/<?= preg_replace('/[^0-9]/', '', $b['phone']) ?>" target="_blank" class="text-success"><?= e($b['phone']) ?></a>
                             </small>
@@ -183,11 +183,11 @@ require_once 'includes/admin-header.php';
                         </td>
                         <td class="table-action">
                             <div class="dropdown">
-                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">Ubah Status</button>
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown"><?= t('Ubah Status') ?></button>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="bookings.php?update_status=<?= $b['id'] ?>&status=pending&type=<?= $btype ?>">Pending</a></li>
-                                    <li><a class="dropdown-item text-success" href="bookings.php?update_status=<?= $b['id'] ?>&status=confirmed&type=<?= $btype ?>">Confirmed</a></li>
-                                    <li><a class="dropdown-item text-danger" href="bookings.php?update_status=<?= $b['id'] ?>&status=cancelled&type=<?= $btype ?>">Cancelled</a></li>
+                                    <li><a class="dropdown-item" href="bookings.php?update_status=<?= $b['id'] ?>&status=pending&type=<?= $btype ?>"><?= t('Pending') ?></a></li>
+                                    <li><a class="dropdown-item text-success" href="bookings.php?update_status=<?= $b['id'] ?>&status=confirmed&type=<?= $btype ?>"><?= t('Confirmed') ?></a></li>
+                                    <li><a class="dropdown-item text-danger" href="bookings.php?update_status=<?= $b['id'] ?>&status=cancelled&type=<?= $btype ?>"><?= t('Cancelled') ?></a></li>
                                 </ul>
                             </div>
                             <a href="bookings.php?delete=<?= $b['id'] ?>&type=<?= $btype ?>" class="btn btn-sm btn-danger mt-1" onclick="return confirm('Hapus booking ini?')"><i class="bi bi-trash"></i></a>
@@ -195,7 +195,7 @@ require_once 'includes/admin-header.php';
                     </tr>
                     <?php endforeach; ?>
                     <?php if (empty($all)): ?>
-                    <tr><td colspan="11" class="text-center py-4 text-muted">Belum ada booking</td></tr>
+                    <tr><td colspan="11" class="text-center py-4 text-muted"><?= t('Belum ada booking') ?></td></tr>
                     <?php endif; ?>
                 </tbody>
             </table>

@@ -26,7 +26,7 @@ require_once 'includes/admin-header.php';
 <td><?=$i['id']?></td><td><?=e($i['name'])?></td><td><?=e($i['city'])?></td>
 <td><?=e($i['category'] ?? '-')?></td>
 <td><?=formatRupiah($i['price'])?></td>
-<td><?php if($i['best_seller']):?><span class="badge bg-primary">Best Seller</span><?php else:?>-<?php endif;?></td>
+<td><?php if($i['best_seller']):?><span class="badge bg-primary"><?= t('Best Seller') ?></span><?php else:?>-<?php endif;?></td>
 <td><span class="badge bg-<?=$i['is_active']?'success':'secondary'?>"><?=$i['is_active']?'Aktif':'Nonaktif'?></span></td>
 <td><a href="attraction-edit.php?id=<?=$i['id']?>" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></a>
 <a href="attractions.php?delete=<?=$i['id']?>" class="btn btn-sm btn-danger" onclick="return confirm('Hapus?')"><i class="bi bi-trash"></i></a></td>

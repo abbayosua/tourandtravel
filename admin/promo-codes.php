@@ -6,7 +6,7 @@ require_once '../includes/auth.php';
 cekLogin();
 
 $msg = '';
-if (isset($_GET['msg'])) $msg = match($_GET['msg']) { 'added' => 'Berhasil ditambahkan', 'updated' => 'Berhasil diperbarui', 'deleted' => 'Berhasil dihapus', default => '' };
+if (isset($_GET['msg'])) $msg = match($_GET['msg']) { 'added' => t('Berhasil ditambahkan'), 'updated' => t('Berhasil diperbarui'), 'deleted' => t('Berhasil dihapus'), default => '' };
 
 // Handle delete
 if (isset($_GET['delete'])) {
@@ -77,7 +77,7 @@ require_once 'includes/admin-header.php';
 <?php if ($editId >= 0 && ($editItem || $editId === 0)): ?>
 <div class="card border-0 shadow-sm mb-3">
     <div class="card-body p-3">
-        <h5 class="fw-semibold mb-3"><?= $editId > 0 ? t('Edit') : t('Tambah') ?> Kode Promo</h5>
+        <h5 class="fw-semibold mb-3"><?= $editId > 0 ? t('Edit') : t('Tambah') ?><?= t('Kode Promo') ?></h5>
         <form method="POST" class="row g-2">
             <input type="hidden" name="id" value="<?= $editId ?>">
             <div class="col-md-3">
@@ -87,8 +87,8 @@ require_once 'includes/admin-header.php';
             <div class="col-md-3">
                 <label class="form-label small"><?= t('Tipe Diskon') ?></label>
                 <select name="discount_type" class="form-select form-select-sm">
-                    <option value="percentage" <?= ($editItem['discount_type'] ?? '') === 'percentage' ? 'selected' : '' ?>>Persentase (%)</option>
-                    <option value="fixed" <?= ($editItem['discount_type'] ?? '') === 'fixed' ? 'selected' : '' ?>>Nominal (Rp)</option>
+                    <option value="percentage" <?= ($editItem['discount_type'] ?? '') === 'percentage' ? 'selected' : '' ?>><?= t('Persentase (%)') ?></option>
+                    <option value="fixed" <?= ($editItem['discount_type'] ?? '') === 'fixed' ? 'selected' : '' ?>><?= t('Nominal (Rp)') ?></option>
                 </select>
             </div>
             <div class="col-md-2">
@@ -96,23 +96,23 @@ require_once 'includes/admin-header.php';
                 <input name="discount_value" type="number" class="form-control form-control-sm" value="<?= $editItem['discount_value'] ?? 0 ?>" required>
             </div>
             <div class="col-md-2">
-                <label class="form-label small">Min. Pembelian</label>
+                <label class="form-label small"><?= t('Min. Pembelian') ?></label>
                 <input name="min_purchase" type="number" class="form-control form-control-sm" value="<?= $editItem['min_purchase'] ?? '' ?>" placeholder="Kosongkan">
             </div>
             <div class="col-md-2">
-                <label class="form-label small">Max. Diskon</label>
+                <label class="form-label small"><?= t('Max. Diskon') ?></label>
                 <input name="max_discount" type="number" class="form-control form-control-sm" value="<?= $editItem['max_discount'] ?? '' ?>" placeholder="Kosongkan">
             </div>
             <div class="col-md-2">
-                <label class="form-label small">Batas Pemakaian</label>
+                <label class="form-label small"><?= t('Batas Pemakaian') ?></label>
                 <input name="usage_limit" type="number" class="form-control form-control-sm" value="<?= $editItem['usage_limit'] ?? '' ?>" placeholder="Kosongkan">
             </div>
             <div class="col-md-2">
-                <label class="form-label small">Berlaku Dari</label>
+                <label class="form-label small"><?= t('Berlaku Dari') ?></label>
                 <input name="valid_from" type="date" class="form-control form-control-sm" value="<?= $editItem['valid_from'] ?? date('Y-m-d') ?>">
             </div>
             <div class="col-md-2">
-                <label class="form-label small">Berlaku Sampai</label>
+                <label class="form-label small"><?= t('Berlaku Sampai') ?></label>
                 <input name="valid_until" type="date" class="form-control form-control-sm" value="<?= $editItem['valid_until'] ?? date('Y-m-d', strtotime('+1 year')) ?>">
             </div>
             <div class="col-md-2">
@@ -127,7 +127,7 @@ require_once 'includes/admin-header.php';
                 <a href="promo-codes.php" class="btn btn-outline-secondary btn-sm"><?= t('Batal') ?></a>
             </div>
             <div class="col-12">
-                <small class="text-muted">Deskripsi: <input name="description" class="form-control form-control-sm mt-1" value="<?= e($editItem['description'] ?? '') ?>" placeholder="Deskripsi (opsional)"></small>
+                <small class="text-muted"><?= t('Deskripsi:') ?><input name="description" class="form-control form-control-sm mt-1" value="<?= e($editItem['description'] ?? '') ?>" placeholder="Deskripsi (opsional)"></small>
             </div>
         </form>
     </div>
@@ -136,7 +136,7 @@ require_once 'includes/admin-header.php';
 
 <div class="card border-0 shadow-sm"><div class="card-body p-0">
 <table class="table table-hover mb-0 admin-table">
-<thead class="table-light"><tr><th>#</th><th>Kode</th><th>Tipe</th><th>Nilai</th><th>Min. Beli</th><th>Max. Diskon</th><th>Pemakaian</th><th>Berlaku</th><th>Status</th><th>Aksi</th></tr></thead>
+<thead class="table-light"><tr><th>#</th><th><?= t('Kode') ?></th><th><?= t('Tipe') ?></th><th><?= t('Nilai') ?></th><th><?= t('Min. Beli') ?></th><th><?= t('Max. Diskon') ?></th><th><?= t('Pemakaian') ?></th><th><?= t('Berlaku') ?></th><th><?= t('Status') ?></th><th><?= t('Aksi') ?></th></tr></thead>
 <tbody><?php foreach ($items as $i): ?><tr>
 <td><?=$i['id']?></td><td><strong><?=e($i['code'])?></strong></td>
 <td><?=$i['discount_type']==='percentage'?'%':'Rp'?></td>
@@ -144,7 +144,7 @@ require_once 'includes/admin-header.php';
 <td><?=$i['min_purchase']?formatRupiah($i['min_purchase']):'-'?></td>
 <td><?=$i['max_discount']?formatRupiah($i['max_discount']):'-'?></td>
 <td><?=$i['used_count']?> / <?=$i['usage_limit']??'∞'?></td>
-<td><?=e($i['valid_from'])?> → <?=e($i['valid_until'])?></td>
+<td><?=e($i['valid_from'])?><?= t('→') ?><?=e($i['valid_until'])?></td>
 <td><span class="badge bg-<?=$i['is_active']?'success':'secondary'?>"><?=$i['is_active']?'Aktif':'Nonaktif'?></span></td>
 <td><a href="promo-codes.php?edit=<?=$i['id']?>" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></a>
 <a href="promo-codes.php?delete=<?=$i['id']?>" class="btn btn-sm btn-danger" onclick="return confirm('Hapus kode promo?')"><i class="bi bi-trash"></i></a></td>

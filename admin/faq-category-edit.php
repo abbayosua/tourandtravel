@@ -40,7 +40,7 @@ $pageTitle = $isAdd ? t('Tambah Kategori') : t('Edit Kategori');
 require_once 'includes/admin-header.php';
 ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="fw-bold mb-0"><?= $isAdd ? t('Tambah') : t('Edit') ?> Kategori</h4>
+    <h4 class="fw-bold mb-0"><?= $isAdd ? t('Tambah') : t('Edit') ?> <?= t('Kategori') ?></h4>
     <a href="faq-category.php" class="btn btn-outline-secondary btn-sm">&larr; Kembali</a>
 </div>
 <?php if ($error): ?><div class="alert alert-danger py-2"><?=$error?></div><?php endif; ?>

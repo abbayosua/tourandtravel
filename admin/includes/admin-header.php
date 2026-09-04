@@ -89,7 +89,7 @@
         </a>
         <div class="d-flex align-items-center ms-auto">
             <span class="text-white me-3 small"><?= e($_SESSION['admin_username']) ?></span>
-            <a href="logout.php" class="btn btn-sm btn-outline-light">Logout</a>
+            <a href="logout.php" class="btn btn-sm btn-outline-light"><?= t('Logout') ?></a>
         </div>
     </div>
 </nav>

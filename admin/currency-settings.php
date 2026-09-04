@@ -34,7 +34,7 @@ $currencies = getSupportedCurrencies();
 
 <?php require_once __DIR__ . '/includes/admin-header.php'; ?>
 
-<h4 class="fw-bold mb-3"><i class="bi bi-currency-exchange me-2"></i>Pengaturan Mata Uang</h4>
+<h4 class="fw-bold mb-3"><i class="bi bi-currency-exchange me-2"></i><?= t('Pengaturan Mata Uang') ?></h4>
 
 <?php if ($message): ?>
     <div class="alert alert-success alert-dismissible py-2"><?= $message ?>
@@ -49,7 +49,7 @@ $currencies = getSupportedCurrencies();
     <div class="col-md-6">
         <div class="card border-0 shadow-sm mb-3">
             <div class="card-header bg-white">
-                <h6 class="fw-bold mb-0"><i class="bi bi-gear me-2"></i>Mata Uang Default</h6>
+                <h6 class="fw-bold mb-0"><i class="bi bi-gear me-2"></i><?= t('Mata Uang Default') ?></h6>
             </div>
             <div class="card-body">
                 <form method="POST">
@@ -88,12 +88,12 @@ $currencies = getSupportedCurrencies();
                             <tr><th><?= t('Pasangan') ?></th><th class="text-end"><?= t('Rate') ?></th></tr>
                         </thead>
                         <tbody>
-                            <tr><td>EUR → IDR</td><td class="text-end"><?= number_format($currentRates['IDR'], 2) ?></td></tr>
-                            <tr><td>EUR → SGD</td><td class="text-end"><?= number_format($currentRates['SGD'], 4) ?></td></tr>
-                            <tr><td>EUR → USD</td><td class="text-end"><?= number_format($currentRates['USD'], 4) ?></td></tr>
+                            <tr><td><?= t('EUR → IDR') ?></td><td class="text-end"><?= number_format($currentRates['IDR'], 2) ?></td></tr>
+                            <tr><td><?= t('EUR → SGD') ?></td><td class="text-end"><?= number_format($currentRates['SGD'], 4) ?></td></tr>
+                            <tr><td><?= t('EUR → USD') ?></td><td class="text-end"><?= number_format($currentRates['USD'], 4) ?></td></tr>
                         </tbody>
                     </table>
-                    <p class="text-muted small mt-2 mb-0"><?= t('Sumber') ?>: <a href="https://frankfurter.app" target="_blank">Frankfurter API</a> — <?= t('update setiap 24 jam') ?></p>
+                    <p class="text-muted small mt-2 mb-0"><?= t('Sumber') ?>: <a href="https://frankfurter.app" target="_blank"><?= t('Frankfurter API') ?></a><?= t('—') ?><?= t('update setiap 24 jam') ?></p>
                 <?php else: ?>
                     <p class="text-muted mb-0"><?= t('Belum ada data kurs. Klik "Refresh" untuk mengambil data terbaru.') ?></p>
                 <?php endif; ?>

@@ -152,10 +152,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_gallery'])) {
 $msg = '';
 if (isset($_GET['msg'])) {
     $msgs = [
-        'itinerary_added' => 'Itinerary berhasil ditambahkan',
-        'itinerary_deleted' => 'Itinerary berhasil dihapus',
-        'date_added' => 'Tanggal keberangkatan berhasil ditambahkan',
-        'date_deleted' => 'Tanggal keberangkatan berhasil dihapus',
+        'itinerary_added' => t('Itinerary berhasil ditambahkan'),
+        'itinerary_deleted' => t('Itinerary berhasil dihapus'),
+        'date_added' => t('Tanggal keberangkatan berhasil ditambahkan'),
+        'date_deleted' => t('Tanggal keberangkatan berhasil dihapus'),
     ];
     $msg = $msgs[$_GET['msg']] ?? '';
 }
@@ -164,7 +164,7 @@ $pageTitle = t('Edit Tour');
 require_once 'includes/admin-header.php';
 ?>
 
-<h4 class="fw-bold mb-3">Edit Tour: <?= e($tour['title']) ?></h4>
+<h4 class="fw-bold mb-3"><?= t('Edit Tour:') ?><?= e($tour['title']) ?></h4>
 
 <?php if ($msg): ?>
     <div class="alert alert-success alert-dismissible py-2"><?= $msg ?><button class="btn-close" data-bs-dismiss="alert"></button></div>
@@ -211,7 +211,7 @@ require_once 'includes/admin-header.php';
                         <label class="form-label fw-semibold"><?= t('Harga') ?></label>
                         <div class="input-group">
                             <select name="price_currency" class="form-select" style="max-width: 100px;">
-                                <?php foreach (['IDR' => 'Rp (IDR)', 'SGD' => 'S$ (SGD)', 'USD' => '$ (USD)'] as $code => $label): ?>
+                                <?php foreach (['IDR' => t('Rp (IDR)'), 'SGD' => 'S$ (SGD)', 'USD' => '$ (USD)'] as $code => $label): ?>
                                     <option value="<?= $code ?>" <?= ($tour['price_currency'] ?? 'IDR') === $code ? 'selected' : '' ?>><?= $label ?></option>
                                 <?php endforeach; ?>
                             </select>
@@ -221,8 +221,8 @@ require_once 'includes/admin-header.php';
                     <div class="mb-3">
                         <label class="form-label fw-semibold"><?= t('Bahasa Konten') ?></label>
                         <select name="content_language" class="form-select">
-                            <option value="id" <?= ($tour['content_language'] ?? 'id') === 'id' ? 'selected' : '' ?>>🇮🇩 Indonesia (asli)</option>
-                            <option value="en" <?= ($tour['content_language'] ?? 'id') === 'en' ? 'selected' : '' ?>>🇬🇧 English (asli)</option>
+                            <option value="id" <?= ($tour['content_language'] ?? 'id') === 'id' ? 'selected' : '' ?>><?= t('🇮🇩 Indonesia (asli)') ?></option>
+                            <option value="en" <?= ($tour['content_language'] ?? 'id') === 'en' ? 'selected' : '' ?>><?= t('🇬🇧 English (asli)') ?></option>
                         </select>
                         <div class="form-text"><?= t('Konten akan otomatis diterjemahkan ke bahasa lain') ?></div>
                     </div>
@@ -238,7 +238,7 @@ require_once 'includes/admin-header.php';
                 </div>
             </div>
             <button type="submit" class="btn btn-primary w-100"><?= t('Update Tour') ?></button>
-            <a href="tours.php" class="btn btn-outline-secondary w-100 mt-2">Kembali</a>
+            <a href="tours.php" class="btn btn-outline-secondary w-100 mt-2"><?= t('Kembali') ?></a>
         </div>
     </div>
 </form>
@@ -246,7 +246,7 @@ require_once 'includes/admin-header.php';
 <!-- Jadwal Keberangkatan -->
 <div class="card border-0 shadow-sm mb-3">
     <div class="card-header bg-white d-flex justify-content-between align-items-center">
-        <h6 class="fw-bold mb-0">Jadwal Keberangkatan</h6>
+        <h6 class="fw-bold mb-0"><?= t('Jadwal Keberangkatan') ?></h6>
         <button class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#addDateForm">+ Tambah</button>
     </div>
     <div class="card-body">
@@ -265,7 +265,7 @@ require_once 'includes/admin-header.php';
                     <input type="number" name="slots" class="form-control form-control-sm" min="1" value="20" required>
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
-                    <button type="submit" name="add_date" class="btn btn-sm btn-primary w-100">Simpan</button>
+                    <button type="submit" name="add_date" class="btn btn-sm btn-primary w-100"><?= t('Simpan') ?></button>
                 </div>
             </form>
         </div>
@@ -274,10 +274,10 @@ require_once 'includes/admin-header.php';
         <table class="table table-sm mb-0">
             <thead>
                 <tr>
-                    <th>Berangkat</th>
-                    <th>Kembali</th>
-                    <th>Slot</th>
-                    <th>Aksi</th>
+                    <th><?= t('Berangkat') ?></th>
+                    <th><?= t('Kembali') ?></th>
+                    <th><?= t('Slot') ?></th>
+                    <th><?= t('Aksi') ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -294,7 +294,7 @@ require_once 'includes/admin-header.php';
             </tbody>
         </table>
         <?php else: ?>
-        <p class="text-muted small mb-0">Belum ada jadwal keberangkatan.</p>
+        <p class="text-muted small mb-0"><?= t('Belum ada jadwal keberangkatan.') ?></p>
         <?php endif; ?>
     </div>
 </div>
@@ -302,7 +302,7 @@ require_once 'includes/admin-header.php';
 <!-- Itinerary -->
 <div class="card border-0 shadow-sm mb-3">
     <div class="card-header bg-white d-flex justify-content-between align-items-center">
-        <h6 class="fw-bold mb-0">Itinerary</h6>
+        <h6 class="fw-bold mb-0"><?= t('Itinerary') ?></h6>
         <button class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#addItineraryForm">+ Tambah</button>
     </div>
     <div class="card-body">
@@ -339,12 +339,12 @@ require_once 'includes/admin-header.php';
             <table class="table table-sm mb-0">
                 <thead>
                     <tr>
-                        <th>Hari</th>
-                        <th>Judul</th>
-                        <th>Deskripsi</th>
-                        <th>Makan</th>
-                        <th>Akomodasi</th>
-                        <th>Aksi</th>
+                        <th><?= t('Hari') ?></th>
+                        <th><?= t('Judul') ?></th>
+                        <th><?= t('Deskripsi') ?></th>
+                        <th><?= t('Makan') ?></th>
+                        <th><?= t('Akomodasi') ?></th>
+                        <th><?= t('Aksi') ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -364,7 +364,7 @@ require_once 'includes/admin-header.php';
             </table>
         </div>
         <?php else: ?>
-        <p class="text-muted small mb-0">Belum ada itinerary.</p>
+        <p class="text-muted small mb-0"><?= t('Belum ada itinerary.') ?></p>
         <?php endif; ?>
     </div>
 </div>
@@ -372,8 +372,8 @@ require_once 'includes/admin-header.php';
 <!-- Galeri Foto -->
 <div class="card border-0 shadow-sm mb-3">
     <div class="card-header bg-white d-flex justify-content-between align-items-center">
-        <h6 class="fw-bold mb-0"><i class="bi bi-images me-2"></i>Galeri Foto</h6>
-        <small class="text-muted">Upload beberapa gambar (JPG/PNG/WebP, max 2MB)</small>
+        <h6 class="fw-bold mb-0"><i class="bi bi-images me-2"></i><?= t('Galeri Foto') ?></h6>
+        <small class="text-muted"><?= t('Upload beberapa gambar (JPG/PNG/WebP, max 2MB)') ?></small>
     </div>
     <div class="card-body">
         <?php
@@ -386,7 +386,7 @@ require_once 'includes/admin-header.php';
                     <input type="file" name="gallery_images[]" class="form-control form-control-sm" accept="image/jpeg,image/png,image/webp" multiple required>
                 </div>
                 <div class="col-md-3 d-grid">
-                    <button type="submit" name="add_gallery" class="btn btn-sm btn-primary">Upload Galeri</button>
+                    <button type="submit" name="add_gallery" class="btn btn-sm btn-primary"><?= t('Upload Galeri') ?></button>
                 </div>
             </div>
         </form>
@@ -403,7 +403,7 @@ require_once 'includes/admin-header.php';
             <?php endforeach; ?>
         </div>
         <?php else: ?>
-        <p class="text-muted small mb-0">Belum ada foto galeri. Upload untuk mengganti galeri auto (loremflickr).</p>
+        <p class="text-muted small mb-0"><?= t('Belum ada foto galeri. Upload untuk mengganti galeri auto (loremflickr).') ?></p>
         <?php endif; ?>
     </div>
 </div>
