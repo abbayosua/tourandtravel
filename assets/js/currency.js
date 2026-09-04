@@ -55,7 +55,7 @@ const CurrencySwitcher = {
 
     format(amount, currency) {
         const cfg = this.currencies[currency] || this.currencies.IDR;
-        const formatted = new Intl.NumberFormat('id-ID', {
+        const formatted = new Intl.NumberFormat(window.I18N ? window.I18N.locale : 'id-ID', {
             minimumFractionDigits: cfg.decimals,
             maximumFractionDigits: cfg.decimals
         }).format(amount);

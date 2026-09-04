@@ -6,14 +6,14 @@ require_once 'includes/functions.php';
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+    echo json_encode(['success' => false, 'message' => t('Method not allowed')]);
     exit;
 }
 
 $email = trim($_POST['email'] ?? '');
 
 if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    echo json_encode(['success' => false, 'message' => 'Alamat email tidak valid']);
+    echo json_encode(['success' => false, 'message' => t('Alamat email tidak valid')]);
     exit;
 }
 
@@ -22,13 +22,13 @@ try {
     $stmt = db()->prepare("SELECT COUNT(*) FROM newsletter_subscribers WHERE email = ?");
     $stmt->execute([$email]);
     if ($stmt->fetchColumn() > 0) {
-        echo json_encode(['success' => false, 'message' => 'Email sudah terdaftar']);
+        echo json_encode(['success' => false, 'message' => t('Email sudah terdaftar')]);
         exit;
     }
 
     $stmt = db()->prepare("INSERT INTO newsletter_subscribers (email) VALUES (?)");
     $stmt->execute([$email]);
-    echo json_encode(['success' => true, 'message' => 'Berhasil berlangganan! Cek email Anda untuk konfirmasi.']);
+    echo json_encode(['success' => true, 'message' => t('Berhasil berlangganan! Cek email Anda untuk konfirmasi.')]);
 } catch (Throwable $e) {
-    echo json_encode(['success' => false, 'message' => 'Terjadi kesalahan. Coba lagi nanti.']);
+    echo json_encode(['success' => false, 'message' => t('Terjadi kesalahan. Coba lagi nanti.')]);
 }

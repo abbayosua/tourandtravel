@@ -69,11 +69,11 @@ function initSearchAutocomplete(inputId, dropdownId) {
                         if (item.type === 'category') {
                             url = 'tours.php?category=' + encodeURIComponent(item.label);
                             icon = 'bi-tag';
-                            label2 = 'Kategori';
+                            label2 = I18N.t('Kategori');
                         } else {
                             url = 'tour-detail.php?slug=' + item.slug;
                             icon = 'bi-geo-alt';
-                            label2 = 'Mulai ' + (item.price ? 'Rp' + Number(item.price).toLocaleString('id-ID') : '-');
+                            label2 = I18N.t('Mulai') + ' ' + (item.price ? 'Rp' + Number(item.price).toLocaleString(I18N.locale) : '-');
                         }
                         html += '<a href="' + url + '" class="search-item">' +
                             '<div class="search-icon bg-light text-primary"><i class="bi ' + icon + '"></i></div>' +

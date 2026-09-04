@@ -6,7 +6,7 @@ require_once 'includes/functions.php';
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+    echo json_encode(['success' => false, 'message' => t('Method not allowed')]);
     exit;
 }
 
@@ -14,12 +14,12 @@ $code = strtoupper(trim($_POST['code'] ?? ''));
 $subtotal = (float)($_POST['subtotal'] ?? 0);
 
 if (!$code) {
-    echo json_encode(['success' => false, 'message' => 'Masukkan kode promo']);
+    echo json_encode(['success' => false, 'message' => t('Masukkan kode promo')]);
     exit;
 }
 
 if ($subtotal <= 0) {
-    echo json_encode(['success' => false, 'message' => 'Subtotal tidak valid']);
+    echo json_encode(['success' => false, 'message' => t('Subtotal tidak valid')]);
     exit;
 }
 
@@ -29,31 +29,31 @@ try {
     $promo = $stmt->fetch();
 
     if (!$promo) {
-        echo json_encode(['success' => false, 'message' => 'Kode promo tidak ditemukan']);
+        echo json_encode(['success' => false, 'message' => t('Kode promo tidak ditemukan')]);
         exit;
     }
 
     // Validasi periode berlaku
     $today = date('Y-m-d');
     if ($today < $promo['valid_from']) {
-        echo json_encode(['success' => false, 'message' => 'Kode promo belum berlaku']);
+        echo json_encode(['success' => false, 'message' => t('Kode promo belum berlaku')]);
         exit;
     }
     if ($today > $promo['valid_until']) {
-        echo json_encode(['success' => false, 'message' => 'Kode promo sudah kedaluwarsa']);
+        echo json_encode(['success' => false, 'message' => t('Kode promo sudah kedaluwarsa')]);
         exit;
     }
 
     // Validasi usage limit
     if ($promo['usage_limit'] !== null && $promo['used_count'] >= $promo['usage_limit']) {
-        echo json_encode(['success' => false, 'message' => 'Kode promo sudah mencapai batas pemakaian']);
+        echo json_encode(['success' => false, 'message' => t('Kode promo sudah mencapai batas pemakaian')]);
         exit;
     }
 
     // Validasi minimal pembelian
     if ($promo['min_purchase'] !== null && $subtotal < $promo['min_purchase']) {
-        $minText = 'Rp ' . number_format((float)$promo['min_purchase'], 0, ',', '.');
-        echo json_encode(['success' => false, 'message' => 'Minimal pembelian ' . $minText . ' untuk kode ini']);
+        $minText = formatRupiah((float)$promo['min_purchase']);
+        echo json_encode(['success' => false, 'message' => str_replace(':amount', $minText, t('Minimal pembelian :amount untuk kode ini'))]);
         exit;
     }
 
@@ -73,7 +73,7 @@ try {
 
     echo json_encode([
         'success' => true,
-        'message' => 'Kode promo berlaku!',
+        'message' => t('Kode promo berlaku!'),
         'code' => $code,
         'discount_type' => $promo['discount_type'],
         'discount_value' => (float)$promo['discount_value'],
@@ -81,5 +81,5 @@ try {
         'total' => $total,
     ]);
 } catch (Throwable $e) {
-    echo json_encode(['success' => false, 'message' => 'Terjadi kesalahan. Coba lagi nanti.']);
+    echo json_encode(['success' => false, 'message' => t('Terjadi kesalahan. Coba lagi nanti.')]);
 }

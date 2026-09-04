@@ -21,7 +21,7 @@ if (file_exists($wa_config_file)) {
 
 $base = rtrim($settings['server_url'], '/');
 $token = $settings['token'];
-$result = ['success' => false, 'error' => 'Unknown action'];
+$result = ['success' => false, 'error' => t('Unknown action')];
 
 switch ($action) {
     case 'status':
@@ -33,7 +33,7 @@ switch ($action) {
         if ($http === 200) {
             $result = json_decode($res, true);
         } else {
-            $result = ['success' => false, 'error' => 'Cannot reach WUZAPI'];
+            $result = ['success' => false, 'error' => t('Cannot reach WUZAPI')];
         }
         break;
 
@@ -66,11 +66,11 @@ switch ($action) {
                 $result = ['success' => true, 'qrcode' => $qrData['data']['QRCode'] ?? ''];
             } else {
                 // QR belum siap, coba lagi
-                $result = ['success' => true, 'qrcode' => '', 'message' => 'Menghubungkan...'];
+                $result = ['success' => true, 'qrcode' => '', 'message' => t('Menghubungkan...')];
             }
         } else {
             $data = json_decode($res, true);
-            $result = ['success' => false, 'error' => $data['error'] ?? 'Connect failed'];
+            $result = ['success' => false, 'error' => $data['error'] ?? t('Connect failed')];
         }
         break;
 
@@ -80,7 +80,7 @@ switch ($action) {
         $res = curl_exec($ch);
         $http = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-        $result = $http === 200 ? ['success' => true] : ['success' => false, 'error' => 'Disconnect failed'];
+        $result = $http === 200 ? ['success' => true] : ['success' => false, 'error' => t('Disconnect failed')];
         break;
 
     case 'get_qr':
@@ -93,7 +93,7 @@ switch ($action) {
             $data = json_decode($res, true);
             $result = ['success' => true, 'qrcode' => $data['data']['QRCode'] ?? ''];
         } else {
-            $result = ['success' => false, 'error' => 'QR not available'];
+            $result = ['success' => false, 'error' => t('QR not available')];
         }
         break;
 

@@ -61,12 +61,12 @@
             })
             .then(function (r) { return r.json(); })
             .then(function (d) {
-                msg.textContent = d.message || (d.success ? 'Berhasil! Cek email Anda.' : 'Gagal. Coba lagi.');
+                msg.textContent = d.message || (d.success ? I18N.t('Berhasil! Cek email Anda.') : I18N.t('Gagal. Coba lagi.'));
                 msg.className = 'klook-newsletter-msg small mt-2 ' + (d.success ? 'text-success' : 'text-danger');
                 if (d.success) email.value = '';
             })
             .catch(function () {
-                msg.textContent = 'Terjadi kesalahan. Coba lagi nanti.';
+                msg.textContent = I18N.t('Terjadi kesalahan. Coba lagi nanti.');
                 msg.className = 'klook-newsletter-msg small mt-2 text-danger';
             });
         });
@@ -138,10 +138,10 @@
             var rooms = parseInt(roomsSelect.value) || 1;
             var total = pricePerNight * diff * rooms;
 
-            if (nightsDisplay) nightsDisplay.textContent = diff + ' malam' + (rooms > 1 ? ' x ' + rooms + ' kamar' : '');
+            if (nightsDisplay) nightsDisplay.textContent = diff + ' ' + I18N.t('malam') + (rooms > 1 ? ' × ' + rooms + ' ' + I18N.t('kamar') : '');
 
             // Format Rupiah
-            totalDisplay.textContent = 'Rp ' + Number(total).toLocaleString('id-ID');
+            totalDisplay.textContent = 'Rp ' + Number(total).toLocaleString(window.I18N ? window.I18N.locale : 'id-ID');
         }
 
         if (checkinInput) checkinInput.addEventListener('change', updateTotal);
@@ -162,7 +162,7 @@
 
         var code = input.value.trim();
         if (!code) {
-            result.textContent = 'Masukkan kode promo';
+            result.textContent = I18N.t('Masukkan kode promo');
             result.className = 'klook-promo-result small mt-1 text-danger';
             return;
         }
@@ -176,15 +176,15 @@
         .then(function (d) {
             if (d.success) {
                 result.innerHTML = '<i class="bi bi-check-circle-fill text-success me-1"></i>' + d.message +
-                    ' Diskon: <strong>Rp ' + Number(d.discount).toLocaleString('id-ID') + '</strong>';
+                    ' ' + I18N.t('Diskon:') + ' <strong>Rp ' + Number(d.discount).toLocaleString(I18N.locale) + '</strong>';
                 result.className = 'klook-promo-result small mt-1 text-success';
             } else {
-                result.innerHTML = '<i class="bi bi-x-circle-fill text-danger me-1"></i>' + (d.message || 'Kode promo tidak valid');
+                result.innerHTML = '<i class="bi bi-x-circle-fill text-danger me-1"></i>' + (d.message || I18N.t('Kode promo tidak valid'));
                 result.className = 'klook-promo-result small mt-1 text-danger';
             }
         })
         .catch(function () {
-            result.textContent = 'Terjadi kesalahan. Coba lagi nanti.';
+            result.textContent = I18N.t('Terjadi kesalahan. Coba lagi nanti.');
             result.className = 'klook-promo-result small mt-1 text-danger';
         });
     }
