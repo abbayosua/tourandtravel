@@ -8,7 +8,7 @@
 function renderBreadcrumb($items) {
     if (empty($items)) return;
     ?>
-    <nav class="mb-3" aria-label="breadcrumb">
+    <nav class="mb-3" aria-label="<?= t('breadcrumb') ?>">
         <ol class="breadcrumb small klook-breadcrumb">
             <li class="breadcrumb-item"><a href="<?= BASE_URL ?>/"><i class="bi bi-house"></i></a></li>
             <?php foreach ($items as $item): ?>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="<?= getCurrentLang() ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,6 +14,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=<?= filemtime(__DIR__ . '/../assets/css/style.css') ?>">
+    <?= i18nJs() ?>
     <script defer src="<?= BASE_URL ?>/assets/js/klook.js?v=<?= filemtime(__DIR__ . '/../assets/js/klook.js') ?>"></script>
 </head>
 <body>
@@ -152,9 +153,9 @@
                         <i class="bi bi-translate"></i> <?= strtoupper(getCurrentLang()) ?>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <?php $langParams = $_GET; ?>
-                        <li><a class="dropdown-item <?= getCurrentLang() === 'id' ? 'active' : '' ?>" href="?<?= http_build_query(array_merge($langParams, ['lang' => 'id'])) ?>">🇮🇩 Indonesia</a></li>
-                        <li><a class="dropdown-item <?= getCurrentLang() === 'en' ? 'active' : '' ?>" href="?<?= http_build_query(array_merge($langParams, ['lang' => 'en'])) ?>">🇬🇧 English</a></li>
+                        <?php $langParams = $_GET; foreach (getSupportedLanguages() as $langCode => $langMeta): ?>
+                        <li><a class="dropdown-item <?= getCurrentLang() === $langCode ? 'active' : '' ?>" href="?<?= http_build_query(array_merge($langParams, ['lang' => $langCode])) ?>"><?= $langMeta['flag'] ?> <?= e($langMeta['label']) ?></a></li>
+                        <?php endforeach; ?>
                     </ul>
                 </li>
 

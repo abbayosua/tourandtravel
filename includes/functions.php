@@ -3,7 +3,8 @@
  * Format angka ke Rupiah
  */
 function formatRupiah($angka) {
-    return 'Rp ' . number_format($angka, 0, ',', '.');
+    $sep = (getCurrentLang() === 'en') ? [',', '.'] : ['.', ','];
+    return 'Rp ' . number_format((float)$angka, 0, $sep[1], $sep[0]);
 }
 
 /**
@@ -133,7 +134,8 @@ function formatCurrency($amount, $currency = null, $sourceCurrency = null) {
     $converted = convertCurrency($amount, $sourceCurrency, $currency);
     $config = getSupportedCurrencies()[$currency] ?? getSupportedCurrencies()['IDR'];
 
-    $formatted = number_format($converted, $config['decimals'], ',', '.');
+    $sep = (getCurrentLang() === 'en') ? [',', '.'] : ['.', ','];
+    $formatted = number_format($converted, $config['decimals'], $sep[1], $sep[0]);
     return $config['position'] === 'before'
         ? $config['symbol'] . ' ' . $formatted
         : $formatted . ' ' . $config['symbol'];
@@ -158,11 +160,38 @@ function formatCurrencySpan($amount, $sourceCurrency = null, $extraClass = '') {
 /**
  * Get current language from session/cookie
  */
+/**
+ * Registry bahasa yang didukung — satu-satunya titik untuk menambah bahasa baru.
+ * Untuk menambah bahasa (mis. 'ms'): tambah baris di sini, seed terjemahan di tabel
+ * `translations`, dan (opsional) kolom `_{kode}` untuk konten DB. Switcher UI otomatis.
+ */
+function getSupportedLanguages() {
+    return [
+        'id' => ['label' => 'Bahasa Indonesia', 'flag' => '🇮🇩', 'locale' => 'id_ID'],
+        'en' => ['label' => 'English',          'flag' => '🇬🇧', 'locale' => 'en_US'],
+    ];
+}
+
+/**
+ * Kode bahasa aktif yang valid (sesuai registry); fallback 'id' bila tidak dikenal.
+ */
+function isValidLang($code) {
+    return is_string($code) && array_key_exists($code, getSupportedLanguages());
+}
+
 function getCurrentLang() {
-    if (isset($_SESSION['lang'])) return $_SESSION['lang'];
-    if (isset($_COOKIE['lang'])) {
+    if (isset($_SESSION['lang']) && isValidLang($_SESSION['lang'])) {
+        return $_SESSION['lang'];
+    }
+    if (isset($_COOKIE['lang']) && isValidLang($_COOKIE['lang'])) {
         $_SESSION['lang'] = $_COOKIE['lang'];
         return $_COOKIE['lang'];
+    }
+    if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+        foreach (preg_split('/[,;]/', $_SERVER['HTTP_ACCEPT_LANGUAGE']) as $part) {
+            $code = strtolower(substr(trim($part), 0, 2));
+            if (isValidLang($code)) return $code;
+        }
     }
     return 'id';
 }
@@ -181,6 +210,7 @@ function setLang($lang) {
  */
 function t($key, $fallback = null, $sourceLang = 'id') {
     static $cache = [];
+    static $preloaded = [];
     $lang = getCurrentLang();
     $cacheKey = $lang . ':' . $sourceLang . ':' . $key;
 
@@ -190,6 +220,20 @@ function t($key, $fallback = null, $sourceLang = 'id') {
         $cache[$cacheKey] = $fallback ?? $key;
         return $cache[$cacheKey];
     }
+
+    if (!isset($preloaded[$lang])) {
+        $preloaded[$lang] = true;
+        try {
+            $stmt = db()->query("SELECT `key`, value FROM translations WHERE lang = " . db()->quote($lang));
+            foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                $cache[$lang . ':id:' . $row['key']] = $row['value'];
+            }
+        } catch (Throwable $e) {
+            $preloaded[$lang] = false;
+        }
+    }
+
+    if (isset($cache[$cacheKey])) return $cache[$cacheKey];
 
     try {
         $stmt = db()->prepare("SELECT value FROM translations WHERE `key` = ? AND lang = ? LIMIT 1");
@@ -236,6 +280,94 @@ function tglIndonesia($date) {
     $tahun = date('Y', $t);
 
     return "$namaHari, $tanggal $namaBulan $tahun";
+}
+
+/**
+ * Resolver konten DB per-bahasa: bila bahasa aktif bukan source (id) dan kolom
+ * "{$field}_{lang}" ada di row serta tidak kosong, kembalikan kolom terjemahan;
+ * selain itu fallback ke nilai asli. Pola tunggal untuk semua tabel konten
+ * (tours, hotels, dsb) — tambah bahasa = tambah kolom {field}_{kode}.
+ */
+function tContent($row, $field) {
+    if (!is_array($row) && !is_object($row)) return $row;
+    $lang = getCurrentLang();
+    if ($lang === 'id') {
+        return is_array($row) ? ($row[$field] ?? '') : ($row->$field ?? '');
+    }
+    $key = $field . '_' . $lang;
+    $translated = is_array($row) ? ($row[$key] ?? null) : ($row->$key ?? null);
+    if ($translated !== null && trim((string)$translated) !== '') {
+        return $translated;
+    }
+    return is_array($row) ? ($row[$field] ?? '') : ($row->$field ?? '');
+}
+
+/**
+ * Key string yang dipakai di assets/js (diakses via I18N.t). Terjemahan diambil
+ * dari tabel translations dengan key yang sama. Saat JS baru butuh string,
+ * tambahkan key di sini.
+ */
+function getJsI18nKeys() {
+    return [
+        'Berhasil! Cek email Anda.',
+        'Gagal. Coba lagi.',
+        'Terjadi kesalahan. Coba lagi nanti.',
+        'malam',
+        'kamar',
+        'Masukkan kode promo',
+        'Kode promo tidak valid',
+        'Diskon:',
+        'Kategori',
+        'Mulai',
+    ];
+}
+
+function getJsI18nStrings() {
+    $out = [];
+    foreach (getJsI18nKeys() as $k) {
+        $out[$k] = t($k);
+    }
+    return $out;
+}
+
+/**
+ * Blok <script> window.I18N + assets/js/i18n.js. Harus dicetak sebelum
+ * klook.js/script.js agar I18N.t tersedia saat script lain berjalan.
+ */
+function i18nJs() {
+    $lang = getCurrentLang();
+    $langs = getSupportedLanguages();
+    $locale = str_replace('_', '-', $langs[$lang]['locale'] ?? 'id-ID');
+    $payload = json_encode([
+        'lang' => $lang,
+        'locale' => $locale,
+        'strings' => getJsI18nStrings(),
+    ], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG);
+    return '<script>window.I18N = ' . $payload . ';</script>' . "\n"
+        . '<script defer src="' . BASE_URL . '/assets/js/i18n.js?v=' . filemtime(__DIR__ . '/../assets/js/i18n.js') . '"></script>';
+}
+
+/**
+ * Tanggal locale-aware: nama hari/bulan mengikuti bahasa aktif (getSupportedLanguages).
+ * Output format sama dengan tglIndonesia(): "Senin, 5 Januari 2026" / "Monday, 5 January 2026".
+ */
+function formatDate($date) {
+    $t = strtotime($date);
+    if ($t === false) return '';
+    $lang = getCurrentLang();
+    if ($lang === 'id') {
+        return tglIndonesia($date);
+    }
+    return date('l', $t) . ', ' . date('j', $t) . ' ' . date('F', $t) . ' ' . date('Y', $t);
+}
+
+/**
+ * Angka locale-aware: pemisah ribuan/desimal mengikuti bahasa aktif
+ * (id: 1.000,5 — en: 1,000.5).
+ */
+function formatNumber($n) {
+    $sep = (getCurrentLang() === 'en') ? [',', '.'] : ['.', ','];
+    return number_format((float)$n, 0, $sep[1], $sep[0]);
 }
 
 /**

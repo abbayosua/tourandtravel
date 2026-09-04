@@ -12,8 +12,12 @@ define('SITE_NAME', 'TourAndTravel');
 // Session
 session_start();
 
-// Language switcher
-if (isset($_GET['lang']) && in_array($_GET['lang'], ['id', 'en'])) {
+// Language switcher (validasi via registry bahasa — getSupportedLanguages)
+if (!function_exists('getSupportedLanguages')) {
+    require_once __DIR__ . '/functions.php';
+}
+if (isset($_GET['lang']) && preg_match('/^[a-z]{2,5}$/', $_GET['lang'])
+    && in_array($_GET['lang'], array_keys(getSupportedLanguages()))) {
     $_SESSION['lang'] = $_GET['lang'];
     setcookie('lang', $_GET['lang'], time() + (86400 * 365), '/');
     $params = $_GET;

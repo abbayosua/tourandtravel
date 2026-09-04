@@ -9,7 +9,7 @@
             <div class="col-md-4">
                 <h5 class="fw-bold mb-3"><?= t('Kontak') ?></h5>
                 <ul class="list-unstyled">
-                    <li class="mb-2"><i class="bi bi-geo-alt-fill me-2"></i> Jl. Merdeka No. 123, Jakarta</li>
+                    <li class="mb-2"><i class="bi bi-geo-alt-fill me-2"></i> <?= t('Jl. Merdeka No. 123, Jakarta') ?></li>
                     <li class="mb-2"><i class="bi bi-telephone-fill me-2"></i> 021-12345678</li>
                     <li class="mb-2"><i class="bi bi-whatsapp me-2"></i> 0812-3456-7890</li>
                     <li class="mb-2"><i class="bi bi-envelope-fill me-2"></i> info@wanderlusttravel.com</li>
@@ -25,8 +25,8 @@
                 </div>
                 <hr class="my-3 border-secondary">
                 <h6><?= t('Jam Operasional') ?></h6>
-                <p class="mb-0">Senin - Sabtu: 08:00 - 20:00</p>
-                <p>Minggu: 09:00 - 15:00</p>
+                <p class="mb-0"><?= t('Senin - Sabtu: 08:00 - 20:00') ?></p>
+                <p><?= t('Minggu: 09:00 - 15:00') ?></p>
             </div>
         </div>
         <hr class="border-secondary my-3">

@@ -65,14 +65,14 @@
             <div class="col-md-3">
                 <h6 class="fw-bold mb-3"><?= t('Kontak') ?></h6>
                 <ul class="list-unstyled small">
-                    <li class="mb-2"><i class="bi bi-geo-alt-fill me-2"></i> Jl. Merdeka No. 123, Jakarta</li>
+                    <li class="mb-2"><i class="bi bi-geo-alt-fill me-2"></i> <?= t('Jl. Merdeka No. 123, Jakarta') ?></li>
                     <li class="mb-2"><i class="bi bi-telephone-fill me-2"></i> 021-12345678</li>
                     <li class="mb-2"><i class="bi bi-whatsapp me-2"></i> 0812-3456-7890</li>
                     <li class="mb-2"><i class="bi bi-envelope-fill me-2"></i> info@wanderlusttravel.com</li>
                 </ul>
                 <h6 class="fw-bold mt-3"><?= t('Jam Operasional') ?></h6>
-                <p class="mb-0 text-secondary small">Senin - Sabtu: 08:00 - 20:00</p>
-                <p class="text-secondary small">Minggu: 09:00 - 15:00</p>
+                <p class="mb-0 text-secondary small"><?= t('Senin - Sabtu: 08:00 - 20:00') ?></p>
+                <p class="text-secondary small"><?= t('Minggu: 09:00 - 15:00') ?></p>
             </div>
         </div>
 
@@ -81,10 +81,10 @@
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
             <div class="d-flex flex-wrap align-items-center gap-3 text-secondary small">
                 <span><?= t('Metode Pembayaran') ?>:</span>
-                <span class="badge bg-white bg-opacity-10 text-light px-3 py-2 rounded-pill fw-semibold">Visa</span>
-                <span class="badge bg-white bg-opacity-10 text-light px-3 py-2 rounded-pill fw-semibold">Mastercard</span>
-                <span class="badge bg-white bg-opacity-10 text-light px-3 py-2 rounded-pill fw-semibold">PayPal</span>
-                <span class="badge bg-white bg-opacity-10 text-light px-3 py-2 rounded-pill fw-semibold">Bank Transfer</span>
+                <span class="badge bg-white bg-opacity-10 text-light px-3 py-2 rounded-pill fw-semibold"><?= t('Visa') ?></span>
+                <span class="badge bg-white bg-opacity-10 text-light px-3 py-2 rounded-pill fw-semibold"><?= t('Mastercard') ?></span>
+                <span class="badge bg-white bg-opacity-10 text-light px-3 py-2 rounded-pill fw-semibold"><?= t('PayPal') ?></span>
+                <span class="badge bg-white bg-opacity-10 text-light px-3 py-2 rounded-pill fw-semibold"><?= t('Bank Transfer') ?></span>
             </div>
             <div class="text-secondary small">
                 <i class="bi bi-shield-check me-1"></i><?= t('Pembayaran aman & terenkripsi') ?>
@@ -153,12 +153,12 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(function(r) { return r.json(); })
         .then(function(d) {
-            msg.textContent = d.message || (d.success ? 'OK' : 'Gagal');
+            msg.textContent = d.message || (d.success ? 'OK' : I18N.t('Gagal'));
             msg.className = 'klook-newsletter-msg small mt-2 ' + (d.success ? 'text-success' : 'text-danger');
             if (d.success) form.reset();
         })
         .catch(function() {
-            msg.textContent = 'Terjadi kesalahan. Coba lagi.';
+            msg.textContent = I18N.t('Terjadi kesalahan. Coba lagi.');
             msg.className = 'klook-newsletter-msg small mt-2 text-danger';
         });
     });

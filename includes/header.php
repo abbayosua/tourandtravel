@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="<?= getCurrentLang() ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,6 +14,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=<?= filemtime(__DIR__ . '/../assets/css/style.css') ?>">
+    <?= i18nJs() ?>
     <script defer src="<?= BASE_URL ?>/assets/js/klook.js?v=<?= filemtime(__DIR__ . '/../assets/js/klook.js') ?>"></script>
 </head>
 <body>
@@ -30,7 +31,7 @@
             <div class="nav-search-wrapper search-wrapper">
                 <div class="input-group input-group-sm">
                     <span class="input-group-text bg-white border-0"><i class="bi bi-search text-muted small"></i></span>
-                    <input type="text" class="form-control border-0 shadow-none small" placeholder="Cari destinasi..." id="navSearch" autocomplete="off" onkeypress="if(event.key==='Enter' && this.value.trim()) window.location='tours.php?search='+encodeURIComponent(this.value)">
+                    <input type="text" class="form-control border-0 shadow-none small" placeholder="<?= t('Cari destinasi...') ?>" id="navSearch" autocomplete="off" onkeypress="if(event.key==='Enter' && this.value.trim()) window.location='tours.php?search='+encodeURIComponent(this.value)">
                 </div>
                 <div class="search-dropdown" id="navSearchDropdown"></div>
             </div>
@@ -43,10 +44,10 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link py-2 dropdown-toggle" href="#" data-bs-toggle="dropdown"><?= t('Layanan') ?></a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="tours.php"><i class="bi bi-map me-2"></i>Paket Tour</a></li>
-                        <li><a class="dropdown-item" href="flights.php"><i class="bi bi-airplane me-2"></i>Pesawat</a></li>
-                        <li><a class="dropdown-item" href="ferries.php"><i class="bi bi-ship me-2"></i>Ferry</a></li>
-                        <li><a class="dropdown-item" href="rental-cars.php"><i class="bi bi-car-front me-2"></i>Rental Mobil</a></li>
+                        <li><a class="dropdown-item" href="tours.php"><i class="bi bi-map me-2"></i><?= t('Paket Tour') ?></a></li>
+                        <li><a class="dropdown-item" href="flights.php"><i class="bi bi-airplane me-2"></i><?= t('Pesawat') ?></a></li>
+                        <li><a class="dropdown-item" href="ferries.php"><i class="bi bi-ship me-2"></i><?= t('Ferry') ?></a></li>
+                        <li><a class="dropdown-item" href="rental-cars.php"><i class="bi bi-car-front me-2"></i><?= t('Rental Mobil') ?></a></li>
                     </ul>
                 </li>
                 <li class="nav-item">
@@ -87,9 +88,9 @@
                         <i class="bi bi-translate"></i> <?= strtoupper(getCurrentLang()) ?>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <?php $langParams = $_GET; ?>
-                        <li><a class="dropdown-item <?= getCurrentLang() === 'id' ? 'active' : '' ?>" href="?<?= http_build_query(array_merge($langParams, ['lang' => 'id'])) ?>">🇮🇩 Indonesia</a></li>
-                        <li><a class="dropdown-item <?= getCurrentLang() === 'en' ? 'active' : '' ?>" href="?<?= http_build_query(array_merge($langParams, ['lang' => 'en'])) ?>">🇬🇧 English</a></li>
+                        <?php $langParams = $_GET; foreach (getSupportedLanguages() as $langCode => $langMeta): ?>
+                        <li><a class="dropdown-item <?= getCurrentLang() === $langCode ? 'active' : '' ?>" href="?<?= http_build_query(array_merge($langParams, ['lang' => $langCode])) ?>"><?= $langMeta['flag'] ?> <?= e($langMeta['label']) ?></a></li>
+                        <?php endforeach; ?>
                     </ul>
                 </li>
         </div>
