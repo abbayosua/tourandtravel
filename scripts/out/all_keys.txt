@@ -1,6 +1,14 @@
+"Dari Seoul sampai Busan semua kece! Makin seru sama temen-temen satu grup. Next mau ke Jepang bareng sini lagi!"
+"Liburan ke Bali bareng TourAndTravel puas banget! Hotelnya enak, guide-nya ramah, itinerary-nya lengkap. Recommended!"
+"Pertama kali ke China, awalnya khawatir tapi ternyata lancar semua. Guide lokalnya speak Indonesian,很棒!"
 -- Pilih Tanggal --
 /malam
 /malam termasuk pajak
+3-5 Hari
+6-8 Hari
+9+ Hari
+< Rp 5 Juta
+> Rp 20 Juta
 AC
 Admin
 Admin Panel
@@ -11,14 +19,18 @@ Akomodasi
 Aksi
 Aktif
 Aktivasi instan setelah pembayaran
+Aktivitas Akun
 Alamat / terminal / hotel
 Alamat email Anda
+Alamat email tidak valid
 All rights reserved.
 Anda booking sebagai tamu. Masuk akun untuk melacak booking.
 Anda dapat booking sebagai tamu.
 Apa Kata Mereka?
+Asuransi Dasar
 Asuransi perjalanan
 Atraksi
+Automatic
 Baca selengkapnya
 Bagasi
 Bagikan
@@ -26,26 +38,50 @@ Bagikan link di bawah — Anda & teman dapat reward Rp50.000 saat teman berhasil
 Bagikan pengalaman Anda...
 Bahan bakar
 Bahasa Konten
+Bali Paradise 5D4N
+Bambang S.
+Bandara
 Bangku reclining
+Bank Transfer
 Bantuan
 Bantuan 24 jam
+Bantuan Darurat 24 Jam
 Batal
 Batal Gratis
+Batalkan
+Batalkan booking ini?
+Batas Pemakaian
+Beijing 8D7N
 Beli Sekarang
 Belum ada aktivitas webhook.
 Belum ada booking
 Belum ada data kurs. Klik "Refresh" untuk mengambil data terbaru.
+Belum ada foto galeri. Upload untuk mengganti galeri auto (loremflickr).
 Belum ada item di collection ini.
+Belum ada itinerary.
+Belum ada jadwal keberangkatan tersedia
+Belum ada jadwal keberangkatan.
+Belum ada paket tour ke :city saat ini.
+Belum ada pemesanan.
 Belum ada pertanyaan.
 Belum ada referral. Bagikan link Anda!
+Belum ada tour
+Belum ada tour yang disimpan
 Belum ada transaksi.
 Belum ada ulasan untuk tour ini.
+Belum punya akun?
+Belum terhubung. Klik "Hubungkan Nomor Baru" untuk scan QR.
+Bensin Penuh
 Beranda
 Berangkat
 Berhasil Daftar
+Berhasil berlangganan! Cek email Anda untuk konfirmasi.
 Berhasil dihapus
 Berhasil diperbarui
 Berhasil ditambahkan
+Berlaku
+Berlaku Dari
+Berlaku Sampai
 Berlangganan
 Berlangganan newsletter kami untuk promo eksklusif & tips perjalanan.
 Best Seller
@@ -56,28 +92,47 @@ Blog
 Bonus
 Booking
 Booking Berhasil
+Booking Berhasil!
 Booking Saya
 Booking Sekarang
 Booking Terbaru
+Booking berhasil dibatalkan. KlookCash yang digunakan telah dikembalikan.
 Booking berhasil dihapus
 Booking untuk dapat KlookCash
+Buat akun untuk mulai berpetualang
+Buka di Kiwi.com
+Bulk Bahasa Konten:
+CS 24/7
 Cakupan
+Cancelled
+Cannot reach WUZAPI
 Cari
+Cari Booking
+Cari Lagi
+Cari Penerbangan Lain
 Cari destinasi atau aktivitas...
 Cari destinasi...
+Cari kota...
 Cari...
+Catatan
 Catatan (opsional)
 Cek blog TourAndTravel
+Check-in
+Check-out
 Coba: Batam → Singapore, atau ubah tanggal.
 Coba: CGK → DPS, SIN → CGK, atau ubah tanggal.
 Collection Tidak Ditemukan
 Collection tidak ditemukan
 Colokan listrik
 Confirmed
+Connect failed
 Contoh Konversi dari IDR 10.000.000
 Contoh: Batam → Singapore, Johor → Batam.
+Contoh: TAT-7A2B1
 Cover Image (Upload)
+Current:
 Daftar
+Daftar Akun Baru
 Daftar Referral
 Dapatkan Penawaran Terbaik
 Dapatkan TourCash
@@ -85,15 +140,26 @@ Dapatkan promo spesial untuk pendaftaran hari ini
 Dari
 Dari 2.000+ ulasan
 Dashboard
+Data penumpang tidak tersedia.
 Deskripsi
+Deskripsi:
 Destinasi
 Destinasi Populer
 Detail
+Detail Booking
+Detail Pesanan
 Detail Produk
+Dibatalkan
+Dikonfirmasi
+Disconnect failed
+Diterima
 Driver profesional
 Durasi
 Durasi (contoh: 5j 30m)
 Durasi (hari)
+EUR → IDR
+EUR → SGD
+EUR → USD
 Earn
 Earning Rate KlookCash
 Edit
@@ -105,6 +171,7 @@ Edit Kereta
 Edit Pesawat
 Edit Rental Mobil
 Edit Tour
+Edit Tour:
 Edit Transfer
 Edit eSIM
 Ekonomi
@@ -112,26 +179,44 @@ Email
 Email (opsional)
 Email atau password salah
 Email sudah terdaftar
+Email tidak dapat diubah
 Email tidak valid
+Error: 
 Explorer (%)
 Explorer — minimal booking
 FAQ
 FAQ / Bantuan
 Fasilitas
+Fasilitas Hotel
 Fasilitas Termasuk
 Ferry
 Filter
 First
 Flash Deals
+FlightList (Real)
+FlightList: klik Pesan menampilkan link Kiwi.com (affiliate).
 Format JPG/PNG/WebP, max 2MB
+Foto
+Foto Paspor
+Foto paspor wajib diupload
+Frankfurter API
+Gabung Perangkat
+Gagal
+Gagal memesan: 
+Gagal memuat status: 
+Gagal mengambil kurs
 Gagal mengambil kurs dari Frankfurter API
 Gagal menyimpan file config
+Gagal: 
+Galeri Foto
 Gambar
 Gambar Cover
+Ganti Password
 Gold (%)
 Gold — minimal booking
 Gunakan KlookCash
 Gunakan untuk potongan booking berikutnya
+Gym
 HOT
 Hapus?
 Harga
@@ -146,21 +231,28 @@ Harga per Malam
 Harga/Hari
 Harga/Hari (Rp)
 Harga/Malam (Rp)
+Harga: 
 Hari
 Hasil live tidak tersedia, menampilkan jadwal lokal.
 Hemat
 Hotel
+Hotel Lain di :city
 Hubungi Kami
+Hubungkan Nomor Baru
 Ikuti Kami
 Ikuti tren travel, itinerary ideas, dan tips traveling terbaru.
 Informasi Notifikasi
+Inisialisasi koneksi...
 Instan
 Item
 Itinerary
+Itinerary berhasil dihapus
+Itinerary berhasil ditambahkan
 Jadwal
 Jadwal Ferry
 Jadwal Keberangkatan
 Jadwal keberangkatan pukul
+Jadwal lokal (contoh). Gunakan pencarian di atas untuk hasil live Duffel.
 Jam
 Jam Berangkat
 Jam Operasional
@@ -168,12 +260,14 @@ Jam Penjemputan
 Jam penjemputan harus diisi
 Jawaban
 Jelajahi Tour
+Jl. Merdeka No. 123, Jakarta
 Joy+ (%)
 Joy+ — minimal booking
 Judul
 Judul Tour
 Jumlah
 Jumlah FAQ
+Jumlah Hari
 Jumlah Kursi
 Jumlah Penumpang
 Jumlah Peserta
@@ -183,6 +277,7 @@ Jumlah minimal 1
 Jumlah penumpang minimal 1
 Jumlah peserta minimal 1
 Jumlah tiket minimal 1
+Kamar
 Kami akan menghubungi Anda via WhatsApp untuk konfirmasi.
 Kapal
 Kapasitas
@@ -209,10 +304,12 @@ Kelola Transfer
 Kelola eSIM
 Keluar
 Kembali
+Kembali Cari
 Kembali ke Beranda
 Kembali ke Catalog
 Kembali ke Katalog
 Kembali ke Website
+Kembali ke halaman tour
 Kenapa Pilih
 Kendaraan
 Kepuasan
@@ -223,36 +320,63 @@ Kereta Tidak Ditemukan
 Kereta tidak ditemukan
 Kirim Test
 Kirim Ulasan
+KlookCash
 KlookCash Saya
 Kode
+Kode Booking
 Kode Promo
 Kode Promo (opsional)
+Kode promo belum berlaku
+Kode promo berlaku!
 Kode promo sudah ada
+Kode promo sudah kedaluwarsa
+Kode promo sudah mencapai batas pemakaian
+Kode promo tidak ditemukan
 Kode promo wajib diisi
+Kolam Renang
 Koleksi
 Koleksi Tour
 Koneksi Pengirim WA
 Konfigurasi
+Konfirmasi
 Konfirmasi Instan
+Konfirmasi Password
 Konfirmasi instan via WhatsApp
 Konfirmasi password tidak cocok
 Kontak
 Konten akan otomatis diterjemahkan ke bahasa lain
+Korea Tour 7D6N
+Kosongkan jika tidak diubah.
+Kosongkan jika tidak ingin ganti
 Kosongkan jika tidak ingin mengubah gambar
+Kosongkan untuk memakai versi ID
 Kota
+Kota asal (CGK)...
+Kota atau terminal...
+Kota tujuan (DPS)...
 Kuota
 Kuota Data
 Kurs Terkini (EUR Base)
 Kursi
+Kursi penuh untuk jadwal ini.
 Lacak Booking
 Langsung
+Lanjutkan di Kiwi: 
 Layanan
+Layanan Kamar
+Lihat
+Lihat Detail
 Lihat Semua
+Lihat Semua Tour
 Lihat Website
+Link Tracking
+Live via Duffel (Test Mode)
 Log Webhook
 Login
 Login Admin
 Login untuk Booking
+Login untuk Memesan
+Logout
 Lokasi
 Lokasi Penjemputan
 Lokasi penjemputan harus diisi
@@ -261,63 +385,103 @@ Maaf, sisa slot hanya
 Makan
 Maksimal
 Malam (22-05)
+Manual
 Masa aktif
 Masih butuh bantuan?
 Maskapai
+Mastercard
 Masuk
 Masuk / Daftar
+Masukkan kode booking untuk cek status pemesanan
+Masukkan kode promo
 Masukkan kota asal dan tujuan untuk mencari jadwal ferry.
 Mata Uang
+Mata Uang Default
 Mata uang yang ditampilkan ke pengunjung
 Max
 Max 2MB. Format: JPG, PNG, WebP
 Max Pax
 Max Penumpang
 Max Peserta
+Max. Diskon
+Memproses...
 Memuat status...
+Menghubungkan...
 Menunggu
+Menunggu Konfirmasi
+Menunggu QR code...
+Method not allowed
 Metode Pembayaran
+Min
+Min. Beli
+Min. Pembelian
+Minggu: 09:00 - 15:00
+Minimal pembelian :amount untuk kode ini
 Mudah Booking
 Mulai Sekarang
 Nama
+Nama & No. WA Pemesan
 Nama & kota wajib diisi
 Nama Hotel
 Nama Kategori
 Nama Kereta
 Nama Lengkap
 Nama Mobil
+Nama Produk
 Nama Tiket
+Nama Tour
 Nama Transfer
+Nama dan telepon wajib diisi.
 Nama harus diisi
 Nama kategori wajib diisi
 Negara
+Next
 Nikmati perjalanan
+Nikmati perjalanan Anda dengan :car. Mobil dalam kondisi prima, terawat, dan siap pakai. Harga sudah termasuk asuransi dasar dan bantuan darurat 24 jam.
 Nilai
 No.
 No. Penerbangan
 No. Penerbangan (opsional)
+No. Telepon
 No. WhatsApp
 No. WhatsApp harus diisi
+Nominal (Rp)
 Nomor Tujuan
 Nomor WA Admin/Supplier
 Nomor WhatsApp yang digunakan untuk mengirim notifikasi ke supplier.
 Nomor tujuan notifikasi booking baru. Diawali 62, tanpa + atau spasi.
+Nonaktif
 One Way
+Order ID: 
 Pagi (05-12)
 Pakai
+Paket
 Paket Tour
+Paket Tour ke :city
+Parkir
 Partner perjalanan terpercaya Anda. Kami menyediakan paket wisata domestik & internasional dengan harga terbaik.
 Pasangan
 Password
+Password Baru
 Password minimal 6 karakter
+PayPal
+Pelabuhan
 Pelajari
 Pelanggan
 Pelanggan Puas
 Pelanggan merekomendasikan kami
+Pemakaian
+Pembayaran
 Pembayaran aman & terenkripsi
 Pencarian
 Pendapatan
 Pending
+Penerbangan
+Penerbangan FlightList dipilih!
+Penerbangan Tidak Tersedia
+Penerbangan berhasil dipesan! Booking ref: 
+Penerbangan berhasil dipesan! Total: 
+Penerbangan tidak tersedia
 Pengalaman pelanggan yang sudah traveling bersama kami
 Pengaturan Loyalty
 Pengaturan Loyalty & KlookCash
@@ -329,35 +493,50 @@ Pengaturan loyalty berhasil disimpan
 Penuh
 Penumpang
 Pergi
+Persentase (%)
 Persentase dari total booking yang menjadi KlookCash reward.
 Pertanyaan
 Pertanyaan, jawaban, dan kategori wajib diisi
 Perusahaan
 Pesan
+Pesan Penerbangan
+Pesan Sekarang
 Pesan Tiket
 Pesan Transfer
 Pesawat
 Peserta
+Peta :city
 Pilih
 Pilih (Lokal)
 Pilih Gambar (bisa banyak)
 Pilih Tanggal
+Pilih Tour (centang untuk menambahkan)
 Pilih minimal 1 tour
 Pilihan terbaik untuk liburan Anda
+Pocket WiFi
 Pramusaji
+Previous
 Produk Tidak Ditemukan
 Produk tidak ditemukan
 Profil
+Profil Saya
+Profil berhasil diperbarui
 Promo
 Proses cepat & praktis
 Pusat Bantuan
+Putuskan Koneksi
+QR not available
 Qty
 Rate
 Rating
 Rating Pelanggan
+Rating Tertinggi
+Ref: 
 Referral
 Referral Program
+Referral Saya
 Refresh
+Refresh QR
 Refund
 Refundable
 Rekomendasi Paket Tour
@@ -365,16 +544,32 @@ Rental
 Rental Mobil
 Reset
 Reset Filter
+Restoran
 Revenue
 Reward
 Reward 5% dari total booking — bisa dipakai untuk booking berikutnya
+Rina A.
+Riwayat Booking
 Riwayat Transaksi
 Round Trip
+Rp (IDR)
+Rp 10-20 Juta
+Rp 5-10 Juta
 Rute
+S$ (SGD)
+SIM
 Saat ada booking baru, notifikasi otomatis dikirim ke nomor WA Admin/Supplier:
 Saldo KlookCash
 Salin
+Sarapan
+Sari Dewi
+Scan QR code dengan WhatsApp Anda.
+Scan QR ini dengan WhatsApp Anda
+Scan voucher
+Segera
 Selamat datang
+Selamat datang kembali!
+Selesai
 Selimut
 Semua
 Semua Bintang
@@ -389,29 +584,40 @@ Semua Rating
 Semua Tipe
 Semua Tujuan
 Semua status
+Senin - Sabtu: 08:00 - 20:00
 Server Terhubung
 Server Tidak Terhubung
 Server URL
 Sesampainya di pelabuhan, tunjukkan e-ticket ke petugas.
+Sesi penerbangan tidak valid. Silakan cari ulang.
 Setiap booking dapat poin reward. Tukarkan untuk diskon tour berikutnya!
 Sewa
+Sewa Sekarang
 Siang (12-17)
 Siap Liburan?
 Siap bantu kapan saja
+Siap mengirim notifikasi ke nomor supplier.
+Silakan login terlebih dahulu.
 Silver (%)
 Silver — minimal booking
 Simpan
 Simpan Pengaturan
+Simpan Perubahan
 Simpan Tour
 Simpan kode booking dan link di atas untuk cek status pemesanan.
+Simpan tour favorit Anda dengan menekan ikon hati
 Sisa
 Slot
+Slug
 Sore (17-22)
+Spa
 Spend
 Stasiun Asal
 Stasiun Tujuan
 Status
 Status booking berhasil diperbarui
+Subtotal tidak valid
+Sudah punya akun?
 Sumber
 Tahun
 Tambah
@@ -420,16 +626,20 @@ Tambah Kategori
 Tambah Kereta
 Tambah Koleksi
 Tambah Tour
+Tambah Tour Baru
 Tambah Transfer
 Tambah eSIM
 Tamu
 Tanggal
 Tanggal Berangkat
+Tanggal Keberangkatan
 Tanggal Kembali
 Tanggal Kunjungan
 Tanggal Penjemputan
 Tanggal Perjalanan
 Tanggal Pulang
+Tanggal keberangkatan berhasil dihapus
+Tanggal keberangkatan berhasil ditambahkan
 Tanggal keberangkatan tidak valid
 Tanggal kunjungan harus diisi
 Tanggal penjemputan harus diisi
@@ -438,13 +648,18 @@ Temukan jawaban atas pertanyaan yang sering diajukan
 Temukan paket tour impian Anda dari ratusan destinasi
 Terapkan
 Tercepat
+Terima kasih, pemesanan Anda telah diterima.
+Terjadi kesalahan. Coba lagi nanti.
+Terjadi kesalahan. Coba lagi.
 Terkonfirmasi
+Termahal
 Termasuk
 Termurah
 Terpercaya
 Terpopuler
 Tersebar di 12+ destinasi
 Test Kirim WA
+Test mode: booking akan membuat order Duffel Airways dummy.
 Tiba
 Tidak
 Tidak ada biaya tersembunyi
@@ -473,12 +688,15 @@ Token Akun WUZAPI
 Token akun pengirim WA. Kosongkan jika tidak diubah.
 Total
 Total Booking
+Total Harga
 Total Referral
 Total Reward
 Tour
 Tour Aktif
 Tour Tidak Ditemukan
 Tour tidak ditemukan
+Tracking
+Tracking Booking
 Transfer
 Transfer Bandara
 Transfer Lain
@@ -487,22 +705,35 @@ Transfer tidak ditemukan
 Transit
 Transmisi
 Tulis Ulasan
+Ubah Status
 Ulasan
 Ulasan berhasil dikirim, terima kasih!
+Unknown action
+Untuk multi-penumpang, silakan cari dengan jumlah penumpang yang sesuai.
 Update Tour
 Upload Foto Paspor
+Upload Galeri
+Upload beberapa gambar (JPG/PNG/WebP, max 2MB)
 Urutan
 Urutkan
 Username
 Username atau password salah
+Visa
+WUZAPI Server
+WhatsApp
+WiFi Gratis
+WiFi, Parkir, Kolam...
 Wishlist
+Wishlist Saya
 Ya
 Your World of Joy
 bagasi
+breadcrumb
 dan tiba pukul
 dari
 dengan
 dengan estimasi perjalanan
+di halaman katalog.
 eSIM
 eSIM & Connectivity
 hari
@@ -512,9 +743,14 @@ kelas
 kendaraan
 kereta ditemukan
 kursi
+malam
 menuju
 orang
+org
 paket
+paket tour tersedia
+pax
+pcs
 penumpang
 per referral
 peserta
@@ -523,9 +759,17 @@ slot
 tahun melayani pelanggan
 tiket
 tiket ditemukan
+total
 tour
 tour ditemukan
 transfer ditemukan
 transit
 ulasan
 update setiap 24 jam
+—
+→
+✓ Disalin!
+🇬🇧 English
+🇬🇧 English (asli)
+🇮🇩 Indonesia
+🇮🇩 Indonesia (asli)

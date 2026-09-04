@@ -19,10 +19,20 @@ test.describe('Language switch (id/en)', () => {
     let body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
     expect(body).toMatch(/Rekomendasi Paket Tour|Destinasi Populer|Flash Deals|Lihat Semua/i);
+    // <html lang> dinamis: default id (kecuali cookie/session dari test sebelumnya)
+    const initialLang = await page.locator('html').getAttribute('lang');
+    expect(['id', 'en']).toContain(initialLang);
+    const i18nLang = await page.evaluate(() => window.I18N && window.I18N.lang);
+    expect(i18nLang).toBe(initialLang);
 
     await switchLang(page, 'English');
     body = await page.textContent('body');
     expect(body).toMatch(/Activities|Destination|View All|Recommended Tour|Popular Destinations/i);
+    // <html lang> berubah ke en
+    await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+    const i18nLang2 = await page.evaluate(() => window.I18N && window.I18N.lang);
+    expect(i18nLang2).toBe('en');
+    expect(await page.evaluate(() => window.I18N.locale)).toBe('en-US');
   });
 
   test('homepage: en -> id via dropdown (teks berubah)', async ({ page }) => {
@@ -92,5 +102,31 @@ test.describe('Language switch (id/en)', () => {
     await page.goto(`${BASE}/tours.php`, { waitUntil: 'load' });
     const body = await page.textContent('body');
     expect(body).toMatch(/All Sections|Duration|Price|View All/i);
+  });
+
+  test('formatDate: tanggal keberangkatan EN vs ID (nama hari/bulan)', async ({ page }) => {
+    // booking-success memakai formatDate() — keduanya harus merender tanpa PHP error,
+    // dan halaman track (formatDate untuk Keberangkatan) konsisten dengan html lang
+    await page.goto(`${BASE}/track.php?code=TAT-FIX01&lang=en`, { waitUntil: 'load' });
+    let body = await page.textContent('body');
+    expect(body).not.toMatch(PHP_ERROR);
+    await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+    expect(body).toMatch(/Departure/i);
+
+    await page.goto(`${BASE}/track.php?code=TAT-FIX01&lang=id`, { waitUntil: 'load' });
+    body = await page.textContent('body');
+    expect(body).not.toMatch(PHP_ERROR);
+    await expect(page.locator('html')).toHaveAttribute('lang', 'id');
+    expect(body).toMatch(/Keberangkatan/i);
+  });
+
+  test('switcher: preserve multi query params (category+sort+search)', async ({ page }) => {
+    await page.goto(`${BASE}/tours.php?category=China&sort=termurah&search=Xi%27an&lang=en`, { waitUntil: 'load' });
+    await switchLang(page, 'Indonesia');
+    const url = page.url();
+    expect(url).toContain('category=China');
+    expect(url).toContain('sort=termurah');
+    expect(url).toContain('search=Xi');
+    expect(url).not.toContain('lang=');
   });
 });
