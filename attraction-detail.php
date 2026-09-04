@@ -17,7 +17,7 @@ if (!$attraction) {
     exit;
 }
 
-$pageTitle = $attraction['name'];
+$pageTitle = tContent($attraction, 'name');
 
 $bookingSuccess = '';
 $bookingError = '';
@@ -75,14 +75,14 @@ require_once 'includes/header-klook.php';
 <div class="container py-4">
     <?php renderBreadcrumb([
         ['label' => t('Tiket Tempat Wisata'), 'url' => 'attractions.php'],
-        ['label' => $attraction['name'], 'url' => null],
+        ['label' => tContent($attraction, 'name'), 'url' => null],
     ]); ?>
 
     <div class="row">
         <div class="col-lg-8">
             <img src="<?= e($attraction['cover_image'] ?: 'https://placehold.co/800x450?text=' . urlencode($attraction['name'])) ?>" class="w-100 rounded-4 shadow-sm mb-3" style="max-height: 400px; object-fit: cover;" alt="<?= e($attraction['name']) ?>">
 
-            <h2 class="fw-bold"><?= e($attraction['name']) ?></h2>
+            <h2 class="fw-bold"><?= e(tContent($attraction, 'name')) ?></h2>
             <div class="d-flex flex-wrap gap-3 mb-3">
                 <span class="badge bg-primary"><?= e($attraction['city']) ?></span>
                 <?php if ($attraction['category']): ?><span class="badge bg-info"><?= e($attraction['category']) ?></span><?php endif; ?>

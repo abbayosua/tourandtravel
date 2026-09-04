@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
             $errors[] = $upload['message'];
         }
     } else {
-        $errors[] = 'Foto paspor wajib diupload';
+        $errors[] = t('Foto paspor wajib diupload');
     }
 
     if (empty($errors)) {
@@ -194,7 +194,7 @@ require_once 'includes/header-klook.php';
                     $lat = -6.2 + (crc32($tour['id']) % 1000) / 1000;
                     $lng = 106.8 + (crc32($tour['id'] + 999) % 1000) / 1000;
                 ?>
-                <img src="https://maps.googleapis.com/maps/api/staticmap?center=<?= $mapKw ?>&zoom=5&size=800x200&maptype=roadmap&markers=color:red|<?= $mapKw ?>&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="Peta <?= e($tour['title']) ?>" class="w-100" style="height: 200px; object-fit: cover;" onerror="this.style.display='none'">
+                <img src="https://maps.googleapis.com/maps/api/staticmap?center=<?= $mapKw ?>&zoom=5&size=800x200&maptype=roadmap&markers=color:red|<?= $mapKw ?>&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="<?= e(str_replace(':city', tContent($tour, 'title'), t('Peta :city'))) ?>" class="w-100" style="height: 200px; object-fit: cover;" onerror="this.style.display='none'">
             </div>
 
             <!-- Itinerary Accordion -->
@@ -205,12 +205,12 @@ require_once 'includes/header-klook.php';
                 <div class="accordion-item border-0 shadow-sm mb-3 rounded-3">
                     <h2 class="accordion-header">
                         <button class="accordion-button <?= $idx > 0 ? 'collapsed' : '' ?>" type="button" data-bs-toggle="collapse" data-bs-target="#itineraryDay<?= $idx ?>">
-                            <strong><?= $it['day_number'] ?>. <?= e($it['title']) ?></strong>
+                            <strong><?= $it['day_number'] ?>. <?= e(tContent($it, 'title')) ?></strong>
                         </button>
                     </h2>
                     <div id="itineraryDay<?= $idx ?>" class="accordion-collapse collapse <?= $idx === 0 ? 'show' : '' ?>" data-bs-parent="#itineraryAccordion">
                         <div class="accordion-body">
-                            <p><?= nl2br(e($it['description'])) ?></p>
+                            <p><?= nl2br(e(tContent($it, 'description'))) ?></p>
                             <?php if ($it['meals']): ?>
                                 <span class="badge bg-success me-1"><i class="bi bi-cup-hot"></i> <?= e($it['meals']) ?></span>
                             <?php endif; ?>
@@ -388,14 +388,14 @@ require_once 'includes/header-klook.php';
                             </div>
                             <?php endif; ?>
                         <?php endif; ?>
-                        <button type="submit" class="btn btn-primary w-100 fw-semibold" id="bookingSubmitBtn" onclick="var btn=this;btn.disabled=true;btn.innerHTML='<span class=\'spinner-border spinner-border-sm me-2\'></span>Memproses...';setTimeout(function(){btn.form.submit();},100);return false;">Pesan Sekarang</button>
+                        <button type="submit" class="btn btn-primary w-100 fw-semibold" id="bookingSubmitBtn" onclick="var btn=this;btn.disabled=true;btn.innerHTML='<span class=\'spinner-border spinner-border-sm me-2\'></span><?= t('Memproses...') ?>';setTimeout(function(){btn.form.submit();},100);return false;"><?= t('Pesan Sekarang') ?></button>
                         <?php if (!isLoggedIn()): ?>
                         <div class="alert alert-warning py-2 small mt-2 mb-0"><i class="bi bi-info-circle me-1"></i><?= t('Anda booking sebagai tamu. Masuk akun untuk melacak booking.') ?></div>
                         <?php endif; ?>
                     </form>
                     <?php else: ?>
                     <div class="alert alert-warning py-2 small mb-0">
-                        <i class="bi bi-exclamation-triangle me-1"></i> Belum ada jadwal keberangkatan tersedia
+                        <i class="bi bi-exclamation-triangle me-1"></i> <?= t('Belum ada jadwal keberangkatan tersedia') ?>
                     </div>
                     <?php endif; ?>
                 </div>

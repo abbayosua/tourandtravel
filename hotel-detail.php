@@ -9,7 +9,7 @@ $stmt->execute([$slug]);
 $hotel = $stmt->fetch();
 if (!$hotel) { header('Location: hotels.php'); exit; }
 
-$pageTitle = $hotel['name'];
+$pageTitle = tContent($hotel, 'name');
 $checkin = $_GET['checkin'] ?? date('Y-m-d');
 $checkout = $_GET['checkout'] ?? date('Y-m-d', strtotime('+2 days'));
 $guests = (int)($_GET['guests'] ?? 2);
@@ -68,7 +68,7 @@ require_once 'includes/header-klook.php';
         <?php renderBreadcrumb([
             ['label' => t('Hotel'), 'url' => 'hotels.php'],
             ['label' => $hotel['city'], 'url' => 'hotels.php?city=' . urlencode($hotel['city'])],
-            ['label' => $hotel['name'], 'url' => null],
+            ['label' => tContent($hotel, 'name'), 'url' => null],
         ]); ?>
 
         <div class="row">
@@ -96,7 +96,7 @@ require_once 'includes/header-klook.php';
                     <div class="card-body p-4">
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
-                                <h4 class="fw-bold mb-1"><?= e($hotel['name']) ?></h4>
+                                <h4 class="fw-bold mb-1"><?= e(tContent($hotel, 'name')) ?></h4>
                                 <div class="d-flex gap-3 align-items-center">
                                     <span class="text-warning"><?= str_repeat('★', $hotel['star_rating']) ?><?= str_repeat('☆', 5 - $hotel['star_rating']) ?></span>
                                     <small class="text-muted"><i class="bi bi-geo-alt"></i> <?= e($hotel['city']) ?></small>
@@ -104,10 +104,10 @@ require_once 'includes/header-klook.php';
                             </div>
                         </div>
                         <hr>
-                        <h6 class="fw-semibold">Fasilitas Hotel</h6>
+                        <h6 class="fw-semibold"><?= t('Fasilitas Hotel') ?></h6>
                         <div class="row g-2 mb-3">
                             <?php 
-                            $fasilitas = ['WiFi Gratis','Kolam Renang','AC','Restoran','Parkir','Gym','Spa','Layanan Kamar','Sarapan','Bandara'];
+                            $fasilitas = [t('WiFi Gratis'),t('Kolam Renang'),t('AC'),t('Restoran'),t('Parkir'),t('Gym'),t('Spa'),t('Layanan Kamar'),t('Sarapan'),t('Bandara')];
                             foreach ($fasilitas as $f): ?>
                             <div class="col-6 col-md-4 col-lg-3">
                                 <div class="d-flex align-items-center gap-1">
@@ -117,14 +117,14 @@ require_once 'includes/header-klook.php';
                             </div>
                             <?php endforeach; ?>
                         </div>
-                        <p class="text-muted small"><?= nl2br(e($hotel['description'])) ?></p>
+                        <p class="text-muted small"><?= nl2br(e(tContent($hotel, 'description'))) ?></p>
                     </div>
                 </div>
 
                 <!-- Map -->
                 <div class="card border-0 shadow-sm mb-3">
                     <div class="card-body p-4">
-                        <h6 class="fw-semibold mb-3"><i class="bi bi-geo-alt me-2"></i>Lokasi</h6>
+                        <h6 class="fw-semibold mb-3"><i class="bi bi-geo-alt me-2"></i><?= t('Lokasi') ?></h6>
                         <div class="rounded-3 overflow-hidden border">
                             <iframe width="100%" height="250" frameborder="0" style="border:0;" 
                                 src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=<?= urlencode($hotel['name'] . ' ' . $hotel['city']) ?>&center=<?= $hotel['lat'] ?? '-6.2' ?>,<?= $hotel['lng'] ?? '106.8' ?>&zoom=14" 
@@ -136,7 +136,7 @@ require_once 'includes/header-klook.php';
 
                 <!-- Similar Hotels -->
                 <?php if (count($similar) > 0): ?>
-                <h5 class="fw-bold mb-3">Hotel Lain di <?= e($hotel['city']) ?></h5>
+                <h5 class="fw-bold mb-3"><?= str_replace(':city', e($hotel['city']), t('Hotel Lain di :city')) ?></h5>
                 <div class="row g-3 mb-4">
                     <?php foreach ($similar as $s): ?>
                     <div class="col-md-4">
@@ -146,7 +146,7 @@ require_once 'includes/header-klook.php';
                                 <div class="card-body p-2">
                                     <h6 class="fw-semibold small mb-0 text-dark"><?= e($s['name']) ?></h6>
                                     <span class="text-warning" style="font-size: 11px;"><?= str_repeat('★', $s['star_rating']) ?></span>
-                                    <div class="fw-bold text-primary small mt-1"><?= formatRupiah($s['price_per_night']) ?><small class="fw-normal text-muted">/malam</small></div>
+                                    <div class="fw-bold text-primary small mt-1"><?= formatRupiah($s['price_per_night']) ?><small class="fw-normal text-muted">/<?= t('malam') ?></small></div>
                                 </div>
                             </div>
                         </a>
@@ -182,27 +182,27 @@ require_once 'includes/header-klook.php';
                                 <div class="klook-promo-result small mt-1" id="promoResultHotel"></div>
                             </div>
                             <div class="mb-2">
-                                <label class="form-label small">Check-in</label>
+                                <label class="form-label small"><?= t('Check-in') ?></label>
                                 <input type="date" name="checkin" class="form-control" value="<?= e($checkin) ?>" onchange="updateTotal()">
                             </div>
                             <div class="mb-2">
-                                <label class="form-label small">Check-out</label>
+                                <label class="form-label small"><?= t('Check-out') ?></label>
                                 <input type="date" name="checkout" class="form-control" value="<?= e($checkout) ?>" onchange="updateTotal()">
                             </div>
                             <div class="row g-2 mb-3">
                                 <div class="col-6">
-                                    <label class="form-label small">Kamar</label>
+                                    <label class="form-label small"><?= t('Kamar') ?></label>
                                     <select name="rooms" class="form-select" onchange="updateTotal()">
                                         <?php for ($r=1; $r<=5; $r++): ?>
-                                        <option value="<?= $r ?>"><?= $r ?> Kamar</option>
+                                        <option value="<?= $r ?>"><?= $r ?> <?= t('Kamar') ?></option>
                                         <?php endfor; ?>
                                     </select>
                                 </div>
                                 <div class="col-6">
-                                    <label class="form-label small">Tamu</label>
+                                    <label class="form-label small"><?= t('Tamu') ?></label>
                                     <select name="guests" class="form-select">
                                         <?php for ($g=1; $g<=10; $g++): ?>
-                                        <option value="<?= $g ?>" <?= $guests === $g ? 'selected' : '' ?>><?= $g ?> Tamu</option>
+                                        <option value="<?= $g ?>" <?= $guests === $g ? 'selected' : '' ?>><?= $g ?> <?= t('Tamu') ?></option>
                                         <?php endfor; ?>
                                     </select>
                                 </div>
@@ -211,21 +211,21 @@ require_once 'includes/header-klook.php';
                             <!-- Price Breakdown -->
                             <div class="bg-light rounded-3 p-3 mb-3">
                                 <div class="d-flex justify-content-between small mb-1">
-                                    <span class="text-muted">Harga x <span id="nightsDisplay"><?= $nights ?></span> malam</span>
+                                    <span class="text-muted"><?= t('Harga') ?> × <span id="nightsDisplay"><?= $nights ?></span> <?= t('malam') ?></span>
                                     <span><?= formatRupiah($hotel['price_per_night']) ?> × <span id="nightsDisplay2"><?= $nights ?></span></span>
                                 </div>
                                 <div class="d-flex justify-content-between fw-bold border-top pt-2">
-                                    <span>Total</span>
+                                    <span><?= t('Total') ?></span>
                                     <span class="text-primary fs-5" id="totalDisplay"><?= formatRupiah($totalPrice) ?></span>
                                 </div>
                             </div>
 
                             <div class="mb-2">
-                                <label class="form-label small">Nama Lengkap</label>
+                                <label class="form-label small"><?= t('Nama Lengkap') ?></label>
                                 <input type="text" name="name" class="form-control" value="<?= e(getUser()['name'] ?? '') ?>" required>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label small">No. Telepon</label>
+                                <label class="form-label small"><?= t('No. Telepon') ?></label>
                                 <input type="text" name="phone" class="form-control" value="<?= e(getUser()['phone'] ?? '') ?>" required>
                             </div>
                             <?php if (!empty($_SESSION['user_id'])): require_once 'includes/wallet.php'; $walletBal = getWalletBalance($_SESSION['user_id']); ?>
@@ -236,7 +236,7 @@ require_once 'includes/header-klook.php';
                                 </div>
                                 <?php endif; ?>
                             <?php endif; ?>
-                            <button type="submit" class="btn btn-primary w-100 fw-semibold py-2">Pesan Sekarang</button>
+                            <button type="submit" class="btn btn-primary w-100 fw-semibold py-2"><?= t('Pesan Sekarang') ?></button>
                         </form>
 
                         <script>
@@ -253,7 +253,7 @@ require_once 'includes/header-klook.php';
                             var total = pricePerNight * diff * rooms;
                             document.getElementById('nightsDisplay').textContent = diff;
                             document.getElementById('nightsDisplay2').textContent = diff;
-                            document.getElementById('totalDisplay').textContent = 'Rp ' + total.toLocaleString('id-ID');
+                            document.getElementById('totalDisplay').textContent = 'Rp ' + total.toLocaleString(window.I18N ? window.I18N.locale : 'id-ID');
                         }
                         </script>
                     </div>

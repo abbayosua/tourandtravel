@@ -9,7 +9,7 @@ $stmt->execute([$slug]);
 $car = $stmt->fetch();
 if (!$car) { header('Location: rental-cars.php'); exit; }
 
-$pageTitle = $car['name'];
+$pageTitle = tContent($car, 'name');
 
 $bookingSuccess = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -42,22 +42,22 @@ require_once 'includes/header-klook.php';
     <div class="container">
         <?php renderBreadcrumb([
             ['label' => t('Rental Mobil'), 'url' => 'rental-cars.php'],
-            ['label' => $car['name'], 'url' => null],
+            ['label' => tContent($car, 'name'), 'url' => null],
         ]); ?>
         <div class="row">
             <div class="col-lg-8">
                 <img src="https://placehold.co/800x400?text=<?= urlencode($car['name']) ?>" class="w-100 rounded-4 shadow-sm mb-3" style="max-height: 400px; object-fit: cover;" alt="">
-                <h4 class="fw-bold"><?= e($car['name']); ?></h4>
+                <h4 class="fw-bold"><?= e(tContent($car, 'name')); ?></h4>
                 <div class="d-flex flex-wrap gap-3 mb-2 small">
                     <span><i class="bi bi-geo-alt text-primary"></i> <?= e($car['city']) ?></span>
                     <span><i class="bi bi-car-front text-primary"></i> <?= e($car['car_type']) ?></span>
-                    <span><i class="bi bi-people text-primary"></i> <?= $car['passenger_capacity'] ?> kursi</span>
+                    <span><i class="bi bi-people text-primary"></i> <?= $car['passenger_capacity'] ?> <?= t('kursi') ?></span>
                     <span><i class="bi bi-gear text-primary"></i> <?= ucfirst($car['transmission']) ?></span>
                 </div>
-                <p>Nikmati perjalanan Anda dengan <?= e($car['name']) ?>. Mobil dalam kondisi prima, terawat, dan siap pakai. Harga sudah termasuk asuransi dasar dan bantuan darurat 24 jam.</p>
-                <h6 class="fw-semibold">Termasuk</h6>
+                <p><?= str_replace(':car', e($car['name']), t('Nikmati perjalanan Anda dengan :car. Mobil dalam kondisi prima, terawat, dan siap pakai. Harga sudah termasuk asuransi dasar dan bantuan darurat 24 jam.')) ?></p>
+                <h6 class="fw-semibold"><?= t('Termasuk') ?></h6>
                 <div class="row g-2">
-                    <?php foreach (['Asuransi Dasar','AC','Bantuan Darurat 24 Jam','Bensin Penuh'] as $f): ?>
+                    <?php foreach ([t('Asuransi Dasar'),t('AC'),t('Bantuan Darurat 24 Jam'),t('Bensin Penuh')] as $f): ?>
                     <div class="col-6"><i class="bi bi-check-circle text-success me-1"></i><small><?= $f ?></small></div>
                     <?php endforeach; ?>
                 </div>
@@ -65,7 +65,7 @@ require_once 'includes/header-klook.php';
             <div class="col-lg-4">
                 <div class="card border-0 shadow-sm sticky-top" style="top: 100px;">
                     <div class="card-body">
-                        <h5 class="fw-bold text-primary"><?= formatRupiah($car['price_per_day']) ?> <small class="fw-normal text-muted">/hari</small></h5>
+                        <h5 class="fw-bold text-primary"><?= formatRupiah($car['price_per_day']) ?> <small class="fw-normal text-muted">/<?= t('hari') ?></small></h5>
                         <?php if ($bookingSuccess): ?><div class="alert alert-success py-2 small"><?= $bookingSuccess ?></div><?php endif; ?>
                         <?php if (!isLoggedIn()): ?>
                             <div class="alert alert-warning py-2 small mb-2"><i class="bi bi-info-circle me-1"></i><?= t('Anda dapat booking sebagai tamu.') ?></div>
@@ -78,10 +78,10 @@ require_once 'includes/header-klook.php';
                                 </div>
                                 <div class="klook-promo-result small mt-1" id="promoResultRental"></div>
                             </div>
-                            <div class="mb-2"><label class="form-label small">Jumlah Hari</label><input type="number" name="days" class="form-control form-control-sm" min="1" value="1" required></div>
-                            <div class="mb-2"><label class="form-label small">Nama</label><input type="text" name="name" class="form-control form-control-sm" required></div>
-                            <div class="mb-2"><label class="form-label small">No. Telepon</label><input type="text" name="phone" class="form-control form-control-sm" required></div>
-                            <button type="submit" class="btn btn-primary w-100 mt-2">Sewa Sekarang</button>
+                            <div class="mb-2"><label class="form-label small"><?= t('Jumlah Hari') ?></label><input type="number" name="days" class="form-control form-control-sm" min="1" value="1" required></div>
+                            <div class="mb-2"><label class="form-label small"><?= t('Nama') ?></label><input type="text" name="name" class="form-control form-control-sm" required></div>
+                            <div class="mb-2"><label class="form-label small"><?= t('No. Telepon') ?></label><input type="text" name="phone" class="form-control form-control-sm" required></div>
+                            <button type="submit" class="btn btn-primary w-100 mt-2"><?= t('Sewa Sekarang') ?></button>
                             <?php if (!empty($_SESSION['user_id'])): require_once 'includes/wallet.php'; $walletBal = getWalletBalance($_SESSION['user_id']); ?>
                                 <?php if ($walletBal > 0): ?>
                                 <div class="form-check mt-2">

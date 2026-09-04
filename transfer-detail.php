@@ -91,7 +91,7 @@ require_once 'includes/header-klook.php';
             <div class="d-flex flex-wrap gap-3 mb-3">
                 <span class="badge bg-primary"><?= e($transfer['vehicle_type'] ?? 'Transfer') ?></span>
                 <span class="text-muted"><i class="bi bi-arrow-left-right me-1"></i><?= e($transfer['from_city']) ?> → <?= e($transfer['to_city']) ?></span>
-                <span class="text-muted"><i class="bi bi-people me-1"></i>Max <?= $transfer['max_passengers'] ?> pax</span>
+                <span class="text-muted"><i class="bi bi-people me-1"></i><?= t('Max') ?> <?= $transfer['max_passengers'] ?> <?= t('pax') ?></span>
                 <?php if (!empty($transfer['instant_confirmation'])): ?><span class="badge bg-success"><?= t('Konfirmasi Instan') ?></span><?php endif; ?>
                 <?php if (!empty($transfer['free_cancellation'])): ?><span class="badge bg-info"><?= t('Batal Gratis') ?></span><?php endif; ?>
             </div>
@@ -159,7 +159,7 @@ require_once 'includes/header-klook.php';
                             <label class="form-label small"><?= t('Jumlah Penumpang') ?></label>
                             <select name="passengers" class="form-select form-select-sm">
                                 <?php for ($p = 1; $p <= $transfer['max_passengers']; $p++): ?>
-                                <option value="<?= $p ?>"><?= $p ?> pax</option>
+                                <option value="<?= $p ?>"><?= $p ?> <?= t('pax') ?></option>
                                 <?php endfor; ?>
                             </select>
                         </div>
