@@ -24,7 +24,7 @@ if ($row = $stmt->fetch()) {
     $btype = 'tour';
     $booking['item_title'] = $row['tour_title'];
     $booking['date_label'] = $row['departure_date'];
-    $booking['qty_label'] = $row['participants'] . ' orang';
+    $booking['qty_label'] = $row['participants'] . ' ' . t('orang');
     $itemLink = 'tour-detail.php?slug=' . urlencode($row['tour_slug']);
 }
 
@@ -41,7 +41,7 @@ if (!$booking) {
         $booking = $row;
         $btype = 'attraction';
         $booking['date_label'] = $row['visit_date'] ?? null;
-        $booking['qty_label'] = $row['quantity'] . ' tiket';
+        $booking['qty_label'] = $row['quantity'] . ' ' . t('tiket');
         $itemLink = 'attraction-detail.php?slug=' . urlencode($row['item_slug']);
     }
 }
@@ -59,7 +59,7 @@ if (!$booking) {
         $booking = $row;
         $btype = 'transfer';
         $booking['date_label'] = $row['pickup_date'] ?? null;
-        $booking['qty_label'] = $row['passengers'] . ' pax';
+        $booking['qty_label'] = $row['passengers'] . ' ' . t('pax');
         $itemLink = 'transfer-detail.php?slug=' . urlencode($row['item_slug']);
     }
 }
@@ -77,7 +77,7 @@ if (!$booking) {
         $booking = $row;
         $btype = 'train';
         $booking['date_label'] = $row['travel_date'] ?? null;
-        $booking['qty_label'] = $row['seats'] . ' kursi';
+        $booking['qty_label'] = $row['seats'] . ' ' . t('kursi');
         $itemLink = 'train-detail.php?slug=' . urlencode($row['item_slug']);
     }
 }
@@ -95,7 +95,7 @@ if (!$booking) {
         $booking = $row;
         $btype = 'esim';
         $booking['date_label'] = null;
-        $booking['qty_label'] = $row['quantity'] . ' pcs';
+        $booking['qty_label'] = $row['quantity'] . ' ' . t('pcs');
         $itemLink = 'esim-detail.php?slug=' . urlencode($row['item_slug']);
     }
 }
@@ -134,35 +134,35 @@ require_once 'includes/header-klook.php';
                     <div class="display-1 text-success mb-3">
                         <i class="bi bi-check-circle-fill"></i>
                     </div>
-                    <h3 class="fw-bold mb-2">Booking Berhasil!</h3>
-                    <p class="text-muted mb-3">Terima kasih, pemesanan Anda telah diterima.</p>
+                    <h3 class="fw-bold mb-2"><?= t('Booking Berhasil!') ?></h3>
+                    <p class="text-muted mb-3"><?= t('Terima kasih, pemesanan Anda telah diterima.') ?></p>
 
                     <!-- Step Tracker -->
                     <div class="d-flex justify-content-center gap-2 mb-4">
                         <div class="text-center">
                             <div class="rounded-circle bg-success d-flex align-items-center justify-content-center mx-auto mb-1" style="width: 32px; height: 32px;"><i class="bi bi-check-lg text-white"></i></div>
-                            <small class="d-block text-muted" style="font-size: 10px;">Booking</small>
+                            <small class="d-block text-muted" style="font-size: 10px;"><?= t('Booking') ?></small>
                         </div>
                         <div class="d-flex align-items-center" style="width: 40px;"><div class="border-top border-2 border-success w-100"></div></div>
                         <div class="text-center">
                             <div class="rounded-circle bg-success d-flex align-items-center justify-content-center mx-auto mb-1" style="width: 32px; height: 32px;"><i class="bi bi-check-lg text-white"></i></div>
-                            <small class="d-block text-muted" style="font-size: 10px;">Diterima</small>
+                            <small class="d-block text-muted" style="font-size: 10px;"><?= t('Diterima') ?></small>
                         </div>
                         <div class="d-flex align-items-center" style="width: 40px;"><div class="border-top border-2 border-success w-100"></div></div>
                         <div class="text-center">
                             <div class="rounded-circle bg-warning d-flex align-items-center justify-content-center mx-auto mb-1" style="width: 32px; height: 32px;"><i class="bi bi-clock text-white"></i></div>
-                            <small class="d-block text-muted" style="font-size: 10px;">Konfirmasi</small>
+                            <small class="d-block text-muted" style="font-size: 10px;"><?= t('Konfirmasi') ?></small>
                         </div>
                         <div class="d-flex align-items-center" style="width: 40px;"><div class="border-top border-2 border-secondary w-100"></div></div>
                         <div class="text-center">
                             <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto mb-1" style="width: 32px; height: 32px;"><i class="bi bi-check2-all text-white"></i></div>
-                            <small class="d-block text-muted" style="font-size: 10px;">Selesai</small>
+                            <small class="d-block text-muted" style="font-size: 10px;"><?= t('Selesai') ?></small>
                         </div>
                     </div>
 
                     <!-- Booking Code -->
                     <div class="bg-primary text-white rounded-4 p-4 mb-4 klook-booking-code">
-                        <small class="text-white-50">Kode Booking</small>
+                        <small class="text-white-50"><?= t('Kode Booking') ?></small>
                         <div class="fs-2 fw-bold tracking-code"><?= e($booking['booking_code']) ?></div>
                         <div class="mt-2 small text-white-50">
                             <i class="bi bi-link-45deg me-1"></i>
@@ -182,16 +182,16 @@ require_once 'includes/header-klook.php';
                     <?php endif; ?>
 
                     <div class="text-start bg-light rounded-4 p-4 mb-4">
-                        <h6 class="fw-semibold mb-3">Detail Booking</h6>
+                        <h6 class="fw-semibold mb-3"><?= t('Detail Booking') ?></h6>
                         <table class="table table-borderless mb-0 small align-middle">
-                            <tr><td class="text-muted ps-0">Paket</td><td class="fw-semibold"><?= e($booking['item_title']) ?></td></tr>
-                            <tr><td class="text-muted ps-0">Nama</td><td class="fw-semibold"><?= e($booking['name']) ?></td></tr>
+                            <tr><td class="text-muted ps-0"><?= t('Paket') ?></td><td class="fw-semibold"><?= e($booking['item_title']) ?></td></tr>
+                            <tr><td class="text-muted ps-0"><?= t('Nama') ?></td><td class="fw-semibold"><?= e($booking['name']) ?></td></tr>
                             <?php if (!empty($booking['date_label'])): ?>
-                            <tr><td class="text-muted ps-0">Tanggal</td><td class="fw-semibold"><?= tglIndonesia($booking['date_label']) ?></td></tr>
+                            <tr><td class="text-muted ps-0"><?= t('Tanggal') ?></td><td class="fw-semibold"><?= formatDate($booking['date_label']) ?></td></tr>
                             <?php endif; ?>
-                            <tr><td class="text-muted ps-0">Peserta</td><td class="fw-semibold"><?= $booking['qty_label'] ?></td></tr>
-                            <tr><td class="text-muted ps-0">Total Harga</td><td class="fw-semibold text-primary"><?= formatRupiah($booking['total_price']) ?></td></tr>
-                            <tr><td class="text-muted ps-0">Status</td><td><span class="badge bg-warning text-dark">Pending</span></td></tr>
+                            <tr><td class="text-muted ps-0"><?= t('Peserta') ?></td><td class="fw-semibold"><?= $booking['qty_label'] ?></td></tr>
+                            <tr><td class="text-muted ps-0"><?= t('Total Harga') ?></td><td class="fw-semibold text-primary"><?= formatRupiah($booking['total_price']) ?></td></tr>
+                            <tr><td class="text-muted ps-0"><?= t('Status') ?></td><td><span class="badge bg-warning text-dark"><?= t('Pending') ?></span></td></tr>
                         </table>
                     </div>
 
@@ -202,8 +202,8 @@ require_once 'includes/header-klook.php';
                     </p>
 
                     <div class="d-flex gap-2 justify-content-center">
-                        <a href="track.php?code=<?= urlencode($booking['booking_code']) ?>" class="btn btn-primary px-4"><i class="bi bi-binoculars me-1"></i>Tracking Booking</a>
-                        <a href="<?= $itemLink ?: 'tours.php' ?>" class="btn btn-outline-primary">Lihat Detail</a>
+                        <a href="track.php?code=<?= urlencode($booking['booking_code']) ?>" class="btn btn-primary px-4"><i class="bi bi-binoculars me-1"></i><?= t('Tracking Booking') ?></a>
+                        <a href="<?= $itemLink ?: 'tours.php' ?>" class="btn btn-outline-primary"><?= t('Lihat Detail') ?></a>
                     </div>
                 </div>
             </div>

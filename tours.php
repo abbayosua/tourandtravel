@@ -20,10 +20,10 @@ $currentPage = $result['page'];
 
 $categories = getCategories();
 
-$durasiOptions = ['1' => '3-5 Hari', '2' => '6-8 Hari', '3' => '9+ Hari'];
-$hargaOptions = ['1' => '< Rp 5 Juta', '2' => 'Rp 5-10 Juta', '3' => 'Rp 10-20 Juta', '4' => '> Rp 20 Juta'];
+$durasiOptions = ['1' => t('3-5 Hari'), '2' => t('6-8 Hari'), '3' => t('9+ Hari')];
+$hargaOptions = ['1' => t('< Rp 5 Juta'), '2' => t('Rp 5-10 Juta'), '3' => t('Rp 10-20 Juta'), '4' => t('> Rp 20 Juta')];
 $ratingOptions = ['4.5' => '★ 4.5+', '4' => '★ 4.0+'];
-$sortOptions = ['termurah' => 'Termurah', 'termahal' => 'Termahal', 'rating' => 'Rating Tertinggi', 'popular' => 'Terpopuler'];
+$sortOptions = ['termurah' => t('Termurah'), 'termahal' => t('Termahal'), 'rating' => t('Rating Tertinggi'), 'popular' => t('Terpopuler')];
 
 $wishlistIds = [];
 if (isLoggedIn()) {

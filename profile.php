@@ -18,11 +18,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
     $confirm = $_POST['confirm_password'] ?? '';
 
-    if (!$name) $error = 'Nama harus diisi';
+    if (!$name) $error = t('Nama harus diisi');
 
     if (!$error && $password) {
-        if (strlen($password) < 6) $error = 'Password minimal 6 karakter';
-        elseif ($password !== $confirm) $error = 'Konfirmasi password tidak cocok';
+        if (strlen($password) < 6) $error = t('Password minimal 6 karakter');
+        elseif ($password !== $confirm) $error = t('Konfirmasi password tidak cocok');
     }
 
     if (!$error) {
@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$name, $phone, $userId]);
         }
         $_SESSION['user_name'] = $name;
-        $success = 'Profil berhasil diperbarui';
+        $success = t('Profil berhasil diperbarui');
     }
 }
 
@@ -78,14 +78,14 @@ if ($refCode) {
 
 $initial = strtoupper(substr($user['name'] ?? 'U', 0, 1));
 
-$pageTitle = 'Profil Saya';
+$pageTitle = t('Profil Saya');
 require_once 'includes/header-klook.php';
 ?>
 <section class="py-4">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <h4 class="fw-bold mb-3"><i class="bi bi-person-circle me-2"></i>Profil Saya</h4>
+                <h4 class="fw-bold mb-3"><i class="bi bi-person-circle me-2"></i><?= t('Profil Saya') ?></h4>
 
                 <?php if ($success): ?>
                     <div class="alert alert-success py-2"><?= $success ?></div>
@@ -119,13 +119,13 @@ require_once 'includes/header-klook.php';
                             <div class="col-3">
                                 <a href="wallet.php" class="text-decoration-none">
                                     <div class="fw-bold text-success fs-4"><?= formatRupiah($walletBalance) ?></div>
-                                    <small class="text-muted">KlookCash</small>
+                                    <small class="text-muted"><?= t('KlookCash') ?></small>
                                 </a>
                             </div>
                             <div class="col-3">
                                 <a href="my-bookings.php" class="text-decoration-none">
                                     <div class="fw-bold text-primary fs-4"><i class="bi bi-ticket-perforated"></i></div>
-                                    <small class="text-muted">Lihat</small>
+                                    <small class="text-muted"><?= t('Lihat') ?></small>
                                 </a>
                             </div>
                         </div>
@@ -138,32 +138,32 @@ require_once 'includes/header-klook.php';
                         <form method="POST">
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-semibold">Nama Lengkap</label>
+                                    <label class="form-label small fw-semibold"><?= t('Nama Lengkap') ?></label>
                                     <input type="text" name="name" class="form-control" value="<?= e($user['name']) ?>" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-semibold">Email</label>
+                                    <label class="form-label small fw-semibold"><?= t('Email') ?></label>
                                     <input type="email" class="form-control" value="<?= e($user['email']) ?>" disabled>
-                                    <small class="text-muted">Email tidak dapat diubah</small>
+                                    <small class="text-muted"><?= t('Email tidak dapat diubah') ?></small>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-semibold">No. Telepon</label>
+                                    <label class="form-label small fw-semibold"><?= t('No. Telepon') ?></label>
                                     <input type="text" name="phone" class="form-control" value="<?= e($user['phone'] ?? '') ?>">
                                 </div>
                             </div>
                             <hr class="my-4">
-                            <h6 class="fw-semibold mb-3">Ganti Password</h6>
+                            <h6 class="fw-semibold mb-3"><?= t('Ganti Password') ?></h6>
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-semibold">Password Baru</label>
-                                    <input type="password" name="password" class="form-control" minlength="6" placeholder="Kosongkan jika tidak ingin ganti">
+                                    <label class="form-label small fw-semibold"><?= t('Password Baru') ?></label>
+                                    <input type="password" name="password" class="form-control" minlength="6" placeholder="<?= t('Kosongkan jika tidak ingin ganti') ?>">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label small fw-semibold">Konfirmasi Password</label>
-                                    <input type="password" name="confirm_password" class="form-control" placeholder="Kosongkan jika tidak ingin ganti">
+                                    <label class="form-label small fw-semibold"><?= t('Konfirmasi Password') ?></label>
+                                    <input type="password" name="confirm_password" class="form-control" placeholder="<?= t('Kosongkan jika tidak ingin ganti') ?>">
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100 mt-4">Simpan Perubahan</button>
+                            <button type="submit" class="btn btn-primary w-100 mt-4"><?= t('Simpan Perubahan') ?></button>
                         </form>
                     </div>
                 </div>
@@ -171,7 +171,7 @@ require_once 'includes/header-klook.php';
                 <!-- Aktivitas Akun -->
                 <div class="card border-0 shadow-sm mt-3">
                     <div class="card-body p-4">
-                        <h6 class="fw-semibold mb-0">Aktivitas Akun</h6>
+                        <h6 class="fw-semibold mb-0"><?= t('Aktivitas Akun') ?></h6>
                         <div class="d-flex gap-4 mt-3">
                             <a href="my-bookings.php" class="text-decoration-none text-center">
                                 <div class="fs-4 text-primary"><i class="bi bi-ticket-perforated"></i></div>

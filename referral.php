@@ -44,7 +44,7 @@ foreach (getWalletTransactions($userId, 1000) as $t) {
 }
 $totalReward = max($totalReward, $bonusTotal);
 
-$pageTitle = 'Referral Saya';
+$pageTitle = t('Referral Saya');
 require_once 'includes/header-klook.php';
 ?>
 <section class="py-4">
@@ -60,12 +60,12 @@ require_once 'includes/header-klook.php';
                         <p class="text-white-50 small mb-2"><?= t('Bagikan link di bawah — Anda & teman dapat reward Rp50.000 saat teman berhasil daftar.') ?></p>
                         <div class="input-group">
                             <input type="text" class="form-control" id="refLinkInput" value="<?= e($refLink) ?>" readonly>
-                            <button class="btn btn-light" type="button" onclick="navigator.clipboard.writeText(document.getElementById('refLinkInput').value);this.textContent='✓ Disalin!';setTimeout(()=>this.textContent='Salin',1500);"><?= t('Salin') ?></button>
+                            <button class="btn btn-light" type="button" onclick="navigator.clipboard.writeText(document.getElementById('refLinkInput').value);this.textContent='<?= t('✓ Disalin!') ?>';setTimeout(()=>this.textContent='<?= t('Salin') ?>',1500);"><?= t('Salin') ?></button>
                         </div>
                     </div>
                     <div class="col-md-4 text-center text-white">
                         <div class="fs-1"><i class="bi bi-gift"></i></div>
-                        <div class="fs-3 fw-bold">Rp 50.000</div>
+                        <div class="fs-3 fw-bold"><?= formatRupiah(50000) ?></div>
                         <small class="text-white-50"><?= t('per referral') ?></small>
                     </div>
                 </div>
@@ -110,7 +110,7 @@ require_once 'includes/header-klook.php';
                 <div class="table-responsive">
                     <table class="table table-hover mb-0">
                         <thead class="table-light">
-                            <tr><th>Email</th><th>Status</th><th>Reward</th><th>Tanggal</th></tr>
+                            <tr><th><?= t('Email') ?></th><th><?= t('Status') ?></th><th><?= t('Reward') ?></th><th><?= t('Tanggal') ?></th></tr>
                         </thead>
                         <tbody>
                         <?php foreach ($referrals as $r): ?>

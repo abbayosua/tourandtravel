@@ -63,11 +63,11 @@ require_once 'includes/header-klook.php';
                     <div class="col-md-6 col-lg-4">
                         <div class="card tour-card-klook border-0 shadow-sm h-100">
                             <div class="position-relative overflow-hidden rounded-top" style="height: 180px;">
-                                <img src="https://placehold.co/640x480?text=<?= urlencode($car['name']) ?>" class="w-100 h-100" style="object-fit: cover;" alt="<?= e($car['name']) ?>">
+                                <img src="https://placehold.co/640x480?text=<?= urlencode($car['name']) ?>" class="w-100 h-100" style="object-fit: cover;" alt="<?= e(tContent($car, 'name')) ?>">
                                 <span class="badge bg-primary position-absolute top-0 start-0 m-2 shadow-sm"><?= e($car['car_type']) ?></span>
                             </div>
                             <div class="card-body p-3 d-flex flex-column">
-                                <h6 class="fw-semibold mb-1"><?= e($car['name']) ?></h6>
+                                <h6 class="fw-semibold mb-1"><?= e(tContent($car, 'name')) ?></h6>
                                 <div class="d-flex gap-2 small text-muted mb-2">
                                     <span><i class="bi bi-geo-alt me-1"></i><?= e($car['city']) ?></span>
                                     <span><i class="bi bi-people me-1"></i><?= $car['passenger_capacity'] ?> <?= t('kursi') ?></span>

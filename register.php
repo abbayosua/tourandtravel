@@ -69,37 +69,37 @@ require_once 'includes/header-klook.php';
                     <div class="card-body p-4 p-md-5">
                         <div class="text-center mb-4">
                             <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary bg-opacity-10 text-primary mb-3" style="width: 64px; height: 64px;"><i class="bi bi-person-plus fs-2"></i></div>
-                            <h5 class="fw-bold mb-1">Daftar Akun Baru</h5>
-                            <p class="text-muted small mb-0">Buat akun untuk mulai berpetualang</p>
+                            <h5 class="fw-bold mb-1"><?= t('Daftar Akun Baru') ?></h5>
+                            <p class="text-muted small mb-0"><?= t('Buat akun untuk mulai berpetualang') ?></p>
                         </div>
                         <?php if ($error): ?>
                             <div class="alert alert-danger py-2 small"><?= $error ?></div>
                         <?php endif; ?>
                         <form method="POST">
                             <div class="mb-2">
-                                <label class="form-label small fw-semibold">Nama Lengkap</label>
+                                <label class="form-label small fw-semibold"><?= t('Nama Lengkap') ?></label>
                                 <input type="text" name="name" class="form-control" required>
                             </div>
                             <div class="mb-2">
-                                <label class="form-label small fw-semibold">Email</label>
+                                <label class="form-label small fw-semibold"><?= t('Email') ?></label>
                                 <input type="email" name="email" class="form-control" required>
                             </div>
                             <div class="mb-2">
-                                <label class="form-label small fw-semibold">No. Telepon</label>
+                                <label class="form-label small fw-semibold"><?= t('No. Telepon') ?></label>
                                 <input type="text" name="phone" class="form-control">
                             </div>
                             <div class="mb-2">
-                                <label class="form-label small fw-semibold">Password</label>
+                                <label class="form-label small fw-semibold"><?= t('Password') ?></label>
                                 <input type="password" name="password" class="form-control" minlength="6" required>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label small fw-semibold">Konfirmasi Password</label>
+                                <label class="form-label small fw-semibold"><?= t('Konfirmasi Password') ?></label>
                                 <input type="password" name="confirm_password" class="form-control" required>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100 fw-semibold py-2">Daftar</button>
+                            <button type="submit" class="btn btn-primary w-100 fw-semibold py-2"><?= t('Daftar') ?></button>
                         </form>
                         <p class="text-center mt-3 small">
-                            Sudah punya akun? <a href="login.php" class="text-decoration-none fw-semibold">Masuk</a>
+                            <?= t('Sudah punya akun?') ?> <a href="login.php" class="text-decoration-none fw-semibold"><?= t('Masuk') ?></a>
                         </p>
                     </div>
                 </div>

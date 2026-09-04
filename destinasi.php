@@ -11,7 +11,7 @@ if (!$cityClean) {
     exit;
 }
 
-$pageTitle = "Paket Tour ke $cityClean";
+$pageTitle = str_replace(':city', $cityClean, t('Paket Tour ke :city'));
 $tours = getToursByCity($cityClean);
 $tourCount = count($tours);
 
@@ -36,8 +36,8 @@ require_once 'includes/header-klook.php';
         <div class="d-flex align-items-center gap-3 mb-4">
             <div style="width: 60px; height: 60px; border-radius: 12px; background: url('<?= getDestinasiImage($cityClean) ?>') center/cover no-repeat;" class="shadow-sm flex-shrink-0"></div>
             <div>
-                <h4 class="fw-bold mb-1">Paket Tour ke <?= e($cityClean) ?></h4>
-                <p class="text-muted mb-0 small"><?= $tourCount ?> paket tour tersedia</p>
+                <h4 class="fw-bold mb-1"><?= e(str_replace(':city', $cityClean, t('Paket Tour ke :city'))) ?></h4>
+                <p class="text-muted mb-0 small"><?= $tourCount ?> <?= t('paket tour tersedia') ?></p>
             </div>
         </div>
 
@@ -50,8 +50,8 @@ require_once 'includes/header-klook.php';
         <?php else: ?>
         <div class="text-center py-5">
             <i class="bi bi-geo-alt fs-1 text-muted"></i>
-            <p class="mt-2 text-muted">Belum ada paket tour ke <strong><?= e($cityClean) ?></strong> saat ini.</p>
-            <a href="tours.php" class="btn btn-primary rounded-pill px-4">Lihat Semua Tour</a>
+            <p class="mt-2 text-muted"><?= str_replace(':city', '<strong>' . e($cityClean) . '</strong>', t('Belum ada paket tour ke :city saat ini.')) ?></p>
+            <a href="tours.php" class="btn btn-primary rounded-pill px-4"><?= t('Lihat Semua Tour') ?></a>
         </div>
         <?php endif; ?>
     </div>

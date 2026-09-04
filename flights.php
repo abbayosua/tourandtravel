@@ -203,7 +203,7 @@ require_once 'includes/header-klook.php';
                         <div class="traveloka-search-field">
                             <div class="form-label"><?= t('Dari') ?></div>
                             <div class="search-wrapper">
-                                <input type="text" name="from" class="form-control city-search" placeholder="Kota asal (CGK)..." value="<?= e($from) ?>" autocomplete="off" data-target="fromDropdown" id="fromInput">
+                                <input type="text" name="from" class="form-control city-search" placeholder="<?= t('Kota asal (CGK)...') ?>" value="<?= e($from) ?>" autocomplete="off" data-target="fromDropdown" id="fromInput">
                                 <div class="search-dropdown" id="fromDropdown"></div>
                             </div>
                         </div>
@@ -212,7 +212,7 @@ require_once 'includes/header-klook.php';
                         <div class="traveloka-search-field">
                             <div class="form-label"><?= t('Ke') ?></div>
                             <div class="search-wrapper">
-                                <input type="text" name="to" class="form-control city-search" placeholder="Kota tujuan (DPS)..." value="<?= e($to) ?>" autocomplete="off" data-target="toDropdown" id="toInput">
+                                <input type="text" name="to" class="form-control city-search" placeholder="<?= t('Kota tujuan (DPS)...') ?>" value="<?= e($to) ?>" autocomplete="off" data-target="toDropdown" id="toInput">
                                 <div class="search-dropdown" id="toDropdown"></div>
                             </div>
                         </div>
@@ -323,8 +323,8 @@ require_once 'includes/header-klook.php';
 
                                 <h6 class="fw-semibold mb-2"><?= t('Harga') ?></h6>
                                 <div class="d-flex gap-2 mb-3">
-                                    <input type="number" name="min_price" class="form-control form-control-sm" placeholder="Min" value="<?= e($minPrice) ?>" min="0">
-                                    <input type="number" name="max_price" class="form-control form-control-sm" placeholder="Max" value="<?= e($maxPrice) ?>" min="0">
+                                    <input type="number" name="min_price" class="form-control form-control-sm" placeholder="<?= t('Min') ?>" value="<?= e($minPrice) ?>" min="0">
+                                    <input type="number" name="max_price" class="form-control form-control-sm" placeholder="<?= t('Max') ?>" value="<?= e($maxPrice) ?>" min="0">
                                 </div>
                                 <button class="btn btn-primary btn-sm w-100" type="submit"><i class="bi bi-funnel me-1"></i><?= t('Terapkan') ?></button>
                                 <a href="?from=<?= urlencode($from) ?>&to=<?= urlencode($to) ?>&date=<?= urlencode($date) ?>&class=<?= urlencode($class) ?>&passengers=<?= $passengers ?>&trip_type=<?= $tripType ?>&search=1" class="btn btn-outline-secondary btn-sm w-100 mt-2"><?= t('Reset') ?></a>
@@ -344,7 +344,7 @@ require_once 'includes/header-klook.php';
             ?>
             <!-- Sort bar ala Traveloka -->
             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                <div><h5 class="fw-bold mb-0"><?= count($duffelOffers) ?> Penerbangan <span class="badge <?= $badgeClass ?> ms-1" style="font-size:11px"><?= $badge ?></span></h5><small class="text-muted"><?= tglIndonesia($date) ?> · <?= e($from) ?> → <?= e($to) ?> · <?= $passengers ?> pax</small></div>
+                <div><h5 class="fw-bold mb-0"><?= count($duffelOffers) ?> <?= t('Penerbangan') ?> <span class="badge <?= $badgeClass ?> ms-1" style="font-size:11px"><?= $badge ?></span></h5><small class="text-muted"><?= formatDate($date) ?> · <?= e($from) ?> → <?= e($to) ?> · <?= $passengers ?> <?= t('pax') ?></small></div>
                 <div class="d-flex gap-1">
                     <a href="?<?= e(http_build_query(array_merge($_GET, ['sort' => 'price']))) ?>" class="btn btn-sm <?= $sort === 'price' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Termurah') ?></a>
                     <a href="?<?= e(http_build_query(array_merge($_GET, ['sort' => 'duration']))) ?>" class="btn btn-sm <?= $sort === 'duration' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Tercepat') ?></a>
@@ -433,8 +433,8 @@ if ($isFL) {
             <div class="text-center py-5" id="noResults"><i class="bi bi-airplane fs-1 text-muted"></i><p class="mt-2 text-muted"><?= t('Tidak ada penerbangan untuk rute/tanggal tersebut.') ?></p><p class="small text-muted"><?= t('Coba: CGK → DPS, SIN → CGK, atau ubah tanggal.') ?></p><a href="flights.php" class="btn btn-primary rounded-pill px-4"><?= t('Reset') ?></a></div>
             <?php endif; ?>
         <?php else: ?>
-            <?php if (count($localSchedules) > 0): ?><p class="small text-muted mb-2">Jadwal lokal (contoh). Gunakan pencarian di atas untuk hasil live Duffel.</p><div class="row g-3"><?php foreach ($localSchedules as $s): $dep = date('H:i', strtotime($s['departure_time'])); $arr = date('H:i', strtotime($s['arrival_time'])); $airlineCode = substr($s['airline'], 0, 2); ?>
-                <div class="col-12"><div class="card border-0 shadow-sm flight-card"><div class="card-body p-3 d-flex justify-content-between align-items-center"><div class="d-flex align-items-center gap-2"><div class="flight-logo bg-light border rounded-2 d-flex align-items-center justify-content-center fw-bold" style="width:36px;height:36px;font-size:12px"><?= $airlineCode ?></div><div><div class="fw-semibold small"><?= e($s['airline']) ?> <?= e($s['flight_number']) ?></div><small class="text-muted"><?= e($s['from_city']) ?> → <?= e($s['to_city']) ?> · <?= e($s['duration']) ?></small></div></div><div class="text-end"><div class="fw-bold text-primary small"><?= formatCurrencySpan($s['price']) ?></div><a href="flight-detail.php?schedule_id=<?= $s['id'] ?>" class="btn btn-sm btn-outline-primary rounded-pill mt-1">Lihat</a></div></div></div></div>
+            <?php if (count($localSchedules) > 0): ?><p class="small text-muted mb-2"><?= t('Jadwal lokal (contoh). Gunakan pencarian di atas untuk hasil live Duffel.') ?></p><div class="row g-3"><?php foreach ($localSchedules as $s): $dep = date('H:i', strtotime($s['departure_time'])); $arr = date('H:i', strtotime($s['arrival_time'])); $airlineCode = substr($s['airline'], 0, 2); ?>
+                <div class="col-12"><div class="card border-0 shadow-sm flight-card"><div class="card-body p-3 d-flex justify-content-between align-items-center"><div class="d-flex align-items-center gap-2"><div class="flight-logo bg-light border rounded-2 d-flex align-items-center justify-content-center fw-bold" style="width:36px;height:36px;font-size:12px"><?= $airlineCode ?></div><div><div class="fw-semibold small"><?= e($s['airline']) ?> <?= e($s['flight_number']) ?></div><small class="text-muted"><?= e($s['from_city']) ?> → <?= e($s['to_city']) ?> · <?= e($s['duration']) ?></small></div></div><div class="text-end"><div class="fw-bold text-primary small"><?= formatCurrencySpan($s['price']) ?></div><a href="flight-detail.php?schedule_id=<?= $s['id'] ?>" class="btn btn-sm btn-outline-primary rounded-pill mt-1"><?= t('Lihat') ?></a></div></div></div></div>
                 <?php endforeach; ?></div><?php endif; ?>
         <?php endif; ?>
         </div><!-- /.col-lg-9 -->

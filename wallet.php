@@ -37,7 +37,7 @@ require_once 'includes/header-klook.php';
 ?>
 <section class="py-4">
     <div class="container">
-        <h4 class="fw-bold mb-3"><i class="bi bi-wallet2 text-primary me-2"></i>KlookCash Saya</h4>
+        <h4 class="fw-bold mb-3"><i class="bi bi-wallet2 text-primary me-2"></i><?= t('KlookCash Saya') ?></h4>
 
         <!-- Balance card -->
         <div class="card border-0 shadow-sm mb-4 overflow-hidden" style="background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);">
@@ -74,7 +74,7 @@ require_once 'includes/header-klook.php';
                 <div class="table-responsive">
                     <table class="table table-hover mb-0">
                         <thead class="table-light">
-                            <tr><th>#</th><th>Tipe</th><th>Deskripsi</th><th>Jumlah</th><th>Tanggal</th></tr>
+                            <tr><th>#</th><th><?= t('Tipe') ?></th><th><?= t('Deskripsi') ?></th><th><?= t('Jumlah') ?></th><th><?= t('Tanggal') ?></th></tr>
                         </thead>
                         <tbody>
                         <?php foreach ($txns as $t): ?>

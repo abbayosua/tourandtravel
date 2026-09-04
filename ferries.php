@@ -122,7 +122,7 @@ require_once 'includes/header-klook.php';
                         <div class="traveloka-search-field">
                             <div class="form-label"><span class="badge bg-primary rounded-pill me-1" style="font-size:10px;">1</span><?= t('Dari') ?></div>
                             <div class="search-wrapper">
-                                <input type="text" name="from" class="form-control ferry-search" placeholder="Kota atau terminal..." value="<?= e($from) ?>" autocomplete="off" data-target="fromDropdown" id="fromInput">
+                                <input type="text" name="from" class="form-control ferry-search" placeholder="<?= t('Kota atau terminal...') ?>" value="<?= e($from) ?>" autocomplete="off" data-target="fromDropdown" id="fromInput">
                                 <div class="search-dropdown" id="fromDropdown"></div>
                             </div>
                         </div>
@@ -133,7 +133,7 @@ require_once 'includes/header-klook.php';
                         <div class="traveloka-search-field">
                             <div class="form-label"><span class="badge bg-primary rounded-pill me-1" style="font-size:10px;">2</span><?= t('Ke') ?></div>
                             <div class="search-wrapper">
-                                <input type="text" name="to" class="form-control ferry-search" placeholder="Kota atau terminal..." value="<?= e($to) ?>" autocomplete="off" data-target="toDropdown" id="toInput">
+                                <input type="text" name="to" class="form-control ferry-search" placeholder="<?= t('Kota atau terminal...') ?>" value="<?= e($to) ?>" autocomplete="off" data-target="toDropdown" id="toInput">
                                 <div class="search-dropdown" id="toDropdown"></div>
                             </div>
                         </div>
@@ -167,7 +167,7 @@ require_once 'includes/header-klook.php';
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
                 <h5 class="fw-bold mb-0"><?= count($ferries) ?> <?= t('Jadwal Ferry') ?></h5>
-                <small class="text-muted"><?= tglIndonesia($date) ?> · <?= e($from) ?> → <?= e($to) ?></small>
+                <small class="text-muted"><?= formatDate($date) ?> · <?= e($from) ?> → <?= e($to) ?></small>
             </div>
         </div>
         <?php

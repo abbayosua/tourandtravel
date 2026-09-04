@@ -53,18 +53,18 @@ require_once 'includes/header-klook.php';
                     <div class="col-md">
                         <div class="traveloka-search-field">
                             <div class="form-label"><?= t('Kota') ?></div>
-                            <input type="text" name="city" class="form-control" placeholder="Cari kota..." value="<?= e($city) ?>">
+                            <input type="text" name="city" class="form-control" placeholder="<?= t('Cari kota...') ?>" value="<?= e($city) ?>">
                         </div>
                     </div>
                     <div class="col-md">
                         <div class="traveloka-search-field">
-                            <div class="form-label">Check-in</div>
+                            <div class="form-label"><?= t('Check-in') ?></div>
                             <input type="date" name="checkin" class="form-control" value="<?= e($checkin ?: date('Y-m-d')) ?>">
                         </div>
                     </div>
                     <div class="col-md">
                         <div class="traveloka-search-field">
-                            <div class="form-label">Check-out</div>
+                            <div class="form-label"><?= t('Check-out') ?></div>
                             <input type="date" name="checkout" class="form-control" value="<?= e($checkout ?: date('Y-m-d', strtotime('+2 days'))) ?>">
                         </div>
                     </div>
@@ -111,13 +111,13 @@ require_once 'includes/header-klook.php';
                                 <div class="col-12">
                                     <label class="form-label small fw-semibold text-muted"><?= t('Harga per Malam') ?></label>
                                     <div class="d-flex gap-2">
-                                        <input type="number" name="min_price" class="form-control form-control-sm" placeholder="Min" value="<?= e($minPrice) ?>" min="0">
-                                        <input type="number" name="max_price" class="form-control form-control-sm" placeholder="Max" value="<?= e($maxPrice) ?>" min="0">
+                                        <input type="number" name="min_price" class="form-control form-control-sm" placeholder="<?= t('Min') ?>" value="<?= e($minPrice) ?>" min="0">
+                                        <input type="number" name="max_price" class="form-control form-control-sm" placeholder="<?= t('Max') ?>" value="<?= e($maxPrice) ?>" min="0">
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label small fw-semibold text-muted"><?= t('Fasilitas') ?></label>
-                                    <input type="text" name="amenity" class="form-control form-control-sm" placeholder="WiFi, Parkir, Kolam..." value="<?= e($amenityFilter) ?>">
+                                    <input type="text" name="amenity" class="form-control form-control-sm" placeholder="<?= t('WiFi, Parkir, Kolam...') ?>" value="<?= e($amenityFilter) ?>">
                                 </div>
                                 <div class="col-12">
                                     <div class="form-check">
@@ -174,7 +174,7 @@ require_once 'includes/header-klook.php';
                             <div class="card-body p-3 d-flex flex-column h-100">
                                 <div class="d-flex justify-content-between align-items-start">
                                     <div>
-                                        <h6 class="fw-semibold mb-1"><?= e($h['name']) ?></h6>
+                                        <h6 class="fw-semibold mb-1"><?= e(tContent($h, 'name')) ?></h6>
                                         <div class="small text-warning mb-1"><?= str_repeat('★', $h['star_rating']) ?></div>
                                         <small class="text-muted"><i class="bi bi-geo-alt me-1"></i><?= e($h['city']) ?></small>
                                     </div>

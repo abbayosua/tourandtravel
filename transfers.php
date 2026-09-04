@@ -77,7 +77,7 @@ require_once 'includes/header-klook.php';
                     <div class="col-md-6 col-lg-4">
                         <div class="card tour-card-klook border-0 shadow-sm h-100">
                             <div class="position-relative overflow-hidden rounded-top" style="height: 160px;">
-                                <img src="https://placehold.co/640x400?text=Transfer" class="w-100 h-100" style="object-fit: cover;" alt="<?= e($t['name']) ?>">
+                                <img src="https://placehold.co/640x400?text=Transfer" class="w-100 h-100" style="object-fit: cover;" alt="<?= e(tContent($t, 'name')) ?>">
                                 <span class="badge bg-primary position-absolute top-0 start-0 m-2 shadow-sm"><?= e($t['vehicle_type'] ?? 'Transfer') ?></span>
                                 <?php if (!empty($t['instant_confirmation'])): ?>
                                     <span class="badge bg-success position-absolute top-0 end-0 m-2 shadow-sm" style="font-size: 10px;"><i class="bi bi-lightning-charge-fill me-1"></i><?= t('Instan') ?></span>
@@ -87,8 +87,8 @@ require_once 'includes/header-klook.php';
                                 <?php endif; ?>
                             </div>
                             <div class="card-body p-3 d-flex flex-column">
-                                <h6 class="fw-semibold mb-1"><?= e($t['name']) ?></h6>
-                                <p class="small text-muted flex-grow-1 mb-2"><i class="bi bi-arrow-left-right me-1"></i><?= e($t['from_city']) ?> → <?= e($t['to_city']) ?> · <?= $t['max_passengers'] ?> pax</p>
+                                <h6 class="fw-semibold mb-1"><?= e(tContent($t, 'name')) ?></h6>
+                                <p class="small text-muted flex-grow-1 mb-2"><i class="bi bi-arrow-left-right me-1"></i><?= e($t['from_city']) ?> → <?= e($t['to_city']) ?> · <?= $t['max_passengers'] ?> <?= t('pax') ?></p>
                                 <div class="d-flex justify-content-between align-items-center pt-2 border-top mt-auto">
                                     <div>
                                         <span class="fw-bold text-primary"><?= formatCurrencySpan($t['price'], $t['price_currency'] ?? 'IDR') ?></span>

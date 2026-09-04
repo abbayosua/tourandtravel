@@ -46,7 +46,7 @@ $all = [];
 
 $tourBookings = db()->prepare("
     SELECT b.*, t.title as item_title, t.slug as item_slug, t.cover_image, td.departure_date, 'tour' AS btype,
-           CONCAT(b.participants, ' peserta') AS qty_label, b.total_price
+           b.participants AS qty_num, 'peserta' AS qty_unit, b.total_price
     FROM bookings b
     JOIN tours t ON b.tour_id = t.id
     JOIN tour_dates td ON b.tour_date_id = td.id
@@ -58,7 +58,7 @@ foreach ($tourBookings->fetchAll() as $b) { $b['img'] = getTourImage($b, 'small'
 
 $attrBookings = db()->prepare("
     SELECT ab.*, a.name as item_title, a.slug as item_slug, 'attraction' AS btype,
-           CONCAT(ab.quantity, ' tiket') AS qty_label, ab.total_price, ab.visit_date AS date_label
+           ab.quantity AS qty_num, 'tiket' AS qty_unit, ab.total_price, ab.visit_date AS date_label
     FROM attraction_bookings ab
     JOIN attractions a ON ab.attraction_id = a.id
     WHERE ab.user_id = ?
@@ -69,7 +69,7 @@ foreach ($attrBookings->fetchAll() as $b) { $b['img'] = 'https://placehold.co/30
 
 $transferBookings = db()->prepare("
     SELECT tb.*, tr.name as item_title, tr.slug as item_slug, 'transfer' AS btype,
-           CONCAT(tb.passengers, ' pax') AS qty_label, tb.total_price, tb.pickup_date AS date_label
+           tb.passengers AS qty_num, 'pax' AS qty_unit, tb.total_price, tb.pickup_date AS date_label
     FROM transfer_bookings tb
     JOIN transfers tr ON tb.transfer_id = tr.id
     WHERE tb.user_id = ?
@@ -80,7 +80,7 @@ foreach ($transferBookings->fetchAll() as $b) { $b['img'] = 'https://placehold.c
 
 $trainBookings = db()->prepare("
     SELECT tb.*, tr.name as item_title, tr.slug as item_slug, 'train' AS btype,
-           CONCAT(tb.seats, ' kursi') AS qty_label, tb.total_price, tb.travel_date AS date_label
+           tb.seats AS qty_num, 'kursi' AS qty_unit, tb.total_price, tb.travel_date AS date_label
     FROM train_bookings tb
     JOIN trains tr ON tb.train_id = tr.id
     WHERE tb.user_id = ?
@@ -91,7 +91,7 @@ foreach ($trainBookings->fetchAll() as $b) { $b['img'] = 'https://placehold.co/3
 
 $esimBookings = db()->prepare("
     SELECT cb.*, cp.name as item_title, cp.slug as item_slug, 'esim' AS btype,
-           CONCAT(cb.quantity, ' pcs') AS qty_label, cb.total_price
+           cb.quantity AS qty_num, 'pcs' AS qty_unit, cb.total_price
     FROM connectivity_bookings cb
     JOIN connectivity_products cp ON cb.product_id = cp.id
     WHERE cb.user_id = ?
@@ -104,18 +104,18 @@ foreach ($esimBookings->fetchAll() as $b) { $b['img'] = 'https://placehold.co/30
 usort($all, function ($a, $b) { return strtotime($b['created_at']) - strtotime($a['created_at']); });
 
 $typeIcon = ['tour' => 'map', 'attraction' => 'signpost-2', 'transfer' => 'arrow-left-right', 'train' => 'train-front', 'esim' => 'sim'];
-$typeName = ['tour' => 'Tour', 'attraction' => 'Atraksi', 'transfer' => 'Transfer', 'train' => 'Kereta', 'esim' => 'eSIM'];
+$typeName = ['tour' => t('Tour'), 'attraction' => t('Atraksi'), 'transfer' => t('Transfer'), 'train' => t('Kereta'), 'esim' => t('eSIM')];
 $typeLink = ['tour' => 'tour-detail.php', 'attraction' => 'attraction-detail.php', 'transfer' => 'transfer-detail.php', 'train' => 'train-detail.php', 'esim' => 'esim-detail.php'];
 
-$pageTitle = 'Riwayat Booking';
+$pageTitle = t('Riwayat Booking');
 require_once 'includes/header-klook.php';
 ?>
 <section class="py-4">
     <div class="container">
-        <h4 class="fw-bold mb-3"><i class="bi bi-ticket-perforated me-2"></i>Riwayat Booking</h4>
+        <h4 class="fw-bold mb-3"><i class="bi bi-ticket-perforated me-2"></i><?= t('Riwayat Booking') ?></h4>
 
         <?php if (isset($_GET['msg']) && $_GET['msg'] === 'cancelled'): ?>
-            <div class="alert alert-success py-2 small">Booking berhasil dibatalkan. KlookCash yang digunakan telah dikembalikan.</div>
+            <div class="alert alert-success py-2 small"><?= t('Booking berhasil dibatalkan. KlookCash yang digunakan telah dikembalikan.') ?></div>
         <?php endif; ?>
 
         <?php if (count($all) > 0): ?>
@@ -151,7 +151,7 @@ require_once 'includes/header-klook.php';
                                     </div>
                                     <?php endif; ?>
                                     <div class="col-6">
-                                        <i class="bi bi-people me-1"></i><?= $b['qty_label'] ?>
+                                        <i class="bi bi-people me-1"></i><?= $b['qty_num'] . ' ' . t($b['qty_unit']) ?>
                                     </div>
                                     <div class="col-6">
                                         <i class="bi bi-cash me-1"></i><?= formatRupiah($b['total_price']) ?>
@@ -161,9 +161,9 @@ require_once 'includes/header-klook.php';
                                     </div>
                                 </div>
                                 <div class="d-flex gap-2 mt-2 flex-wrap">
-                                    <a href="<?= $typeLink[$btype] ?>?slug=<?= urlencode($b['item_slug']) ?>" class="btn btn-sm btn-outline-primary rounded-pill px-3"><i class="bi bi-eye me-1"></i>Detail</a>
+                                    <a href="<?= $typeLink[$btype] ?>?slug=<?= urlencode($b['item_slug']) ?>" class="btn btn-sm btn-outline-primary rounded-pill px-3"><i class="bi bi-eye me-1"></i><?= t('Detail') ?></a>
                                     <?php if ($b['status'] === 'pending' || $b['status'] === 'confirmed'): ?>
-                                    <a href="my-bookings.php?cancel=<?= $b['id'] ?>&type=<?= $btype ?>" class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="return confirm('Batalkan booking ini?')"><i class="bi bi-x-circle me-1"></i>Batalkan</a>
+                                    <a href="my-bookings.php?cancel=<?= $b['id'] ?>&type=<?= $btype ?>" class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="return confirm('<?= t('Batalkan booking ini?') ?>')"><i class="bi bi-x-circle me-1"></i><?= t('Batalkan') ?></a>
                                     <?php endif; ?>
                                 </div>
                             </div>
@@ -176,8 +176,8 @@ require_once 'includes/header-klook.php';
         <?php else: ?>
         <div class="text-center py-5">
             <i class="bi bi-ticket fs-1 text-muted"></i>
-            <p class="mt-2 text-muted">Belum ada pemesanan.</p>
-            <a href="tours.php" class="btn btn-primary rounded-pill px-4">Booking Sekarang</a>
+            <p class="mt-2 text-muted"><?= t('Belum ada pemesanan.') ?></p>
+            <a href="tours.php" class="btn btn-primary rounded-pill px-4"><?= t('Booking Sekarang') ?></a>
         </div>
         <?php endif; ?>
     </div>
