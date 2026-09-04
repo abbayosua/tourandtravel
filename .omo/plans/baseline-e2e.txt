@@ -1,0 +1,17 @@
+# E2E Baseline (pre-multilingual-work)
+- Recorded: 2026-09-04 17:53
+- Commit: f9e79c9 (main)
+- Command: npx playwright test (full, chromium, workers=1)
+- Result: 404 tests — 400 passed, 4 failed
+
+## Failures (4)
+- tests/e2e/multilingual.spec.ts:7  › Multilingual - Tour Detail Page › tour detail switches to English
+- tests/e2e/multilingual.spec.ts:19 › Multilingual - Tour Detail Page › tour detail switches back to Indonesian
+- tests/e2e/multilingual.spec.ts:49 › Multilingual - Homepage › homepage switches to English
+- tests/e2e/multilingual.spec.ts:68 › Multilingual - Homepage › homepage switches back to Indonesian
+
+## Catatan
+- Konteks lama menyebut "13 failure pre-existing (language-switch/admin-bulk-lang)" — saat baseline ini
+  suite sudah 404 test dan hanya multilingual.spec.ts (4 test) yang gagal; language-switch dan
+  admin-bulk-lang lulus semua. Gunakan daftar 4 ini sebagai garis dasar regresi.
+- Semua failure ada di file multilingual.spec.ts = target yang akan diperbaiki oleh work multilingual.

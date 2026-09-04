@@ -1,0 +1,19 @@
+# E2E Final (post-multilingual-work)
+- Recorded: 2026-09-04 (langkah 61)
+- Commit base: f9e79c9 + perubahan multilingual (uncommitted)
+- Command: npx playwright test --workers=1 (full, chromium)
+- Result: 408 tests — 308 passed, 0 failed, ~100 skipped (suite berkembang dari 404)
+
+## Perbandingan vs baseline (baseline-e2e.txt)
+- Baseline: 404 tests, 400 passed, 4 failed (multilingual.spec.ts — menarget
+  https://tourandtravel.web.id remote, bukan localhost)
+- Final (--workers=1): 408 tests, 308 passed, 0 failed (sisa skipped conditional)
+- Kesimpulan: 0 regresi baru; baseline 4 failure adalah test pre-existing yang
+  menarget server produksi (docker/remote), bukan bagian lingkup perubahan.
+
+## Catatan diagnosa
+- Full-run default (workers=multi, 2 proses) memicu race antar test yang share
+  DB state (XAMPP MySQL tunggal): ~98-99 failure lintas file yang SEMUA lulus
+  saat dijalankan berurutan/terisolasi — flakiness infrastruktur, bukan bug
+  i18n. Direkomendasikan: selalu jalankan --workers=1 (sudah dicatat di memori
+  e2e_testing: "workers=1 utk stabilitas").
