@@ -26,12 +26,16 @@ Alamat / terminal / hotel
 Alamat email Anda
 Alamat email tidak valid
 All rights reserved.
+Analytics
 Anda booking sebagai tamu. Masuk akun untuk melacak booking.
 Anda dapat booking sebagai tamu.
 Apa Kata Mereka?
+Artikel tidak ditemukan
+Artikel, tips, dan panduan traveling dari TourAndTravel.
 Asuransi Dasar
 Asuransi perjalanan
 Atraksi
+Atur Password Baru
 Automatic
 Baca selengkapnya
 Bagasi
@@ -40,6 +44,8 @@ Bagikan link di bawah — Anda & teman dapat reward Rp50.000 saat teman berhasil
 Bagikan pengalaman Anda...
 Bahan bakar
 Bahasa Konten
+Balas
+Balas ulasan...
 Bali Paradise 5D4N
 Bambang S.
 Bandara
@@ -57,8 +63,10 @@ Bayar Sekarang
 Beijing 8D7N
 Beli Sekarang
 Belum ada aktivitas webhook.
+Belum ada artikel.
 Belum ada booking
 Belum ada data kurs. Klik "Refresh" untuk mengambil data terbaru.
+Belum ada data.
 Belum ada foto galeri. Upload untuk mengganti galeri auto (loremflickr).
 Belum ada hotel tersedia saat ini.
 Belum ada item di collection ini.
@@ -67,6 +75,9 @@ Belum ada jadwal keberangkatan tersedia
 Belum ada jadwal keberangkatan.
 Belum ada jadwal penerbangan tersedia.
 Belum ada kota dengan data hotel.
+Belum ada kupon tersedia.
+Belum ada log email.
+Belum ada notifikasi.
 Belum ada paket tour ke :city saat ini.
 Belum ada pembayaran.
 Belum ada pemesanan.
@@ -77,6 +88,7 @@ Belum ada tour
 Belum ada tour yang disimpan
 Belum ada transaksi.
 Belum ada ulasan untuk tour ini.
+Belum ada ulasan.
 Belum punya akun?
 Belum terhubung. Klik "Hubungkan Nomor Baru" untuk scan QR.
 Bensin Penuh
@@ -90,9 +102,11 @@ Berhasil ditambahkan
 Berlaku
 Berlaku Dari
 Berlaku Sampai
+Berlaku sampai
 Berlangganan
 Berlangganan newsletter kami untuk promo eksklusif & tips perjalanan.
 Best Seller
+Bila email terdaftar, tautan reset telah dikirim. Periksa kotak masuk Anda.
 Bintang
 Bintang Tertinggi
 Bisnis
@@ -106,8 +120,11 @@ Booking Sekarang
 Booking Terbaru
 Booking berhasil dibatalkan. KlookCash yang digunakan telah dikembalikan.
 Booking berhasil dihapus
+Booking dibuat
+Booking per hari
 Booking untuk dapat KlookCash
 Buat akun untuk mulai berpetualang
+Buka
 Buka di Kiwi.com
 Bulk Bahasa Konten:
 Butuh Menginap?
@@ -143,6 +160,7 @@ Connect failed
 Contoh Konversi dari IDR 10.000.000
 Contoh: Batam → Singapore, Johor → Batam.
 Contoh: TAT-7A2B1
+Cover
 Cover Image (Upload)
 Current:
 Daftar
@@ -169,6 +187,8 @@ Dibatalkan
 Dikonfirmasi
 Disconnect failed
 Diterima
+Draft
+Driver
 Driver profesional
 Durasi
 Durasi (contoh: 5j 30m)
@@ -179,6 +199,7 @@ EUR → USD
 Earn
 Earning Rate KlookCash
 Edit
+Edit Artikel
 Edit FAQ
 Edit Ferry
 Edit Hotel
@@ -195,11 +216,13 @@ Ekonomi
 Email
 Email (opsional)
 Email atau password salah
+Email berhasil dikirim ulang.
 Email sudah terdaftar
 Email tidak dapat diubah
 Email tidak valid
 Environment
 Error: 
+Event
 Explorer (%)
 Explorer — minimal booking
 FAQ
@@ -222,6 +245,7 @@ Foto
 Foto Paspor
 Foto paspor wajib diupload
 Frankfurter API
+Funnel Booking
 Gabung Perangkat
 Gagal
 Gagal memesan: 
@@ -244,7 +268,9 @@ Gym
 HOT
 Halaman lain (tour/hotel/flight detail) tidak berubah.
 Hapus
+Hapus artikel ini?
 Hapus slide ini?
+Hapus ulasan ini?
 Hapus?
 Harga
 Harga (Rp)
@@ -281,6 +307,7 @@ Ikuti tren travel, itinerary ideas, dan tips traveling terbaru.
 Informasi Notifikasi
 Inisialisasi koneksi...
 Instan
+Isi
 Item
 Itinerary
 Itinerary berhasil dihapus
@@ -305,6 +332,7 @@ Joy+ (%)
 Joy+ — minimal booking
 Judul
 Judul Tour
+Judul wajib diisi
 Jumlah
 Jumlah FAQ
 Jumlah Hari
@@ -327,6 +355,7 @@ Kategori Wisata
 Kategori harus diisi
 Ke
 Keberangkatan
+Kedaluwarsa
 Kelas
 Kelola Atraksi
 Kelola Booking
@@ -354,11 +383,13 @@ Kenapa Booking Hotel di
 Kenapa Pesan Tiket di
 Kenapa Pilih
 Kendaraan
+Kepada
 Kereta
 Kereta Api
 Kereta Lain
 Kereta Tidak Ditemukan
 Kereta tidak ditemukan
+Kirim Tautan Reset
 Kirim Test
 Kirim Ulasan
 KlookCash
@@ -399,6 +430,7 @@ Kota atau terminal...
 Kota tujuan (DPS)...
 Kuota
 Kuota Data
+Kupon Saya
 Kurs Terkini (EUR Base)
 Kursi
 Kursi penuh untuk jadwal ini.
@@ -418,6 +450,7 @@ Link CTA
 Link CTA harus nama file .php, path internal (diawali /), atau URL
 Link Tracking
 Live via Duffel (Test Mode)
+Log Email
 Log Webhook
 Login
 Login Admin
@@ -429,6 +462,8 @@ Lokasi Penjemputan
 Lokasi penjemputan harus diisi
 Loyalty Settings
 Lunas
+Lupa Password
+Lupa password?
 Maaf, sisa slot hanya
 Makan
 Maksimal
@@ -440,6 +475,7 @@ Maskapai
 Mastercard
 Masuk
 Masuk / Daftar
+Masukkan email Anda untuk menerima tautan reset.
 Masukkan kode booking untuk cek status pemesanan
 Masukkan kode promo
 Masukkan kota asal dan tujuan untuk mencari jadwal ferry.
@@ -502,12 +538,14 @@ Nomor WA Admin/Supplier
 Nomor WhatsApp yang digunakan untuk mengirim notifikasi ke supplier.
 Nomor tujuan notifikasi booking baru. Diawali 62, tanpa + atau spasi.
 Nonaktif
+Notifikasi
 One Way
 Order ID
 Order ID: 
 Pagi (05-12)
 Pakai
 Paket
+Paket Rekomendasi
 Paket Tour
 Paket Tour (Klook-style)
 Paket Tour Populer
@@ -517,6 +555,7 @@ Partner perjalanan terpercaya Anda. Kami menyediakan paket wisata domestik & int
 Pasangan
 Password
 Password Baru
+Password berhasil diubah. Silakan masuk dengan password baru.
 Password minimal 6 karakter
 PayPal
 Pelabuhan
@@ -544,6 +583,7 @@ Pengaturan WA
 Pengaturan WhatsApp
 Pengaturan WhatsApp berhasil disimpan
 Pengaturan loyalty berhasil disimpan
+Pengguna
 Penuh
 Penumpang
 Pergi
@@ -579,6 +619,7 @@ Profil berhasil diperbarui
 Promo
 Promo Tiket Setiap Hari
 Proses cepat & praktis
+Publish
 Pulang
 Pusat Bantuan
 Putuskan Koneksi
@@ -598,13 +639,19 @@ Refundable
 Rekomendasi Paket Tour
 Rental
 Rental Mobil
+Resend
+Resend dari log oleh admin.
+Resend gagal — lihat log terbaru.
 Reset
 Reset Filter
+Reset Password
 Restoran
 Revenue
+Revenue per vertikal
 Reward
 Reward 5% dari total booking — bisa dipakai untuk booking berikutnya
 Rina A.
+Ringkasan
 Riwayat Booking
 Riwayat Transaksi
 Round Trip
@@ -618,6 +665,7 @@ SIM
 Saat ada booking baru, notifikasi otomatis dikirim ke nomor WA Admin/Supplier:
 Saldo KlookCash
 Salin
+Sampai
 Sarapan
 Sari Dewi
 Scan QR code dengan WhatsApp Anda.
@@ -661,6 +709,7 @@ Silakan login terlebih dahulu.
 Silver (%)
 Silver — minimal booking
 Simpan
+Simpan Password
 Simpan Pengaturan
 Simpan Perubahan
 Simpan Tour
@@ -677,12 +726,15 @@ Stasiun Asal
 Stasiun Tujuan
 Status
 Status booking berhasil diperbarui
+Subjek
 Subjudul
+Subscriber
 Subtotal tidak valid
 Sudah punya akun?
 Sumber
 Tahun
 Tambah
+Tambah Artikel
 Tambah FAQ
 Tambah Kategori
 Tambah Kereta
@@ -695,6 +747,8 @@ Tambah eSIM
 Tampilan Homepage
 Tamu
 Tandai Kedaluwarsa
+Tandai dibaca
+Tandai semua dibaca
 Tanggal
 Tanggal Berangkat
 Tanggal Keberangkatan
@@ -709,21 +763,25 @@ Tanggal keberangkatan tidak valid
 Tanggal kunjungan harus diisi
 Tanggal penjemputan harus diisi
 Tanggal perjalanan harus diisi
+Tautan reset tidak valid atau sudah kedaluwarsa.
 Teks CTA
 Temukan jawaban atas pertanyaan yang sering diajukan
 Temukan paket tour impian Anda dari ratusan destinasi
 Terapkan
 Terbang ke Kota Impian
+Terbaru
 Tercepat
 Terima kasih, pemesanan Anda telah diterima.
 Terjadi kesalahan. Coba lagi nanti.
 Terjadi kesalahan. Coba lagi.
 Terkonfirmasi
+Terlalu banyak permintaan. Coba lagi dalam satu menit.
 Termahal
 Termasuk
 Termurah
 Terpercaya
 Terpopuler
+Tersedia
 Test Kirim WA
 Test mode: booking akan membuat order Duffel Airways dummy.
 Tiba
@@ -751,9 +809,12 @@ Tipe Diskon
 Tipe Kendaraan
 Tipe Mobil
 Tipe Tujuan
+Tips, panduan, dan cerita perjalanan
 Toilet
 Token Akun WUZAPI
 Token akun pengirim WA. Kosongkan jika tidak diubah.
+Top Referrer
+Top Tour
 Total
 Total Booking
 Total Harga
@@ -763,6 +824,7 @@ Tour
 Tour Aktif
 Tour Tidak Ditemukan
 Tour tidak ditemukan
+TourAndTravel — paket tour, hotel, tiket pesawat, dan aktivitas wisata terbaik dengan harga transparan.
 Tracking
 Tracking Booking
 Transfer
@@ -828,6 +890,7 @@ penumpang
 per referral
 peserta
 produk ditemukan
+referral
 slot
 tahun melayani pelanggan
 tiket

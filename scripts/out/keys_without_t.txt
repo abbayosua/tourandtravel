@@ -13,12 +13,17 @@ Jakarta → Singapore
 KlookCash
 Kode promo tidak valid
 Masukkan kode promo
+Nama Kereta (EN)
+Nama Produk (EN)
+Nama Transfer (EN)
 Production
 Sandbox
+Skip to content
 Terjadi kesalahan. Coba lagi nanti.
 Test.php — berisi satu atau lebih fungsi
  *   function test
 Webhook URL:
+Welcome to
 ada 5 paket
 ada :n paket
 id-ID

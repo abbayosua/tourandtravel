@@ -1,4 +1,7 @@
 Akun: ${name}    [/admin/wa-settings.php]
+Nama Kereta (EN)    [/admin/train-edit.php]
+Nama Produk (EN)    [/admin/esim-edit.php]
+Nama Transfer (EN)    [/admin/transfer-edit.php]
 Production    [/admin/payments.php]
 Sandbox    [/admin/payments.php]
 Webhook URL:    [/admin/payments.php]
