@@ -19,6 +19,7 @@ if (!$isAdd) {
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name'] ?? '');
+    $nameEn = trim($_POST['name_en'] ?? '');
     $fromCity = trim($_POST['from_city'] ?? '');
     $toCity = trim($_POST['to_city'] ?? '');
     $fromType = $_POST['from_type'] ?? 'airport';
