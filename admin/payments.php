@@ -79,8 +79,8 @@ require_once __DIR__ . '/includes/admin-header.php';
             <div class="col-md-3">
                 <label class="form-label small fw-semibold"><?= t('Environment') ?></label>
                 <select name="midtrans_env" class="form-select">
-                    <option value="sandbox" <?= getSetting('midtrans_env') === 'sandbox' ? 'selected' : '' ?>>Sandbox</option>
-                    <option value="production" <?= getSetting('midtrans_env') === 'production' ? 'selected' : '' ?>>Production</option>
+                    <option value="sandbox" <?= getSetting('midtrans_env') === 'sandbox' ? 'selected' : '' ?>><?= t('Sandbox') ?></option>
+                    <option value="production" <?= getSetting('midtrans_env') === 'production' ? 'selected' : '' ?>><?= t('Production') ?></option>
                 </select>
             </div>
             <div class="col-md-4">

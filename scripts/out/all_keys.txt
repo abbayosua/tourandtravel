@@ -611,6 +611,7 @@ Pilihan terbaik untuk liburan Anda
 Pocket WiFi
 Pramusaji
 Previous
+Production
 Produk Tidak Ditemukan
 Produk tidak ditemukan
 Profil
@@ -666,6 +667,7 @@ Saat ada booking baru, notifikasi otomatis dikirim ke nomor WA Admin/Supplier:
 Saldo KlookCash
 Salin
 Sampai
+Sandbox
 Sarapan
 Sari Dewi
 Scan QR code dengan WhatsApp Anda.
@@ -716,6 +718,7 @@ Simpan Tour
 Simpan kode booking dan link di atas untuk cek status pemesanan.
 Simpan tour favorit Anda dengan menekan ikon hati
 Sisa
+Skip to content
 Slide tampil di homepage dengan fokus ini (atau semua).
 Slot
 Slug

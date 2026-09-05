@@ -11,3 +11,10 @@
 - Analytics: KPI/grafik/filter/guard
 - Reviews: foto galeri, distribusi, filter
 - Kupon & referral, dark mode, PWA, skip-link
+
+## Smoke Final (langkah 28, pasca-audit) — ALL_OK: true
+- forgot-password id/en ✓ | blog id/en ✓ | notifications (login) ✓
+- dark mode toggle ✓ | analytics admin ✓
+- Audit final: missing en = 0; kandidat hardcoded turun 16 → 10 (semua FP terdokumentasi)
+- Full E2E final: 368 passed, 0 failed, 1 skipped (--workers=1)
+- Unit: 32/32

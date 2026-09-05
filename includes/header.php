@@ -22,7 +22,7 @@
 </head>
 <body>
 
-<a class="skip-link" href="#mainContent">Skip to content</a>
+<a class="skip-link" href="#mainContent"><?= t('Skip to content') ?></a>
 <script>
 (function () {
     var t = localStorage.getItem('theme') || 'light';

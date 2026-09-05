@@ -61,7 +61,7 @@ require_once 'includes/admin-header.php';
 <div class="col-md-8">
 <div class="card border-0 shadow-sm mb-3"><div class="card-body">
     <div class="mb-3"><label class="form-label"><?= t('Nama Transfer') ?></label><input name="name" class="form-control" value="<?=e($item['name']??'')?>" required></div>
-<div class="mb-3"><label class="form-label">Nama Transfer (EN)</label><input name="name_en" class="form-control" value="<?= e($item["name_en"] ?? "") ?>"></div>
+<div class="mb-3"><label class="form-label"><?= t('Nama Transfer') ?> (EN)</label><input name="name_en" class="form-control" value="<?= e($item["name_en"] ?? "") ?>"></div>
     <div class="mb-3"><label class="form-label"><?= t('Deskripsi') ?></label><textarea name="description" class="form-control" rows="5"><?=e($item['description']??'')?></textarea></div>
 </div></div>
 </div>
