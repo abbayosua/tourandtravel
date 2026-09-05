@@ -1,0 +1,12 @@
+# Baseline PRD Roadmap (pre-implementasi, 2026-09-06)
+
+- Commit: 83c7de8 (main = origin/main, identik produksi kecuali config)
+- Unit test: `php tests/unit/run.php` → LULUS 11, GAGAL 0 (SmokeTest 3 + HelpersTest 8)
+- E2E full baseline sebelumnya: 322 passed / 0 failed (--workers=1)
+  - lihat .omo/plans/homepage-baseline.txt
+- E2E smoke di titik ini: 7 passed
+
+## Aturan regresi selama implementasi PRD
+- Unit: `php tests/unit/run.php` wajib 0 gagal setiap fase
+- E2E: SELALU --workers=1; wajib tanpa failure baru vs 322+barunya
+- Audit i18n: missing en = 0 tiap fase
