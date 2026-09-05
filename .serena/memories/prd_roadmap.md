@@ -20,6 +20,12 @@
 ## Commit
 fase 0..11 di origin/main (412d201..f1d3aa0).
 
+## Finalisasi (langkah 28)
+- Audit: missing=0; kandidat hardcoded 16→10 (semua FP terdokumentasi; sisa string baru sudah dibungkus: skip-link, label EN editors, Sandbox/Production)
+- Unit 32/32; Full E2E --workers=1: 368 passed / 0 failed / 1 skipped
+- Smoke id/en ALL_OK (forgot, blog, notifications, dark, analytics) — .omo/plans/prd-smoke.md
+- Push origin/main sampai a079eef; git bersih.
+
 ## Follow-up
 - Skip 1 test flaky balasan (f3f1778) — investigasi timing admin page nanti.
 - Produksi: jalankan migrate-payments/email/password-resets/blog/notifications/reviews + regenerate-en + set Midtrans keys di admin.
