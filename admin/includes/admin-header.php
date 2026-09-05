@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="<?= getCurrentLang() ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -144,6 +144,9 @@
                 </a>
                 <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'loyalty-settings.php' ? 'active' : '' ?>" href="loyalty-settings.php">
                     <i class="bi bi-award"></i><span class="nav-label"> <?= t('Loyalty Settings') ?></span>
+                </a>
+                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'appearance.php' ? 'active' : '' ?>" href="appearance.php">
+                    <i class="bi bi-layout-text-window-reverse text-info"></i><span class="nav-label"> <?= t('Tampilan Homepage') ?></span>
                 </a>
                 <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'wa-settings.php' ? 'active' : '' ?>" href="wa-settings.php">
                     <i class="bi bi-whatsapp text-success"></i><span class="nav-label"> <?= t('Pengaturan WA') ?></span>

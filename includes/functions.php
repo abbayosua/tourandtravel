@@ -49,6 +49,32 @@ function setDefaultCurrency($code) {
 }
 
 /**
+ * Baca satu setting dari tabel settings; kembalikan $default bila belum ada
+ * atau DB error. Generic (pola getDefaultCurrency).
+ */
+function getSetting($key, $default = null) {
+    try {
+        $stmt = db()->prepare("SELECT setting_value FROM settings WHERE setting_key = ? LIMIT 1");
+        $stmt->execute([$key]);
+        $row = $stmt->fetch();
+        if ($row === false || $row['setting_value'] === null || $row['setting_value'] === '') {
+            return $default;
+        }
+        return $row['setting_value'];
+    } catch (Throwable $e) {
+        return $default;
+    }
+}
+
+/**
+ * Tulis (insert atau update) satu setting. Aman dipanggil berulang.
+ */
+function setSetting($key, $value) {
+    $stmt = db()->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = ?");
+    $stmt->execute([$key, $value, $value]);
+}
+
+/**
  * Fetch exchange rates from Frankfurter API (EUR base) + store in DB
  */
 function fetchFrankfurterRates() {
