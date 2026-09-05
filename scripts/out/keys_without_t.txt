@@ -7,6 +7,9 @@ Akun: ${name}
 Berhasil! Cek email Anda.
 Gagal. Coba lagi.
 IDR
+Jakarta → Denpasar
+Jakarta → Kuala Lumpur
+Jakarta → Singapore
 KlookCash
 Kode promo tidak valid
 Masukkan kode promo

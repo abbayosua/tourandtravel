@@ -20,6 +20,8 @@ Aksi
 Aktif
 Aktivasi instan setelah pembayaran
 Aktivitas Akun
+Aktivitas Menarik
+Aktivitas Seru
 Alamat / terminal / hotel
 Alamat email Anda
 Alamat email tidak valid
@@ -57,14 +59,18 @@ Belum ada aktivitas webhook.
 Belum ada booking
 Belum ada data kurs. Klik "Refresh" untuk mengambil data terbaru.
 Belum ada foto galeri. Upload untuk mengganti galeri auto (loremflickr).
+Belum ada hotel tersedia saat ini.
 Belum ada item di collection ini.
 Belum ada itinerary.
 Belum ada jadwal keberangkatan tersedia
 Belum ada jadwal keberangkatan.
+Belum ada jadwal penerbangan tersedia.
+Belum ada kota dengan data hotel.
 Belum ada paket tour ke :city saat ini.
 Belum ada pemesanan.
 Belum ada pertanyaan.
 Belum ada referral. Bagikan link Anda!
+Belum ada slide.
 Belum ada tour
 Belum ada tour yang disimpan
 Belum ada transaksi.
@@ -102,16 +108,21 @@ Booking untuk dapat KlookCash
 Buat akun untuk mulai berpetualang
 Buka di Kiwi.com
 Bulk Bahasa Konten:
+Butuh Menginap?
 CS 24/7
 Cakupan
 Cancelled
 Cannot reach WUZAPI
 Cari
 Cari Booking
+Cari Hotel
 Cari Lagi
+Cari Penerbangan
 Cari Penerbangan Lain
+Cari Sekarang
 Cari destinasi atau aktivitas...
 Cari destinasi...
+Cari kota atau nama hotel...
 Cari kota...
 Cari...
 Catatan
@@ -138,9 +149,10 @@ Dapatkan Penawaran Terbaik
 Dapatkan TourCash
 Dapatkan promo spesial untuk pendaftaran hari ini
 Dari
-Dari 2.000+ ulasan
+Dari budget sampai bintang 5 — bandingkan dan pesan sekarang.
 Dashboard
 Data penumpang tidak tersedia.
+Deal Hotel Terbaik
 Deskripsi
 Deskripsi:
 Destinasi
@@ -170,6 +182,7 @@ Edit Kategori
 Edit Kereta
 Edit Pesawat
 Edit Rental Mobil
+Edit Slide
 Edit Tour
 Edit Tour:
 Edit Transfer
@@ -195,6 +208,10 @@ First
 Flash Deals
 FlightList (Real)
 FlightList: klik Pesan menampilkan link Kiwi.com (affiliate).
+Fokus
+Fokus Website
+Fokus tidak valid
+Fokus website berhasil disimpan.
 Format JPG/PNG/WebP, max 2MB
 Foto
 Foto Paspor
@@ -211,6 +228,7 @@ Gagal:
 Galeri Foto
 Gambar
 Gambar Cover
+Gambar slide wajib diupload
 Ganti Password
 Gold (%)
 Gold — minimal booking
@@ -218,6 +236,9 @@ Gunakan KlookCash
 Gunakan untuk potongan booking berikutnya
 Gym
 HOT
+Halaman lain (tour/hotel/flight detail) tidak berubah.
+Hapus
+Hapus slide ini?
 Hapus?
 Harga
 Harga (Rp)
@@ -227,7 +248,11 @@ Harga Termurah
 Harga Tertinggi
 Harga Transparan
 Harga harus diisi
+Harga mulai dari — per malam
+Harga mulai dari — per penumpang, one way
 Harga per Malam
+Harga spesial untuk rute favorit — kuota terbatas, pesan sekarang.
+Harga termurah untuk menginap di kota favoritmu
 Harga/Hari
 Harga/Hari (Rp)
 Harga/Malam (Rp)
@@ -235,7 +260,13 @@ Harga:
 Hari
 Hasil live tidak tersedia, menampilkan jadwal lokal.
 Hemat
+Hero Slides
+Hero utama + slide hero sesuai fokus (dikelola di menu Hero Slides).
+Homepage menonjolkan hotel: pencarian menginap dominan, deal hotel terbaik, hotel per kota.
+Homepage menonjolkan paket tour: flash deals, destinasi populer, rekomendasi tur.
+Homepage menonjolkan penerbangan: form cari tiket dominan, promo & rute populer.
 Hotel
+Hotel (Agoda-style)
 Hotel Lain di :city
 Hubungi Kami
 Hubungkan Nomor Baru
@@ -248,6 +279,7 @@ Item
 Itinerary
 Itinerary berhasil dihapus
 Itinerary berhasil ditambahkan
+JPG/PNG/WebP, maks 2MB. Rekomendasi 1920px lebar.
 Jadwal
 Jadwal Ferry
 Jadwal Keberangkatan
@@ -259,6 +291,8 @@ Jam Operasional
 Jam Penjemputan
 Jam penjemputan harus diisi
 Jawaban
+Jelajahi Juga: Paket Tour
+Jelajahi Paket Tour
 Jelajahi Tour
 Jl. Merdeka No. 123, Jakarta
 Joy+ (%)
@@ -310,9 +344,10 @@ Kembali ke Catalog
 Kembali ke Katalog
 Kembali ke Website
 Kembali ke halaman tour
+Kenapa Booking Hotel di
+Kenapa Pesan Tiket di
 Kenapa Pilih
 Kendaraan
-Kepuasan
 Kereta
 Kereta Api
 Kereta Lain
@@ -351,6 +386,8 @@ Kosongkan jika tidak ingin ganti
 Kosongkan jika tidak ingin mengubah gambar
 Kosongkan untuk memakai versi ID
 Kota
+Kota / Hotel
+Kota Populer
 Kota asal (CGK)...
 Kota atau terminal...
 Kota tujuan (DPS)...
@@ -364,11 +401,15 @@ Langsung
 Lanjutkan di Kiwi: 
 Layanan
 Layanan Kamar
+Lengkapi Perjalanan: Hotel
 Lihat
 Lihat Detail
 Lihat Semua
+Lihat Semua Promo
 Lihat Semua Tour
 Lihat Website
+Link CTA
+Link CTA harus nama file .php, path internal (diawali /), atau URL
 Link Tracking
 Live via Duffel (Test Mode)
 Log Webhook
@@ -407,6 +448,7 @@ Max. Diskon
 Memproses...
 Memuat status...
 Menghubungkan...
+Menginap Nyaman, Harga Terbaik
 Menunggu
 Menunggu Konfirmasi
 Menunggu QR code...
@@ -457,6 +499,8 @@ Pagi (05-12)
 Pakai
 Paket
 Paket Tour
+Paket Tour (Klook-style)
+Paket Tour Populer
 Paket Tour ke :city
 Parkir
 Partner perjalanan terpercaya Anda. Kami menyediakan paket wisata domestik & internasional dengan harga terbaik.
@@ -468,8 +512,6 @@ PayPal
 Pelabuhan
 Pelajari
 Pelanggan
-Pelanggan Puas
-Pelanggan merekomendasikan kami
 Pemakaian
 Pembayaran
 Pembayaran aman & terenkripsi
@@ -512,6 +554,7 @@ Pilih Gambar (bisa banyak)
 Pilih Tanggal
 Pilih Tour (centang untuk menambahkan)
 Pilih minimal 1 tour
+Pilih produk utama yang dijual website ini. Halaman utama akan tersusun otomatis mengikuti pilihan.
 Pilihan terbaik untuk liburan Anda
 Pocket WiFi
 Pramusaji
@@ -522,14 +565,15 @@ Profil
 Profil Saya
 Profil berhasil diperbarui
 Promo
+Promo Tiket Setiap Hari
 Proses cepat & praktis
+Pulang
 Pusat Bantuan
 Putuskan Koneksi
 QR not available
 Qty
 Rate
 Rating
-Rating Pelanggan
 Rating Tertinggi
 Ref: 
 Referral
@@ -556,6 +600,7 @@ Rp (IDR)
 Rp 10-20 Juta
 Rp 5-10 Juta
 Rute
+Rute Populer
 S$ (SGD)
 SIM
 Saat ada booking baru, notifikasi otomatis dikirim ke nomor WA Admin/Supplier:
@@ -566,7 +611,6 @@ Sari Dewi
 Scan QR code dengan WhatsApp Anda.
 Scan QR ini dengan WhatsApp Anda
 Scan voucher
-Segera
 Selamat datang
 Selamat datang kembali!
 Selesai
@@ -574,12 +618,15 @@ Selimut
 Semua
 Semua Bintang
 Semua Durasi
+Semua Fokus
 Semua Harga
+Semua Hotel
 Semua Kategori
 Semua Kelas
 Semua Kota
 Semua Lokasi
 Semua Negara
+Semua Penerbangan
 Semua Rating
 Semua Tipe
 Semua Tujuan
@@ -607,6 +654,7 @@ Simpan Tour
 Simpan kode booking dan link di atas untuk cek status pemesanan.
 Simpan tour favorit Anda dengan menekan ikon hati
 Sisa
+Slide tampil di homepage dengan fokus ini (atau semua).
 Slot
 Slug
 Sore (17-22)
@@ -616,6 +664,7 @@ Stasiun Asal
 Stasiun Tujuan
 Status
 Status booking berhasil diperbarui
+Subjudul
 Subtotal tidak valid
 Sudah punya akun?
 Sumber
@@ -625,10 +674,12 @@ Tambah FAQ
 Tambah Kategori
 Tambah Kereta
 Tambah Koleksi
+Tambah Slide
 Tambah Tour
 Tambah Tour Baru
 Tambah Transfer
 Tambah eSIM
+Tampilan Homepage
 Tamu
 Tanggal
 Tanggal Berangkat
@@ -644,9 +695,11 @@ Tanggal keberangkatan tidak valid
 Tanggal kunjungan harus diisi
 Tanggal penjemputan harus diisi
 Tanggal perjalanan harus diisi
+Teks CTA
 Temukan jawaban atas pertanyaan yang sering diajukan
 Temukan paket tour impian Anda dari ratusan destinasi
 Terapkan
+Terbang ke Kota Impian
 Tercepat
 Terima kasih, pemesanan Anda telah diterima.
 Terjadi kesalahan. Coba lagi nanti.
@@ -657,7 +710,6 @@ Termasuk
 Termurah
 Terpercaya
 Terpopuler
-Tersebar di 12+ destinasi
 Test Kirim WA
 Test mode: booking akan membuat order Duffel Airways dummy.
 Tiba
@@ -674,8 +726,10 @@ Tidak ada tour ditemukan
 Tidak ada transfer ditemukan.
 Tier Threshold (Jumlah Booking)
 Tiket Lain di
+Tiket Pesawat (Tiket.com-style)
 Tiket Tempat Wisata
 Tiket Tidak Ditemukan
+Tiket pesawat murah ke ratusan kota, setiap hari.
 Tiket tidak ditemukan
 Tipe
 Tipe Asal
@@ -715,6 +769,7 @@ Upload Foto Paspor
 Upload Galeri
 Upload beberapa gambar (JPG/PNG/WebP, max 2MB)
 Urutan
+Urutan & jenis section homepage (produk utama di atas, lainnya sebagai pendukung).
 Urutkan
 Username
 Username atau password salah
@@ -726,6 +781,7 @@ WiFi, Parkir, Kolam...
 Wishlist
 Wishlist Saya
 Ya
+Yang berubah saat fokus diganti
 Your World of Joy
 bagasi
 breadcrumb
@@ -736,8 +792,11 @@ dengan estimasi perjalanan
 di halaman katalog.
 eSIM
 eSIM & Connectivity
+harga mulai
 hari
+hotel
 hotel ditemukan
+jadwal
 kabin
 kelas
 kendaraan

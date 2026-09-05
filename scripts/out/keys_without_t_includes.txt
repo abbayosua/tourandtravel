@@ -1,1 +1,4 @@
 IDR    [/includes/header.php]
+Jakarta → Denpasar    [/includes/homepage/flight-hero.php]
+Jakarta → Kuala Lumpur    [/includes/homepage/flight-hero.php]
+Jakarta → Singapore    [/includes/homepage/flight-hero.php]
