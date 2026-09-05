@@ -86,6 +86,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
         require_once 'includes/send-wa.php';
         sendBookingNotification($tour, $bookingCode, $name, $phone, $participants, $totalPrice, tglIndonesia($selectedDate['departure_date']));
 
+        // Email booking_created ke pemesan (tidak pernah throw)
+        require_once 'includes/email.php';
+        sendEmailTemplate($email, 'booking-created', [
+            'booking_code' => $bookingCode,
+            'total' => formatRupiah($totalPrice),
+            'tour_title' => tContent($tour, 'title'),
+            'pay_link' => BASE_URL . '/booking-success.php?code=' . $bookingCode,
+            'track_link' => BASE_URL . '/track.php?code=' . $bookingCode,
+        ], null);
+
         header("Location: booking-success.php?code=$bookingCode");
         exit;
     } else {

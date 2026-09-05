@@ -23,6 +23,22 @@ if (isset($_GET['update_status'])) {
     if (in_array($status, ['pending', 'confirmed', 'cancelled']) && isset($tableMap[$type])) {
         $table = $tableMap[$type];
         db()->prepare("UPDATE `$table` SET status = ? WHERE id = ?")->execute([$status, $id]);
+
+        // Email status ke pemesan (tour saja; kolom email ada di semua tabel booking)
+        if ($type === 'tour') {
+            require_once '../includes/email.php';
+            $bs = db()->prepare("SELECT booking_code, email FROM `$table` WHERE id = ?");
+            $bs->execute([$id]);
+            if ($bk = $bs->fetch()) {
+                sendEmailTemplate($bk['email'], 'booking-status', [
+                    'booking_code' => $bk['booking_code'],
+                    'status' => $status,
+                    'track_link' => BASE_URL . '/track.php?code=' . $bk['booking_code'],
+                    'subject' => 'Status Booking - ' . $bk['booking_code'],
+                ], null);
+            }
+        }
+
         header('Location: bookings.php?msg=updated'); exit;
     }
 }

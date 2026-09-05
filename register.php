@@ -28,6 +28,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$name, $email, $phone, $hash]);
             $userId = (int)db()->lastInsertId();
 
+            // Email welcome (tidak pernah throw)
+            require_once 'includes/email.php';
+            sendEmailTemplate($email, 'welcome', [
+                'name' => $name,
+                'subject' => 'Selamat Datang di ' . SITE_NAME,
+            ], null);
+
             // Generate referral code: REF-{user_id}-{random4}
             $referralCode = 'REF-' . $userId . '-' . strtoupper(substr(bin2hex(random_bytes(2)), 0, 4));
             $upd = db()->prepare("UPDATE users SET referral_code = ? WHERE id = ?");
