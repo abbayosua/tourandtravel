@@ -19,6 +19,7 @@ if (!$isAdd) {
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name'] ?? '');
+    $nameEn = trim($_POST['name_en'] ?? '');
     $routeFrom = trim($_POST['route_from'] ?? '');
     $routeTo = trim($_POST['route_to'] ?? '');
     $departureTime = trim($_POST['departure_time'] ?? '');
@@ -39,8 +40,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $st->execute([$name, $slug, $routeFrom, $routeTo, $depTime, $arrTime, $duration, $price, $class, $isActive]);
             header('Location: trains.php?msg=added'); exit;
         } else {
-            $st = db()->prepare("UPDATE trains SET name=?, slug=?, route_from=?, route_to=?, departure_time=?, arrival_time=?, duration=?, price=?, class=?, is_active=? WHERE id=?");
-            $st->execute([$name, $slug, $routeFrom, $routeTo, $depTime, $arrTime, $duration, $price, $class, $isActive, $id]);
+            $st = db()->prepare("UPDATE trains SET name=?, name_en=?, slug=?, route_from=?, route_to=?, departure_time=?, arrival_time=?, duration=?, price=?, class=?, is_active=? WHERE id=?");
+            $st->execute([$name, $nameEn, $slug, $routeFrom, $routeTo, $depTime, $arrTime, $duration, $price, $class, $isActive, $id]);
             header('Location: trains.php?msg=updated'); exit;
         }
     }
@@ -59,6 +60,7 @@ require_once 'includes/admin-header.php';
 <div class="col-md-8">
 <div class="card border-0 shadow-sm mb-3"><div class="card-body">
     <div class="mb-3"><label class="form-label"><?= t('Nama Kereta') ?></label><input name="name" class="form-control" value="<?=e($item['name']??'')?>" required></div>
+<div class="mb-3"><label class="form-label">Nama Kereta (EN)</label><input name="name_en" class="form-control" value="<?= e($item["name_en"] ?? "") ?>"></div>
     <div class="mb-3"><label class="form-label"><?= t('Durasi (contoh: 5j 30m)') ?></label><input name="duration" class="form-control" value="<?=e($item['duration']??'')?>" placeholder="5j 30m"></div>
 </div></div>
 </div>

@@ -1,3 +1,4 @@
+<?php if (!empty($heroSlides[0]['image'])): ?><link rel="preload" as="image" href="<?= e($heroSlides[0]['image']) ?>" fetchpriority="high"><?php endif; ?>
 <section class="hero-klook klook-hero d-flex align-items-center position-relative overflow-hidden" style="min-height: 65vh;">
     <div id="heroCarousel" class="carousel slide carousel-fade w-100 h-100 position-absolute" data-bs-ride="carousel" data-bs-interval="5000" style="inset: 0;">
         <div class="carousel-inner h-100">

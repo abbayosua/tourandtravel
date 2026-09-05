@@ -165,4 +165,16 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 </body>
-</html>
+</html><script>
+// Recently viewed: catat tour-detail & render baris kecil
+(function () {
+    var match = location.href.match(/[?&]slug=([^&]+)/);
+    var title = document.title.split(' - ')[0];
+    if (match && /detail\.php$/.test(location.pathname)) {
+        var list = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+        list = list.filter(function (x) { return x.slug !== match[1]; });
+        list.unshift({ slug: match[1], title: title, url: location.pathname + '?slug=' + match[1] });
+        localStorage.setItem('recentlyViewed', JSON.stringify(list.slice(0, 6)));
+    }
+})();
+</script>

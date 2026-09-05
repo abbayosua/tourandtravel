@@ -37,11 +37,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $slug = buatSlug($name);
         if ($isAdd) {
             $st = db()->prepare("INSERT INTO transfers (name, slug, from_city, to_city, from_type, to_type, price, vehicle_type, max_passengers, description, instant_confirmation, free_cancellation, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $st->execute([$name, $slug, $fromCity, $toCity, $fromType, $toType, $price, $vehicleType, $maxPassengers, $desc, $instantConf, $freeCancel, $isActive]);
+            $st->execute([$name, $nameEn, $slug, $fromCity, $toCity, $fromType, $toType, $price, $vehicleType, $maxPassengers, $desc, $instantConf, $freeCancel, $isActive]);
             header('Location: transfers.php?msg=added'); exit;
         } else {
-            $st = db()->prepare("UPDATE transfers SET name=?, slug=?, from_city=?, to_city=?, from_type=?, to_type=?, price=?, vehicle_type=?, max_passengers=?, description=?, instant_confirmation=?, free_cancellation=?, is_active=? WHERE id=?");
-            $st->execute([$name, $slug, $fromCity, $toCity, $fromType, $toType, $price, $vehicleType, $maxPassengers, $desc, $instantConf, $freeCancel, $isActive, $id]);
+            $st = db()->prepare("UPDATE transfers SET name=?, name_en=?, slug=?, from_city=?, to_city=?, from_type=?, to_type=?, price=?, vehicle_type=?, max_passengers=?, description=?, instant_confirmation=?, free_cancellation=?, is_active=? WHERE id=?");
+            $st->execute([$name, $nameEn, $slug, $fromCity, $toCity, $fromType, $toType, $price, $vehicleType, $maxPassengers, $desc, $instantConf, $freeCancel, $isActive, $id]);
             header('Location: transfers.php?msg=updated'); exit;
         }
     }
@@ -60,6 +60,7 @@ require_once 'includes/admin-header.php';
 <div class="col-md-8">
 <div class="card border-0 shadow-sm mb-3"><div class="card-body">
     <div class="mb-3"><label class="form-label"><?= t('Nama Transfer') ?></label><input name="name" class="form-control" value="<?=e($item['name']??'')?>" required></div>
+<div class="mb-3"><label class="form-label">Nama Transfer (EN)</label><input name="name_en" class="form-control" value="<?= e($item["name_en"] ?? "") ?>"></div>
     <div class="mb-3"><label class="form-label"><?= t('Deskripsi') ?></label><textarea name="description" class="form-control" rows="5"><?=e($item['description']??'')?></textarea></div>
 </div></div>
 </div>

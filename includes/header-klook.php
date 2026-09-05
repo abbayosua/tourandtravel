@@ -2,6 +2,8 @@
 <html lang="<?= getCurrentLang() ?>">
 <head>
     <meta charset="UTF-8">
+    <link rel="manifest" href="<?= BASE_URL ?>/manifest.json">
+    <meta name="theme-color" content="#0d6efd">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="base-url" content="<?= BASE_URL ?>">
     <title><?= e($pageTitle ?? SITE_NAME) ?> - <?= SITE_NAME ?></title>
@@ -19,6 +21,14 @@
     <script defer src="<?= BASE_URL ?>/assets/js/klook.js?v=<?= filemtime(__DIR__ . '/../assets/js/klook.js') ?>"></script>
 </head>
 <body>
+
+<a class="skip-link" href="#mainContent">Skip to content</a>
+<script>
+(function () {
+    var t = localStorage.getItem('theme') || 'light';
+    if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+})();
+</script>
 
 <!-- Navbar Klook-style: 1 baris, putih bersih, sticky -->
 <div class="sticky-top klook-navbar-wrap" style="z-index: 1020;">
@@ -182,7 +192,10 @@
                         <div class="search-dropdown" id="navSearchMobileDropdown"></div>
                     </div>
                 </li>
-            </ul>
+            <li class="nav-item">
+                    <button id="themeToggle" class="btn btn-sm btn-outline-secondary rounded-pill px-2" title="Theme" onclick="var t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);localStorage.setItem('theme',t);this.innerHTML=t==='dark'?'☀️':'🌙';"><script>document.write(document.documentElement.getAttribute('data-theme')==='dark'?'☀️':'🌙')</script></button>
+                </li>
+</ul>
         </div>
     </div>
 </nav>

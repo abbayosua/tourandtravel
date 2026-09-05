@@ -91,3 +91,35 @@
     --z-toast: 1080;
     --z-overlay: 1100;
 }
+
+/* ===== Dark mode ===== */
+[data-theme="dark"] body {
+    background-color: #10151c;
+    color: #e5e7eb;
+}
+[data-theme="dark"] .card,
+[data-theme="dark"] .bg-white,
+[data-theme="dark"] .bg-light {
+    background-color: #1a212b !important;
+    color: #e5e7eb;
+}
+[data-theme="dark"] .bg-white .form-control,
+[data-theme="dark"] .card .form-control,
+[data-theme="dark"] .card .form-select {
+    background-color: #121820;
+    color: #e5e7eb;
+    border-color: #2c3440;
+}
+[data-theme="dark"] .text-dark { color: #e5e7eb !important; }
+[data-theme="dark"] .text-muted { color: #9ca3af !important; }
+[data-theme="dark"] .border-bottom,
+[data-theme="dark"] .border-top { border-color: #2c3440 !important; }
+[data-theme="dark"] .navbar-light { background-color: #1a212b !important; }
+[data-theme="dark"] .navbar-light .navbar-nav .nav-link { color: #e5e7eb; }
+
+/* Skip link a11y */
+.skip-link {
+    position: absolute; left: -9999px; top: 0; z-index: 2000;
+    background: var(--primary); color: #fff; padding: 8px 16px; border-radius: 0 0 8px 0;
+}
+.skip-link:focus { left: 0; }
