@@ -32,8 +32,8 @@ Per inisiatif PRD (urutan PRD: I-1→I-2→I-3→I-4→I-5→I-6→I-7→I-8→I
 | **FASE 0 — Infrastruktur test & baseline** | | | |
 | 0.1 | Buat unit test runner sederhana (tanpa composer): assert helper, bootstrap config+db, output lulus/gagal per kasus | tests/unit/run.php, tests/unit/README.md | pending |
 | 0.2 | Unit test contoh (getSetting/setSetting, formatRupiah EN/ID, formatDate) sebagai validasi runner | tests/unit/*Test.php | pending |
-| 0.3 | Jalankan runner + jalankan E2E smoke sebagai baseline; catat | tests/unit/run.php, .omo/plans/prd-baseline.txt | pending |
-| 0.4 | Commit fase 0 (`feat: prd phase 0 - unit test infra`) | git | pending |
+| 0.3 | Jalankan runner + jalankan E2E smoke sebagai baseline; catat (HASIL: unit 11 lulus, smoke 7 passed @ 83c7de8) | tests/unit/run.php, .omo/plans/prd-baseline.txt | done |
+| 0.4 | Commit fase 0 (`feat: prd phase 0 - unit test infra` @ 8ac530d) | git | done |
 | **FASE 1 — I-1 Payment Gateway (Midtrans Snap)** | | | |
 | 1.1 | Migration: tabel `payments` (id, booking_type, booking_id, order_id uniq, gross_amount, status, payment_type, raw_payload JSON, created_at, paid_at) — idempotent | database/migrate-payments.sql | pending |
 | 1.2 | Jalankan migration lokal + verifikasi SHOW COLUMNS + re-run idempotent; update schema-klook.sql | mysql | pending |
