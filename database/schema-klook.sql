@@ -401,3 +401,31 @@ CALL klook_add_content_lang('tours');
 DROP PROCEDURE IF EXISTS klook_add_content_lang;
 CALL klook_add_col_if_missing();
 DROP PROCEDURE IF EXISTS klook_add_col_if_missing;
+
+-- ============================================================
+-- Payments (Midtrans) — lihat PRD-20260906-0117.md I-1
+-- ============================================================
+CREATE TABLE IF NOT EXISTS payments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    booking_type VARCHAR(20) NOT NULL DEFAULT 'tour',
+    booking_id INT NOT NULL,
+    booking_code VARCHAR(20) DEFAULT NULL,
+    order_id VARCHAR(64) NOT NULL,
+    gross_amount DECIMAL(12,2) NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'pending',
+    payment_type VARCHAR(40) DEFAULT NULL,
+    transaction_id VARCHAR(64) DEFAULT NULL,
+    raw_payload JSON DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    paid_at DATETIME DEFAULT NULL,
+    UNIQUE KEY uniq_order_id (order_id),
+    INDEX idx_payments_booking (booking_type, booking_id),
+    INDEX idx_payments_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT IGNORE INTO settings (setting_key, setting_value) VALUES
+    ('midtrans_env', 'sandbox'),
+    ('midtrans_server_key', ''),
+    ('midtrans_client_key', ''),
+    ('payment_enabled', '1');

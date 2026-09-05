@@ -53,6 +53,7 @@ Batal Gratis
 Batalkan
 Batalkan booking ini?
 Batas Pemakaian
+Bayar Sekarang
 Beijing 8D7N
 Beli Sekarang
 Belum ada aktivitas webhook.
@@ -67,6 +68,7 @@ Belum ada jadwal keberangkatan.
 Belum ada jadwal penerbangan tersedia.
 Belum ada kota dengan data hotel.
 Belum ada paket tour ke :city saat ini.
+Belum ada pembayaran.
 Belum ada pemesanan.
 Belum ada pertanyaan.
 Belum ada referral. Bagikan link Anda!
@@ -130,6 +132,7 @@ Catatan (opsional)
 Cek blog TourAndTravel
 Check-in
 Check-out
+Client Key
 Coba: Batam → Singapore, atau ubah tanggal.
 Coba: CGK → DPS, SIN → CGK, atau ubah tanggal.
 Collection Tidak Ditemukan
@@ -144,6 +147,7 @@ Cover Image (Upload)
 Current:
 Daftar
 Daftar Akun Baru
+Daftar Pembayaran
 Daftar Referral
 Dapatkan Penawaran Terbaik
 Dapatkan TourCash
@@ -194,6 +198,7 @@ Email atau password salah
 Email sudah terdaftar
 Email tidak dapat diubah
 Email tidak valid
+Environment
 Error: 
 Explorer (%)
 Explorer — minimal booking
@@ -221,6 +226,7 @@ Gabung Perangkat
 Gagal
 Gagal memesan: 
 Gagal memuat status: 
+Gagal memulai pembayaran. Coba lagi.
 Gagal mengambil kurs
 Gagal mengambil kurs dari Frankfurter API
 Gagal menyimpan file config
@@ -422,6 +428,7 @@ Lokasi
 Lokasi Penjemputan
 Lokasi penjemputan harus diisi
 Loyalty Settings
+Lunas
 Maaf, sisa slot hanya
 Makan
 Maksimal
@@ -452,7 +459,9 @@ Menginap Nyaman, Harga Terbaik
 Menunggu
 Menunggu Konfirmasi
 Menunggu QR code...
+Menunggu pembayaran...
 Method not allowed
+Metode
 Metode Pembayaran
 Min
 Min. Beli
@@ -494,6 +503,7 @@ Nomor WhatsApp yang digunakan untuk mengirim notifikasi ke supplier.
 Nomor tujuan notifikasi booking baru. Diawali 62, tanpa + atau spasi.
 Nonaktif
 One Way
+Order ID
 Order ID: 
 Pagi (05-12)
 Pakai
@@ -515,6 +525,7 @@ Pelanggan
 Pemakaian
 Pembayaran
 Pembayaran aman & terenkripsi
+Pembayaran diterima. Terima kasih!
 Pencarian
 Pendapatan
 Pending
@@ -528,6 +539,7 @@ Pengalaman pelanggan yang sudah traveling bersama kami
 Pengaturan Loyalty
 Pengaturan Loyalty & KlookCash
 Pengaturan Mata Uang
+Pengaturan Midtrans
 Pengaturan WA
 Pengaturan WhatsApp
 Pengaturan WhatsApp berhasil disimpan
@@ -632,6 +644,7 @@ Semua Tipe
 Semua Tujuan
 Semua status
 Senin - Sabtu: 08:00 - 20:00
+Server Key
 Server Terhubung
 Server Tidak Terhubung
 Server URL
@@ -681,6 +694,7 @@ Tambah Transfer
 Tambah eSIM
 Tampilan Homepage
 Tamu
+Tandai Kedaluwarsa
 Tanggal
 Tanggal Berangkat
 Tanggal Keberangkatan

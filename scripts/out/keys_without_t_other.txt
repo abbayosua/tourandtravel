@@ -1,0 +1,2 @@
+Test.php — berisi satu atau lebih fungsi
+ *   function test    [/tests/unit/run.php]
