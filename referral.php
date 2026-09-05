@@ -100,6 +100,26 @@ require_once 'includes/header-klook.php';
             </div>
         </div>
 
+        <!-- Leaderboard -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white py-3"><h6 class="fw-bold mb-0"><?= t('Top Referrer') ?></h6></div>
+            <div class="card-body p-0">
+                <?php
+                $top = db()->query("SELECT u.name, COUNT(r.id) n FROM referrals r JOIN users u ON r.referrer_id = u.id GROUP BY r.referrer_id ORDER BY n DESC LIMIT 5")->fetchAll();
+                if (!count($top)): ?>
+                <div class="text-center text-muted py-3 small"><?= t('Belum ada data.') ?></div>
+                <?php endif; ?>
+                <ul class="list-group list-group-flush">
+                <?php foreach ($top as $i => $tp): ?>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span><?= $i + 1 ?>. <?= e($tp['name']) ?></span>
+                        <span class="badge bg-primary"><?= $tp['n'] ?> <?= t('referral') ?></span>
+                    </li>
+                <?php endforeach; ?>
+                </ul>
+            </div>
+        </div>
+
         <!-- Referral list -->
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-white py-3">
