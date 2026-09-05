@@ -151,6 +151,9 @@
                 <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'payments.php' ? 'active' : '' ?>" href="payments.php">
                     <i class="bi bi-credit-card text-success"></i><span class="nav-label"> <?= t('Pembayaran') ?></span>
                 </a>
+                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'email-log.php' ? 'active' : '' ?>" href="email-log.php">
+                    <i class="bi bi-envelope-paper text-warning"></i><span class="nav-label"> <?= t('Log Email') ?></span>
+                </a>
                 <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'wa-settings.php' ? 'active' : '' ?>" href="wa-settings.php">
                     <i class="bi bi-whatsapp text-success"></i><span class="nav-label"> <?= t('Pengaturan WA') ?></span>
                 </a>

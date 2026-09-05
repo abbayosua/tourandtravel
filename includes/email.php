@@ -74,9 +74,14 @@ function sendEmail(string $to, string $subject, string $html, ?string $event = n
         [$ok, $error] = emailSendViaApi($to, $subject, $html);
     }
 
-    $stmt = db()->prepare("INSERT INTO email_log (to_email, subject, event, driver, status, error) VALUES (?, ?, ?, ?, ?, ?)");
-    $stmt->execute([$to, $subject, $event, $driver, $ok ? 'sent' : 'failed', $error]);
-    $logId = (int)db()->lastInsertId();
+    try {
+        $stmt = db()->prepare("INSERT INTO email_log (to_email, subject, event, driver, status, error) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$to, $subject, $event, $driver, $ok ? 'sent' : 'failed', $error]);
+        $logId = (int)db()->lastInsertId();
+    } catch (Throwable $e) {
+        $logId = 0;
+        $error = $error ?: $e->getMessage();
+    }
 
     return ['ok' => $ok, 'log_id' => $logId, 'error' => $error];
 }
@@ -112,8 +117,17 @@ function renderEmailTemplate(string $event, array $data = [], ?string $lang = nu
     return ['subject' => $subject, 'html' => $shell];
 }
 
-/** Kirim template lengkap: render + sendEmail */
+/** Kirim template lengkap: render + sendEmail. TIDAK pernah throw. */
 function sendEmailTemplate(string $to, string $event, array $data = [], ?string $lang = null): array {
-    $t = renderEmailTemplate($event, $data, $lang);
-    return sendEmail($to, $t['subject'], $t['html'], $event);
+    try {
+        $t = renderEmailTemplate($event, $data, $lang);
+        return sendEmail($to, $t['subject'], $t['html'], $event);
+    } catch (Throwable $e) {
+        // Fallback: kirim email generic polos agar log tetap tercatat
+        try {
+            return sendEmail($to, ucfirst(str_replace('-', ' ', $event)) . (isset($data['booking_code']) ? ' - ' . $data['booking_code'] : ''), '<p>' . t('Notifikasi dari ' . SITE_NAME) . '</p>', $event);
+        } catch (Throwable $e2) {
+            return ['ok' => false, 'log_id' => 0, 'error' => $e->getMessage()];
+        }
+    }
 }
