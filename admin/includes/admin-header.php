@@ -151,6 +151,9 @@
                 <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'posts.php' ? 'active' : '' ?>" href="posts.php">
                     <i class="bi bi-journal-richtext text-primary"></i><span class="nav-label"> <?= t('Blog') ?></span>
                 </a>
+                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'analytics.php' ? 'active' : '' ?>" href="analytics.php">
+                    <i class="bi bi-graph-up-arrow text-info"></i><span class="nav-label"> <?= t('Analytics') ?></span>
+                </a>
                 <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'payments.php' ? 'active' : '' ?>" href="payments.php">
                     <i class="bi bi-credit-card text-success"></i><span class="nav-label"> <?= t('Pembayaran') ?></span>
                 </a>
