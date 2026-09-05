@@ -148,6 +148,9 @@
                 <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'appearance.php' ? 'active' : '' ?>" href="appearance.php">
                     <i class="bi bi-layout-text-window-reverse text-info"></i><span class="nav-label"> <?= t('Tampilan Homepage') ?></span>
                 </a>
+                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'payments.php' ? 'active' : '' ?>" href="payments.php">
+                    <i class="bi bi-credit-card text-success"></i><span class="nav-label"> <?= t('Pembayaran') ?></span>
+                </a>
                 <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'wa-settings.php' ? 'active' : '' ?>" href="wa-settings.php">
                     <i class="bi bi-whatsapp text-success"></i><span class="nav-label"> <?= t('Pengaturan WA') ?></span>
                 </a>

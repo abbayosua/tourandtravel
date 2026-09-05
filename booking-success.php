@@ -3,6 +3,8 @@ require_once 'includes/config.php';
 require_once 'includes/db.php';
 require_once 'includes/functions.php';
 
+require_once __DIR__ . '/includes/payments.php';
+
 $code = $_GET['code'] ?? '';
 
 // Try to find the booking across all booking types
@@ -120,6 +122,19 @@ if (!empty($booking['user_id'])) {
     }
 }
 
+// Payment aktif bila enabled & booking masih pending
+$paymentEnabled = midtransEnabled() && ($booking['status'] ?? '') === 'pending';
+$paymentStatus = 'unpaid';
+$paymentOrderId = null;
+if ($paymentEnabled && $btype === 'tour') {
+    $pst = db()->prepare("SELECT order_id, status FROM payments WHERE booking_type='tour' AND booking_id=? ORDER BY id DESC LIMIT 1");
+    $pst->execute([$booking['id']]);
+    if ($prow = $pst->fetch()) {
+        $paymentStatus = $prow['status'];
+        $paymentOrderId = $prow['order_id'];
+    }
+}
+
 $pageTitle = t('Booking Berhasil');
 require_once 'includes/header-klook.php';
 ?>
@@ -191,7 +206,13 @@ require_once 'includes/header-klook.php';
                             <?php endif; ?>
                             <tr><td class="text-muted ps-0"><?= t('Peserta') ?></td><td class="fw-semibold"><?= $booking['qty_label'] ?></td></tr>
                             <tr><td class="text-muted ps-0"><?= t('Total Harga') ?></td><td class="fw-semibold text-primary"><?= formatRupiah($booking['total_price']) ?></td></tr>
-                            <tr><td class="text-muted ps-0"><?= t('Status') ?></td><td><span class="badge bg-warning text-dark"><?= t('Pending') ?></span></td></tr>
+                            <tr><td class="text-muted ps-0"><?= t('Status') ?></td><td>
+                                <?php if ($paymentStatus === 'paid'): ?>
+                                    <span class="badge bg-success"><?= t('Lunas') ?></span>
+                                <?php else: ?>
+                                    <span class="badge bg-warning text-dark"><?= t('Pending') ?></span>
+                                <?php endif; ?>
+                            </td></tr>
                         </table>
                     </div>
 
@@ -201,10 +222,22 @@ require_once 'includes/header-klook.php';
                         <br><?= t('Kami akan menghubungi Anda via WhatsApp untuk konfirmasi.') ?>
                     </p>
 
-                    <div class="d-flex gap-2 justify-content-center">
+                    <div class="d-flex gap-2 justify-content-center flex-wrap">
+                        <?php if ($paymentEnabled && $btype === 'tour' && $paymentStatus !== 'paid'): ?>
+                            <button type="button" id="payNowBtn" class="btn btn-success px-4" data-booking-id="<?= (int)$booking['id'] ?>">
+                                <i class="bi bi-credit-card me-1"></i><?= t('Bayar Sekarang') ?>
+                            </button>
+                            <form method="POST" action="ajax/create-payment.php" id="createPaymentForm" style="display:none;"></form>
+                        <?php endif; ?>
                         <a href="track.php?code=<?= urlencode($booking['booking_code']) ?>" class="btn btn-primary px-4"><i class="bi bi-binoculars me-1"></i><?= t('Tracking Booking') ?></a>
                         <a href="<?= $itemLink ?: 'tours.php' ?>" class="btn btn-outline-primary"><?= t('Lihat Detail') ?></a>
                     </div>
+
+                    <?php if ($paymentEnabled && $btype === 'tour'): ?>
+                    <div id="paymentStatusArea" class="small mt-3" data-order-id="<?= e($paymentOrderId ?? '') ?>">
+                        <span class="text-muted"><?= $paymentOrderId ? t('Menunggu pembayaran...') : '' ?></span>
+                    </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -218,3 +251,53 @@ require_once 'includes/header-klook.php';
 }
 </style>
 <?php require_once 'includes/footer-klook.php'; ?>
+<script>
+(function () {
+    var btn = document.getElementById('payNowBtn');
+    if (!btn) return;
+    var statusArea = document.getElementById('paymentStatusArea');
+
+    function pollStatus(orderId) {
+        if (!orderId) return;
+        var timer = setInterval(function () {
+            fetch('<?= BASE_URL ?>/ajax/payment-status.php?order_id=' + encodeURIComponent(orderId))
+                .then(function (r) { return r.json(); })
+                .then(function (d) {
+                    if (d.status === 'paid') {
+                        clearInterval(timer);
+                        if (statusArea) statusArea.innerHTML = '<span class="text-success fw-bold"><?= t('Pembayaran diterima. Terima kasih!') ?></span>';
+                        var badge = document.querySelector('.badge.bg-warning');
+                        if (badge) { badge.className = 'badge bg-success'; badge.textContent = '<?= t('Lunas') ?>'; }
+                        btn.remove();
+                    }
+                }).catch(function () {});
+        }, 3000);
+    }
+
+    btn.addEventListener('click', function () {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span><?= t('Memproses...') ?>';
+        fetch('<?= BASE_URL ?>/ajax/create-payment.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'booking_type=tour&booking_id=' + btn.dataset.bookingId
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+            if (d.ok && d.redirect_url) {
+                window.location.href = d.redirect_url;
+            } else {
+                btn.disabled = false;
+                btn.innerHTML = '<?= t('Bayar Sekarang') ?>';
+                if (statusArea) statusArea.innerHTML = '<span class="text-danger"><?= t('Gagal memulai pembayaran. Coba lagi.') ?></span>';
+            }
+        })
+        .catch(function () {
+            btn.disabled = false;
+            btn.innerHTML = '<?= t('Bayar Sekarang') ?>';
+        });
+    });
+
+    if (statusArea && statusArea.dataset.orderId) pollStatus(statusArea.dataset.orderId);
+})();
+</script>
