@@ -1,0 +1,24 @@
+# E2E Baseline (pre-homepage-templates work)
+- Recorded: 2026-09-05 09:57
+- Commit: f6ecd15 (main, identik origin/main & produksi)
+- Command: npx playwright test --workers=1 (full, chromium, global-setup)
+- Result: 408 tests — 308 passed, 4 failed (remote spec), ~96 skipped
+
+## Failures (4) — SEMUA pre-existing, di luar scope
+- tests/e2e/multilingual.spec.ts:7  › tour detail switches to English
+- tests/e2e/multilingual.spec.ts:19 › tour detail switches back to Indonesian
+- tests/e2e/multilingual.spec.ts:49 › homepage switches to English
+- tests/e2e/multilingual.spec.ts:68 › homepage switches back to Indonesian
+Penyebab: file ini menarget https://tourandtravel.web.id (server produksi,
+timeout/koneksi dari lokal), bukan localhost. Identik dengan baseline
+full-multilingual sebelumnya (.omo/plans/baseline-e2e-final.txt).
+
+## Aturan regresi untuk pekerjaan homepage-templates
+- Wajib jalankan dengan --workers=1 (multi-worker memicu race DB palsu).
+- Kriteria lulus: TIDAK ADA failure baru selain 4 test di atas.
+
+## HASIL FULL REGRESI (post-homepage-templates, 2026-09-05)
+- Command: npx playwright test --workers=1
+- Result: 322 passed, 0 failed (31.6 menit)
+- Rasio: baseline 308 passed + 14 test baru (homepage-templates.spec.ts) = 322 ✓
+- Kesimpulan: 0 failure baru. Target tercapai.
