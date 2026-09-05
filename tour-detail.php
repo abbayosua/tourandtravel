@@ -255,15 +255,48 @@ require_once 'includes/header-klook.php';
             <?php endif; ?>
             <h5 class="fw-bold mt-5 mb-3"><i class="bi bi-chat-square-text me-2"></i><?= t('Ulasan') ?></h5>
             <?php
+                $revSort = ($_GET['rev_sort'] ?? 'new') === 'high' ? 'high' : 'new';
+                $revStar = (int)($_GET['rev_star'] ?? 0);
                 $reviews = getTourReviews($tour['id']);
+                if ($revSort === 'high') usort($reviews, fn($a, $b) => $b['rating'] <=> $a['rating']);
+                if ($revStar >= 1 && $revStar <= 5) $reviews = array_values(array_filter($reviews, fn($r) => (int)$r['rating'] === $revStar));
                 $realRating = getRealRating($tour['id']);
                 $realCount = getReviewCount($tour['id']);
+                // foto review
+                $reviewImages = [];
+                try {
+                    $ri = db()->query("SELECT ri.review_id, ri.path FROM review_images ri JOIN reviews rv ON rv.id = ri.review_id WHERE rv.tour_id = " . (int)$tour['id']);
+                    foreach ($ri as $im) $reviewImages[$im['review_id']][] = $im['path'];
+                } catch (Throwable $e) {}
             ?>
             <?php if ($realCount > 0): ?>
                 <div class="d-flex align-items-center gap-2 mb-3">
                     <span class="fs-4 fw-bold text-warning"><?= $realRating ?></span>
                     <span class="text-warning"><?= renderStars($realRating) ?></span>
                     <span class="text-muted small"><?= t('dari') ?> <?= $realCount ?> <?= t('ulasan') ?></span>
+                </div>
+                <?php
+                // Distribusi bintang
+                $dist = [5 => 0, 4 => 0, 3 => 0, 2 => 0, 1 => 0];
+                foreach ($reviews as $r) $dist[(int)$r['rating']] = ($dist[(int)$r['rating']] ?? 0) + 1;
+                ?>
+                <div class="row g-2 mb-3">
+                    <?php foreach ($dist as $star => $n): $pct = $realCount ? (int)($n / $realCount * 100) : 0; ?>
+                    <div class="col-md-2 col-4">
+                        <a href="?rev_sort=<?= e($revSort) ?>&rev_star=<?= $star ?>" class="text-decoration-none d-block">
+                            <div class="d-flex align-items-center gap-1 small <?= $revStar === $star ? 'fw-bold' : 'text-muted' ?>">
+                                <span><?= $star ?>★</span>
+                                <div class="progress flex-grow-1" style="height:6px;"><div class="progress-bar bg-warning" style="width:<?= $pct ?>%"></div></div>
+                                <span><?= $n ?></span>
+                            </div>
+                        </a>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+                <div class="d-flex gap-2 mb-3">
+                    <a href="?rev_sort=new&rev_star=<?= $revStar ?>" class="btn btn-sm <?= $revSort === 'new' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Terbaru') ?></a>
+                    <a href="?rev_sort=high&rev_star=<?= $revStar ?>" class="btn btn-sm <?= $revSort === 'high' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Rating Tertinggi') ?></a>
+                    <?php if ($revStar): ?><a href="?rev_sort=<?= e($revSort) ?>" class="btn btn-sm btn-outline-danger rounded-pill"><?= t('Reset Filter') ?></a><?php endif; ?>
                 </div>
                 <div class="row g-3 mb-4">
                 <?php foreach ($reviews as $r): ?>
@@ -274,7 +307,20 @@ require_once 'includes/header-klook.php';
                                     <span class="fw-semibold small"><?= e($r['user_name']) ?></span>
                                     <span class="text-warning small"><?= renderStars($r['rating']) ?></span>
                                 </div>
-                                <p class="small text-muted mb-0"><?= nl2br(e($r['comment'])) ?></p>
+                                <p class="small text-muted mb-2"><?= nl2br(e($r['comment'])) ?></p>
+                                <?php if (!empty($reviewImages[$r['id']])): ?>
+                                <div class="d-flex gap-1 mb-2">
+                                    <?php foreach ($reviewImages[$r['id']] as $img): ?>
+                                        <img src="<?= e($img) ?>" style="width:60px;height:60px;object-fit:cover;" class="rounded" alt="">
+                                    <?php endforeach; ?>
+                                </div>
+                                <?php endif; ?>
+                                <?php if (!empty($r['reply_text'])): ?>
+                                <div class="bg-light rounded-3 p-2 mt-2">
+                                    <small class="fw-semibold"><i class="bi bi-shield-check text-primary me-1"></i><?= SITE_NAME ?></small>
+                                    <p class="small mb-0"><?= nl2br(e($r['reply_text'])) ?></p>
+                                </div>
+                                <?php endif; ?>
                                 <small class="text-muted" style="font-size: 10px;"><?= date('d M Y', strtotime($r['created_at'])) ?></small>
                             </div>
                         </div>
@@ -290,7 +336,7 @@ require_once 'includes/header-klook.php';
                 <div class="card border-0 shadow-sm mb-4 bg-light">
                     <div class="card-body p-3">
                         <h6 class="fw-semibold mb-2"><?= t('Tulis Ulasan') ?></h6>
-                        <form method="POST" action="review-submit.php">
+                        <form method="POST" action="review-submit.php" enctype="multipart/form-data">
                             <input type="hidden" name="tour_id" value="<?= $tour['id'] ?>">
                             <input type="hidden" name="slug" value="<?= e($tour['slug']) ?>">
                             <div class="mb-2">
@@ -304,6 +350,7 @@ require_once 'includes/header-klook.php';
                             </div>
                             <div class="mb-2">
                                 <textarea name="comment" class="form-control form-control-sm" rows="3" placeholder="<?= t('Bagikan pengalaman Anda...') ?>" required></textarea>
+                                <input type="file" name="review_photo[]" class="form-control form-control-sm mt-2" accept="image/*" multiple>
                             </div>
                             <button type="submit" class="btn btn-primary btn-sm"><?= t('Kirim Ulasan') ?></button>
                         </form>
