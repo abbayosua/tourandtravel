@@ -86,6 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
         require_once 'includes/send-wa.php';
         sendBookingNotification($tour, $bookingCode, $name, $phone, $participants, $totalPrice, tglIndonesia($selectedDate['departure_date']));
 
+        error_log("PRD-DBG booking-created email fired");
         // Email booking_created ke pemesan (tidak pernah throw)
         require_once 'includes/email.php';
         sendEmailTemplate($email, 'booking-created', [
