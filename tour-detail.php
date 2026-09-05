@@ -89,6 +89,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
         sendBookingNotification($tour, $bookingCode, $name, $phone, $participants, $totalPrice, tglIndonesia($selectedDate['departure_date']));
 
         error_log("PRD-DBG booking-created email fired");
+        // Notifikasi in-app utk user (bila login)
+        require_once 'includes/notifications.php';
+        if (!empty($_SESSION['user_id'])) {
+            addNotification((int)$_SESSION['user_id'], 'booking', t('Booking dibuat'), t('Booking') . ' ' . $bookingCode, 'my-bookings.php');
+        }
+
         // Email booking_created ke pemesan (tidak pernah throw)
         require_once 'includes/email.php';
         sendEmailTemplate($email, 'booking-created', [

@@ -24,6 +24,18 @@ if (isset($_GET['update_status'])) {
         $table = $tableMap[$type];
         db()->prepare("UPDATE `$table` SET status = ? WHERE id = ?")->execute([$status, $id]);
 
+        // Notifikasi in-app user (tour)
+        if ($type === 'tour') {
+            require_once '../includes/notifications.php';
+            $nq = db()->prepare("SELECT user_id, booking_code FROM `$table` WHERE id = ?");
+            $nq->execute([$id]);
+            if ($nb = $nq->fetch()) {
+                if (!empty($nb['user_id'])) {
+                    addNotification((int)$nb['user_id'], 'status', 'Status booking: ' . $status, 'Booking ' . $nb['booking_code'], 'track.php?code=' . $nb['booking_code']);
+                }
+            }
+        }
+
         // Email status ke pemesan (tour saja; kolom email ada di semua tabel booking)
         if ($type === 'tour') {
             require_once '../includes/email.php';

@@ -206,6 +206,18 @@ function handleMidtransNotification(array $notif): bool {
         }
     }
 
+    // Notifikasi in-app (tour booking ber-user)
+    if ($payment['booking_type'] === 'tour' && $newStatus === 'paid') {
+        require_once __DIR__ . '/notifications.php';
+        $bq = db()->prepare("SELECT user_id, booking_code FROM bookings WHERE id = ?");
+        $bq->execute([$payment['booking_id']]);
+        if ($bk = $bq->fetch()) {
+            if (!empty($bk['user_id'])) {
+                addNotification((int)$bk['user_id'], 'payment', 'Pembayaran diterima', 'Booking ' . $bk['booking_code'] . ' telah dibayar.', 'booking-success.php?code=' . $bk['booking_code']);
+            }
+        }
+    }
+
     // Sinkron booking (semua vertikal memakai kolom payment_status)
     $typeMap = [
         'tour' => 'bookings', 'hotel' => 'hotel_bookings', 'flight' => 'flight_bookings',

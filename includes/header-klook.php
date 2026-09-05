@@ -105,6 +105,16 @@
                     <hr class="my-1">
                 </li>
 
+                <!-- Notifications -->
+                <?php if (isset($_SESSION['user_id'])): require_once 'includes/notifications.php'; $nUnread = getUnreadCount((int)$_SESSION['user_id']); ?>
+                <li class="nav-item">
+                    <a class="nav-link position-relative" href="notifications.php" title="<?= t('Notifikasi') ?>">
+                        <i class="bi bi-bell"></i>
+                        <?php if ($nUnread > 0): ?><span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size:9px;"><?= $nUnread > 9 ? '9+' : $nUnread ?></span><?php endif; ?>
+                    </a>
+                </li>
+                <?php endif; ?>
+
                 <!-- Wishlist -->
                 <li class="nav-item">
                     <a class="nav-link py-2 klook-nav-icon <?= basename($_SERVER['PHP_SELF']) === 'wishlist.php' ? 'active' : '' ?>" href="<?= BASE_URL ?>/wishlist.php" title="<?= t('Wishlist') ?>">
