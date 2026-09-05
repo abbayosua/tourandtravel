@@ -51,6 +51,9 @@ require_once 'includes/header-klook.php';
                                 <label class="form-label small fw-semibold"><?= t('Password') ?></label>
                                 <input type="password" name="password" class="form-control" required>
                             </div>
+                            <div class="mb-2 text-end">
+                                <a href="forgot-password.php" class="small text-decoration-none"><?= t('Lupa password?') ?></a>
+                            </div>
                             <button type="submit" class="btn btn-primary w-100 fw-semibold py-2"><?= t('Masuk') ?></button>
                         </form>
                         <p class="text-center mt-3 small">
