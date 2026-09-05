@@ -2,6 +2,8 @@
 require_once 'includes/config.php';
 require_once 'includes/db.php';
 require_once 'includes/functions.php';
+require_once 'includes/payments.php';
+require_once 'includes/seo.php';
 
 $slug = $_GET['slug'] ?? '';
 $tour = getTourBySlug($slug);
@@ -104,6 +106,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
     }
 }
 
+// SEO: meta + JSON-LD TouristTrip
+$metaDesc = mb_substr(trim(strip_tags((string)tContent($tour, 'description'))), 0, 160);
+$jsonLd = seoTour($tour);
+// SEO: meta + JSON-LD TouristTrip
+$metaDesc = mb_substr(trim(strip_tags((string)tContent($tour, 'description'))), 0, 160);
+$jsonLd = seoTour($tour);
 require_once 'includes/components/breadcrumb.php';
 require_once 'includes/header-klook.php';
 ?>

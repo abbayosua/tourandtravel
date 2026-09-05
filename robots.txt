@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /ajax/
+Disallow: /includes/
+Sitemap: https://tourandtravel.web.id/sitemap.php

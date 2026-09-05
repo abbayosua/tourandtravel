@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="base-url" content="<?= BASE_URL ?>">
     <title><?= e($pageTitle ?? SITE_NAME) ?> - <?= SITE_NAME ?></title>
+    <?php require_once __DIR__ . '/seo.php'; seoHead($metaDesc ?? null, $ogImage ?? null, $jsonLd ?? null); ?>
     <!-- Google Fonts: Inter + Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

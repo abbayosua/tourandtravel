@@ -2,6 +2,7 @@
 require_once 'includes/config.php';
 require_once 'includes/db.php';
 require_once 'includes/functions.php';
+require_once 'includes/seo.php';
 
 $slug = $_GET['slug'] ?? '';
 $stmt = db()->prepare("SELECT * FROM hotels WHERE slug = ? AND is_active = 1");
@@ -61,6 +62,12 @@ $nights = max(1, (strtotime($checkout) - strtotime($checkin)) / 86400);
 $totalPrice = $hotel['price_per_night'] * $nights;
 
 require_once 'includes/components/breadcrumb.php';
+// SEO
+$metaDesc = mb_substr(trim(strip_tags((string)tContent($hotel, 'description'))), 0, 160);
+$jsonLd = seoHotel($hotel);
+// SEO
+$metaDesc = mb_substr(trim(strip_tags((string)tContent($hotel, 'description'))), 0, 160);
+$jsonLd = seoHotel($hotel);
 require_once 'includes/header-klook.php';
 ?>
 <section class="py-4 bg-light">
