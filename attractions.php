@@ -15,6 +15,7 @@ $params = [];
 if ($city) { $sql .= " AND city = ?"; $params[] = $city; }
 if ($category) { $sql .= " AND category = ?"; $params[] = $category; }
 $sql .= " ORDER BY best_seller DESC, price ASC";
+$attractionWishlistIds = isLoggedIn() ? (getUserWishlistItems($_SESSION['user_id'])['attraction'] ?? []) : [];
 $attractions = db()->prepare($sql);
 $attractions->execute($params);
 $attractions = $attractions->fetchAll();
@@ -67,6 +68,10 @@ require_once 'includes/header-klook.php';
                         <div class="card tour-card-klook border-0 shadow-sm h-100">
                             <div class="position-relative overflow-hidden rounded-top" style="height: 180px;">
                                 <img src="<?= e($a['cover_image'] ?: 'https://placehold.co/640x480?text=' . urlencode($a['name'])) ?>" class="w-100 h-100" style="object-fit: cover;" alt="<?= e(tContent($a, 'name')) ?>">
+                                <button class="btn btn-sm position-absolute top-0 end-0 m-1 like-btn wishlist-btn klook-wishlist-btn text-white <?= in_array((int)$a['id'], $attractionWishlistIds) ? 'text-danger' : '' ?>" style="margin-top: 38px !important; z-index:5;"
+                                    onclick="toggleWishlist(this, <?= (int)$a['id'] ?>, 'attraction')" title="<?= t('Simpan ke wishlist') ?>">
+                                    <i class="bi bi-heart<?= in_array((int)$a['id'], $attractionWishlistIds) ? '-fill' : '' ?>"></i>
+                                </button>
                                 <?php if (!empty($a['best_seller'])): ?>
                                     <span class="badge bg-primary position-absolute top-0 start-0 m-2 shadow-sm"><?= t('Best Seller') ?></span>
                                 <?php endif; ?>

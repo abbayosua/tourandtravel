@@ -117,13 +117,14 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <script>
-function toggleWishlist(btn, tourId) {
+function toggleWishlist(btn, tourId, itemType) {
+    itemType = itemType || 'tour';
     <?php if (!isLoggedIn()): ?>
     window.location.href = 'login.php?redirect=' + encodeURIComponent(window.location.href);
     return;
     <?php endif; ?>
     var icon = btn.querySelector('i');
-    fetch('wishlist-ajax.php?tour_id=' + tourId + '&action=toggle')
+    fetch('wishlist-ajax.php?tour_id=' + tourId + '&item_type=' + itemType + '&action=toggle')
         .then(function(r) { return r.json(); })
         .then(function(d) {
             if (d.status === 'added') {

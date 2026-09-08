@@ -47,6 +47,7 @@ $hotels = db()->prepare($sql);
 $hotels->execute($params);
 $hotels = $hotels->fetchAll();
 
+$hotelWishlistIds = isLoggedIn() ? (getUserWishlistItems($_SESSION['user_id'])['hotel'] ?? []) : [];
 require_once 'includes/components/breadcrumb.php';
 require_once 'includes/header-klook.php';
 ?>
@@ -188,7 +189,11 @@ require_once 'includes/header-klook.php';
                     $amenities = array_filter(array_map('trim', explode(',', $h['amenities'] ?? '')));
                     $linkParams = 'slug=' . e($h['slug']) . '&checkin=' . urlencode($checkin ?: date('Y-m-d')) . '&checkout=' . urlencode($checkout ?: date('Y-m-d', strtotime('+2 days'))) . '&guests=' . $guests;
                 ?>
-                <div class="card border-0 shadow-sm mb-3 overflow-hidden klook-hover-card">
+                <div class="card border-0 shadow-sm mb-3 overflow-hidden klook-hover-card position-relative">
+                    <button class="btn btn-sm position-absolute top-0 end-0 m-1 like-btn wishlist-btn klook-wishlist-btn text-white bg-dark bg-opacity-25" style="z-index:5;"
+                        onclick="toggleWishlist(this, <?= (int)$h['id'] ?>, 'hotel')" title="<?= t('Simpan ke wishlist') ?>">
+                        <i class="bi bi-heart<?= in_array((int)$h['id'], $hotelWishlistIds) ? '-fill text-danger' : '' ?>"></i>
+                    </button>
                     <div class="row g-0">
                         <div class="col-md-3 col-4" style="min-height: 160px;">
                             <img src="https://placehold.co/640x480?text=<?= urlencode($h['name']) ?>" class="w-100 h-100" style="object-fit: cover;" alt="<?= e($h['name']) ?>" loading="lazy">
