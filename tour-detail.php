@@ -67,6 +67,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
 
     if (empty($errors)) {
         $unitPrice = getPriceForDate('tour', $tour['id'], $selectedDate['departure_date'], $tour['price']);
+        // Flash sale berlaku pada harga final (kalender atau dasar)
+        $unitPrice = getFlashSalePrice((float)$unitPrice, 'tour', (int)$tour['id'])['price'];
         $totalPrice = $unitPrice * $participants;
         $bookingCode = generateBookingCode();
 
@@ -83,6 +85,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
 
         $stmt = db()->prepare("INSERT INTO bookings (booking_code, tour_id, tour_date_id, name, email, phone, participants, total_price, notes, passport_photo, user_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
         $stmt->execute([$bookingCode, $tour['id'], $tourDateId, $name, $email, $phone, $participants, $totalPrice, $notes, $passportFile, $_SESSION['user_id'] ?? null]);
+
+        // Flash sale: catat penjualan (stok berkurang)
+        $fsNow = getActiveFlashSale('tour', (int)$tour['id']);
+        if ($fsNow && $fsNow['stock_limit'] !== null) {
+            db()->prepare("UPDATE flash_sales SET sold_count = sold_count + ? WHERE id = ?")->execute([$participants, $fsNow['id']]);
+        }
         $bookingId = (int)db()->lastInsertId();
 
         // Process wallet spend
@@ -377,7 +385,17 @@ require_once 'includes/header-klook.php';
                         <span class="text-muted">(<?= $tour['total_reviews'] ?> <?= t('ulasan') ?>)</span>
                     </div>
                     <?php $diskon = getDiskonPersen($tour); ?>
-                    <h4 class="fw-bold text-primary mb-0"><?= formatCurrencySpan($tour['price'], $tour['price_currency'] ?? 'IDR') ?></h4>
+                    <?php $flashDetail = getFlashSalePrice((float)$tour['price'], 'tour', (int)$tour['id']); ?>
+                    <h4 class="fw-bold text-primary mb-0" data-testid="detail-price"><?= formatCurrencySpan($flashDetail['price'], $tour['price_currency'] ?? 'IDR') ?></h4>
+                    <?php if ($flashDetail['flash']): ?>
+                    <div class="mb-1">
+                        <small class="text-decoration-line-through text-muted"><?= formatCurrencySpan($tour['price'], $tour['price_currency'] ?? 'IDR') ?></small>
+                        <span class="badge bg-danger">-<?= (int)$flashDetail['flash']['discount_percent'] ?>%</span>
+                        <span class="badge bg-warning text-dark"><i class="bi bi-lightning-charge"></i> <?= t('Flash Sale') ?></span>
+                        <?php if ($flashDetail['flash']['stock_limit'] !== null): ?><small class="d-block text-danger"><?= t('Sisa') ?> <?= max(0, (int)$flashDetail['flash']['stock_limit'] - (int)$flashDetail['flash']['sold_count']) ?> <?= t('slot') ?></small><?php endif; ?>
+                        <small class="d-block text-muted flash-countdown" data-deadline="<?= e(date('c', strtotime($flashDetail['flash']['ends_at']))) ?>" data-testid="detail-countdown"></small>
+                    </div>
+                    <?php endif; ?>
                     <?php if ($diskon > 0): ?>
                         <small class="text-decoration-line-through text-muted"><?= formatCurrencySpan($tour['original_price']) ?></small>
                         <span class="badge bg-danger ms-1">-<?= $diskon ?>%</span>

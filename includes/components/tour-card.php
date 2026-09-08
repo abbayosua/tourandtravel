@@ -15,6 +15,9 @@ function renderTourCard($tour, $wishlistIds = [], $options = []) {
         'show_wishlist'    => true,
         'link_target'      => 'tour-detail.php?slug=' . e($tour['slug']),
     ];
+    $flash = getFlashSalePrice((float)$tour['price'], 'tour', (int)$tour['id']);
+    $flashSale = $flash['flash'];
+    $displayPrice = $flash['price'];
     $opts = array_merge($defaults, $options);
 
     $isWishlisted = in_array($tour['id'], $wishlistIds);
@@ -81,8 +84,13 @@ function renderTourCard($tour, $wishlistIds = [], $options = []) {
                 <!-- Price + CTA -->
                 <div class="d-flex justify-content-between align-items-center pt-2 border-top mt-auto">
                     <div>
-                        <span class="fw-bold text-primary klook-price"><?= formatCurrencySpan($tour['price'], $tour['price_currency'] ?? 'IDR') ?></span>
-                        <?php if ($diskon > 0 && !empty($tour['original_price'])): ?>
+                        <span class="fw-bold text-primary klook-price" data-testid="card-price"><?= formatCurrencySpan($displayPrice, $tour['price_currency'] ?? 'IDR') ?></span>
+                        <?php if ($flashSale): ?>
+                            <small class="text-decoration-line-through text-muted ms-1"><?= formatCurrencySpan($tour['price'], $tour['price_currency'] ?? 'IDR') ?></small>
+                            <span class="badge bg-danger ms-1">-<?= (int)$flashSale['discount_percent'] ?>%</span>
+                            <?php if ($flashSale['stock_limit'] !== null): ?><small class="d-block text-danger" data-testid="card-flash-stock"><?= t('Sisa') ?> <?= max(0, (int)$flashSale['stock_limit'] - (int)$flashSale['sold_count']) ?> <?= t('slot') ?></small><?php endif; ?>
+                            <small class="d-block text-muted flash-countdown" data-deadline="<?= e(date('c', strtotime($flashSale['ends_at']))) ?>" data-testid="card-countdown"></small>
+                        <?php elseif ($diskon > 0 && !empty($tour['original_price'])): ?>
                             <small class="text-decoration-line-through text-muted ms-1"><?= formatCurrencySpan($tour['original_price'], $tour['price_currency'] ?? 'IDR') ?></small>
                         <?php endif; ?>
                         <small class="d-block text-muted">/<?= t('orang') ?></small>

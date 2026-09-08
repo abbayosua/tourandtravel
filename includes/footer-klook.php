@@ -167,6 +167,23 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <?php require_once __DIR__ . '/components/social-proof.php'; ?>
 <?php require_once __DIR__ . '/components/live-chat.php'; ?>
+
+<script>
+// ===== Flash sale countdown (reusable) =====
+(function() {
+    function tick() {
+        document.querySelectorAll('.flash-countdown[data-deadline]').forEach(function(el) {
+            var end = new Date(el.dataset.deadline).getTime();
+            var diff = Math.floor((end - Date.now()) / 1000);
+            if (diff <= 0) { el.textContent = ''; return; }
+            var d = Math.floor(diff / 86400), h = Math.floor(diff % 86400 / 3600), m = Math.floor(diff % 3600 / 60), s = diff % 60;
+            el.textContent = (d > 0 ? d + 'h ' : '') + h + 'j ' + String(m).padStart(2, '0') + 'm ' + String(s).padStart(2, '0') + 'd';
+        });
+    }
+    tick();
+    setInterval(tick, 1000);
+})();
+</script>
 </body>
 </html><script>
 // Recently viewed: catat tour-detail & render baris kecil
