@@ -31,7 +31,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $bookingError = 'Tanggal sudah dibooking untuk hotel ini. Pilih tanggal lain.';
         } else {
             $nights = max(1, (strtotime($co) - strtotime($ci)) / 86400);
-            $total = $hotel['price_per_night'] * $nights * $rooms;
+            $nightly = [];
+            $cur = strtotime($ci);
+            while ($cur < strtotime($co)) {
+                $nightly[] = (float)getPriceForDate('hotel', $hotel['id'], date('Y-m-d', $cur), $hotel['price_per_night']);
+                $cur = strtotime('+1 day', $cur);
+            }
+            $total = array_sum($nightly) * $rooms;
             $walletDeduct = 0;
             if (!empty($_SESSION['user_id']) && !empty($_POST['use_wallet'])) {
                 require_once 'includes/wallet.php';
@@ -59,7 +65,18 @@ $similar->execute([$hotel['city'], $hotel['id']]);
 $similar = $similar->fetchAll();
 
 $nights = max(1, (strtotime($checkout) - strtotime($checkin)) / 86400);
-$totalPrice = $hotel['price_per_night'] * $nights;
+$nightlyPrices = [];
+$cur = strtotime($checkin);
+while ($cur < strtotime($checkout)) {
+    $d = date('Y-m-d', $cur);
+    $nightlyPrices[$d] = (float)getPriceForDate('hotel', $hotel['id'], $d, $hotel['price_per_night']);
+    $cur = strtotime('+1 day', $cur);
+}
+$totalPrice = array_sum($nightlyPrices);
+$hotelCalendar = [];
+foreach (db()->query("SELECT date, price FROM price_calendar WHERE item_type = 'hotel' AND item_id = " . (int)$hotel['id'] . " AND date >= CURDATE() AND date <= CURDATE() + INTERVAL 90 DAY ORDER BY date")->fetchAll() as $pcRow) {
+    $hotelCalendar[] = ['date' => $pcRow['date'], 'price' => (float)$pcRow['price']];
+}
 
 require_once 'includes/components/breadcrumb.php';
 // SEO
@@ -219,7 +236,7 @@ require_once 'includes/header-klook.php';
                             <div class="bg-light rounded-3 p-3 mb-3">
                                 <div class="d-flex justify-content-between small mb-1">
                                     <span class="text-muted"><?= t('Harga') ?> × <span id="nightsDisplay"><?= $nights ?></span> <?= t('malam') ?></span>
-                                    <span><?= formatRupiah($hotel['price_per_night']) ?> × <span id="nightsDisplay2"><?= $nights ?></span></span>
+                                    <span id="nightlySummary"><?= formatRupiah(array_sum($nightlyPrices)) ?><?= count($nightlyPrices) > 1 && count(array_unique($nightlyPrices)) > 1 ? ' (' . t('harga bervariasi per tanggal') . ')' : '' ?></span>
                                 </div>
                                 <div class="d-flex justify-content-between fw-bold border-top pt-2">
                                     <span><?= t('Total') ?></span>
@@ -248,19 +265,30 @@ require_once 'includes/header-klook.php';
 
                         <script>
                         var pricePerNight = <?= $hotel['price_per_night'] ?>;
+                        var HOTEL_CAL = <?= json_encode($hotelCalendar) ?>;
                         var checkinInput = document.querySelector('input[name="checkin"]');
                         var checkoutInput = document.querySelector('input[name="checkout"]');
                         var roomsSelect = document.querySelector('select[name="rooms"]');
 
+                        function calcNightTotal(ciStr, coStr, rooms) {
+                            var sum = 0, n = 0;
+                            var byDate = {};
+                            HOTEL_CAL.forEach(function(r) { byDate[r.date] = r.price; });
+                            var cur = new Date(ciStr);
+                            var end = new Date(coStr);
+                            while (cur < end && n < 60) {
+                                var key = cur.getFullYear() + '-' + String(cur.getMonth() + 1).padStart(2, '0') + '-' + String(cur.getDate()).padStart(2, '0');
+                                sum += (typeof byDate[key] === 'number') ? byDate[key] : pricePerNight;
+                                cur.setDate(cur.getDate() + 1);
+                                n++;
+                            }
+                            return { total: sum * rooms, nights: Math.max(1, n) };
+                        }
                         function updateTotal() {
-                            var ci = new Date(checkinInput.value);
-                            var co = new Date(checkoutInput.value);
-                            var diff = Math.max(1, Math.round((co - ci) / (1000 * 60 * 60 * 24)));
-                            var rooms = parseInt(roomsSelect.value);
-                            var total = pricePerNight * diff * rooms;
-                            document.getElementById('nightsDisplay').textContent = diff;
-                            document.getElementById('nightsDisplay2').textContent = diff;
-                            document.getElementById('totalDisplay').textContent = 'Rp ' + total.toLocaleString(window.I18N ? window.I18N.locale : 'id-ID');
+                            var r = calcNightTotal(checkinInput.value, checkoutInput.value, parseInt(roomsSelect.value));
+                            document.getElementById('nightsDisplay').textContent = r.nights;
+                            document.getElementById('nightlySummary').textContent = 'Rp ' + Math.round(r.total / r.nights * parseInt(roomsSelect.value)).toLocaleString(window.I18N ? window.I18N.locale : 'id-ID') + (r.nights > 1 ? ' × ' + r.nights : '');
+                            document.getElementById('totalDisplay').textContent = 'Rp ' + Math.round(r.total).toLocaleString(window.I18N ? window.I18N.locale : 'id-ID');
                         }
                         </script>
                     </div>

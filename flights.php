@@ -25,6 +25,12 @@ $stopsFilter = trim($_GET['stops'] ?? '');
 $sortRaw = trim((string)($_GET['sort'] ?? ''));
 $sort = in_array($sortRaw, ['price', 'duration', 'rating']) ? $sortRaw : 'price';
 
+// Kalender harga pasar per tanggal (price_calendar item_type=flight, item_id=0)
+$flightCal = [];
+foreach (db()->query("SELECT date, price FROM price_calendar WHERE item_type = 'flight' AND item_id = 0 AND date >= CURDATE() AND date <= CURDATE() + INTERVAL 90 DAY ORDER BY date")->fetchAll() as $fcRow) {
+    $flightCal[] = ['date' => $fcRow['date'], 'price' => (float)$fcRow['price']];
+}
+
 // Keep past dates when searching so Duffel validation shows
 if (!$doSearch && (!strtotime($date) || $date < date('Y-m-d'))) $date = date('Y-m-d', strtotime('+3 days'));
 
@@ -227,6 +233,9 @@ require_once 'includes/header-klook.php';
                         <div class="traveloka-search-field">
                             <div class="form-label"><?= $tripType === 'roundtrip' ? t('Pergi') : t('Tanggal') ?></div>
                             <input type="date" name="date" class="form-control" value="<?= e($date) ?>" min="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d', strtotime('+360 days')) ?>">
+                            <?php if (!empty($flightCal)): ?>
+                            <div class="small text-primary fw-semibold mt-1 d-none" id="flightCalHint" data-testid="flight-cal-hint"></div>
+                            <?php endif; ?>
                         </div>
                     </div>
                     <div class="col-md">
@@ -488,5 +497,25 @@ document.querySelectorAll('input[name="trip_type"]').forEach(function(radio) {
             dateLabel.textContent = '<?= t('Tanggal') ?>';
         }
     });
+});
+// ===== Harga per tanggal (price_calendar) =====
+var FLIGHT_CAL = <?= json_encode($flightCal) ?>;
+function showFlightCalHint() {
+    var hint = document.getElementById('flightCalHint');
+    if (!hint) return;
+    var d = document.querySelector('input[name="date"]').value;
+    var hit = FLIGHT_CAL.find(function(r) { return r.date === d; });
+    if (hit) {
+        hint.textContent = '<?= t('Harga termurah') ?>: Rp ' + hit.price.toLocaleString(window.I18N && String(window.I18N.locale).indexOf('en') === 0 ? 'en-US' : 'id-ID');
+        hint.classList.remove('d-none');
+    } else {
+        hint.textContent = '';
+        hint.classList.add('d-none');
+    }
+}
+document.addEventListener('DOMContentLoaded', function() {
+    showFlightCalHint();
+    var dateInput = document.querySelector('input[name="date"]');
+    if (dateInput) dateInput.addEventListener('change', showFlightCalHint);
 });
 </script>
