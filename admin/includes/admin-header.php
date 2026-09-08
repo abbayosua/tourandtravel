@@ -106,7 +106,7 @@
                 <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'tours.php' ? 'active' : '' ?>" href="tours.php">
                     <i class="bi bi-map"></i><span class="nav-label"> <?= t('Kelola Tour') ?></span>
                 </a>
-                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'hotels.php' || basename($_SERVER['PHP_SELF']) === 'hotel-edit.php' ? 'active' : '' ?>" href="hotels.php">
+                <a class="nav-link <?= in_array(basename($_SERVER['PHP_SELF']), ['hotels.php', 'hotel-edit.php', 'hotel-rooms.php']) ? 'active' : '' ?>" href="hotels.php">
                     <i class="bi bi-building"></i><span class="nav-label"> <?= t('Kelola Hotel') ?></span>
                 </a>
                 <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'flights.php' || basename($_SERVER['PHP_SELF']) === 'flight-edit.php' ? 'active' : '' ?>" href="flights.php">

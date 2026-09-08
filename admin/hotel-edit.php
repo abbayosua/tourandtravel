@@ -45,6 +45,24 @@ require_once 'includes/admin-header.php';
 </div></div></div>
 <div class="col-md-4">
 <div class="card border-0 shadow-sm mb-3"><div class="card-body">
+<div class="d-flex justify-content-between align-items-center mb-2">
+    <strong><?= t('Tipe Kamar') ?></strong>
+    <a class="btn btn-sm btn-outline-primary" href="hotel-rooms.php?hotel_id=<?= $id ?>"><?= t('Kelola') ?></a>
+</div>
+<?php
+$hrStmt = db()->prepare("SELECT name, rate, stock FROM hotel_rooms WHERE hotel_id = ? AND is_active = 1 ORDER BY rate");
+$hrStmt->execute([$id]);
+$hotelRoomsList = $hrStmt->fetchAll();
+if ($hotelRoomsList): foreach ($hotelRoomsList as $hrl): ?>
+    <div class="d-flex justify-content-between small border-bottom py-1">
+        <span><?= e($hrl['name']) ?> (<?= (int)$hrl['stock'] ?>)</span>
+        <span><?= formatRupiah($hrl['rate']) ?></span>
+    </div>
+<?php endforeach; else: ?>
+    <div class="text-muted small"><?= t('Belum ada tipe kamar') ?></div>
+<?php endif; ?>
+</div></div>
+<div class="card border-0 shadow-sm mb-3"><div class="card-body">
 <div class="mb-3"><label class="form-label"><?= t('Kota') ?></label><input name="city" class="form-control" value="<?=e($item['city'])?>" required></div>
 <div class="mb-3"><label class="form-label"><?= t('Bintang') ?></label><select name="stars" class="form-select"><?php for($s=1;$s<=5;$s++):?><option value="<?=$s?>" <?=$item['star_rating']==$s?'selected':''?>><?=$s?><?= t('Bintang') ?></option><?php endfor;?></select></div>
 <div class="mb-3"><label class="form-label"><?= t('Harga/Malam (Rp)') ?></label><input name="price" type="number" class="form-control" value="<?=$item['price_per_night']?>" required></div>
