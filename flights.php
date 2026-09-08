@@ -11,8 +11,25 @@ $to = trim($_GET['to'] ?? '');
 $date = $_GET['date'] ?? date('Y-m-d', strtotime('+3 days'));
 $class = $_GET['class'] ?? '';
 $passengers = max(1, min(9, (int)($_GET['passengers'] ?? 1)));
-$tripType = ($_GET['trip_type'] ?? 'oneway') === 'roundtrip' ? 'roundtrip' : 'oneway';
+$tripType = in_array($_GET['trip_type'] ?? 'oneway', ['oneway', 'roundtrip', 'multicity'], true) ? $_GET['trip_type'] : 'oneway';
 $returnDate = $_GET['return_date'] ?? '';
+
+// Multi-city legs: leg_from[], leg_to[], leg_date[]
+$legs = [];
+if ($tripType === 'multicity') {
+    $legFrom = is_array($_GET['leg_from'] ?? null) ? $_GET['leg_from'] : [];
+    $legTo = is_array($_GET['leg_to'] ?? null) ? $_GET['leg_to'] : [];
+    $legDate = is_array($_GET['leg_date'] ?? null) ? $_GET['leg_date'] : [];
+    $n = max(count($legFrom), count($legTo), count($legDate));
+    for ($i = 0; $i < min($n, 6); $i++) {
+        $lf = trim((string)($legFrom[$i] ?? ''));
+        $lt = trim((string)($legTo[$i] ?? ''));
+        $ld = trim((string)($legDate[$i] ?? ''));
+        if ($lf !== '' && $lt !== '' && $ld !== '') {
+            $legs[] = ['origin' => $lf, 'destination' => $lt, 'departure_date' => $ld];
+        }
+    }
+}
 $doSearch = isset($_GET['search']);
 
 // Traveloka-style filters
@@ -38,7 +55,21 @@ $duffelOffers = [];
 $duffelError = null;
 $localSchedules = [];
 
-if ($doSearch && $from && $to) {
+if ($doSearch && $tripType === 'multicity' && count($legs) >= 2) {
+    // Multi-city: langsung Duffel multi-slice (FlightList tak dukung multi-leg)
+    $cabinMap = ['economy'=>'economy','business'=>'business','first'=>'first','premium_economy'=>'premium_economy'];
+    $cabin = $cabinMap[$class] ?? 'economy';
+    $result = duffelSearchOffers(null, null, null, $cabin, $passengers, $legs);
+    if (isset($result['error'])) {
+        $duffelError = $result['error'];
+    } else {
+        $duffelOffers = $result['offers'] ?? [];
+        $offerSource = 'duffel';
+        $flightlistCurrency = $duffelOffers[0]['total_currency'] ?? 'USD';
+    }
+} elseif ($doSearch && $tripType === 'multicity') {
+    $duffelError = 'Minimal 2 leg untuk perjalanan multi-kota.';
+} elseif ($doSearch && $from && $to) {
     // Primary: FlightList (gratis, real airlines)
     $flightlistResult = flightlistSearchOffers($from, $to, $date, $class ?: 'economy', $passengers);
     if (isset($flightlistResult['offers']) && count($flightlistResult['offers']) > 0) {
@@ -209,6 +240,16 @@ require_once 'includes/header-klook.php';
                             <input class="form-check-input" type="radio" name="trip_type" value="roundtrip" id="tripRoundtrip" <?= $tripType === 'roundtrip' ? 'checked' : '' ?>>
                             <label class="form-check-label fw-semibold small" for="tripRoundtrip"><i class="bi bi-arrow-left-right me-1"></i><?= t('Round Trip') ?></label>
                         </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="trip_type" value="multicity" id="tripMulticity" <?= $tripType === 'multicity' ? 'checked' : '' ?> data-testid="trip-multicity">
+                            <label class="form-check-label fw-semibold small" for="tripMulticity"><i class="bi bi-diagram-3 me-1"></i><?= t('Multi-Kota') ?></label>
+                        </div>
+                    </div>
+                    <!-- Multi-city leg editor -->
+                    <div id="multiCityLegs" class="mb-3 d-none" data-testid="multicity-legs">
+                        <div id="legContainer"></div>
+                        <button type="button" class="btn btn-sm btn-outline-primary" id="addLegBtn" data-testid="add-leg"><i class="bi bi-plus-lg me-1"></i><?= t('Tambah leg') ?></button>
+                        <div class="form-text"><?= t('Maksimal 6 leg. Format kota: Kota (IATA), contoh: Jakarta (CGK).') ?></div>
                     </div>
                     <div class="row g-2 g-md-3">
                     <div class="col-md">
@@ -235,7 +276,7 @@ require_once 'includes/header-klook.php';
                             <input type="date" name="return_date" class="form-control" value="<?= e($returnDate) ?>" min="<?= $date ?>" max="<?= date('Y-m-d', strtotime('+360 days')) ?>">
                         </div>
                     </div>
-                    <div class="col-md">
+                    <div class="col-md main-date-col" data-testid="main-date-col">
                         <div class="traveloka-search-field">
                             <div class="form-label"><?= $tripType === 'roundtrip' ? t('Pergi') : t('Tanggal') ?></div>
                             <input type="date" name="date" class="form-control" value="<?= e($date) ?>" min="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d', strtotime('+360 days')) ?>">
@@ -495,17 +536,68 @@ document.querySelectorAll('.city-search').forEach(function(input) {
 });
 document.querySelectorAll('input[name="trip_type"]').forEach(function(radio) {
     radio.addEventListener('change', function() {
+        initTripUi();
+    });
+});
+function initTripUi() {
+    (function() {
         var returnCol = document.querySelector('.return-date-col');
         var dateLabel = document.querySelector('input[name="date"]').closest('.traveloka-search-field').querySelector('.form-label');
+        var isMc = document.getElementById('tripMulticity').checked;
+        document.getElementById('multiCityLegs').classList.toggle('d-none', !isMc);
+        document.querySelector('.main-date-col').style.display = isMc ? 'none' : '';
         if (document.getElementById('tripRoundtrip').checked) {
             returnCol.style.display = '';
             dateLabel.textContent = '<?= t('Pergi') ?>';
+        } else if (isMc) {
+            returnCol.style.display = 'none';
         } else {
             returnCol.style.display = 'none';
             dateLabel.textContent = '<?= t('Tanggal') ?>';
         }
     });
-});
+    if (document.getElementById('tripMulticity').checked) {
+        document.getElementById('multiCityLegs').classList.remove('d-none');
+        var mainCol = document.querySelector('.main-date-col');
+        if (mainCol) mainCol.style.display = 'none';
+    }
+}
+initTripUi();
+// ===== Leg editor multi-city =====
+    var legContainer = document.getElementById('legContainer');
+    var legIdx = 0;
+    function addLeg(fromVal, toVal, dateVal) {
+        legIdx++;
+        var row = document.createElement('div');
+        row.className = 'row g-2 mb-2 leg-row';
+        row.innerHTML = ''
+            + '<div class="col-md-4"><input type="text" class="form-control form-control-sm city-search" name="leg_from[]" placeholder="<?= t('Dari (CGK)...') ?>" value="' + (fromVal || '') + '" autocomplete="off" required></div>'
+            + '<div class="col-md-4"><input type="text" class="form-control form-control-sm city-search" name="leg_to[]" placeholder="<?= t('Ke (DPS)...') ?>" value="' + (toVal || '') + '" autocomplete="off" required></div>'
+            + '<div class="col-md-3"><input type="date" class="form-control form-control-sm" name="leg_date[]" value="' + (dateVal || '') + '" min="<?= date('Y-m-d') ?>" required></div>'
+            + '<div class="col-md-1"><button type="button" class="btn btn-sm btn-outline-danger w-100 leg-del" title="<?= t('Hapus') ?>">×</button></div>';
+        row.querySelector('.leg-del').addEventListener('click', function() {
+            row.remove();
+        });
+        legContainer.appendChild(row);
+    }
+    var addLegBtn = document.getElementById('addLegBtn');
+    if (addLegBtn) {
+        addLegBtn.addEventListener('click', function() {
+            var rows = legContainer.querySelectorAll('.leg-row');
+            if (rows.length >= 6) return;
+            addLeg();
+        });
+    }
+    <?php if ($tripType === 'multicity' && count($legs)): ?>
+    (function() {
+        <?php foreach ($legs as $lg): ?>
+        addLeg(<?= json_encode($lg['origin']) ?>, <?= json_encode($lg['destination']) ?>, <?= json_encode($lg['departure_date']) ?>);
+        <?php endforeach; ?>
+    })();
+    <?php else: ?>
+    addLeg('', '', '');
+    addLeg('', '', '');
+    <?php endif; ?>
 // ===== Harga per tanggal (price_calendar) =====
 var FLIGHT_CAL = <?= json_encode($flightCal) ?>;
 function showFlightCalHint() {

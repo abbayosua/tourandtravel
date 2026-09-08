@@ -33,23 +33,40 @@ function parseIata($str) {
     return null;
 }
 
-function duffelSearchOffers($origin, $dest, $date, $cabinClass = 'economy', $passengers = 1) {
-    $originCode = parseIata($origin);
-    $destCode = parseIata($dest);
-    if (!$originCode || !$destCode) return ['error' => 'Kode bandara tidak valid. Contoh: CGK, DPS, atau pilih dari daftar.'];
-    if ($originCode === $destCode) return ['error' => 'Kota asal dan tujuan tidak boleh sama.'];
-    // Validate date
-    $ts = strtotime($date);
-    if (!$ts) return ['error' => 'Tanggal tidak valid.'];
-    $dateStr = date('Y-m-d', $ts);
-    if ($dateStr < date('Y-m-d')) return ['error' => 'Tanggal keberangkatan tidak boleh di masa lalu.'];
-    if ($dateStr > date('Y-m-d', strtotime('+360 days'))) return ['error' => 'Tanggal terlalu jauh (maks 360 hari).'];
+/**
+ * Cari offers multi-slice (oneway/roundtrip/multicity).
+ * - Mode lama: duffelSearchOffers($origin, $dest, $date, ...) tetap didukung.
+ * - Mode multi: duffelSearchOffers(null, null, null, $cabin, $pax, [
+ *     ['origin' => 'CGK (Jakarta)', 'destination' => 'DPS (Bali)', 'departure_date' => '2026-12-01'],
+ *     ...
+ *   ])
+ */
+function duffelSearchOffers($origin, $dest, $date, $cabinClass = 'economy', $passengers = 1, array $slices = []) {
+    if (empty($slices)) {
+        $slices = [['origin' => (string)$origin, 'destination' => (string)$dest, 'departure_date' => (string)$date]];
+    }
+    $slices = array_slice($slices, 0, 6); // Duffel max 6 slices
+    if (count($slices) < 1) return ['error' => 'Minimal 1 leg.'];
+
+    $parsedSlices = [];
+    foreach ($slices as $i => $s) {
+        $o = parseIata($s['origin'] ?? '');
+        $d = parseIata($s['destination'] ?? '');
+        if (!$o || !$d) return ['error' => 'Kode bandara tidak valid. Contoh: CGK, DPS, atau pilih dari daftar.'];
+        if ($o === $d) return ['error' => 'Kota asal dan tujuan leg ' . ($i + 1) . ' tidak boleh sama.'];
+        $ts = strtotime($s['departure_date'] ?? '');
+        if (!$ts) return ['error' => 'Tanggal leg ' . ($i + 1) . ' tidak valid.'];
+        $dateStr = date('Y-m-d', $ts);
+        if ($dateStr < date('Y-m-d')) return ['error' => 'Tanggal leg ' . ($i + 1) . ' tidak boleh di masa lalu.'];
+        if ($dateStr > date('Y-m-d', strtotime('+360 days'))) return ['error' => 'Tanggal leg ' . ($i + 1) . ' terlalu jauh (maks 360 hari).'];
+        $parsedSlices[] = ['origin' => $o, 'destination' => $d, 'departure_date' => $dateStr];
+    }
     $allowed = ['economy','premium_economy','business','first'];
     if (!in_array($cabinClass, $allowed)) $cabinClass = 'economy';
     $passengers = max(1, min(9, (int)$passengers));
     $pax = array_fill(0, $passengers, ['type' => 'adult']);
     $res = duffelRequest('POST', '/air/offer_requests', [
-        'data' => ['slices' => [['origin' => $originCode, 'destination' => $destCode, 'departure_date' => $dateStr]], 'passengers' => $pax, 'cabin_class' => $cabinClass]
+        'data' => ['slices' => $parsedSlices, 'passengers' => $pax, 'cabin_class' => $cabinClass]
     ]);
     if (isset($res['error'])) return $res;
     // offer_requests returns {data:{id, offers:[]}}
