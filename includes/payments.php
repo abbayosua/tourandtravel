@@ -230,5 +230,18 @@ function handleMidtransNotification(array $notif): bool {
             ->execute([$newStatus, $payment['booking_id']]);
     }
 
+    // Loyalty points: earn otomatis saat paid (idempotent)
+    if ($newStatus === 'paid' && $table) {
+        require_once __DIR__ . '/points.php';
+        $b2 = db()->prepare("SELECT total_price, booking_code, user_id FROM `$table` WHERE id = ?");
+        $b2->execute([$payment['booking_id']]);
+        if ($bk2 = $b2->fetch()) {
+            $uid = (int)($bk2['user_id'] ?? 0);
+            if ($uid > 0) {
+                awardPointsForPaidBooking($payment['booking_type'], (int)$payment['booking_id'], $uid, (float)$bk2['total_price'], $bk2['booking_code'] ?? null);
+            }
+        }
+    }
+
     return true;
 }

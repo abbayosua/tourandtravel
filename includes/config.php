@@ -19,6 +19,9 @@ if (!function_exists('getSupportedLanguages')) {
 if (!function_exists('getFlashSalePrice')) {
     require_once __DIR__ . '/flash-sales.php';
 }
+if (!function_exists('awardPointsForPaidBooking')) {
+    require_once __DIR__ . '/points.php';
+}
 if (isset($_GET['lang']) && preg_match('/^[a-z]{2,5}$/', $_GET['lang'])
     && in_array($_GET['lang'], array_keys(getSupportedLanguages()))) {
     $_SESSION['lang'] = $_GET['lang'];
