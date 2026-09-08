@@ -74,5 +74,6 @@ function toggleWishlist(btn, tourId) {
 }
 </script>
 <?php require_once __DIR__ . '/components/social-proof.php'; ?>
+<?php require_once __DIR__ . '/components/live-chat.php'; ?>
 </body>
 </html>

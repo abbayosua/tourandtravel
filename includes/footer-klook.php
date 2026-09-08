@@ -165,6 +165,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <?php require_once __DIR__ . '/components/social-proof.php'; ?>
+<?php require_once __DIR__ . '/components/live-chat.php'; ?>
 </body>
 </html><script>
 // Recently viewed: catat tour-detail & render baris kecil

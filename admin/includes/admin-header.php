@@ -166,6 +166,9 @@
                 <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'wa-settings.php' ? 'active' : '' ?>" href="wa-settings.php">
                     <i class="bi bi-whatsapp text-success"></i><span class="nav-label"> <?= t('Pengaturan WA') ?></span>
                 </a>
+                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'chat-settings.php' ? 'active' : '' ?>" href="chat-settings.php" data-testid="nav-chat-settings">
+                    <i class="bi bi-chat-dots text-info"></i><span class="nav-label"> <?= t('Live Chat') ?></span>
+                </a>
                 <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'currency-settings.php' ? 'active' : '' ?>" href="currency-settings.php">
                     <i class="bi bi-currency-exchange text-warning"></i><span class="nav-label"> <?= t('Mata Uang') ?></span>
                 </a>
