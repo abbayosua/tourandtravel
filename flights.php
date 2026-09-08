@@ -450,7 +450,9 @@ if ($isFL) {
         <?php else: ?>
             <?php if (count($localSchedules) > 0): ?><p class="small text-muted mb-2"><?= t('Jadwal lokal (contoh). Gunakan pencarian di atas untuk hasil live Duffel.') ?></p><div class="row g-3"><?php foreach ($localSchedules as $s): $dep = date('H:i', strtotime($s['departure_time'])); $arr = date('H:i', strtotime($s['arrival_time'])); $airlineCode = substr($s['airline'], 0, 2); ?>
                 <div class="col-12"><div class="card border-0 shadow-sm flight-card"><div class="card-body p-3 d-flex justify-content-between align-items-center"><div class="d-flex align-items-center gap-2"><div class="flight-logo bg-light border rounded-2 d-flex align-items-center justify-content-center fw-bold" style="width:36px;height:36px;font-size:12px"><?= $airlineCode ?></div><div><div class="fw-semibold small"><?= e($s['airline']) ?> <?= e($s['flight_number']) ?></div><small class="text-muted"><?= e($s['from_city']) ?> → <?= e($s['to_city']) ?> · <?= e($s['duration']) ?></small></div></div><div class="text-end"><div class="fw-bold text-primary small"><?= formatCurrencySpan($s['price']) ?></div><a href="flight-detail.php?schedule_id=<?= $s['id'] ?>" class="btn btn-sm btn-outline-primary rounded-pill mt-1"><?= t('Lihat') ?></a></div></div></div></div>
-                <?php endforeach; ?></div><?php endif; ?>
+                <?php endforeach; ?></div><?php else: ?>
+                <div class="text-center py-5" id="noLocalResults"><i class="bi bi-airplane fs-1 text-muted"></i><p class="mt-2 text-muted"><?= t('Tidak ada jadwal lokal yang cocok dengan filter.') ?></p><a href="flights.php" class="btn btn-primary rounded-pill px-4"><?= t('Reset') ?></a></div>
+                <?php endif; ?>
         <?php endif; ?>
         </div><!-- /.col-lg-9 -->
         </div><!-- /.row -->
