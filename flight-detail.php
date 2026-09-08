@@ -145,6 +145,18 @@ require_once 'includes/header.php';
                             <div class="text-center"><i class="bi bi-airplane-fill fs-3 text-primary d-block mb-1"></i><span class="text-muted small"><?= e($duration) ?></span><div class="text-muted small"><?= e(date('d M Y', strtotime($offer['local_departure'] ?? ''))) ?></div><small class="text-muted"><?= $stops>0 ? $stops.' '.t('transit') : t('Langsung') ?></small></div>
                             <div class="text-center"><div class="fs-3 fw-bold"><?= $arr ?></div><small class="text-muted"><?= e($offer['flyTo'] ?? $route0['flyTo'] ?? '') ?></small><div class="small text-muted"><?= e($offer['cityTo'] ?? '') ?></div></div>
                         </div>
+                        <?php if ($stops > 0): ?>
+                        <!-- Rincian semua segmen FlightList -->
+                        <div class="text-start mt-3 pt-3 border-top" data-testid="fl-segments-detail">
+                            <h6 class="fw-semibold mb-3"><?= t('Rincian segmen') ?></h6>
+                            <?php foreach ($offer['route'] as $sg2): ?>
+                                <div class="d-flex justify-content-between small border-bottom py-1">
+                                    <span><?= e($sg2['airline'] ?? '') ?> <?= e($sg2['flight_no'] ?? '') ?> · <?= e($sg2['flyFrom'] ?? '') ?> → <?= e($sg2['flyTo'] ?? '') ?></span>
+                                    <span class="text-muted"><?= e(date('d M H:i', strtotime($sg2['local_departure'] ?? ''))) ?> → <?= e(date('H:i', strtotime($sg2['local_arrival'] ?? ''))) ?></span>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <div class="card border-0 shadow-sm">
@@ -172,10 +184,13 @@ require_once 'includes/header.php';
                     </div>
                 </div>
                 <?php elseif ($mode==='duffel' && $offer):
-                    $slice = $offer['slices'][0]; $seg = $slice['segments'][0]; $carrier = $seg['marketing_carrier'] ?? $seg['operating_carrier'];
-                    $dep = date('H:i', strtotime($seg['departing_at'])); $arr = date('H:i', strtotime($seg['arriving_at']));
-                    $duration = duffelFormatDuration($slice['duration'] ?? $seg['duration']);
+                    $allSlices = $offer['slices'] ?? [];
+                    $slice = $allSlices[0] ?? ['segments' => []]; $seg = $slice['segments'][0] ?? []; $carrier = $seg['marketing_carrier'] ?? $seg['operating_carrier'] ?? [];
+                    $dep = !empty($seg) ? date('H:i', strtotime($seg['departing_at'])) : '--:--'; $arr = !empty($seg) ? date('H:i', strtotime($seg['arriving_at'])) : '--:--';
+                    $duration = duffelFormatDuration($slice['duration'] ?? $seg['duration'] ?? 'PT0H');
                     $cc = $seg['passengers'][0]['cabin_class'] ?? 'economy';
+                    $totalStops = 0;
+                    foreach ($allSlices as $sl) { $totalStops += max(0, count($sl['segments'] ?? []) - 1); }
                 ?>
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-body p-4 text-center">
@@ -183,15 +198,39 @@ require_once 'includes/header.php';
                         <h4 class="fw-bold"><?= e($carrier['name'] ?? 'Duffel Airways') ?></h4>
                         <span class="badge bg-primary"><?= e(($carrier['iata_code']??'ZZ').' '.($seg['marketing_carrier_flight_number']??'')) ?></span>
                         <span class="badge bg-<?= $cc==='economy'?'success':($cc==='business'?'warning text-dark':'danger') ?> ms-1"><?= ucfirst($cc) ?></span>
+                        <?php if (count($allSlices) > 1): ?>
+                            <div class="mt-2" data-testid="multileg-badges">
+                                <span class="badge bg-info"><?= count($allSlices) ?> <?= t('leg') ?></span>
+                                <span class="badge bg-secondary"><?= $totalStops ?> <?= t('transit') ?></span>
+                            </div>
+                        <?php endif; ?>
                         <div class="d-flex justify-content-center align-items-center gap-4 my-4">
                             <div class="text-center"><div class="fs-3 fw-bold"><?= $dep ?></div><small class="text-muted"><?= e($seg['origin']['iata_code'] ?? '') ?></small><div class="small text-muted"><?= e($seg['origin']['name'] ?? '') ?></div></div>
-                            <div class="text-center"><i class="bi bi-airplane-fill fs-3 text-primary d-block mb-1"></i><span class="text-muted small"><?= e($duration) ?></span><div class="text-muted small"><?= e(date('d M Y', strtotime($seg['departing_at']))) ?></div></div>
+                            <div class="text-center"><i class="bi bi-airplane-fill fs-3 text-primary d-block mb-1"></i><span class="text-muted small"><?= e($duration) ?></span><div class="text-muted small"><?= !empty($seg) ? e(date('d M Y', strtotime($seg['departing_at']))) : '' ?></div></div>
                             <div class="text-center"><div class="fs-3 fw-bold"><?= $arr ?></div><small class="text-muted"><?= e($seg['destination']['iata_code'] ?? '') ?></small><div class="small text-muted"><?= e($seg['destination']['name'] ?? '') ?></div></div>
                         </div>
                         <div class="d-flex justify-content-center gap-4 text-muted small mb-3">
                             <span><?php if(count($slice['segments'])>1) echo (count($slice['segments'])-1).' '.t('transit'); else echo t('Langsung'); ?></span>
                             <span><?= e($offer['total_currency'].' '.number_format((float)$offer['total_amount'],2)) ?> <?= t('total') ?></span>
                         </div>
+                        <?php if (count($allSlices) > 1): ?>
+                        <!-- Rincian semua leg -->
+                        <div class="text-start mt-3 pt-3 border-top" data-testid="multileg-detail">
+                            <h6 class="fw-semibold mb-3"><?= t('Rute multi-kota') ?></h6>
+                            <?php $legNo = 0; foreach ($allSlices as $sl): $legNo++; ?>
+                                <div class="mb-3">
+                                    <div class="small fw-semibold text-primary mb-1"><?= t('Leg') ?> <?= $legNo ?></div>
+                                    <?php foreach ($sl['segments'] as $sg2):
+                                        $c2 = $sg2['marketing_carrier'] ?? $sg2['operating_carrier'] ?? []; ?>
+                                        <div class="d-flex justify-content-between small border-bottom py-1">
+                                            <span><?= e(($c2['iata_code'] ?? 'ZZ') . ' ' . ($sg2['marketing_carrier_flight_number'] ?? '')) ?> · <?= e($sg2['origin']['iata_code'] ?? '') ?> → <?= e($sg2['destination']['iata_code'] ?? '') ?></span>
+                                            <span class="text-muted"><?= e(date('d M H:i', strtotime($sg2['departing_at']))) ?> → <?= e(date('H:i', strtotime($sg2['arriving_at']))) ?></span>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <div class="card border-0 shadow-sm">
