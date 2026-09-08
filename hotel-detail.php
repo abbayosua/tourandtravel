@@ -24,6 +24,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $g = (int)($_POST['guests'] ?? $guests);
     $name = trim($_POST['name'] ?? '');
     $phone = trim($_POST['phone'] ?? '');
+    $roomId = (int)($_POST['room_id'] ?? ($_POST['room_id_select'] ?? 0));
+    $room = null;
+    if ($roomId > 0) {
+        $roomStmt = db()->prepare("SELECT * FROM hotel_rooms WHERE id = ? AND hotel_id = ? AND is_active = 1");
+        $roomStmt->execute([$roomId, $hotel['id']]);
+        $room = $roomStmt->fetch();
+    }
     if ($ci && $co && $name && $phone) {
         $overlapStmt = db()->prepare("SELECT COUNT(*) FROM hotel_bookings WHERE hotel_id = ? AND ? < checkout AND checkin < ?");
         $overlapStmt->execute([$hotel['id'], $ci, $co]);
@@ -34,7 +41,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $nightly = [];
             $cur = strtotime($ci);
             while ($cur < strtotime($co)) {
-                $nightly[] = (float)getPriceForDate('hotel', $hotel['id'], date('Y-m-d', $cur), $hotel['price_per_night']);
+                $d = date('Y-m-d', $cur);
+                $nightly[] = $room ? (float)$room['rate'] : (float)getPriceForDate('hotel', $hotel['id'], $d, $hotel['price_per_night']);
                 $cur = strtotime('+1 day', $cur);
             }
             $total = array_sum($nightly) * $rooms;
@@ -47,8 +55,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $total -= $walletDeduct;
                 }
             }
-            $insert = db()->prepare("INSERT INTO hotel_bookings (hotel_id, user_id, checkin, checkout, rooms, guests, name, phone, total_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $insert->execute([$hotel['id'], $_SESSION['user_id'] ?? null, $ci, $co, $rooms, $g, $name, $phone, $total]);
+            $insert = db()->prepare("INSERT INTO hotel_bookings (hotel_id, room_id, user_id, checkin, checkout, rooms, guests, name, phone, total_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $insert->execute([$hotel['id'], $room['id'] ?? null, $_SESSION['user_id'] ?? null, $ci, $co, $rooms, $g, $name, $phone, $total]);
             $bookingId = (int)db()->lastInsertId();
             if ($walletDeduct > 0 && !empty($_SESSION['user_id'])) {
                 require_once 'includes/wallet.php';
@@ -73,6 +81,9 @@ while ($cur < strtotime($checkout)) {
     $cur = strtotime('+1 day', $cur);
 }
 $totalPrice = array_sum($nightlyPrices);
+$hotelRooms = db()->prepare("SELECT * FROM hotel_rooms WHERE hotel_id = ? AND is_active = 1 ORDER BY rate ASC");
+$hotelRooms->execute([$hotel['id']]);
+$hotelRooms = $hotelRooms->fetchAll();
 $hotelCalendar = [];
 foreach (db()->query("SELECT date, price FROM price_calendar WHERE item_type = 'hotel' AND item_id = " . (int)$hotel['id'] . " AND date >= CURDATE() AND date <= CURDATE() + INTERVAL 90 DAY ORDER BY date")->fetchAll() as $pcRow) {
     $hotelCalendar[] = ['date' => $pcRow['date'], 'price' => (float)$pcRow['price']];
@@ -145,6 +156,51 @@ require_once 'includes/header-klook.php';
                     </div>
                 </div>
 
+                <!-- Room Types -->
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-body p-4">
+                        <h6 class="fw-semibold mb-3"><i class="bi bi-door-open me-2"></i><?= t('Pilih Tipe Kamar') ?></h6>
+                        <?php if (count($hotelRooms) > 0): ?>
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0" data-testid="room-types-table">
+                                <thead><tr class="small text-muted">
+                                    <th><?= t('Tipe Kamar') ?></th>
+                                    <th><?= t('Tipe Kasur') ?></th>
+                                    <th><?= t('Kapasitas') ?></th>
+                                    <th><?= t('Fasilitas') ?></th>
+                                    <th class="text-end"><?= t('Harga/Malam (Rp)') ?></th>
+                                    <th></th>
+                                </tr></thead>
+                                <tbody>
+                                <?php foreach ($hotelRooms as $hr): ?>
+                                    <tr data-room-id="<?= $hr['id'] ?>" data-room-rate="<?= (float)$hr['rate'] ?>" data-room-stock="<?= (int)$hr['stock'] ?>" data-room-breakfast="<?= (int)$hr['breakfast'] ?>" data-room-refundable="<?= (int)$hr['refundable'] ?>" data-room-max-guest="<?= (int)$hr['max_guest'] ?>">
+                                        <td>
+                                            <strong><?= e(getCurrentLang() === 'en' && $hr['name_en'] ? $hr['name_en'] : $hr['name']) ?></strong>
+                                            <?php if ($hr['stock'] <= 2): ?><span class="badge bg-warning text-dark ms-1"><?= str_replace(':n', (string)$hr['stock'], t('Sisa :n')) ?></span><?php endif; ?>
+                                        </td>
+                                        <td class="small"><?= t(ucfirst($hr['bed_type'])) ?></td>
+                                        <td class="small"><?= (int)$hr['max_guest'] ?> <?= t('Tamu') ?></td>
+                                        <td class="small">
+                                            <?php if ($hr['breakfast']): ?><span class="badge bg-success-subtle text-success me-1"><?= t('Sarapan') ?></span><?php endif; ?>
+                                            <?php if ($hr['refundable']): ?><span class="badge bg-primary-subtle text-primary"><?= t('Refundable') ?></span><?php else: ?><span class="badge bg-secondary-subtle text-secondary"><?= t('Non-refundable') ?></span><?php endif; ?>
+                                        </td>
+                                        <td class="text-end fw-bold text-primary"><?= formatRupiah($hr['rate']) ?></td>
+                                        <td class="text-end">
+                                            <button type="button" class="btn btn-sm btn-outline-primary room-select-btn" data-room="<?= $hr['id'] ?>" <?= $hr['stock'] < 1 ? 'disabled' : '' ?>>
+                                                <?= $hr['stock'] < 1 ? t('Habis') : t('Pilih') ?>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                        <?php else: ?>
+                            <div class="text-muted small"><?= t('Belum ada tipe kamar') ?></div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
                 <!-- Map -->
                 <div class="card border-0 shadow-sm mb-3">
                     <div class="card-body p-4">
@@ -196,7 +252,21 @@ require_once 'includes/header-klook.php';
                         <?php if (!isLoggedIn()): ?>
                             <div class="alert alert-warning py-2 small mb-2"><i class="bi bi-info-circle me-1"></i><?= t('Anda dapat booking sebagai tamu.') ?></div>
                         <?php endif; ?>
-                        <form method="POST">
+                        <form method="POST" id="hotelBookingForm">
+                            <input type="hidden" name="room_id" id="roomIdInput" value="">
+                            <input type="hidden" name="promo_code_rate" id="promoRateInput" value="0">
+                            <div class="mb-2">
+                                <label class="form-label small"><?= t('Tipe Kamar') ?></label>
+                                <select name="room_id_select" id="roomSelect" class="form-select form-select-sm" data-testid="room-select">
+                                    <option value=""><?= t('Pilih tipe kamar') ?></option>
+                                    <?php foreach ($hotelRooms as $hr): if ($hr['stock'] < 1) continue; ?>
+                                        <option value="<?= $hr['id'] ?>" data-rate="<?= (float)$hr['rate'] ?>" data-breakfast="<?= (int)$hr['breakfast'] ?>" data-refundable="<?= (int)$hr['refundable'] ?>" data-max-guest="<?= (int)$hr['max_guest'] ?>" data-stock="<?= (int)$hr['stock'] ?>">
+                                            <?= e(getCurrentLang() === 'en' && $hr['name_en'] ? $hr['name_en'] : $hr['name']) ?> — <?= formatRupiah($hr['rate']) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <div class="small text-muted mt-1" id="roomBadges" data-testid="room-badges"></div>
+                            </div>
                             <div class="mb-2">
                                 <label class="form-label small"><?= t('Kode Promo (opsional)') ?></label>
                                 <div class="input-group input-group-sm">
@@ -216,7 +286,7 @@ require_once 'includes/header-klook.php';
                             <div class="row g-2 mb-3">
                                 <div class="col-6">
                                     <label class="form-label small"><?= t('Kamar') ?></label>
-                                    <select name="rooms" class="form-select" onchange="updateTotal()">
+                                    <select name="rooms" id="roomsSelect" class="form-select" onchange="updateTotal()">
                                         <?php for ($r=1; $r<=5; $r++): ?>
                                         <option value="<?= $r ?>"><?= $r ?> <?= t('Kamar') ?></option>
                                         <?php endfor; ?>
@@ -224,11 +294,12 @@ require_once 'includes/header-klook.php';
                                 </div>
                                 <div class="col-6">
                                     <label class="form-label small"><?= t('Tamu') ?></label>
-                                    <select name="guests" class="form-select">
+                                    <select name="guests" id="guestsSelect" class="form-select">
                                         <?php for ($g=1; $g<=10; $g++): ?>
                                         <option value="<?= $g ?>" <?= $guests === $g ? 'selected' : '' ?>><?= $g ?> <?= t('Tamu') ?></option>
                                         <?php endfor; ?>
                                     </select>
+                                    <div class="small text-danger d-none mt-1" id="guestOverflow" data-testid="guest-overflow"><?= t('Jumlah tamu melebihi kapasitas kamar') ?></div>
                                 </div>
                             </div>
 
@@ -260,7 +331,7 @@ require_once 'includes/header-klook.php';
                                 </div>
                                 <?php endif; ?>
                             <?php endif; ?>
-                            <button type="submit" class="btn btn-primary w-100 fw-semibold py-2"><?= t('Pesan Sekarang') ?></button>
+                            <button type="submit" class="btn btn-primary w-100 fw-semibold py-2" id="bookingSubmitBtn"><?= t('Pesan Sekarang') ?></button>
                         </form>
 
                         <script>
@@ -270,7 +341,7 @@ require_once 'includes/header-klook.php';
                         var checkoutInput = document.querySelector('input[name="checkout"]');
                         var roomsSelect = document.querySelector('select[name="rooms"]');
 
-                        function calcNightTotal(ciStr, coStr, rooms) {
+                        function calcNightTotal(ciStr, coStr, rooms, roomRate) {
                             var sum = 0, n = 0;
                             var byDate = {};
                             HOTEL_CAL.forEach(function(r) { byDate[r.date] = r.price; });
@@ -278,18 +349,60 @@ require_once 'includes/header-klook.php';
                             var end = new Date(coStr);
                             while (cur < end && n < 60) {
                                 var key = cur.getFullYear() + '-' + String(cur.getMonth() + 1).padStart(2, '0') + '-' + String(cur.getDate()).padStart(2, '0');
-                                sum += (typeof byDate[key] === 'number') ? byDate[key] : pricePerNight;
+                                sum += (typeof roomRate === 'number' && roomRate > 0) ? roomRate : ((typeof byDate[key] === 'number') ? byDate[key] : pricePerNight);
                                 cur.setDate(cur.getDate() + 1);
                                 n++;
                             }
                             return { total: sum * rooms, nights: Math.max(1, n) };
                         }
                         function updateTotal() {
-                            var r = calcNightTotal(checkinInput.value, checkoutInput.value, parseInt(roomsSelect.value));
+                            var sel = document.getElementById('roomSelect');
+                            var opt = sel ? sel.options[sel.selectedIndex] : null;
+                            var roomRate = (opt && opt.value) ? parseFloat(opt.dataset.rate) : NaN;
+                            var r = calcNightTotal(checkinInput.value, checkoutInput.value, parseInt(roomsSelect.value), roomRate);
                             document.getElementById('nightsDisplay').textContent = r.nights;
                             document.getElementById('nightlySummary').textContent = 'Rp ' + Math.round(r.total / r.nights * parseInt(roomsSelect.value)).toLocaleString(window.I18N ? window.I18N.locale : 'id-ID') + (r.nights > 1 ? ' × ' + r.nights : '');
                             document.getElementById('totalDisplay').textContent = 'Rp ' + Math.round(r.total).toLocaleString(window.I18N ? window.I18N.locale : 'id-ID');
+                            syncRoomUI();
                         }
+                        function syncRoomUI() {
+                            var sel = document.getElementById('roomSelect');
+                            var opt = sel ? sel.options[sel.selectedIndex] : null;
+                            var badges = document.getElementById('roomBadges');
+                            var hidden = document.getElementById('roomIdInput');
+                            var overflow = document.getElementById('guestOverflow');
+                            if (opt && opt.value) {
+                                hidden.value = opt.value;
+                                var tags = [];
+                                if (opt.dataset.breakfast === '1') tags.push('<?= t('Sarapan') ?>');
+                                tags.push(opt.dataset.refundable === '1' ? '<?= t('Refundable') ?>' : '<?= t('Non-refundable') ?>');
+                                badges.textContent = tags.join(' · ');
+                            } else {
+                                hidden.value = '';
+                                badges.textContent = '';
+                            }
+                            var guestsSel = document.getElementById('guestsSelect');
+                            var maxGuest = (opt && opt.value) ? parseInt(opt.dataset.maxGuest) : 99;
+                            var over = parseInt(guestsSel.value) > maxGuest;
+                            overflow.classList.toggle('d-none', !over);
+                            document.getElementById('bookingSubmitBtn').disabled = over;
+                        }
+                        document.addEventListener('DOMContentLoaded', function() {
+                            var sel = document.getElementById('roomSelect');
+                            if (sel) {
+                                sel.addEventListener('change', updateTotal);
+                                document.getElementById('guestsSelect').addEventListener('change', syncRoomUI);
+                            }
+                        });
+                        document.querySelectorAll('.room-select-btn').forEach(function(btn) {
+                            btn.addEventListener('click', function() {
+                                var roomId = btn.dataset.room;
+                                var sel = document.getElementById('roomSelect');
+                                sel.value = roomId;
+                                document.querySelector('#hotelBookingForm').scrollIntoView({ behavior: 'smooth' });
+                                updateTotal();
+                            });
+                        });
                         </script>
                     </div>
                 </div>
