@@ -550,6 +550,30 @@ function getUser() {
 /**
  * Wishlist
  */
+/**
+ * Harga per tanggal dari price_calendar (fallback harga dasar produk).
+ * Return null jika produk tidak ditemukan.
+ */
+function getPriceForDate($itemType, $itemId, $date, $defaultPrice = null) {
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', (string)$date)) {
+        return $defaultPrice;
+    }
+    $stmt = db()->prepare("SELECT price FROM price_calendar WHERE item_type = ? AND item_id = ? AND date = ?");
+    $stmt->execute([$itemType, $itemId, $date]);
+    $cal = $stmt->fetchColumn();
+    if ($cal !== false && $cal !== null) return (float)$cal;
+
+    if ($defaultPrice !== null) return (float)$defaultPrice;
+
+    $tableMap = ['tour' => 'tours', 'hotel' => 'hotels'];
+    $colMap = ['tour' => 'price', 'hotel' => 'price_per_night'];
+    if (!isset($tableMap[$itemType])) return null;
+    $stmt = db()->prepare("SELECT {$colMap[$itemType]} FROM {$tableMap[$itemType]} WHERE id = ?");
+    $stmt->execute([$itemId]);
+    $base = $stmt->fetchColumn();
+    return $base === false ? null : (float)$base;
+}
+
 function isWishlisted($userId, $tourId) {
     $stmt = db()->prepare("SELECT COUNT(*) FROM wishlists WHERE user_id = ? AND tour_id = ?");
     $stmt->execute([$userId, $tourId]);
