@@ -164,6 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+<?php require_once __DIR__ . '/components/social-proof.php'; ?>
 </body>
 </html><script>
 // Recently viewed: catat tour-detail & render baris kecil

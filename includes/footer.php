@@ -73,5 +73,6 @@ function toggleWishlist(btn, tourId) {
         });
 }
 </script>
+<?php require_once __DIR__ . '/components/social-proof.php'; ?>
 </body>
 </html>
