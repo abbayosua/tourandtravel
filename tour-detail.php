@@ -20,6 +20,11 @@ if (!$tour) {
 $pageTitle = $tour['title'];
 $tourDates = getTourDates($tour['id']);
 $itineraries = getItineraries($tour['id']);
+$datePrices = [];
+foreach (db()->query("SELECT date, price FROM price_calendar WHERE item_type = 'tour' AND item_id = " . (int)$tour['id'] . " AND date >= CURDATE() AND date <= CURDATE() + INTERVAL 90 DAY ORDER BY date")->fetchAll() as $pcRow) {
+    $datePrices[$pcRow['date']] = (float)$pcRow['price'];
+}
+$priceCalendar = array_map(fn($d, $p) => ['date' => $d, 'price' => $p], array_keys($datePrices), $datePrices);
 
 // Proses booking form
 $bookingMessage = '';
@@ -61,7 +66,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
     }
 
     if (empty($errors)) {
-        $totalPrice = $tour['price'] * $participants;
+        $unitPrice = getPriceForDate('tour', $tour['id'], $selectedDate['departure_date'], $tour['price']);
+        $totalPrice = $unitPrice * $participants;
         $bookingCode = generateBookingCode();
 
         // KlookCash: kurangi total jika user memakai saldo
@@ -375,6 +381,16 @@ require_once 'includes/header-klook.php';
                     <?php endif; ?>
                     <p class="text-muted">/ <?= t('orang') ?></p>
 
+                    <!-- Harga per tanggal (price_calendar) -->
+                    <?php if (!empty($priceCalendar)): ?>
+                    <div class="mb-3 p-2 rounded border bg-light" id="priceDatePicker">
+                        <label class="form-label small fw-semibold mb-1" for="datePriceInput"><?= t('Cek Harga per Tanggal') ?></label>
+                        <input type="date" id="datePriceInput" class="form-control form-control-sm"
+                               min="<?= e($priceCalendar[0]['date']) ?>" max="<?= e($priceCalendar[count($priceCalendar) - 1]['date']) ?>">
+                        <div class="small mt-1" id="datePriceResult" aria-live="polite"></div>
+                    </div>
+                    <?php endif; ?>
+
                     <!-- Pilih Tanggal -->
                     <?php if (count($tourDates) > 0): ?>
                     <hr>
@@ -382,14 +398,17 @@ require_once 'includes/header-klook.php';
                     <div class="mb-3">
                         <?php foreach ($tourDates as $td): ?>
                             <?php $sisa = getSisaSlot($td['id']); ?>
-                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom date-item">
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom date-item" data-date="<?= $td['departure_date'] ?>">
                                 <div>
                                     <strong><?= tglIndonesia($td['departure_date']) ?></strong>
                                     <span class="d-block small text-muted"><?= tglIndonesia($td['return_date']) ?></span>
                                 </div>
-                                <span class="badge <?= $sisa > 0 ? 'bg-success' : 'bg-danger' ?>">
-                                    <?= $sisa > 0 ? "$sisa " . t('slot') : t('Penuh') ?>
-                                </span>
+                                <div class="text-end">
+                                    <span class="d-block small fw-semibold text-primary"><?= formatCurrencySpan($datePrices[$td['departure_date']] ?? $tour['price'], $tour['price_currency'] ?? 'IDR') ?></span>
+                                    <span class="badge <?= $sisa > 0 ? 'bg-success' : 'bg-danger' ?>">
+                                        <?= $sisa > 0 ? "$sisa " . t('slot') : t('Penuh') ?>
+                                    </span>
+                                </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -420,7 +439,7 @@ require_once 'includes/header-klook.php';
                                 <?php foreach ($tourDates as $td): ?>
                                     <?php $sisa = getSisaSlot($td['id']); ?>
                                     <?php if ($sisa > 0): ?>
-                                    <option value="<?= $td['id'] ?>"><?= tglIndonesia($td['departure_date']) ?> (<?= $sisa ?> <?= t('slot') ?>)</option>
+                                    <option value="<?= $td['id'] ?>" data-price="<?= (float)($datePrices[$td['departure_date']] ?? $tour['price']) ?>" data-cal="<?= isset($datePrices[$td['departure_date']]) ? '1' : '0' ?>"><?= tglIndonesia($td['departure_date']) ?> (<?= $sisa ?> <?= t('slot') ?>)</option>
                                     <?php endif; ?>
                                 <?php endforeach; ?>
                             </select>
@@ -504,4 +523,45 @@ function updateDots(index) {
         el.style.opacity = i === index ? '1' : '0.6';
     });
 }
+// ===== Harga per tanggal (price_calendar) =====
+var PRICE_CAL = <?= json_encode($priceCalendar) ?>;
+var PRICE_BASE = <?= (float)$tour['price'] ?>;
+var PRICE_CUR = <?= json_encode($tour['price_currency'] ?? 'IDR') ?>;
+var PRICE_CAL_LABEL = <?= json_encode(t('Harga normal')) ?>;
+function formatPriceLocal(amount, cur) {
+    var sym = { IDR: 'Rp', SGD: 'S$', USD: '$' }[cur] || cur;
+    var dec = cur === 'IDR' ? 0 : 2;
+    var loc = (window.I18N && window.I18N.locale === 'en') ? 'en-US' : 'id-ID';
+    return sym + ' ' + new Intl.NumberFormat(loc, { minimumFractionDigits: dec, maximumFractionDigits: dec }).format(amount);
+}
+function datePriceText(d) {
+    var hit = PRICE_CAL.find(function(r) { return r.date === d; });
+    if (hit) return formatPriceLocal(hit.price, PRICE_CUR);
+    return PRICE_CAL_LABEL + ' · ' + formatPriceLocal(PRICE_BASE, PRICE_CUR);
+}
+document.addEventListener('DOMContentLoaded', function() {
+    var input = document.getElementById('datePriceInput');
+    var out = document.getElementById('datePriceResult');
+    if (input && out) {
+        input.addEventListener('change', function() {
+            out.textContent = input.value ? datePriceText(input.value) : '';
+        });
+    }
+    var sel = document.querySelector('select[name="tour_date_id"]');
+    if (sel) {
+        var hint = document.createElement('div');
+        hint.className = 'small text-primary fw-semibold mt-1';
+        hint.setAttribute('data-testid', 'selected-date-price');
+        sel.closest('.mb-2').appendChild(hint);
+        var updSel = function() {
+            var opt = sel.options[sel.selectedIndex];
+            if (!opt || !opt.value) { hint.textContent = ''; return; }
+            var txt = formatPriceLocal(parseFloat(opt.dataset.price), PRICE_CUR);
+            if (opt.dataset.cal !== '1') txt += ' · ' + PRICE_CAL_LABEL;
+            hint.textContent = txt;
+        };
+        sel.addEventListener('change', updSel);
+        updSel();
+    }
+});
 </script>
