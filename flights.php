@@ -139,8 +139,8 @@ if (!empty($duffelOffers) && (!empty($airlineFilter) || $minPrice !== '' || $max
         return true;
     }));
 }
-if (!empty($localSchedules) && (!empty($airlineFilter) || $minPrice !== '' || $maxPrice !== '')) {
-    $localSchedules = array_values(array_filter($localSchedules, function ($s) use ($airlineFilter, $minPrice, $maxPrice) {
+if (!empty($localSchedules) && (!empty($airlineFilter) || $minPrice !== '' || $maxPrice !== '' || $depFilter !== '' || $stopsFilter !== '')) {
+    $localSchedules = array_values(array_filter($localSchedules, function ($s) use ($airlineFilter, $minPrice, $maxPrice, $depFilter, $stopsFilter) {
         if (!empty($airlineFilter)) {
             $matched = false;
             foreach ($airlineFilter as $af) {
@@ -151,6 +151,12 @@ if (!empty($localSchedules) && (!empty($airlineFilter) || $minPrice !== '' || $m
         $price = (float)($s['price'] ?? 0);
         if ($minPrice !== '' && $price < (float)$minPrice) return false;
         if ($maxPrice !== '' && $price > (float)$maxPrice) return false;
+        if ($depFilter !== '') {
+            $hour = (int)date('G', strtotime($s['departure_time'] ?? ''));
+            $inRange = match ($depFilter) { 'morning' => $hour >= 5 && $hour < 12, 'afternoon' => $hour >= 12 && $hour < 17, 'evening' => $hour >= 17 && $hour < 22, 'night' => $hour >= 22 || $hour < 5, default => true };
+            if (!$inRange) return false;
+        }
+        if ($stopsFilter === 'direct' && !empty($s['stops']) && (int)$s['stops'] > 0) return false;
         return true;
     }));
 }
