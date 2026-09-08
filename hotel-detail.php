@@ -206,11 +206,21 @@ require_once 'includes/header-klook.php';
                 <div class="card border-0 shadow-sm mb-3">
                     <div class="card-body p-4">
                         <h6 class="fw-semibold mb-3"><i class="bi bi-geo-alt me-2"></i><?= t('Lokasi') ?></h6>
-                        <div class="rounded-3 overflow-hidden border">
-                            <iframe width="100%" height="250" frameborder="0" style="border:0;" 
-                                src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=<?= urlencode($hotel['name'] . ' ' . $hotel['city']) ?>&center=<?= $hotel['lat'] ?? '-6.2' ?>,<?= $hotel['lng'] ?? '106.8' ?>&zoom=14" 
+                        <div class="rounded-3 overflow-hidden border" data-testid="hotel-map">
+                        <?php if ($hotel['lat'] !== null && $hotel['lng'] !== null): ?>
+                            <?php
+                            require_once 'includes/components/map-leaflet.php';
+                            renderMap('hotelMap', [
+                                ['lat' => (float)$hotel['lat'], 'lng' => (float)$hotel['lng'], 'label' => tContent($hotel, 'name'), 'price' => formatRupiah($hotel['price_per_night']), 'link' => null],
+                            ], (float)$hotel['lat'], (float)$hotel['lng'], 14);
+                            ?>
+                        <?php else: ?>
+                            <!-- Fallback static map (tanpa koordinat) -->
+                            <iframe width="100%" height="250" frameborder="0" style="border:0;" data-testid="static-map-fallback"
+                                src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=<?= urlencode($hotel['name'] . ' ' . $hotel['city']) ?>&zoom=14"
                                 allowfullscreen loading="lazy">
                             </iframe>
+                        <?php endif; ?>
                         </div>
                     </div>
                 </div>

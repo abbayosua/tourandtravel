@@ -219,13 +219,16 @@ require_once 'includes/header-klook.php';
 
             <!-- Peta -->
             <h5 class="fw-bold mt-4 mb-3"><i class="bi bi-geo-alt me-2"></i><?= t('Lokasi') ?></h5>
-            <div class="rounded-3 overflow-hidden mb-4 border">
+            <div class="rounded-3 overflow-hidden mb-4 border" data-testid="tour-map">
                 <?php
                     $mapKw = urlencode(preg_replace('/\d+[dD]\d+[nN]?/i', '', $tour['title']));
                     $lat = -6.2 + (crc32($tour['id']) % 1000) / 1000;
                     $lng = 106.8 + (crc32($tour['id'] + 999) % 1000) / 1000;
+                    require_once 'includes/components/map-leaflet.php';
+                    renderMap('tourMap', [
+                        ['lat' => $lat, 'lng' => $lng, 'label' => tContent($tour, 'title'), 'price' => formatCurrencySpan($tour['price'], $tour['price_currency'] ?? 'IDR'), 'link' => null],
+                    ], $lat, $lng, 5);
                 ?>
-                <img src="https://maps.googleapis.com/maps/api/staticmap?center=<?= $mapKw ?>&zoom=5&size=800x200&maptype=roadmap&markers=color:red|<?= $mapKw ?>&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="<?= e(str_replace(':city', tContent($tour, 'title'), t('Peta :city'))) ?>" class="w-100" style="height: 200px; object-fit: cover;" onerror="this.style.display='none'">
             </div>
 
             <!-- Itinerary Accordion -->

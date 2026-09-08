@@ -237,6 +237,26 @@ require_once 'includes/header-klook.php';
         </div>
     </div>
 </section>
+
+<!-- Peta harga -->
+<section class="pb-4 bg-light">
+    <div class="container">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-3">
+                <h6 class="fw-semibold mb-2"><i class="bi bi-geo-alt me-1"></i><?= t('Peta harga hotel') ?></h6>
+                <?php
+                require_once 'includes/components/map-leaflet.php';
+                $mapPoints = [];
+                foreach ($hotels as $h) {
+                    if ($h['lat'] === null || $h['lng'] === null) continue;
+                    $mapPoints[] = ['lat' => (float)$h['lat'], 'lng' => (float)$h['lng'], 'label' => tContent($h, 'name'), 'price' => formatRupiah($h['price_per_night']), 'link' => 'hotel-detail.php?slug=' . urlencode($h['slug'])];
+                }
+                renderMap('hotelsMap', $mapPoints, -2.5, 118.0, 5);
+                ?>
+            </div>
+        </div>
+    </div>
+</section>
 <?php require_once 'includes/footer-klook.php'; ?>
 <script>
 (function() {

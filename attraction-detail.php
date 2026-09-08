@@ -110,6 +110,29 @@ require_once 'includes/header-klook.php';
                 <?php endforeach; ?>
             </div>
             <?php endif; ?>
+
+            <!-- Lokasi -->
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-body p-4">
+                    <h6 class="fw-semibold mb-3"><i class="bi bi-geo-alt me-2"></i><?= t('Lokasi') ?></h6>
+                    <div class="rounded-3 overflow-hidden border" data-testid="attraction-map">
+                    <?php if (!empty($attraction['lat']) && !empty($attraction['lng'])): ?>
+                        <?php
+                        require_once 'includes/components/map-leaflet.php';
+                        renderMap('attractionMap', [
+                            ['lat' => (float)$attraction['lat'], 'lng' => (float)$attraction['lng'], 'label' => tContent($attraction, 'name'), 'price' => formatCurrencySpan($attraction['price'], $attraction['price_currency'] ?? 'IDR'), 'link' => null],
+                        ], (float)$attraction['lat'], (float)$attraction['lng'], 14);
+                        ?>
+                    <?php else: ?>
+                        <!-- Fallback static map (tanpa koordinat) -->
+                        <iframe width="100%" height="250" frameborder="0" style="border:0;" data-testid="static-map-fallback"
+                            src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=<?= urlencode($attraction['name'] . ' ' . $attraction['city']) ?>&zoom=14"
+                            allowfullscreen loading="lazy">
+                        </iframe>
+                    <?php endif; ?>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Sidebar Booking -->
