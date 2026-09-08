@@ -24,6 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $g = (int)($_POST['guests'] ?? $guests);
     $name = trim($_POST['name'] ?? '');
     $phone = trim($_POST['phone'] ?? '');
+    $email = trim($_POST['email'] ?? '');
     $roomId = (int)($_POST['room_id'] ?? ($_POST['room_id_select'] ?? 0));
     $room = null;
     if ($roomId > 0) {
@@ -55,8 +56,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $total -= $walletDeduct;
                 }
             }
-            $insert = db()->prepare("INSERT INTO hotel_bookings (hotel_id, room_id, user_id, checkin, checkout, rooms, guests, name, phone, total_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $insert->execute([$hotel['id'], $room['id'] ?? null, $_SESSION['user_id'] ?? null, $ci, $co, $rooms, $g, $name, $phone, $total]);
+            $insert = db()->prepare("INSERT INTO hotel_bookings (hotel_id, room_id, user_id, checkin, checkout, rooms, guests, name, phone, email, total_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $insert->execute([$hotel['id'], $room['id'] ?? null, $_SESSION['user_id'] ?? null, $ci, $co, $rooms, $g, $name, $phone, $email ?: null, $total]);
             $bookingId = (int)db()->lastInsertId();
             if ($walletDeduct > 0 && !empty($_SESSION['user_id'])) {
                 require_once 'includes/wallet.php';
@@ -322,6 +323,10 @@ require_once 'includes/header-klook.php';
                             <div class="mb-3">
                                 <label class="form-label small"><?= t('No. Telepon') ?></label>
                                 <input type="text" name="phone" class="form-control" value="<?= e(getUser()['phone'] ?? '') ?>" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small"><?= t('Email') ?></label>
+                                <input type="email" name="email" class="form-control" value="<?= e(getUser()['email'] ?? '') ?>" placeholder="email@contoh.com">
                             </div>
                             <?php if (!empty($_SESSION['user_id'])): require_once 'includes/wallet.php'; $walletBal = getWalletBalance($_SESSION['user_id']); ?>
                                 <?php if ($walletBal > 0): ?>

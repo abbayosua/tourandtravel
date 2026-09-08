@@ -21,33 +21,42 @@ if (isset($_GET['update_status'])) {
     $id = (int)$_GET['update_status'];
     $status = $_GET['status'] ?? 'pending';
     $type = $_GET['type'] ?? 'tour';
-    if (in_array($status, ['pending', 'confirmed', 'cancelled']) && isset($tableMap[$type])) {
+    $note = trim($_POST['admin_note'] ?? ($_GET['note'] ?? ''));
+    if (in_array($status, ['pending', 'confirmed', 'cancelled', 'paid', 'refunded']) && isset($tableMap[$type])) {
         $table = $tableMap[$type];
-        db()->prepare("UPDATE `$table` SET status = ? WHERE id = ?")->execute([$status, $id]);
-
-        // Notifikasi in-app user (tour)
-        if ($type === 'tour') {
-            require_once '../includes/notifications.php';
-            $nq = db()->prepare("SELECT user_id, booking_code FROM `$table` WHERE id = ?");
-            $nq->execute([$id]);
-            if ($nb = $nq->fetch()) {
-                if (!empty($nb['user_id'])) {
-                    addNotification((int)$nb['user_id'], 'status', 'Status booking: ' . $status, 'Booking ' . $nb['booking_code'], 'track.php?code=' . $nb['booking_code']);
-                }
-            }
+        if ($note !== '') {
+            db()->prepare("UPDATE `$table` SET status = ?, admin_note = ? WHERE id = ?")->execute([$status, $note, $id]);
+        } else {
+            db()->prepare("UPDATE `$table` SET status = ? WHERE id = ?")->execute([$status, $id]);
         }
 
-        // Email status ke pemesan (tour saja; kolom email ada di semua tabel booking)
-        if ($type === 'tour') {
-            require_once '../includes/email.php';
-            $bs = db()->prepare("SELECT booking_code, email FROM `$table` WHERE id = ?");
-            $bs->execute([$id]);
-            if ($bk = $bs->fetch()) {
-                sendEmailTemplate($bk['email'], 'booking-status', [
-                    'booking_code' => $bk['booking_code'],
+        require_once '../includes/notifications.php';
+        require_once '../includes/email.php';
+
+        // Mapping kolom per vertikal
+        $codeCol = $type === 'hotel' ? 'id' : ($type === 'flight' ? 'id' : 'booking_code');
+        $nq = db()->prepare("SELECT * FROM `$table` WHERE id = ?");
+        $nq->execute([$id]);
+        $row = $nq->fetch();
+
+        if ($row) {
+            $userEmail = $row['email'] ?? null;
+            $userId = isset($row['user_id']) ? (int)$row['user_id'] : 0;
+            $code = $row['booking_code'] ?? ('#' . $id);
+            $trackLink = $type === 'tour' ? (BASE_URL . '/track.php?code=' . $code) : BASE_URL . '/my-bookings.php';
+
+            // Notifikasi in-app (semua vertikal yang punya user_id)
+            if ($userId > 0) {
+                addNotification($userId, 'status', 'Status booking: ' . $status, 'Booking ' . $code . ($note !== '' ? ' — ' . $note : ''), $trackLink);
+            }
+            // Email status (semua vertikal dengan email terdaftar)
+            if (!empty($userEmail)) {
+                sendEmailTemplate($userEmail, 'booking-status', [
+                    'booking_code' => $code,
                     'status' => $status,
-                    'track_link' => BASE_URL . '/track.php?code=' . $bk['booking_code'],
-                    'subject' => 'Status Booking - ' . $bk['booking_code'],
+                    'admin_note' => $note,
+                    'track_link' => $trackLink,
+                    'subject' => 'Status Booking - ' . $code,
                 ], null);
             }
         }
@@ -236,9 +245,10 @@ require_once 'includes/admin-header.php';
                             <a href="https://wa.me/<?= preg_replace('/[^0-9]/', '', $b['phone']) ?>" target="_blank" class="text-success small"><?= e($b['phone']) ?></a>
                         </td>
                         <td>
-                            <span class="badge bg-<?= $b['status'] === 'confirmed' ? 'success' : ($b['status'] === 'pending' ? 'warning text-dark' : 'danger') ?>">
+                            <span class="badge bg-<?= in_array($b['status'], ['confirmed', 'paid'], true) ? 'success' : ($b['status'] === 'pending' ? 'warning text-dark' : ($b['status'] === 'refunded' ? 'info' : 'danger')) ?>">
                                 <?= ucfirst($b['status']) ?>
                             </span>
+                            <?php if (!empty($b['admin_note'])): ?><small class="d-block text-muted" style="max-width:140px;" title="<?= e($b['admin_note']) ?>"><i class="bi bi-sticky"></i> <?= e(mb_strimwidth($b['admin_note'], 0, 24, '…')) ?></small><?php endif; ?>
                         </td>
                         <td class="table-action">
                             <div class="dropdown">
@@ -246,10 +256,27 @@ require_once 'includes/admin-header.php';
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" href="bookings.php?update_status=<?= $b['id'] ?>&status=pending&type=<?= $btype ?>"><?= t('Pending') ?></a></li>
                                     <li><a class="dropdown-item text-success" href="bookings.php?update_status=<?= $b['id'] ?>&status=confirmed&type=<?= $btype ?>"><?= t('Confirmed') ?></a></li>
+                                    <li><a class="dropdown-item text-primary" href="bookings.php?update_status=<?= $b['id'] ?>&status=paid&type=<?= $btype ?>" data-testid="mark-paid"><?= t('Paid') ?></a></li>
+                                    <li><a class="dropdown-item text-warning" href="bookings.php?update_status=<?= $b['id'] ?>&status=refunded&type=<?= $btype ?>" data-testid="mark-refund"><?= t('Refunded') ?></a></li>
                                     <li><a class="dropdown-item text-danger" href="bookings.php?update_status=<?= $b['id'] ?>&status=cancelled&type=<?= $btype ?>"><?= t('Cancelled') ?></a></li>
                                 </ul>
                             </div>
+                            <button class="btn btn-sm btn-outline-secondary mt-1" data-bs-toggle="modal" data-bs-target="#noteModal<?= $b['id'] ?>" title="<?= t('Catatan internal') ?>"><i class="bi bi-sticky"></i></button>
                             <a href="bookings.php?delete=<?= $b['id'] ?>&type=<?= $btype ?>" class="btn btn-sm btn-danger mt-1" onclick="return confirm('Hapus booking ini?')"><i class="bi bi-trash"></i></a>
+                            <!-- Modal catatan internal -->
+                            <div class="modal fade" id="noteModal<?= $b['id'] ?>" tabindex="-1">
+                              <div class="modal-dialog modal-sm">
+                                <div class="modal-content">
+                                  <form method="POST" action="bookings.php?update_status=<?= $b['id'] ?>&status=<?= e($b['status']) ?>&type=<?= $btype ?>">
+                                    <div class="modal-header py-2"><h6 class="modal-title"><?= t('Catatan internal') ?> — <?= e($b['name']) ?></h6><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                                    <div class="modal-body">
+                                      <textarea name="admin_note" class="form-control form-control-sm" rows="3" placeholder="<?= t('Catatan untuk tim (tidak dikirim ke pelanggan email)') ?>"><?= e($b['admin_note'] ?? '') ?></textarea>
+                                    </div>
+                                    <div class="modal-footer py-1"><button type="submit" class="btn btn-sm btn-primary"><?= t('Simpan') ?></button></div>
+                                  </form>
+                                </div>
+                              </div>
+                            </div>
                         </td>
                     </tr>
                     <?php endforeach; ?>
