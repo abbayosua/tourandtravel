@@ -612,19 +612,49 @@ function getPriceForDate($itemType, $itemId, $date, $defaultPrice = null) {
 }
 
 function isWishlisted($userId, $tourId) {
-    $stmt = db()->prepare("SELECT COUNT(*) FROM wishlists WHERE user_id = ? AND tour_id = ?");
-    $stmt->execute([$userId, $tourId]);
-    return $stmt->fetchColumn() > 0;
+    return isWishlistedItem($userId, 'tour', $tourId);
+}
+
+/**
+ * Wishlist polimorfik (tour|hotel|attraction|esim).
+ * Fungsi tour lama tetap bekerja sebagai wrapper item_type='tour'.
+ */
+function isWishlistedItem($userId, string $itemType, int $itemId): bool {
+    $stmt = db()->prepare("SELECT COUNT(*) FROM wishlists WHERE user_id = ? AND item_type = ? AND item_id = ?");
+    $stmt->execute([$userId, $itemType, $itemId]);
+    return (int)$stmt->fetchColumn() > 0;
+}
+
+function toggleWishlistItem($userId, string $itemType, int $itemId): string {
+    if (isWishlistedItem($userId, $itemType, $itemId)) {
+        $stmt = db()->prepare("DELETE FROM wishlists WHERE user_id = ? AND item_type = ? AND item_id = ?");
+        $stmt->execute([$userId, $itemType, $itemId]);
+        return 'removed';
+    }
+    $stmt = db()->prepare("INSERT IGNORE INTO wishlists (user_id, item_type, item_id, tour_id) VALUES (?, ?, ?, ?)");
+    $stmt->execute([$userId, $itemType, $itemId, $itemType === 'tour' ? $itemId : 0]);
+    return 'added';
 }
 
 function getUserWishlists($userId) {
-    $stmt = db()->prepare("SELECT t.* FROM wishlists w JOIN tours t ON w.tour_id = t.id WHERE w.user_id = ? AND t.is_active = 1 ORDER BY w.created_at DESC");
+    $stmt = db()->prepare("SELECT t.* FROM wishlists w JOIN tours t ON w.tour_id = t.id WHERE w.user_id = ? AND w.item_type = 'tour' AND t.is_active = 1 ORDER BY w.created_at DESC");
     $stmt->execute([$userId]);
     return $stmt->fetchAll();
 }
 
+function getUserWishlistItems($userId): array {
+    $out = ['tour' => [], 'hotel' => [], 'attraction' => [], 'esim' => []];
+    $stmt = db()->prepare("SELECT item_type, item_id FROM wishlists WHERE user_id = ? ORDER BY created_at DESC");
+    $stmt->execute([$userId]);
+    foreach ($stmt->fetchAll() as $r) {
+        $t = $r['item_type'];
+        if (isset($out[$t])) $out[$t][] = (int)$r['item_id'];
+    }
+    return $out;
+}
+
 function getWishlistIds($userId) {
-    $stmt = db()->prepare("SELECT tour_id FROM wishlists WHERE user_id = ?");
+    $stmt = db()->prepare("SELECT item_id FROM wishlists WHERE user_id = ? AND item_type = 'tour'");
     $stmt->execute([$userId]);
     return $stmt->fetchAll(PDO::FETCH_COLUMN);
 }
