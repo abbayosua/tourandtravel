@@ -451,7 +451,7 @@ function e($string) {
 /**
  * Ambil data tours aktif dengan filter lanjutan + sort + pagination
  */
-function getTours($category = null, $search = null, $priceRange = null, $duration = null, $rating = null, $sort = null, $page = 1, $perPage = 12) {
+function getTours($category = null, $search = null, $priceRange = null, $duration = null, $rating = null, $sort = null, $page = 1, $perPage = 12, $minPrice = null, $maxPrice = null, $departure = null) {
     $sql = "SELECT * FROM tours WHERE is_active = 1";
     $countSql = "SELECT COUNT(*) FROM tours WHERE is_active = 1";
     $params = [];
@@ -504,6 +504,43 @@ function getTours($category = null, $search = null, $priceRange = null, $duratio
         $countSql .= " AND rating >= ?";
         $params[] = (float)$rating;
         $countParams[] = (float)$rating;
+    }
+
+    // Slider rentang harga (IDR, dikonversi ke currency tersimpan)
+    if ($minPrice !== null || $maxPrice !== null) {
+        $rates = getExchangeRates();
+        $conv = fn($idr) => $rates ? round($idr / ($rates['IDR'] ?? 20566) * ($rates['SGD'] ?? 1.48), 2) : $idr;
+        if ($minPrice !== null && $minPrice !== '') {
+            $sql .= " AND price >= " . $conv((float)$minPrice);
+            $countSql .= " AND price >= " . $conv((float)$minPrice);
+        }
+        if ($maxPrice !== null && $maxPrice !== '') {
+            $sql .= " AND price <= " . $conv((float)$maxPrice);
+            $countSql .= " AND price <= " . $conv((float)$maxPrice);
+        }
+    }
+
+    // Waktu keberangkatan (dari tour_dates)
+    if ($departure === 'today') {
+        $sql .= " AND id IN (SELECT tour_id FROM tour_dates WHERE departure_date = CURDATE() AND available_slots > 0)";
+        $countSql .= " AND id IN (SELECT tour_id FROM tour_dates WHERE departure_date = CURDATE() AND available_slots > 0)";
+    } elseif ($departure === 'tomorrow') {
+        $sql .= " AND id IN (SELECT tour_id FROM tour_dates WHERE departure_date = CURDATE() + INTERVAL 1 DAY AND available_slots > 0)";
+        $countSql .= " AND id IN (SELECT tour_id FROM tour_dates WHERE departure_date = CURDATE() + INTERVAL 1 DAY AND available_slots > 0)";
+    } elseif ($departure === 'week') {
+        $sql .= " AND id IN (SELECT tour_id FROM tour_dates WHERE departure_date BETWEEN CURDATE() AND CURDATE() + INTERVAL 7 DAY AND available_slots > 0)";
+        $countSql .= " AND id IN (SELECT tour_id FROM tour_dates WHERE departure_date BETWEEN CURDATE() AND CURDATE() + INTERVAL 7 DAY AND available_slots > 0)";
+    } elseif ($departure === 'month') {
+        $sql .= " AND id IN (SELECT tour_id FROM tour_dates WHERE departure_date BETWEEN CURDATE() AND CURDATE() + INTERVAL 30 DAY AND available_slots > 0)";
+        $countSql .= " AND id IN (SELECT tour_id FROM tour_dates WHERE departure_date BETWEEN CURDATE() AND CURDATE() + INTERVAL 30 DAY AND available_slots > 0)";
+    } elseif ($departure) {
+        $dept = date('Y-m-d', strtotime((string)$departure));
+        if ($dept && preg_match('/^\d{4}-\d{2}-\d{2}$/', (string)$departure)) {
+            $sql .= " AND id IN (SELECT tour_id FROM tour_dates WHERE departure_date = ? AND available_slots > 0)";
+            $countSql .= " AND id IN (SELECT tour_id FROM tour_dates WHERE departure_date = ? AND available_slots > 0)";
+            $params[] = $dept;
+            $countParams[] = $dept;
+        }
     }
 
     // Sort

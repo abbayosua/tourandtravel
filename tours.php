@@ -10,9 +10,12 @@ $priceRange = $_GET['harga'] ?? null;
 $duration = $_GET['durasi'] ?? null;
 $rating = $_GET['rating'] ?? null;
 $sort = $_GET['sort'] ?? null;
+$minPrice = $_GET['min_price'] ?? null;
+$maxPrice = $_GET['max_price'] ?? null;
+$departure = $_GET['departure'] ?? null;
 $page = (int)($_GET['page'] ?? 1);
 
-$result = getTours($category, $search, $priceRange, $duration, $rating, $sort, $page, 12);
+$result = getTours($category, $search, $priceRange, $duration, $rating, $sort, $page, 12, $minPrice, $maxPrice, $departure);
 $tours = $result['tours'];
 $total = $result['total'];
 $lastPage = $result['lastPage'];
@@ -24,6 +27,10 @@ $durasiOptions = ['1' => t('3-5 Hari'), '2' => t('6-8 Hari'), '3' => t('9+ Hari'
 $hargaOptions = ['1' => t('< Rp 5 Juta'), '2' => t('Rp 5-10 Juta'), '3' => t('Rp 10-20 Juta'), '4' => t('> Rp 20 Juta')];
 $ratingOptions = ['4.5' => '★ 4.5+', '4' => '★ 4.0+'];
 $sortOptions = ['termurah' => t('Termurah'), 'termahal' => t('Termahal'), 'rating' => t('Rating Tertinggi'), 'popular' => t('Terpopuler')];
+$departureOptions = ['today' => t('Hari ini'), 'tomorrow' => t('Besok'), 'week' => t('7 hari ke depan'), 'month' => t('30 hari ke depan')];
+$priceFloor = 0;
+$priceCeil = 25000000; // IDR
+$hasAdvanced = ($minPrice !== null && $minPrice !== '') || ($maxPrice !== null && $maxPrice !== '') || ($departure !== null && $departure !== '');
 
 $wishlistIds = [];
 if (isLoggedIn()) {
@@ -60,6 +67,9 @@ require_once 'includes/header-klook.php';
                         <button class="btn btn-outline-primary btn-sm w-100 d-lg-none mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse">
                             <i class="bi bi-funnel me-1"></i><?= t('Filter') ?>
                         </button>
+                        <?php if ($hasAdvanced): ?>
+                        <a href="tours.php" class="btn btn-sm btn-outline-secondary rounded-pill d-lg-none"><?= t('Reset') ?></a>
+                        <?php endif; ?>
                         <div class="collapse d-lg-block" id="filterCollapse">
                             <form method="GET">
                                 <h6 class="fw-semibold mb-2"><?= t('Kategori') ?></h6>
@@ -67,6 +77,25 @@ require_once 'includes/header-klook.php';
                                     <option value=""><?= t('Semua Kategori') ?></option>
                                     <?php foreach ($categories as $cat): ?>
                                         <option value="<?= e($cat) ?>" <?= $category === $cat ? 'selected' : '' ?>><?= e($cat) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+
+                                <h6 class="fw-semibold mb-2"><?= t('Rentang Harga (IDR)') ?></h6>
+                                <div class="mb-1 d-flex justify-content-between small text-muted">
+                                    <span id="priceMinLabel">Rp <?= number_format((float)($minPrice ?: $priceFloor), 0, ',', '.') ?></span>
+                                    <span id="priceMaxLabel">Rp <?= number_format((float)($maxPrice ?: $priceCeil), 0, ',', '.') ?></span>
+                                </div>
+                                <input type="range" class="form-range" id="priceMinRange" min="<?= $priceFloor ?>" max="<?= $priceCeil ?>" step="500000" value="<?= (int)($minPrice ?: $priceFloor) ?>" data-testid="price-min-range">
+                                <input type="range" class="form-range" id="priceMaxRange" min="<?= $priceFloor ?>" max="<?= $priceCeil ?>" step="500000" value="<?= (int)($maxPrice ?: $priceCeil) ?>" data-testid="price-max-range">
+                                <input type="hidden" name="min_price" id="priceMinInput" value="<?= e((string)($minPrice ?? '')) ?>">
+                                <input type="hidden" name="max_price" id="priceMaxInput" value="<?= e((string)($maxPrice ?? '')) ?>">
+                                <button type="submit" class="btn btn-sm btn-primary w-100 mb-3" data-testid="apply-price"><?= t('Terapkan') ?></button>
+
+                                <h6 class="fw-semibold mb-2"><?= t('Waktu Keberangkatan') ?></h6>
+                                <select name="departure" class="form-select form-select-sm mb-3" onchange="this.form.submit()" data-testid="departure-select">
+                                    <option value=""><?= t('Kapan saja') ?></option>
+                                    <?php foreach ($departureOptions as $k => $v): ?>
+                                        <option value="<?= $k ?>" <?= $departure === $k ? 'selected' : '' ?>><?= $v ?></option>
                                     <?php endforeach; ?>
                                 </select>
 
@@ -141,3 +170,21 @@ require_once 'includes/header-klook.php';
     </div>
 </section>
 <?php require_once 'includes/footer-klook.php'; ?>
+<script>
+(function() {
+    var minR = document.getElementById('priceMinRange'), maxR = document.getElementById('priceMaxRange');
+    var minI = document.getElementById('priceMinInput'), maxI = document.getElementById('priceMaxInput');
+    var minL = document.getElementById('priceMinLabel'), maxL = document.getElementById('priceMaxLabel');
+    if (!minR || !maxR) return;
+    var fmt = function(n) { return 'Rp ' + Number(n).toLocaleString('id-ID'); };
+    function sync() {
+        var lo = parseInt(minR.value), hi = parseInt(maxR.value);
+        if (lo > hi) { var t = lo; lo = hi; hi = t; }
+        minI.value = lo <= <?= $priceFloor ?> ? '' : lo;
+        maxI.value = hi >= <?= $priceCeil ?> ? '' : hi;
+        minL.textContent = fmt(lo); maxL.textContent = fmt(hi);
+    }
+    minR.addEventListener('input', sync); maxR.addEventListener('input', sync);
+    sync();
+})();
+</script>
