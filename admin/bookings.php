@@ -14,6 +14,7 @@ $tableMap = [
     'transfer' => 'transfer_bookings',
     'train' => 'train_bookings',
     'esim' => 'connectivity_bookings',
+    'hotel' => 'hotel_bookings',
 ];
 
 if (isset($_GET['update_status'])) {
@@ -133,10 +134,37 @@ if (!$typeFilter || $typeFilter === 'esim') {
     foreach ($st->fetchAll() as $r) { $r['date_label'] = null; $all[] = $r; }
 }
 
+// Hotels
+if (!$typeFilter || $typeFilter === 'hotel') {
+    $sql = "SELECT hb.*, h.name as item_title, hr.name as room_name, hr.bed_type, hr.max_guest, 'hotel' AS btype,
+                   CONCAT(hb.rooms, ' kamar / ', hb.guests, ' tamu') AS qty_label,
+                   CONCAT(hb.checkin, ' → ', hb.checkout) AS date_label
+            FROM hotel_bookings hb JOIN hotels h ON hb.hotel_id = h.id LEFT JOIN hotel_rooms hr ON hb.room_id = hr.id";
+    $params = [];
+    if ($statusFilter) { $sql .= " WHERE hb.status = ?"; $params[] = $statusFilter; }
+    $sql .= " ORDER BY hb.created_at DESC";
+    $st = db()->prepare($sql); $st->execute($params);
+    $all = array_merge($all, $st->fetchAll());
+}
+
+// Flights
+if (!$typeFilter || $typeFilter === 'flight') {
+    try {
+        $sql = "SELECT fb.*, CONCAT(f.airline, ' ', f.flight_number) as item_title, f.from_city, f.to_city,
+                       'flight' AS btype, CONCAT(fb.seats, ' pax') AS qty_label, fb.departure_date AS date_label
+                FROM flight_bookings fb JOIN flight_schedules fs ON fb.schedule_id = fs.id JOIN flights f ON fs.flight_id = f.id";
+        $params = [];
+        if ($statusFilter) { $sql .= " WHERE fb.status = ?"; $params[] = $statusFilter; }
+        $sql .= " ORDER BY fb.created_at DESC";
+        $st = db()->prepare($sql); $st->execute($params);
+        $all = array_merge($all, $st->fetchAll());
+    } catch (Throwable $e) { /* tabel flight_bookings belum ada */ }
+}
+
 usort($all, function ($a, $b) { return strtotime($b['created_at']) - strtotime($a['created_at']); });
 
-$typeName = ['tour' => t('Tour'), 'attraction' => t('Atraksi'), 'transfer' => t('Transfer'), 'train' => t('Kereta'), 'esim' => 'eSIM'];
-$typeBadge = ['tour' => 'primary', 'attraction' => 'info', 'transfer' => 'warning text-dark', 'train' => 'success', 'esim' => 'secondary'];
+$typeName = ['tour' => t('Tour'), 'attraction' => t('Atraksi'), 'transfer' => t('Transfer'), 'train' => t('Kereta'), 'esim' => 'eSIM', 'hotel' => t('Hotel'), 'flight' => t('Pesawat')];
+$typeBadge = ['tour' => 'primary', 'attraction' => 'info', 'transfer' => 'warning text-dark', 'train' => 'success', 'esim' => 'secondary', 'hotel' => 'danger', 'flight' => 'dark'];
 
 $pageTitle = t('Kelola Booking');
 require_once 'includes/admin-header.php';
@@ -149,17 +177,16 @@ require_once 'includes/admin-header.php';
         <?php foreach (['pending', 'confirmed', 'cancelled'] as $st): ?>
         <a href="bookings.php?status=<?= $st ?><?= $typeFilter ? "&type=$typeFilter" : '' ?>" class="btn btn-sm <?= $statusFilter === $st ? 'btn-primary' : 'btn-outline-primary' ?>"><?= t(ucfirst($st)) ?></a>
         <?php endforeach; ?>
-        <div class="dropdown">
-            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown"><?= $typeFilter ? t($typeName[$typeFilter]) : t('Semua Tipe') ?></button>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="bookings.php<?= $statusFilter ? "?status=$statusFilter" : '' ?>"><?= t('Semua Tipe') ?></a></li>
-                <?php foreach ($typeName as $tk => $tn): ?>
-                <li><a class="dropdown-item" href="bookings.php?type=<?= $tk ?><?= $statusFilter ? "&status=$statusFilter" : '' ?>"><?= t($tn) ?></a></li>
-                <?php endforeach; ?>
-            </ul>
-        </div>
     </div>
 </div>
+
+<!-- Tab per vertikal -->
+<ul class="nav nav-pills mb-3 flex-wrap" data-testid="booking-tabs">
+    <li class="nav-item"><a class="nav-link <?= !$typeFilter ? 'active' : '' ?>" href="bookings.php<?= $statusFilter ? "?status=$statusFilter" : '' ?>"><?= t('Semua Tipe') ?></a></li>
+    <?php foreach ($typeName as $tk => $tn): ?>
+    <li class="nav-item"><a class="nav-link <?= $typeFilter === $tk ? 'active' : '' ?>" href="bookings.php?type=<?= $tk ?><?= $statusFilter ? "&status=$statusFilter" : '' ?>" data-testid="tab-<?= $tk ?>"><?= $tn ?></a></li>
+    <?php endforeach; ?>
+</ul>
 
 <?php if ($msg): ?>
     <div class="alert alert-success alert-dismissible py-2"><?= $msg ?><button class="btn-close" data-bs-dismiss="alert"></button></div>
@@ -197,12 +224,16 @@ require_once 'includes/admin-header.php';
                         <td><?= $b['qty_label'] ?></td>
                         <td><?= formatRupiah($b['total_price']) ?></td>
                         <td>
-                            <small>
-                                <?php if (!empty($b['passport_photo'])): ?>
-                                    <a href="../uploads/passports/<?= e($b['passport_photo']) ?>" target="_blank" class="text-primary small"><?= t('Foto') ?></a><br>
-                                <?php endif; ?>
-                                <a href="https://wa.me/<?= preg_replace('/[^0-9]/', '', $b['phone']) ?>" target="_blank" class="text-success"><?= e($b['phone']) ?></a>
-                            </small>
+                            <?php if ($btype === 'hotel'): ?>
+                                <small class="d-block" data-testid="hotel-room-detail"><?= t('Kamar') ?>: <strong><?= e($b['room_name'] ?? '-') ?></strong></small>
+                                <small class="d-block text-muted"><?= t('Kasur') ?>: <?= e($b['bed_type'] ?? '-') ?> · <?= (int)($b['max_guest'] ?? 0) ?> <?= t('Tamu') ?>/<?= t('Kamar') ?></small>
+                            <?php elseif ($btype === 'flight'): ?>
+                                <small class="d-block" data-testid="flight-offer-detail"><?= e($b['from_city'] ?? '') ?> → <?= e($b['to_city'] ?? '') ?></small>
+                                <small class="d-block text-muted"><?= t('Jadwal') ?> #<?= (int)($b['schedule_id'] ?? 0) ?><?= !empty($b['offer_id']) ? ' · ' . t('Offer') . ' ' . e($b['offer_id']) : '' ?></small>
+                            <?php elseif (!empty($b['passport_photo'])): ?>
+                                <a href="../uploads/passports/<?= e($b['passport_photo']) ?>" target="_blank" class="text-primary small"><?= t('Foto') ?></a>
+                            <?php endif; ?>
+                            <a href="https://wa.me/<?= preg_replace('/[^0-9]/', '', $b['phone']) ?>" target="_blank" class="text-success small"><?= e($b['phone']) ?></a>
                         </td>
                         <td>
                             <span class="badge bg-<?= $b['status'] === 'confirmed' ? 'success' : ($b['status'] === 'pending' ? 'warning text-dark' : 'danger') ?>">
