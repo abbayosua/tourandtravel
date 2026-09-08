@@ -12,7 +12,10 @@ $stars = $_GET['stars'] ?? '';
 $sort = $_GET['sort'] ?? 'price';
 $minPrice = trim($_GET['min_price'] ?? '');
 $maxPrice = trim($_GET['max_price'] ?? '');
-$amenityFilter = trim($_GET['amenity'] ?? '');
+$amenitiesRaw = $_GET['amenity'] ?? [];
+$amenities = array_values(array_filter(is_array($amenitiesRaw) ? array_map('trim', $amenitiesRaw) : explode(',', (string)$amenitiesRaw), fn($v) => $v !== ''));
+$validAmenities = ['WiFi', 'Kolam', 'Parkir', 'Sarapan', 'Gym', 'Spa', 'Restoran'];
+$amenities = array_values(array_intersect($validAmenities, $amenities));
 $freeCancel = (int)($_GET['free_cancel'] ?? 0);
 $instantConf = (int)($_GET['instant'] ?? 0);
 $bestSeller = (int)($_GET['best'] ?? 0);
@@ -25,7 +28,12 @@ if ($city) { $sql .= " AND city LIKE ?"; $params[] = "%$city%"; }
 if ($stars) { $sql .= " AND star_rating = ?"; $params[] = (int)$stars; }
 if ($minPrice !== '') { $sql .= " AND price_per_night >= ?"; $params[] = (float)$minPrice; }
 if ($maxPrice !== '') { $sql .= " AND price_per_night <= ?"; $params[] = (float)$maxPrice; }
-if ($amenityFilter) { $sql .= " AND amenities LIKE ?"; $params[] = "%$amenityFilter%"; }
+if (count($amenities)) {
+    foreach ($amenities as $am) {
+        $sql .= " AND amenities LIKE ?";
+        $params[] = "%$am%";
+    }
+}
 if ($freeCancel) { $sql .= " AND free_cancellation = 1"; }
 if ($instantConf) { $sql .= " AND instant_confirmation = 1"; }
 if ($bestSeller) { $sql .= " AND best_seller = 1"; }
@@ -101,23 +109,38 @@ require_once 'includes/header-klook.php';
                                 <input type="hidden" name="guests" value="<?= $guests ?>">
                                 <div class="col-12">
                                     <label class="form-label small fw-semibold text-muted"><?= t('Bintang') ?></label>
-                                    <select name="stars" class="form-select form-select-sm" onchange="this.form.submit()">
-                                        <option value=""><?= t('Semua Bintang') ?></option>
+                                    <div class="d-flex flex-wrap gap-2" data-testid="stars-filter">
                                         <?php for ($s=5; $s>=3; $s--): ?>
-                                        <option value="<?= $s ?>" <?= $stars == $s ? 'selected' : '' ?>><?= str_repeat('★', $s) ?></option>
+                                        <input type="radio" class="btn-check" name="stars" id="star<?= $s ?>" value="<?= $s ?>" <?= $stars == $s ? 'checked' : '' ?> onchange="this.form.submit()">
+                                        <label class="btn btn-sm btn-outline-warning rounded-pill" for="star<?= $s ?>"><?= str_repeat('★', $s) ?></label>
                                         <?php endfor; ?>
-                                    </select>
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label small fw-semibold text-muted"><?= t('Harga per Malam') ?></label>
-                                    <div class="d-flex gap-2">
-                                        <input type="number" name="min_price" class="form-control form-control-sm" placeholder="<?= t('Min') ?>" value="<?= e($minPrice) ?>" min="0">
-                                        <input type="number" name="max_price" class="form-control form-control-sm" placeholder="<?= t('Max') ?>" value="<?= e($maxPrice) ?>" min="0">
+                                        <input type="radio" class="btn-check" name="stars" id="starAll" value="" <?= $stars === '' ? 'checked' : '' ?> onchange="this.form.submit()">
+                                        <label class="btn btn-sm btn-outline-secondary rounded-pill" for="starAll"><?= t('Semua') ?></label>
                                     </div>
                                 </div>
                                 <div class="col-12">
+                                    <label class="form-label small fw-semibold text-muted"><?= t('Harga per Malam') ?></label>
+                                    <div class="mb-1 d-flex justify-content-between small text-muted">
+                                        <span id="hPriceMinLabel">Rp <?= number_format((float)($minPrice ?: 0), 0, ',', '.') ?></span>
+                                        <span id="hPriceMaxLabel">Rp <?= number_format((float)($maxPrice ?: 5000000), 0, ',', '.') ?></span>
+                                    </div>
+                                    <input type="range" class="form-range" id="hPriceMinRange" min="0" max="5000000" step="250000" value="<?= (int)($minPrice ?: 0) ?>" data-testid="hotel-price-min-range">
+                                    <input type="range" class="form-range" id="hPriceMaxRange" min="0" max="5000000" step="250000" value="<?= (int)($maxPrice ?: 5000000) ?>" data-testid="hotel-price-max-range">
+                                    <input type="hidden" name="min_price" id="hPriceMinInput" value="<?= e($minPrice) ?>">
+                                    <input type="hidden" name="max_price" id="hPriceMaxInput" value="<?= e($maxPrice) ?>">
+                                </div>
+                                <div class="col-12">
                                     <label class="form-label small fw-semibold text-muted"><?= t('Fasilitas') ?></label>
-                                    <input type="text" name="amenity" class="form-control form-control-sm" placeholder="<?= t('WiFi, Parkir, Kolam...') ?>" value="<?= e($amenityFilter) ?>">
+                                    <div class="row g-1" data-testid="amenities-filter">
+                                        <?php foreach (['Kolam', 'Parkir', 'WiFi', 'Sarapan', 'Gym', 'Spa', 'Restoran'] as $am): ?>
+                                        <div class="col-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="amenity[]" value="<?= $am ?>" id="am<?= md5($am) ?>" <?= in_array($am, $amenities, true) ? 'checked' : '' ?> onchange="this.form.submit()">
+                                                <label class="form-check-label small" for="am<?= md5($am) ?>"><?= t($am) ?></label>
+                                            </div>
+                                        </div>
+                                        <?php endforeach; ?>
+                                    </div>
                                 </div>
                                 <div class="col-12">
                                     <div class="form-check">
@@ -215,3 +238,23 @@ require_once 'includes/header-klook.php';
     </div>
 </section>
 <?php require_once 'includes/footer-klook.php'; ?>
+<script>
+(function() {
+    var minR = document.getElementById('hPriceMinRange'), maxR = document.getElementById('hPriceMaxRange');
+    var minI = document.getElementById('hPriceMinInput'), maxI = document.getElementById('hPriceMaxInput');
+    var minL = document.getElementById('hPriceMinLabel'), maxL = document.getElementById('hPriceMaxLabel');
+    if (!minR || !maxR) return;
+    var fmt = function(n) { return 'Rp ' + Number(n).toLocaleString('id-ID'); };
+    function sync() {
+        var lo = parseInt(minR.value), hi = parseInt(maxR.value);
+        if (lo > hi) { var t = lo; lo = hi; hi = t; }
+        minI.value = lo <= 0 ? '' : lo;
+        maxI.value = hi >= 5000000 ? '' : hi;
+        minL.textContent = fmt(lo); maxL.textContent = fmt(hi);
+    }
+    minR.addEventListener('input', sync); maxR.addEventListener('input', sync);
+    minR.addEventListener('change', function() { minR.closest('form').submit(); });
+    maxR.addEventListener('change', function() { maxR.closest('form').submit(); });
+    sync();
+})();
+</script>
