@@ -15,7 +15,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/e084jofhobfzizgn39ae.jpg', 'Private Tour ke Mutianyu atau Badaling Great Wall dengan VIP Fast Pass', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/e084jofhobfzizgn39ae.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 10, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 7, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Pengalaman Trekking Sehari Penuh Tembok Besar Jinshanling dengan Transfer', 'pengalaman-trekking-sehari-penuh-tembok-besar-jinshanling-dengan-transfer', 'Beijing', 'Pengalaman Trekking Sehari Penuh Tembok Besar Jinshanling dengan Transfer
@@ -31,7 +31,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/e7fctrkwm7kwgireuwvt.jpg', 'Pengalaman Trekking Sehari Penuh Tembok Besar Jinshanling dengan Transfer', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/e7fctrkwm7kwgireuwvt.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 20, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 11, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur Pribadi UNESCO Sehari Penuh Beijing: Istana Musim Panas & Tembok Besar', 'tur-pribadi-unesco-sehari-penuh-beijing-istana-musim-panas-tembok-besar', 'Beijing', 'Tur Pribadi UNESCO Sehari Penuh Beijing: Istana Musim Panas & Tembok Besar
@@ -47,7 +47,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/naj591by0qpftezezj8t.jpg', 'Tur Pribadi UNESCO Sehari Penuh Beijing: Istana Musim Panas & Tembok Besar', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/naj591by0qpftezezj8t.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 12, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 10, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Suiguo+Kehidupan Pemandian Air Panas | Toko Hopson One', 'suiguokehidupan-pemandian-air-panas-toko-hopson-one', 'Beijing', 'Suiguo+Kehidupan Pemandian Air Panas | Toko Hopson One
@@ -63,7 +63,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/sfiaanmknrsqicuyykps.jpg', 'Suiguo+Kehidupan Pemandian Air Panas | Toko Hopson One', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/sfiaanmknrsqicuyykps.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 11, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 14, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Perjalanan Budaya 3 Hari ke Tembok Besar Mutianyu dan Kota Terlarang Beijing', 'perjalanan-budaya-3-hari-ke-tembok-besar-mutianyu-dan-kota-terlarang-beijing', 'Beijing', 'Perjalanan Budaya 3 Hari ke Tembok Besar Mutianyu dan Kota Terlarang Beijing
@@ -79,7 +79,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/naw1dla7p95covdiuodf.jpg', 'Perjalanan Budaya 3 Hari ke Tembok Besar Mutianyu dan Kota Terlarang Beijing', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/naw1dla7p95covdiuodf.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 12, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 7, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur 1 Hari Tembok Besar Badaling Beijing + Istana Musim Panas/Taman Yuanmingyuan/Sarang Burung', 'tur-1-hari-tembok-besar-badaling-beijing-istana-musim-panastaman-yuanmingyuansarang-burung', 'Beijing', 'Tur 1 Hari Tembok Besar Badaling Beijing + Istana Musim Panas/Taman Yuanmingyuan/Sarang Burung
@@ -95,7 +95,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/bjw4iphrd4wx0bz5uux9.jpg', 'Tur 1 Hari Tembok Besar Badaling Beijing + Istana Musim Panas/Taman Yuanmingyuan/Sarang Burung', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/bjw4iphrd4wx0bz5uux9.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 7, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 12, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur berpemandu sehari penuh ke Tembok Besar Huanghuacheng di Beijing', 'tur-berpemandu-sehari-penuh-ke-tembok-besar-huanghuacheng-di-beijing', 'Beijing', 'Tur berpemandu sehari penuh ke Tembok Besar Huanghuacheng di Beijing
@@ -111,7 +111,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/hr1wiipiunlqn6qhjoij.jpg', 'Tur berpemandu sehari penuh ke Tembok Besar Huanghuacheng di Beijing', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/hr1wiipiunlqn6qhjoij.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 10, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 15, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur Sehari Tembok Besar Mutianyu Beijing & Kota Air Gubei', 'tur-sehari-tembok-besar-mutianyu-beijing-kota-air-gubei', 'Beijing', 'Tur Sehari Tembok Besar Mutianyu Beijing & Kota Air Gubei
@@ -127,7 +127,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/fgtz470kbrv8n2onmqen.jpg', 'Tur Sehari Tembok Besar Mutianyu Beijing & Kota Air Gubei', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/fgtz470kbrv8n2onmqen.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 5, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 11, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur Sehari Mutianyu Great Wall & Temple of Heaven Beijing', 'tur-sehari-mutianyu-great-wall-temple-of-heaven-beijing', 'Beijing', 'Tur Sehari Mutianyu Great Wall & Temple of Heaven Beijing
@@ -143,7 +143,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/iuuxpgkcophtgg0zhwgg.jpg', 'Tur Sehari Mutianyu Great Wall & Temple of Heaven Beijing', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/iuuxpgkcophtgg0zhwgg.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 17, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 5, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Layanan Pemandu Wisata Beijing', 'layanan-pemandu-wisata-beijing', 'Beijing', 'Layanan Pemandu Wisata Beijing
@@ -159,7 +159,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/wju8gskc4ighknuoexxm.jpg', 'Layanan Pemandu Wisata Beijing', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/wju8gskc4ighknuoexxm.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 10, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 14, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Pengalaman Setengah Hari Budaya Teh Meijiawu Hangzhou termasuk Upacara Teh Dinasti Song', 'pengalaman-setengah-hari-budaya-teh-meijiawu-hangzhou-termasuk-upacara-teh-dinasti-song', 'Shanghai', 'Pengalaman Setengah Hari Budaya Teh Meijiawu Hangzhou termasuk Upacara Teh Dinasti Song
@@ -175,7 +175,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/wxxpvzgqukc3sxx2ddgc.jpg', 'Pengalaman Setengah Hari Budaya Teh Meijiawu Hangzhou termasuk Upacara Teh Dinasti Song', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/wxxpvzgqukc3sxx2ddgc.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 19, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 16, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Pengalaman Sewa Hanfu & Pemotretan di Suzhou (Sewa Hanfu + Opsional Pemotretan di Lokasi dengan Fotografer + Berbagai Pilihan Gaya + Pakaian yang Indah dan Beragam + Layanan Premium + Pakaian Berkualitas Tinggi)', 'pengalaman-sewa-hanfu-pemotretan-di-suzhou-sewa-hanfu-opsional-pemotretan-di-lokasi-dengan-fotografer-berbagai-pilihan-gaya-pakaian-yang-indah-dan-beragam-layanan-premium-pakaian-b', 'Shanghai', 'Pengalaman Sewa Hanfu & Pemotretan di Suzhou (Sewa Hanfu + Opsional Pemotretan di Lokasi dengan Fotografer + Berbagai Pilihan Gaya + Pakaian yang Indah dan Beragam + Layanan Premium + Pakaian Berkualitas Tinggi)
@@ -191,7 +191,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/ojlgbkmgqq6ifknhyb03.jpg', 'Pengalaman Sewa Hanfu & Pemotretan di Suzhou (Sewa Hanfu + Opsional Pemotretan di Lokasi dengan Fotografer + Berbagai Pilihan Gaya + Pakaian yang Indah dan Beragam + Layanan Premium + Pakaian Berkualitas Tinggi)', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/ojlgbkmgqq6ifknhyb03.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 18, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 7, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur Sehari Kota Air Suzhou Zhouzhuang & Taman Administrator yang Rendah Hati', 'tur-sehari-kota-air-suzhou-zhouzhuang-taman-administrator-yang-rendah-hati', 'Shanghai', 'Tur Sehari Kota Air Suzhou Zhouzhuang & Taman Administrator yang Rendah Hati
@@ -207,7 +207,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/zcbcidqf3no3pp0evhcs.jpg', 'Tur Sehari Kota Air Suzhou Zhouzhuang & Taman Administrator yang Rendah Hati', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/zcbcidqf3no3pp0evhcs.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 19, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 13, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Pengalaman Pribadi Sehari Penuh di Taman Zhouzheng & Kota Air Tongli', 'pengalaman-pribadi-sehari-penuh-di-taman-zhouzheng-kota-air-tongli', 'Shanghai', 'Pengalaman Pribadi Sehari Penuh di Taman Zhouzheng & Kota Air Tongli
@@ -223,7 +223,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/u1fbdzpedqepycekjb13.jpg', 'Pengalaman Pribadi Sehari Penuh di Taman Zhouzheng & Kota Air Tongli', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/u1fbdzpedqepycekjb13.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 14, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 16, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Pengalaman Pemotretan Hanfu 3 Jam di Jalan Kuno Danau Barat Hangzhou', 'pengalaman-pemotretan-hanfu-3-jam-di-jalan-kuno-danau-barat-hangzhou', 'Shanghai', 'Pengalaman Pemotretan Hanfu 3 Jam di Jalan Kuno Danau Barat Hangzhou
@@ -239,7 +239,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/ktmnkuuaqeemi1aedhg8.jpg', 'Pengalaman Pemotretan Hanfu 3 Jam di Jalan Kuno Danau Barat Hangzhou', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/ktmnkuuaqeemi1aedhg8.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 11, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 8, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur Sehari Hangzhou dari Shanghai/Hangzhou | Danau Barat + Kuil Lingyin + Tiket Kereta Cepat Pulang Pergi · Tur Kelompok Kecil Berbahasa Inggris', 'tur-sehari-hangzhou-dari-shanghaihangzhou-danau-barat-kuil-lingyin-tiket-kereta-cepat-pulang-pergi-tur-kelompok-kecil-berbahasa-inggris', 'Shanghai', 'Tur Sehari Hangzhou dari Shanghai/Hangzhou | Danau Barat + Kuil Lingyin + Tiket Kereta Cepat Pulang Pergi · Tur Kelompok Kecil Berbahasa Inggris
@@ -255,21 +255,21 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/zntvxudmdd0wqhkdrttp.jpg', 'Tur Sehari Hangzhou dari Shanghai/Hangzhou | Danau Barat + Kuil Lingyin + Tiket Kereta Cepat Pulang Pergi · Tur Kelompok Kecil Berbahasa Inggris', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/zntvxudmdd0wqhkdrttp.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 17, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 10, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
-SELECT 'Suzhou Humble Administrator's Garden & Hanshan Temple Full-Day City Highlights Tour', 'suzhou-humble-administrators-garden-hanshan-temple-full-day-city-highlights-tour', 'Shanghai', 'Suzhou Humble Administrator's Garden & Hanshan Temple Full-Day City Highlights Tour
+SELECT 'Suzhou Humble Administrator''s Garden & Hanshan Temple Full-Day City Highlights Tour', 'suzhou-humble-administrators-garden-hanshan-temple-full-day-city-highlights-tour', 'Shanghai', 'Suzhou Humble Administrator''s Garden & Hanshan Temple Full-Day City Highlights Tour
 
 Tags: Pesan untuk besok; Pembatalan gratis; Konfirmasi instan
 Popularity: 50+ kali dipesan', 732961.0, 'IDR', NULL, 20, 5.0, 0, 'https://res.klook.com/image/upload/activities/cfdyixwqguu3dau93s2j.jpg', 1
 WHERE NOT EXISTS (SELECT 1 FROM tours WHERE slug = 'suzhou-humble-administrators-garden-hanshan-temple-full-day-city-highlights-tour') LIMIT 1;
 SET @tid = (SELECT id FROM tours WHERE slug = 'suzhou-humble-administrators-garden-hanshan-temple-full-day-city-highlights-tour' LIMIT 1);
 
-INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Shanghai', 'Day 1 di Shanghai: Suzhou Humble Administrator's Garden & Hanshan Temple Full-Day City Highlights Tour' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
+INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Shanghai', 'Day 1 di Shanghai: Suzhou Humble Administrator''s Garden & Hanshan Temple Full-Day City Highlights Tour' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
 
 INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, accommodation) SELECT @tid, 2, 'Day 2 — Shanghai', 'Day 2: Explore Shanghai. Free day.', 'Breakfast', 'Hotel' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 2) LIMIT 1;
 
-INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/cfdyixwqguu3dau93s2j.jpg', 'Suzhou Humble Administrator's Garden & Hanshan Temple Full-Day City Highlights Tour', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/cfdyixwqguu3dau93s2j.jpg') LIMIT 1;
+INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/cfdyixwqguu3dau93s2j.jpg', 'Suzhou Humble Administrator''s Garden & Hanshan Temple Full-Day City Highlights Tour', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/cfdyixwqguu3dau93s2j.jpg') LIMIT 1;
 
 INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 13, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
@@ -287,7 +287,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/cfjh1ldfqzcdwq7tzi6z.jpg', 'Private Day Tour Danau Barat & Kuil Lingyin Hangzhou', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/cfjh1ldfqzcdwq7tzi6z.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 19, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 20, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Pengalaman Setengah Hari Naik Perahu Danau Barat Hangzhou dan Pagoda Leifeng', 'pengalaman-setengah-hari-naik-perahu-danau-barat-hangzhou-dan-pagoda-leifeng', 'Shanghai', 'Pengalaman Setengah Hari Naik Perahu Danau Barat Hangzhou dan Pagoda Leifeng
@@ -303,7 +303,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/ajxvbtaqzqufjoz8r9ln.jpg', 'Pengalaman Setengah Hari Naik Perahu Danau Barat Hangzhou dan Pagoda Leifeng', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/ajxvbtaqzqufjoz8r9ln.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 10, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 16, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur 1 Hari Pulau Meifeng Danau Qiandao/Dek Observasi Gunung Tianyu (Termasuk Perjalanan Perahu)', 'tur-1-hari-pulau-meifeng-danau-qiandaodek-observasi-gunung-tianyu-termasuk-perjalanan-perahu', 'Shanghai', 'Tur 1 Hari Pulau Meifeng Danau Qiandao/Dek Observasi Gunung Tianyu (Termasuk Perjalanan Perahu)
@@ -319,7 +319,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/i88elo8van4j2o2deypt.jpg', 'Tur 1 Hari Pulau Meifeng Danau Qiandao/Dek Observasi Gunung Tianyu (Termasuk Perjalanan Perahu)', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/i88elo8van4j2o2deypt.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 8, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 7, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Pengalaman Cheongsam Khas Bund Shanghai (opsional dengan fotografer untuk pemotretan luar ruangan)', 'pengalaman-cheongsam-khas-bund-shanghai-opsional-dengan-fotografer-untuk-pemotretan-luar-ruangan', 'Guangzhou', 'Pengalaman Cheongsam Khas Bund Shanghai (opsional dengan fotografer untuk pemotretan luar ruangan)
@@ -335,7 +335,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/gxkdypczvrr6nhi0lz59.jpg', 'Pengalaman Cheongsam Khas Bund Shanghai (opsional dengan fotografer untuk pemotretan luar ruangan)', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/gxkdypczvrr6nhi0lz59.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 13, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 14, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Half-Day Guided Tour di Shanghai Science & Technology Museum', 'half-day-guided-tour-di-shanghai-science-technology-museum', 'Guangzhou', 'Half-Day Guided Tour di Shanghai Science & Technology Museum
@@ -351,7 +351,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/eyya8yegwiuhyyie3tio.jpg', 'Half-Day Guided Tour di Shanghai Science & Technology Museum', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/eyya8yegwiuhyyie3tio.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 5, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 7, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Shuiguo · Tangquan | Toko Wujiaochang ', 'shuiguo-tangquan-toko-wujiaochang', 'Guangzhou', 'Shuiguo · Tangquan | Toko Wujiaochang 
@@ -367,7 +367,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/v7d1pvb6kv874rdubg5m.jpg', 'Shuiguo · Tangquan | Toko Wujiaochang ', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/v7d1pvb6kv874rdubg5m.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 12, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 6, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur Sehari Penuh Shanghai Wuzhen & Nanxun Old Towns', 'tur-sehari-penuh-shanghai-wuzhen-nanxun-old-towns', 'Guangzhou', 'Tur Sehari Penuh Shanghai Wuzhen & Nanxun Old Towns
@@ -383,7 +383,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/eqtrbxet8arry39moxoc.jpg', 'Tur Sehari Penuh Shanghai Wuzhen & Nanxun Old Towns', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/eqtrbxet8arry39moxoc.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 12, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 18, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Perjamuan Shanghai Bulan Menyanyi · Perjamuan Hongmen', 'perjamuan-shanghai-bulan-menyanyi-perjamuan-hongmen', 'Guangzhou', 'Perjamuan Shanghai Bulan Menyanyi · Perjamuan Hongmen
@@ -399,7 +399,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/uafc9qj9hxencatpifso.jpg', 'Perjamuan Shanghai Bulan Menyanyi · Perjamuan Hongmen', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/uafc9qj9hxencatpifso.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 12, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 13, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Terapi Kepala Sirkulasi Air Musim Semi Empat Musim · Pembersihan Wajah · Pijat SPA | Toko Gedung Puhui', 'terapi-kepala-sirkulasi-air-musim-semi-empat-musim-pembersihan-wajah-pijat-spa-toko-gedung-puhui', 'Guangzhou', 'Terapi Kepala Sirkulasi Air Musim Semi Empat Musim · Pembersihan Wajah · Pijat SPA | Toko Gedung Puhui
@@ -415,7 +415,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/k5bembmyjnax9l3xnkm5.jpg', 'Terapi Kepala Sirkulasi Air Musim Semi Empat Musim · Pembersihan Wajah · Pijat SPA | Toko Gedung Puhui', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/k5bembmyjnax9l3xnkm5.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 19, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 20, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Authentic Local Food Tour di Central Shanghai', 'authentic-local-food-tour-di-central-shanghai', 'Guangzhou', 'Authentic Local Food Tour di Central Shanghai
@@ -431,7 +431,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/h6nqjeavy6htyaldx3zd.jpg', 'Authentic Local Food Tour di Central Shanghai', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/h6nqjeavy6htyaldx3zd.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 20, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 9, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Full-Day Tour dengan Pemandu ke Shanghai Film Park & Zhujiajiao Water Town', 'full-day-tour-dengan-pemandu-ke-shanghai-film-park-zhujiajiao-water-town', 'Guangzhou', 'Full-Day Tour dengan Pemandu ke Shanghai Film Park & Zhujiajiao Water Town
@@ -447,7 +447,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/a62bure8tc8ny3grvhn0.jpg', 'Full-Day Tour dengan Pemandu ke Shanghai Film Park & Zhujiajiao Water Town', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/a62bure8tc8ny3grvhn0.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 20, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 7, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'TASTE OF CHINA Restoran Imersif Rasa', 'taste-of-china-restoran-imersif-rasa', 'Guangzhou', 'TASTE OF CHINA Restoran Imersif Rasa
@@ -463,7 +463,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/f41vfkn8ximeugrxxdvz.jpg', 'TASTE OF CHINA Restoran Imersif Rasa', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/f41vfkn8ximeugrxxdvz.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 15, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 6, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Hanfu Butik Shanghai Yu Garden · Perjalanan (Fotografer Mengikuti Pemotretan di Lokasi)', 'hanfu-butik-shanghai-yu-garden-perjalanan-fotografer-mengikuti-pemotretan-di-lokasi', 'Guangzhou', 'Hanfu Butik Shanghai Yu Garden · Perjalanan (Fotografer Mengikuti Pemotretan di Lokasi)
@@ -479,71 +479,71 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/bzmceck9qpwyfxy9xubq.jpg', 'Hanfu Butik Shanghai Yu Garden · Perjalanan (Fotografer Mengikuti Pemotretan di Lokasi)', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/bzmceck9qpwyfxy9xubq.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 17, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 11, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
-SELECT 'Perjamuan Istana Xi'an Chang'an·Pengalaman Imersif Perjamuan Istana', 'perjamuan-istana-xian-changanpengalaman-imersif-perjamuan-istana', 'Shenzhen', 'Perjamuan Istana Xi'an Chang'an·Pengalaman Imersif Perjamuan Istana
+SELECT 'Perjamuan Istana Xi''an Chang''an·Pengalaman Imersif Perjamuan Istana', 'perjamuan-istana-xian-changanpengalaman-imersif-perjamuan-istana', 'Shenzhen', 'Perjamuan Istana Xi''an Chang''an·Pengalaman Imersif Perjamuan Istana
 
 Tags: Pembatalan gratis
 Popularity: 50+ kali dipesan', 614250.0, 'IDR', NULL, 20, 5.0, 0, 'https://res.klook.com/image/upload/activities/ivpdkornkphqj4tgbbsx.jpg', 1
 WHERE NOT EXISTS (SELECT 1 FROM tours WHERE slug = 'perjamuan-istana-xian-changanpengalaman-imersif-perjamuan-istana') LIMIT 1;
 SET @tid = (SELECT id FROM tours WHERE slug = 'perjamuan-istana-xian-changanpengalaman-imersif-perjamuan-istana' LIMIT 1);
 
-INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Shenzhen', 'Day 1 di Shenzhen: Perjamuan Istana Xi'an Chang'an·Pengalaman Imersif Perjamuan Istana' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
+INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Shenzhen', 'Day 1 di Shenzhen: Perjamuan Istana Xi''an Chang''an·Pengalaman Imersif Perjamuan Istana' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
 
 INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, accommodation) SELECT @tid, 2, 'Day 2 — Shenzhen', 'Day 2: Explore Shenzhen. Free day.', 'Breakfast', 'Hotel' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 2) LIMIT 1;
 
-INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/ivpdkornkphqj4tgbbsx.jpg', 'Perjamuan Istana Xi'an Chang'an·Pengalaman Imersif Perjamuan Istana', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/ivpdkornkphqj4tgbbsx.jpg') LIMIT 1;
+INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/ivpdkornkphqj4tgbbsx.jpg', 'Perjamuan Istana Xi''an Chang''an·Pengalaman Imersif Perjamuan Istana', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/ivpdkornkphqj4tgbbsx.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 14, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 16, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
-SELECT 'Transportasi Pribadi Setengah Hari Xi'an Terracotta Army', 'transportasi-pribadi-setengah-hari-xian-terracotta-army', 'Shenzhen', 'Transportasi Pribadi Setengah Hari Xi'an Terracotta Army
+SELECT 'Transportasi Pribadi Setengah Hari Xi''an Terracotta Army', 'transportasi-pribadi-setengah-hari-xian-terracotta-army', 'Shenzhen', 'Transportasi Pribadi Setengah Hari Xi''an Terracotta Army
 
 Tags: Pesan untuk besok; Private tour; Grup pribadi; Pembatalan gratis; Konfirmasi instan
 Popularity: 50+ kali dipesan', 1356773.0, 'IDR', NULL, 20, 5.0, 0, 'https://res.klook.com/image/upload/activities/bjsiwjfnbth8mexpea86.jpg', 1
 WHERE NOT EXISTS (SELECT 1 FROM tours WHERE slug = 'transportasi-pribadi-setengah-hari-xian-terracotta-army') LIMIT 1;
 SET @tid = (SELECT id FROM tours WHERE slug = 'transportasi-pribadi-setengah-hari-xian-terracotta-army' LIMIT 1);
 
-INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Shenzhen', 'Day 1 di Shenzhen: Transportasi Pribadi Setengah Hari Xi'an Terracotta Army' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
+INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Shenzhen', 'Day 1 di Shenzhen: Transportasi Pribadi Setengah Hari Xi''an Terracotta Army' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
 
 INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, accommodation) SELECT @tid, 2, 'Day 2 — Shenzhen', 'Day 2: Explore Shenzhen. Free day.', 'Breakfast', 'Hotel' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 2) LIMIT 1;
 
-INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/bjsiwjfnbth8mexpea86.jpg', 'Transportasi Pribadi Setengah Hari Xi'an Terracotta Army', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/bjsiwjfnbth8mexpea86.jpg') LIMIT 1;
+INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/bjsiwjfnbth8mexpea86.jpg', 'Transportasi Pribadi Setengah Hari Xi''an Terracotta Army', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/bjsiwjfnbth8mexpea86.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 20, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 12, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
-SELECT 'Tur Sehari Penuh Xi'an Terracotta Army & Tembok Kota dengan Makan Siang Lokal', 'tur-sehari-penuh-xian-terracotta-army-tembok-kota-dengan-makan-siang-lokal', 'Shenzhen', 'Tur Sehari Penuh Xi'an Terracotta Army & Tembok Kota dengan Makan Siang Lokal
+SELECT 'Tur Sehari Penuh Xi''an Terracotta Army & Tembok Kota dengan Makan Siang Lokal', 'tur-sehari-penuh-xian-terracotta-army-tembok-kota-dengan-makan-siang-lokal', 'Shenzhen', 'Tur Sehari Penuh Xi''an Terracotta Army & Tembok Kota dengan Makan Siang Lokal
 
 Tags: Pesan untuk besok; Pembatalan gratis; Konfirmasi instan
 Popularity: 50+ kali dipesan', 1975451.0, 'IDR', NULL, 20, 5.0, 0, 'https://res.klook.com/image/upload/activities/ii9qxjtofscnwms9ycbt.jpg', 1
 WHERE NOT EXISTS (SELECT 1 FROM tours WHERE slug = 'tur-sehari-penuh-xian-terracotta-army-tembok-kota-dengan-makan-siang-lokal') LIMIT 1;
 SET @tid = (SELECT id FROM tours WHERE slug = 'tur-sehari-penuh-xian-terracotta-army-tembok-kota-dengan-makan-siang-lokal' LIMIT 1);
 
-INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Shenzhen', 'Day 1 di Shenzhen: Tur Sehari Penuh Xi'an Terracotta Army & Tembok Kota dengan Makan Siang Lokal' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
+INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Shenzhen', 'Day 1 di Shenzhen: Tur Sehari Penuh Xi''an Terracotta Army & Tembok Kota dengan Makan Siang Lokal' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
 
 INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, accommodation) SELECT @tid, 2, 'Day 2 — Shenzhen', 'Day 2: Explore Shenzhen. Free day.', 'Breakfast', 'Hotel' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 2) LIMIT 1;
 
-INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/ii9qxjtofscnwms9ycbt.jpg', 'Tur Sehari Penuh Xi'an Terracotta Army & Tembok Kota dengan Makan Siang Lokal', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/ii9qxjtofscnwms9ycbt.jpg') LIMIT 1;
+INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/ii9qxjtofscnwms9ycbt.jpg', 'Tur Sehari Penuh Xi''an Terracotta Army & Tembok Kota dengan Makan Siang Lokal', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/ii9qxjtofscnwms9ycbt.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 18, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 15, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
-SELECT 'Private Terracotta Army Tour di Xi'an dengan Opsi Penjemputan', 'private-terracotta-army-tour-di-xian-dengan-opsi-penjemputan', 'Shenzhen', 'Private Terracotta Army Tour di Xi'an dengan Opsi Penjemputan
+SELECT 'Private Terracotta Army Tour di Xi''an dengan Opsi Penjemputan', 'private-terracotta-army-tour-di-xian-dengan-opsi-penjemputan', 'Shenzhen', 'Private Terracotta Army Tour di Xi''an dengan Opsi Penjemputan
 
 Tags: Pesan untuk besok; Private tour; Grup pribadi; Pembatalan gratis; Konfirmasi instan
 Popularity: ', 2963046.0, 'IDR', NULL, 20, 5.0, 0, 'https://res.klook.com/image/upload/activities/lvw3frjcdgnytw576ajt.jpg', 1
 WHERE NOT EXISTS (SELECT 1 FROM tours WHERE slug = 'private-terracotta-army-tour-di-xian-dengan-opsi-penjemputan') LIMIT 1;
 SET @tid = (SELECT id FROM tours WHERE slug = 'private-terracotta-army-tour-di-xian-dengan-opsi-penjemputan' LIMIT 1);
 
-INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Shenzhen', 'Day 1 di Shenzhen: Private Terracotta Army Tour di Xi'an dengan Opsi Penjemputan' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
+INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Shenzhen', 'Day 1 di Shenzhen: Private Terracotta Army Tour di Xi''an dengan Opsi Penjemputan' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
 
 INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, accommodation) SELECT @tid, 2, 'Day 2 — Shenzhen', 'Day 2: Explore Shenzhen. Free day.', 'Breakfast', 'Hotel' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 2) LIMIT 1;
 
-INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/lvw3frjcdgnytw576ajt.jpg', 'Private Terracotta Army Tour di Xi'an dengan Opsi Penjemputan', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/lvw3frjcdgnytw576ajt.jpg') LIMIT 1;
+INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/lvw3frjcdgnytw576ajt.jpg', 'Private Terracotta Army Tour di Xi''an dengan Opsi Penjemputan', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/lvw3frjcdgnytw576ajt.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 6, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 15, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur setengah hari di Museum Sejarah Shaanxi (pertunjukan khas dapat digabungkan)', 'tur-setengah-hari-di-museum-sejarah-shaanxi-pertunjukan-khas-dapat-digabungkan', 'Shenzhen', 'Tur setengah hari di Museum Sejarah Shaanxi (pertunjukan khas dapat digabungkan)
@@ -559,7 +559,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/xqduooaxh3mhtd1lbgib.jpg', 'Tur setengah hari di Museum Sejarah Shaanxi (pertunjukan khas dapat digabungkan)', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/xqduooaxh3mhtd1lbgib.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 19, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 18, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tiket Terra-cotta Warriors dengan Layanan Pemandu atau Transportasi Opsional', 'tiket-terra-cotta-warriors-dengan-layanan-pemandu-atau-transportasi-opsional', 'Shenzhen', 'Tiket Terra-cotta Warriors dengan Layanan Pemandu atau Transportasi Opsional
@@ -575,39 +575,39 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/xzombuivtvsepdag6qid.jpg', 'Tiket Terra-cotta Warriors dengan Layanan Pemandu atau Transportasi Opsional', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/xzombuivtvsepdag6qid.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 10, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 6, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
-SELECT 'Xi'an Legend of Camel Bell Show Half-Day Tour dengan Private Transfer', 'xian-legend-of-camel-bell-show-half-day-tour-dengan-private-transfer', 'Shenzhen', 'Xi'an Legend of Camel Bell Show Half-Day Tour dengan Private Transfer
+SELECT 'Xi''an Legend of Camel Bell Show Half-Day Tour dengan Private Transfer', 'xian-legend-of-camel-bell-show-half-day-tour-dengan-private-transfer', 'Shenzhen', 'Xi''an Legend of Camel Bell Show Half-Day Tour dengan Private Transfer
 
 Tags: Pesan untuk besok; Pembatalan gratis; Konfirmasi instan
 Popularity: 100+ kali dipesan', 607071.0, 'IDR', NULL, 20, 5.0, 0, 'https://res.klook.com/image/upload/activities/covjx6fohqvamrj7nao3.jpg', 1
 WHERE NOT EXISTS (SELECT 1 FROM tours WHERE slug = 'xian-legend-of-camel-bell-show-half-day-tour-dengan-private-transfer') LIMIT 1;
 SET @tid = (SELECT id FROM tours WHERE slug = 'xian-legend-of-camel-bell-show-half-day-tour-dengan-private-transfer' LIMIT 1);
 
-INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Shenzhen', 'Day 1 di Shenzhen: Xi'an Legend of Camel Bell Show Half-Day Tour dengan Private Transfer' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
+INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Shenzhen', 'Day 1 di Shenzhen: Xi''an Legend of Camel Bell Show Half-Day Tour dengan Private Transfer' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
 
 INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, accommodation) SELECT @tid, 2, 'Day 2 — Shenzhen', 'Day 2: Explore Shenzhen. Free day.', 'Breakfast', 'Hotel' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 2) LIMIT 1;
 
-INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/covjx6fohqvamrj7nao3.jpg', 'Xi'an Legend of Camel Bell Show Half-Day Tour dengan Private Transfer', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/covjx6fohqvamrj7nao3.jpg') LIMIT 1;
+INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/covjx6fohqvamrj7nao3.jpg', 'Xi''an Legend of Camel Bell Show Half-Day Tour dengan Private Transfer', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/covjx6fohqvamrj7nao3.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 7, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 10, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
-SELECT 'Tur Setengah Hari Pasukan Terakota Xi'an dengan Makan Siang Keluarga Lokal', 'tur-setengah-hari-pasukan-terakota-xian-dengan-makan-siang-keluarga-lokal', 'Shenzhen', 'Tur Setengah Hari Pasukan Terakota Xi'an dengan Makan Siang Keluarga Lokal
+SELECT 'Tur Setengah Hari Pasukan Terakota Xi''an dengan Makan Siang Keluarga Lokal', 'tur-setengah-hari-pasukan-terakota-xian-dengan-makan-siang-keluarga-lokal', 'Shenzhen', 'Tur Setengah Hari Pasukan Terakota Xi''an dengan Makan Siang Keluarga Lokal
 
 Tags: Pesan untuk besok; Pembatalan gratis; Konfirmasi instan
 Popularity: 50+ kali dipesan', 1407286.0, 'IDR', NULL, 20, 5.0, 0, 'https://res.klook.com/image/upload/activities/vrbjkt1qxehkxp4okpud.jpg', 1
 WHERE NOT EXISTS (SELECT 1 FROM tours WHERE slug = 'tur-setengah-hari-pasukan-terakota-xian-dengan-makan-siang-keluarga-lokal') LIMIT 1;
 SET @tid = (SELECT id FROM tours WHERE slug = 'tur-setengah-hari-pasukan-terakota-xian-dengan-makan-siang-keluarga-lokal' LIMIT 1);
 
-INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Shenzhen', 'Day 1 di Shenzhen: Tur Setengah Hari Pasukan Terakota Xi'an dengan Makan Siang Keluarga Lokal' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
+INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Shenzhen', 'Day 1 di Shenzhen: Tur Setengah Hari Pasukan Terakota Xi''an dengan Makan Siang Keluarga Lokal' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
 
 INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, accommodation) SELECT @tid, 2, 'Day 2 — Shenzhen', 'Day 2: Explore Shenzhen. Free day.', 'Breakfast', 'Hotel' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 2) LIMIT 1;
 
-INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/vrbjkt1qxehkxp4okpud.jpg', 'Tur Setengah Hari Pasukan Terakota Xi'an dengan Makan Siang Keluarga Lokal', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/vrbjkt1qxehkxp4okpud.jpg') LIMIT 1;
+INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/vrbjkt1qxehkxp4okpud.jpg', 'Tur Setengah Hari Pasukan Terakota Xi''an dengan Makan Siang Keluarga Lokal', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/vrbjkt1qxehkxp4okpud.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 20, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 7, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur Jalan Kaki Makanan Lokal & Budaya 3 Jam di Muslim Quarter', 'tur-jalan-kaki-makanan-lokal-budaya-3-jam-di-muslim-quarter', 'Shenzhen', 'Tur Jalan Kaki Makanan Lokal & Budaya 3 Jam di Muslim Quarter
@@ -623,21 +623,21 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/t03gztledq4ptk99owz1.jpg', 'Tur Jalan Kaki Makanan Lokal & Budaya 3 Jam di Muslim Quarter', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/t03gztledq4ptk99owz1.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 20, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 8, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
-SELECT 'Xi'an Xiangrui Furong Banquet - Pengalaman Imersif Seribu Tahun Estetika Istana Dinasti Tang', 'xian-xiangrui-furong-banquet-pengalaman-imersif-seribu-tahun-estetika-istana-dinasti-tang', 'Shenzhen', 'Xi'an Xiangrui Furong Banquet - Pengalaman Imersif Seribu Tahun Estetika Istana Dinasti Tang
+SELECT 'Xi''an Xiangrui Furong Banquet - Pengalaman Imersif Seribu Tahun Estetika Istana Dinasti Tang', 'xian-xiangrui-furong-banquet-pengalaman-imersif-seribu-tahun-estetika-istana-dinasti-tang', 'Shenzhen', 'Xi''an Xiangrui Furong Banquet - Pengalaman Imersif Seribu Tahun Estetika Istana Dinasti Tang
 
 Tags: Pembatalan gratis
 Popularity: 50+ kali dipesan', 379894.0, 'IDR', NULL, 20, 5.0, 0, 'https://res.klook.com/image/upload/activities/xpthecrz7nsp8v8qfd9g.jpg', 1
 WHERE NOT EXISTS (SELECT 1 FROM tours WHERE slug = 'xian-xiangrui-furong-banquet-pengalaman-imersif-seribu-tahun-estetika-istana-dinasti-tang') LIMIT 1;
 SET @tid = (SELECT id FROM tours WHERE slug = 'xian-xiangrui-furong-banquet-pengalaman-imersif-seribu-tahun-estetika-istana-dinasti-tang' LIMIT 1);
 
-INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Shenzhen', 'Day 1 di Shenzhen: Xi'an Xiangrui Furong Banquet - Pengalaman Imersif Seribu Tahun Estetika Istana Dinasti Tang' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
+INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Shenzhen', 'Day 1 di Shenzhen: Xi''an Xiangrui Furong Banquet - Pengalaman Imersif Seribu Tahun Estetika Istana Dinasti Tang' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
 
 INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, accommodation) SELECT @tid, 2, 'Day 2 — Shenzhen', 'Day 2: Explore Shenzhen. Free day.', 'Breakfast', 'Hotel' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 2) LIMIT 1;
 
-INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/xpthecrz7nsp8v8qfd9g.jpg', 'Xi'an Xiangrui Furong Banquet - Pengalaman Imersif Seribu Tahun Estetika Istana Dinasti Tang', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/xpthecrz7nsp8v8qfd9g.jpg') LIMIT 1;
+INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/xpthecrz7nsp8v8qfd9g.jpg', 'Xi''an Xiangrui Furong Banquet - Pengalaman Imersif Seribu Tahun Estetika Istana Dinasti Tang', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/xpthecrz7nsp8v8qfd9g.jpg') LIMIT 1;
 
 INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 20, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
@@ -671,7 +671,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/zpgbu2s2gf7k2xmcqtif.jpg', 'Tur Sehari Panda Chengdu & Buddha Raksasa Leshan', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/zpgbu2s2gf7k2xmcqtif.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 11, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 14, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur 2 Hari Gunung Emei Sichuan dan Buddha Raksasa Leshan (Opsional Tur Pribadi Berbahasa Inggris)', 'tur-2-hari-gunung-emei-sichuan-dan-buddha-raksasa-leshan-opsional-tur-pribadi-berbahasa-inggris', 'Chengdu', 'Tur 2 Hari Gunung Emei Sichuan dan Buddha Raksasa Leshan (Opsional Tur Pribadi Berbahasa Inggris)
@@ -687,7 +687,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/dlzppfvkmkevovmvapks.jpg', 'Tur 2 Hari Gunung Emei Sichuan dan Buddha Raksasa Leshan (Opsional Tur Pribadi Berbahasa Inggris)', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/dlzppfvkmkevovmvapks.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 7, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 12, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur 6 Hari Lintas Sichuan Barat Jalur Selatan Genyen (Mata Genyen + Lenggacuo + Yuzixi + Cuopugou + Lembah Sungai Reti + Jiagenba)', 'tur-6-hari-lintas-sichuan-barat-jalur-selatan-genyen-mata-genyen-lenggacuo-yuzixi-cuopugou-lembah-sungai-reti-jiagenba', 'Chengdu', 'Tur 6 Hari Lintas Sichuan Barat Jalur Selatan Genyen (Mata Genyen + Lenggacuo + Yuzixi + Cuopugou + Lembah Sungai Reti + Jiagenba)
@@ -703,7 +703,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/w8ibposhsismdjn9yfmk.jpg', 'Tur 6 Hari Lintas Sichuan Barat Jalur Selatan Genyen (Mata Genyen + Lenggacuo + Yuzixi + Cuopugou + Lembah Sungai Reti + Jiagenba)', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/w8ibposhsismdjn9yfmk.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 17, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 11, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur Sehari di Chengdu: Pangkalan Panda & Eksplorasi Museum Sanxingdui', 'tur-sehari-di-chengdu-pangkalan-panda-eksplorasi-museum-sanxingdui', 'Chengdu', 'Tur Sehari di Chengdu: Pangkalan Panda & Eksplorasi Museum Sanxingdui
@@ -735,7 +735,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/f4sbrmu6eqkawrdyakld.jpg', 'Tur Pribadi Sehari Penuh Dujiangyan dan Lembah Panda Chengdu', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/f4sbrmu6eqkawrdyakld.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 16, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 19, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur 4 Hari Gunung Siguniang, Taman Moshigong, Yuzixi, Lenggacuo (2-8 orang)', 'tur-4-hari-gunung-siguniang-taman-moshigong-yuzixi-lenggacuo-2-8-orang', 'Chengdu', 'Tur 4 Hari Gunung Siguniang, Taman Moshigong, Yuzixi, Lenggacuo (2-8 orang)
@@ -751,7 +751,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/wtzp0jqkhmm2lsdyjzyw.jpg', 'Tur 4 Hari Gunung Siguniang, Taman Moshigong, Yuzixi, Lenggacuo (2-8 orang)', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/wtzp0jqkhmm2lsdyjzyw.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 17, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 10, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Chengdu Du Fu Thatched Cottage & Wuhou Shrine Full-Day Food Experience', 'chengdu-du-fu-thatched-cottage-wuhou-shrine-full-day-food-experience', 'Chengdu', 'Chengdu Du Fu Thatched Cottage & Wuhou Shrine Full-Day Food Experience
@@ -767,7 +767,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/v07vig9clftqyafec6ql.jpg', 'Chengdu Du Fu Thatched Cottage & Wuhou Shrine Full-Day Food Experience', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/v07vig9clftqyafec6ql.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 17, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 7, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur Pribadi Sehari Penuh Pangkalan Panda Wolong Chengdu', 'tur-pribadi-sehari-penuh-pangkalan-panda-wolong-chengdu', 'Chengdu', 'Tur Pribadi Sehari Penuh Pangkalan Panda Wolong Chengdu
@@ -783,7 +783,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/xxryh1wgtbzpzhadgzd1.jpg', 'Tur Pribadi Sehari Penuh Pangkalan Panda Wolong Chengdu', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/xxryh1wgtbzpzhadgzd1.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 17, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 12, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Penyewaan Hanfu dan Pengalaman Pemotretan di Chengdu Chunxi Road', 'penyewaan-hanfu-dan-pengalaman-pemotretan-di-chengdu-chunxi-road', 'Chengdu', 'Penyewaan Hanfu dan Pengalaman Pemotretan di Chengdu Chunxi Road
@@ -799,7 +799,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/dd1xlvth5vyewcqzjb8u.jpg', 'Penyewaan Hanfu dan Pengalaman Pemotretan di Chengdu Chunxi Road', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/dd1xlvth5vyewcqzjb8u.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 11, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 9, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Pengalaman Pemotretan Hanfu di Guilin Yangshuo (Sewa Hanfu + Fotografer Opsional untuk Pemotretan Luar Ruangan + Pengalaman Rakit Bambu)', 'pengalaman-pemotretan-hanfu-di-guilin-yangshuo-sewa-hanfu-fotografer-opsional-untuk-pemotretan-luar-ruangan-pengalaman-rakit-bambu', 'Xi'an', 'Pengalaman Pemotretan Hanfu di Guilin Yangshuo (Sewa Hanfu + Fotografer Opsional untuk Pemotretan Luar Ruangan + Pengalaman Rakit Bambu)
@@ -809,13 +809,13 @@ Popularity: ', 285576.0, 'IDR', NULL, 20, 5.0, 0, 'https://res.klook.com/image/u
 WHERE NOT EXISTS (SELECT 1 FROM tours WHERE slug = 'pengalaman-pemotretan-hanfu-di-guilin-yangshuo-sewa-hanfu-fotografer-opsional-untuk-pemotretan-luar-ruangan-pengalaman-rakit-bambu') LIMIT 1;
 SET @tid = (SELECT id FROM tours WHERE slug = 'pengalaman-pemotretan-hanfu-di-guilin-yangshuo-sewa-hanfu-fotografer-opsional-untuk-pemotretan-luar-ruangan-pengalaman-rakit-bambu' LIMIT 1);
 
-INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Xi'an', 'Day 1 di Xi'an: Pengalaman Pemotretan Hanfu di Guilin Yangshuo (Sewa Hanfu + Fotografer Opsional untuk Pemotretan Luar Ruangan + Pengalaman Rakit Bambu)' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
+INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Xi'an', 'Day 1 di Xi''an: Pengalaman Pemotretan Hanfu di Guilin Yangshuo (Sewa Hanfu + Fotografer Opsional untuk Pemotretan Luar Ruangan + Pengalaman Rakit Bambu)' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
 
-INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, accommodation) SELECT @tid, 2, 'Day 2 — Xi'an', 'Day 2: Explore Xi'an. Free day.', 'Breakfast', 'Hotel' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 2) LIMIT 1;
+INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, accommodation) SELECT @tid, 2, 'Day 2 — Xi'an', 'Day 2: Explore Xi''an. Free day.', 'Breakfast', 'Hotel' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 2) LIMIT 1;
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/h6pgxix0gjwsn35blycc.jpg', 'Pengalaman Pemotretan Hanfu di Guilin Yangshuo (Sewa Hanfu + Fotografer Opsional untuk Pemotretan Luar Ruangan + Pengalaman Rakit Bambu)', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/h6pgxix0gjwsn35blycc.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 13, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 20, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur Sehari Penuh Pelayaran Sungai Li dengan Kapal Bintang Empat dari Yangshuo (Pilihan Objek Wisata: Arung Jeram Bambu Sungai Yulong/Gua Yinzi/Impression Liu Sanjie/Cinta Abadi Guilin)', 'tur-sehari-penuh-pelayaran-sungai-li-dengan-kapal-bintang-empat-dari-yangshuo-pilihan-objek-wisata-arung-jeram-bambu-sungai-yulonggua-yinziimpression-liu-sanjiecinta-abadi-guilin', 'Xi'an', 'Tur Sehari Penuh Pelayaran Sungai Li dengan Kapal Bintang Empat dari Yangshuo (Pilihan Objek Wisata: Arung Jeram Bambu Sungai Yulong/Gua Yinzi/Impression Liu Sanjie/Cinta Abadi Guilin)
@@ -825,13 +825,13 @@ Popularity: ', 1590684.0, 'IDR', NULL, 20, 5.0, 0, 'https://res.klook.com/image/
 WHERE NOT EXISTS (SELECT 1 FROM tours WHERE slug = 'tur-sehari-penuh-pelayaran-sungai-li-dengan-kapal-bintang-empat-dari-yangshuo-pilihan-objek-wisata-arung-jeram-bambu-sungai-yulonggua-yinziimpression-liu-sanjiecinta-abadi-guilin') LIMIT 1;
 SET @tid = (SELECT id FROM tours WHERE slug = 'tur-sehari-penuh-pelayaran-sungai-li-dengan-kapal-bintang-empat-dari-yangshuo-pilihan-objek-wisata-arung-jeram-bambu-sungai-yulonggua-yinziimpression-liu-sanjiecinta-abadi-guilin' LIMIT 1);
 
-INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Xi'an', 'Day 1 di Xi'an: Tur Sehari Penuh Pelayaran Sungai Li dengan Kapal Bintang Empat dari Yangshuo (Pilihan Objek Wisata: Arung Jeram Bambu Sungai Yulong/Gua Yinzi/Impression Liu Sanjie/Cinta Abadi Guilin)' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
+INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Xi'an', 'Day 1 di Xi''an: Tur Sehari Penuh Pelayaran Sungai Li dengan Kapal Bintang Empat dari Yangshuo (Pilihan Objek Wisata: Arung Jeram Bambu Sungai Yulong/Gua Yinzi/Impression Liu Sanjie/Cinta Abadi Guilin)' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
 
-INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, accommodation) SELECT @tid, 2, 'Day 2 — Xi'an', 'Day 2: Explore Xi'an. Free day.', 'Breakfast', 'Hotel' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 2) LIMIT 1;
+INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, accommodation) SELECT @tid, 2, 'Day 2 — Xi'an', 'Day 2: Explore Xi''an. Free day.', 'Breakfast', 'Hotel' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 2) LIMIT 1;
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/cfckbsqo8cjbc7jnc3k8.jpg', 'Tur Sehari Penuh Pelayaran Sungai Li dengan Kapal Bintang Empat dari Yangshuo (Pilihan Objek Wisata: Arung Jeram Bambu Sungai Yulong/Gua Yinzi/Impression Liu Sanjie/Cinta Abadi Guilin)', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/cfckbsqo8cjbc7jnc3k8.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 13, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 6, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur Sehari Perahu Bintang 3 Sungai Li Guilin (Grup Kecil 8 Orang + Pilihan Sendiri Rakit Bambu Sungai Yulong/Kupu-Kupu Musim Semi/Gua Yinzi/Puncak Ruyi/Impresi Liu Sanjie/Guilin Cinta Abadi)', 'tur-sehari-perahu-bintang-3-sungai-li-guilin-grup-kecil-8-orang-pilihan-sendiri-rakit-bambu-sungai-yulongkupu-kupu-musim-semigua-yinzipuncak-ruyiimpresi-liu-sanjieguilin-cinta-abad', 'Xi'an', 'Tur Sehari Perahu Bintang 3 Sungai Li Guilin (Grup Kecil 8 Orang + Pilihan Sendiri Rakit Bambu Sungai Yulong/Kupu-Kupu Musim Semi/Gua Yinzi/Puncak Ruyi/Impresi Liu Sanjie/Guilin Cinta Abadi)
@@ -841,29 +841,29 @@ Popularity: ', 1291274.0, 'IDR', NULL, 20, 5.0, 0, 'https://res.klook.com/image/
 WHERE NOT EXISTS (SELECT 1 FROM tours WHERE slug = 'tur-sehari-perahu-bintang-3-sungai-li-guilin-grup-kecil-8-orang-pilihan-sendiri-rakit-bambu-sungai-yulongkupu-kupu-musim-semigua-yinzipuncak-ruyiimpresi-liu-sanjieguilin-cinta-abad') LIMIT 1;
 SET @tid = (SELECT id FROM tours WHERE slug = 'tur-sehari-perahu-bintang-3-sungai-li-guilin-grup-kecil-8-orang-pilihan-sendiri-rakit-bambu-sungai-yulongkupu-kupu-musim-semigua-yinzipuncak-ruyiimpresi-liu-sanjieguilin-cinta-abad' LIMIT 1);
 
-INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Xi'an', 'Day 1 di Xi'an: Tur Sehari Perahu Bintang 3 Sungai Li Guilin (Grup Kecil 8 Orang + Pilihan Sendiri Rakit Bambu Sungai Yulong/Kupu-Kupu Musim Semi/Gua Yinzi/Puncak Ruyi/Impresi Liu Sanjie/Guilin Cinta Abadi)' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
+INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Xi'an', 'Day 1 di Xi''an: Tur Sehari Perahu Bintang 3 Sungai Li Guilin (Grup Kecil 8 Orang + Pilihan Sendiri Rakit Bambu Sungai Yulong/Kupu-Kupu Musim Semi/Gua Yinzi/Puncak Ruyi/Impresi Liu Sanjie/Guilin Cinta Abadi)' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
 
-INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, accommodation) SELECT @tid, 2, 'Day 2 — Xi'an', 'Day 2: Explore Xi'an. Free day.', 'Breakfast', 'Hotel' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 2) LIMIT 1;
+INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, accommodation) SELECT @tid, 2, 'Day 2 — Xi'an', 'Day 2: Explore Xi''an. Free day.', 'Breakfast', 'Hotel' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 2) LIMIT 1;
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/bugnkku9rs64zw3pxyv2.jpg', 'Tur Sehari Perahu Bintang 3 Sungai Li Guilin (Grup Kecil 8 Orang + Pilihan Sendiri Rakit Bambu Sungai Yulong/Kupu-Kupu Musim Semi/Gua Yinzi/Puncak Ruyi/Impresi Liu Sanjie/Guilin Cinta Abadi)', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/bugnkku9rs64zw3pxyv2.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 15, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 8, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
-SELECT 'Guilin Longji Scenic Area + Huangluo Yao Village One-Day Tour (Jinkeng Dazhai Hongyao Terraces/Ping'an Village Terraces)', 'guilin-longji-scenic-area-huangluo-yao-village-one-day-tour-jinkeng-dazhai-hongyao-terracespingan-village-terraces', 'Xi'an', 'Guilin Longji Scenic Area + Huangluo Yao Village One-Day Tour (Jinkeng Dazhai Hongyao Terraces/Ping'an Village Terraces)
+SELECT 'Guilin Longji Scenic Area + Huangluo Yao Village One-Day Tour (Jinkeng Dazhai Hongyao Terraces/Ping''an Village Terraces)', 'guilin-longji-scenic-area-huangluo-yao-village-one-day-tour-jinkeng-dazhai-hongyao-terracespingan-village-terraces', 'Xi'an', 'Guilin Longji Scenic Area + Huangluo Yao Village One-Day Tour (Jinkeng Dazhai Hongyao Terraces/Ping''an Village Terraces)
 
 Tags: Keberangkatan pagi; Pembatalan gratis
 Popularity: ', 505286.0, 'IDR', NULL, 20, 5.0, 0, 'https://res.klook.com/image/upload/activities/yutm762shfn0koduvoz0.jpg', 1
 WHERE NOT EXISTS (SELECT 1 FROM tours WHERE slug = 'guilin-longji-scenic-area-huangluo-yao-village-one-day-tour-jinkeng-dazhai-hongyao-terracespingan-village-terraces') LIMIT 1;
 SET @tid = (SELECT id FROM tours WHERE slug = 'guilin-longji-scenic-area-huangluo-yao-village-one-day-tour-jinkeng-dazhai-hongyao-terracespingan-village-terraces' LIMIT 1);
 
-INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Xi'an', 'Day 1 di Xi'an: Guilin Longji Scenic Area + Huangluo Yao Village One-Day Tour (Jinkeng Dazhai Hongyao Terraces/Ping'an Village Terraces)' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
+INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Xi'an', 'Day 1 di Xi''an: Guilin Longji Scenic Area + Huangluo Yao Village One-Day Tour (Jinkeng Dazhai Hongyao Terraces/Ping''an Village Terraces)' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
 
-INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, accommodation) SELECT @tid, 2, 'Day 2 — Xi'an', 'Day 2: Explore Xi'an. Free day.', 'Breakfast', 'Hotel' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 2) LIMIT 1;
+INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, accommodation) SELECT @tid, 2, 'Day 2 — Xi'an', 'Day 2: Explore Xi''an. Free day.', 'Breakfast', 'Hotel' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 2) LIMIT 1;
 
-INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/yutm762shfn0koduvoz0.jpg', 'Guilin Longji Scenic Area + Huangluo Yao Village One-Day Tour (Jinkeng Dazhai Hongyao Terraces/Ping'an Village Terraces)', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/yutm762shfn0koduvoz0.jpg') LIMIT 1;
+INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/yutm762shfn0koduvoz0.jpg', 'Guilin Longji Scenic Area + Huangluo Yao Village One-Day Tour (Jinkeng Dazhai Hongyao Terraces/Ping''an Village Terraces)', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/yutm762shfn0koduvoz0.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 12, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 14, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Guilin Yangshuo & Yulong River Full-Day Tour', 'guilin-yangshuo-yulong-river-full-day-tour', 'Xi'an', 'Guilin Yangshuo & Yulong River Full-Day Tour
@@ -873,9 +873,9 @@ Popularity: ', 575108.0, 'IDR', NULL, 20, 5.0, 0, 'https://res.klook.com/image/u
 WHERE NOT EXISTS (SELECT 1 FROM tours WHERE slug = 'guilin-yangshuo-yulong-river-full-day-tour') LIMIT 1;
 SET @tid = (SELECT id FROM tours WHERE slug = 'guilin-yangshuo-yulong-river-full-day-tour' LIMIT 1);
 
-INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Xi'an', 'Day 1 di Xi'an: Guilin Yangshuo & Yulong River Full-Day Tour' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
+INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Xi'an', 'Day 1 di Xi''an: Guilin Yangshuo & Yulong River Full-Day Tour' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
 
-INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, accommodation) SELECT @tid, 2, 'Day 2 — Xi'an', 'Day 2: Explore Xi'an. Free day.', 'Breakfast', 'Hotel' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 2) LIMIT 1;
+INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, accommodation) SELECT @tid, 2, 'Day 2 — Xi'an', 'Day 2: Explore Xi''an. Free day.', 'Breakfast', 'Hotel' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 2) LIMIT 1;
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/vfjtfytkenefrkyow6le.jpg', 'Guilin Yangshuo & Yulong River Full-Day Tour', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/vfjtfytkenefrkyow6le.jpg') LIMIT 1;
 
@@ -889,13 +889,13 @@ Popularity: 100+ kali dipesan', 1801224.0, 'IDR', NULL, 20, 5.0, 0, 'https://res
 WHERE NOT EXISTS (SELECT 1 FROM tours WHERE slug = 'tur-sehari-kota-guilin-kota-kuno-pinggiran-kota-dan-gua-seruling-buluh') LIMIT 1;
 SET @tid = (SELECT id FROM tours WHERE slug = 'tur-sehari-kota-guilin-kota-kuno-pinggiran-kota-dan-gua-seruling-buluh' LIMIT 1);
 
-INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Xi'an', 'Day 1 di Xi'an: Tur Sehari Kota Guilin: Kota Kuno Pinggiran Kota dan Gua Seruling Buluh' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
+INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Xi'an', 'Day 1 di Xi''an: Tur Sehari Kota Guilin: Kota Kuno Pinggiran Kota dan Gua Seruling Buluh' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
 
-INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, accommodation) SELECT @tid, 2, 'Day 2 — Xi'an', 'Day 2: Explore Xi'an. Free day.', 'Breakfast', 'Hotel' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 2) LIMIT 1;
+INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, accommodation) SELECT @tid, 2, 'Day 2 — Xi'an', 'Day 2: Explore Xi''an. Free day.', 'Breakfast', 'Hotel' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 2) LIMIT 1;
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/mlrsnqky6qups4jgd82f.jpg', 'Tur Sehari Kota Guilin: Kota Kuno Pinggiran Kota dan Gua Seruling Buluh', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/mlrsnqky6qups4jgd82f.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 14, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 9, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Pengalaman Pribadi Setengah Hari Guilin Impression Liu Sanjie', 'pengalaman-pribadi-setengah-hari-guilin-impression-liu-sanjie', 'Xi'an', 'Pengalaman Pribadi Setengah Hari Guilin Impression Liu Sanjie
@@ -905,13 +905,13 @@ Popularity: 50+ kali dipesan', 998074.0, 'IDR', NULL, 20, 5.0, 0, 'https://res.k
 WHERE NOT EXISTS (SELECT 1 FROM tours WHERE slug = 'pengalaman-pribadi-setengah-hari-guilin-impression-liu-sanjie') LIMIT 1;
 SET @tid = (SELECT id FROM tours WHERE slug = 'pengalaman-pribadi-setengah-hari-guilin-impression-liu-sanjie' LIMIT 1);
 
-INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Xi'an', 'Day 1 di Xi'an: Pengalaman Pribadi Setengah Hari Guilin Impression Liu Sanjie' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
+INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Xi'an', 'Day 1 di Xi''an: Pengalaman Pribadi Setengah Hari Guilin Impression Liu Sanjie' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
 
-INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, accommodation) SELECT @tid, 2, 'Day 2 — Xi'an', 'Day 2: Explore Xi'an. Free day.', 'Breakfast', 'Hotel' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 2) LIMIT 1;
+INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, accommodation) SELECT @tid, 2, 'Day 2 — Xi'an', 'Day 2: Explore Xi''an. Free day.', 'Breakfast', 'Hotel' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 2) LIMIT 1;
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/gl2h3csvbwfuovhf0mxy.jpg', 'Pengalaman Pribadi Setengah Hari Guilin Impression Liu Sanjie', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/gl2h3csvbwfuovhf0mxy.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 15, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 9, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur Pesiar Bintang 3 Sungai Li Jiang Guilin. Gua Reed Flute. Bukit Gajah. Sungai Yulong Yangshuo. Tur Pribadi 3 Hari', 'tur-pesiar-bintang-3-sungai-li-jiang-guilin-gua-reed-flute-bukit-gajah-sungai-yulong-yangshuo-tur-pribadi-3-hari', 'Xi'an', 'Tur Pesiar Bintang 3 Sungai Li Jiang Guilin. Gua Reed Flute. Bukit Gajah. Sungai Yulong Yangshuo. Tur Pribadi 3 Hari
@@ -921,13 +921,13 @@ Popularity: ', 0.0, 'IDR', NULL, 20, 5.0, 0, 'https://res.klook.com/image/upload
 WHERE NOT EXISTS (SELECT 1 FROM tours WHERE slug = 'tur-pesiar-bintang-3-sungai-li-jiang-guilin-gua-reed-flute-bukit-gajah-sungai-yulong-yangshuo-tur-pribadi-3-hari') LIMIT 1;
 SET @tid = (SELECT id FROM tours WHERE slug = 'tur-pesiar-bintang-3-sungai-li-jiang-guilin-gua-reed-flute-bukit-gajah-sungai-yulong-yangshuo-tur-pribadi-3-hari' LIMIT 1);
 
-INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Xi'an', 'Day 1 di Xi'an: Tur Pesiar Bintang 3 Sungai Li Jiang Guilin. Gua Reed Flute. Bukit Gajah. Sungai Yulong Yangshuo. Tur Pribadi 3 Hari' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
+INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Xi'an', 'Day 1 di Xi''an: Tur Pesiar Bintang 3 Sungai Li Jiang Guilin. Gua Reed Flute. Bukit Gajah. Sungai Yulong Yangshuo. Tur Pribadi 3 Hari' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
 
-INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, accommodation) SELECT @tid, 2, 'Day 2 — Xi'an', 'Day 2: Explore Xi'an. Free day.', 'Breakfast', 'Hotel' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 2) LIMIT 1;
+INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, accommodation) SELECT @tid, 2, 'Day 2 — Xi'an', 'Day 2: Explore Xi''an. Free day.', 'Breakfast', 'Hotel' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 2) LIMIT 1;
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/gc4h9zwmzw2ugiaojjyh.jpg', 'Tur Pesiar Bintang 3 Sungai Li Jiang Guilin. Gua Reed Flute. Bukit Gajah. Sungai Yulong Yangshuo. Tur Pribadi 3 Hari', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/gc4h9zwmzw2ugiaojjyh.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 11, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 12, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Pengalaman Dayung SUP/Kayak Luar Ruangan di Guilin Yangshuo Setengah Hari - Minimal 2 Orang', 'pengalaman-dayung-supkayak-luar-ruangan-di-guilin-yangshuo-setengah-hari-minimal-2-orang', 'Xi'an', 'Pengalaman Dayung SUP/Kayak Luar Ruangan di Guilin Yangshuo Setengah Hari - Minimal 2 Orang
@@ -937,13 +937,13 @@ Popularity: ', 857723.0, 'IDR', NULL, 20, 5.0, 0, 'https://res.klook.com/image/u
 WHERE NOT EXISTS (SELECT 1 FROM tours WHERE slug = 'pengalaman-dayung-supkayak-luar-ruangan-di-guilin-yangshuo-setengah-hari-minimal-2-orang') LIMIT 1;
 SET @tid = (SELECT id FROM tours WHERE slug = 'pengalaman-dayung-supkayak-luar-ruangan-di-guilin-yangshuo-setengah-hari-minimal-2-orang' LIMIT 1);
 
-INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Xi'an', 'Day 1 di Xi'an: Pengalaman Dayung SUP/Kayak Luar Ruangan di Guilin Yangshuo Setengah Hari - Minimal 2 Orang' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
+INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Xi'an', 'Day 1 di Xi''an: Pengalaman Dayung SUP/Kayak Luar Ruangan di Guilin Yangshuo Setengah Hari - Minimal 2 Orang' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
 
-INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, accommodation) SELECT @tid, 2, 'Day 2 — Xi'an', 'Day 2: Explore Xi'an. Free day.', 'Breakfast', 'Hotel' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 2) LIMIT 1;
+INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, accommodation) SELECT @tid, 2, 'Day 2 — Xi'an', 'Day 2: Explore Xi''an. Free day.', 'Breakfast', 'Hotel' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 2) LIMIT 1;
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/jqkkmge26vpj671dqqep.jpg', 'Pengalaman Dayung SUP/Kayak Luar Ruangan di Guilin Yangshuo Setengah Hari - Minimal 2 Orang', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/jqkkmge26vpj671dqqep.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 14, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 20, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Guilin Li River + Yulong River Bamboo Raft + Impression Liu Sanjie Day Tour (Chartered Tour + Tiket + Li River Three/Four-Star Cruise)', 'guilin-li-river-yulong-river-bamboo-raft-impression-liu-sanjie-day-tour-chartered-tour-tiket-li-river-threefour-star-cruise', 'Xi'an', 'Guilin Li River + Yulong River Bamboo Raft + Impression Liu Sanjie Day Tour (Chartered Tour + Tiket + Li River Three/Four-Star Cruise)
@@ -953,13 +953,13 @@ Popularity: ', 2220575.0, 'IDR', NULL, 20, 5.0, 0, 'https://res.klook.com/image/
 WHERE NOT EXISTS (SELECT 1 FROM tours WHERE slug = 'guilin-li-river-yulong-river-bamboo-raft-impression-liu-sanjie-day-tour-chartered-tour-tiket-li-river-threefour-star-cruise') LIMIT 1;
 SET @tid = (SELECT id FROM tours WHERE slug = 'guilin-li-river-yulong-river-bamboo-raft-impression-liu-sanjie-day-tour-chartered-tour-tiket-li-river-threefour-star-cruise' LIMIT 1);
 
-INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Xi'an', 'Day 1 di Xi'an: Guilin Li River + Yulong River Bamboo Raft + Impression Liu Sanjie Day Tour (Chartered Tour + Tiket + Li River Three/Four-Star Cruise)' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
+INSERT IGNORE INTO itineraries (tour_id, day_number, title, description) SELECT @tid, 1, 'Day 1 — Xi'an', 'Day 1 di Xi''an: Guilin Li River + Yulong River Bamboo Raft + Impression Liu Sanjie Day Tour (Chartered Tour + Tiket + Li River Three/Four-Star Cruise)' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 1) LIMIT 1;
 
-INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, accommodation) SELECT @tid, 2, 'Day 2 — Xi'an', 'Day 2: Explore Xi'an. Free day.', 'Breakfast', 'Hotel' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 2) LIMIT 1;
+INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, accommodation) SELECT @tid, 2, 'Day 2 — Xi'an', 'Day 2: Explore Xi''an. Free day.', 'Breakfast', 'Hotel' WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM itineraries WHERE tour_id = @tid AND day_number = 2) LIMIT 1;
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/klngwkus0xtnsoquypjo.jpg', 'Guilin Li River + Yulong River Bamboo Raft + Impression Liu Sanjie Day Tour (Chartered Tour + Tiket + Li River Three/Four-Star Cruise)', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/klngwkus0xtnsoquypjo.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 12, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 6, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur Mewah Panorama Penuh Beberapa Hari di Hunan Changsha Zhangjiajie Fenghuang', 'tur-mewah-panorama-penuh-beberapa-hari-di-hunan-changsha-zhangjiajie-fenghuang', 'Hangzhou', 'Tur Mewah Panorama Penuh Beberapa Hari di Hunan Changsha Zhangjiajie Fenghuang
@@ -975,7 +975,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/h5rpcvj4tmwjvy8eynuh.jpg', 'Tur Mewah Panorama Penuh Beberapa Hari di Hunan Changsha Zhangjiajie Fenghuang', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/h5rpcvj4tmwjvy8eynuh.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 20, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 12, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur Sehari Penuh Zhangjiajie Glass Bridge & Tianmen Mountain', 'tur-sehari-penuh-zhangjiajie-glass-bridge-tianmen-mountain', 'Hangzhou', 'Tur Sehari Penuh Zhangjiajie Glass Bridge & Tianmen Mountain
@@ -991,7 +991,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/v2qzsmwkxczngluuejfb.jpg', 'Tur Sehari Penuh Zhangjiajie Glass Bridge & Tianmen Mountain', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/v2qzsmwkxczngluuejfb.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 9, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 7, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Pertunjukan Zhangjiajie Tianmen Fox Fairy + transportasi pribadi pulang pergi (pemandangan nyata pegunungan dan sungai yang fantastis, pesta visual dan pendengaran yang mengejutkan)', 'pertunjukan-zhangjiajie-tianmen-fox-fairy-transportasi-pribadi-pulang-pergi-pemandangan-nyata-pegunungan-dan-sungai-yang-fantastis-pesta-visual-dan-pendengaran-yang-mengejutkan', 'Hangzhou', 'Pertunjukan Zhangjiajie Tianmen Fox Fairy + transportasi pribadi pulang pergi (pemandangan nyata pegunungan dan sungai yang fantastis, pesta visual dan pendengaran yang mengejutkan)
@@ -1007,7 +1007,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/z06aromawyxwsicevobm.jpg', 'Pertunjukan Zhangjiajie Tianmen Fox Fairy + transportasi pribadi pulang pergi (pemandangan nyata pegunungan dan sungai yang fantastis, pesta visual dan pendengaran yang mengejutkan)', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/z06aromawyxwsicevobm.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 13, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 18, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur Sehari 9 Tempat Teratas Zhangjiajie dengan Lewati Antrean', 'tur-sehari-9-tempat-teratas-zhangjiajie-dengan-lewati-antrean', 'Hangzhou', 'Tur Sehari 9 Tempat Teratas Zhangjiajie dengan Lewati Antrean
@@ -1023,7 +1023,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/opst29j7alomvahggrcy.jpg', 'Tur Sehari 9 Tempat Teratas Zhangjiajie dengan Lewati Antrean', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/opst29j7alomvahggrcy.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 9, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 18, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur Sehari Taman Hutan Nasional Gunung Tianmen Zhangjiajie (Saluran VIP Opsional)', 'tur-sehari-taman-hutan-nasional-gunung-tianmen-zhangjiajie-saluran-vip-opsional', 'Hangzhou', 'Tur Sehari Taman Hutan Nasional Gunung Tianmen Zhangjiajie (Saluran VIP Opsional)
@@ -1039,7 +1039,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/ortityi9gxphoowhwafd.jpg', 'Tur Sehari Taman Hutan Nasional Gunung Tianmen Zhangjiajie (Saluran VIP Opsional)', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/ortityi9gxphoowhwafd.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 14, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 12, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Panduan Bahasa Inggris Tur Dua-Lima Hari Kota Furong Mnt-Avatar untuk Enam Orang', 'panduan-bahasa-inggris-tur-dua-lima-hari-kota-furong-mnt-avatar-untuk-enam-orang', 'Hangzhou', 'Panduan Bahasa Inggris Tur Dua-Lima Hari Kota Furong Mnt-Avatar untuk Enam Orang
@@ -1055,7 +1055,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/lup4bz82tqchn7c4wyfl.jpg', 'Panduan Bahasa Inggris Tur Dua-Lima Hari Kota Furong Mnt-Avatar untuk Enam Orang', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/lup4bz82tqchn7c4wyfl.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 20, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 18, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Pengalaman Sehari Penuh Jembatan Kaca Zhangjiajie & Gua Naga Kuning', 'pengalaman-sehari-penuh-jembatan-kaca-zhangjiajie-gua-naga-kuning', 'Hangzhou', 'Pengalaman Sehari Penuh Jembatan Kaca Zhangjiajie & Gua Naga Kuning
@@ -1071,7 +1071,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/anmyn8uyffpdvvnau5x6.jpg', 'Pengalaman Sehari Penuh Jembatan Kaca Zhangjiajie & Gua Naga Kuning', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/anmyn8uyffpdvvnau5x6.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 19, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 8, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur Setengah Hari Kota Kuno Xiangxi Furong dengan Tiket', 'tur-setengah-hari-kota-kuno-xiangxi-furong-dengan-tiket', 'Hangzhou', 'Tur Setengah Hari Kota Kuno Xiangxi Furong dengan Tiket
@@ -1087,7 +1087,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/udmqnsf5j9ma4xxxcybf.jpg', 'Tur Setengah Hari Kota Kuno Xiangxi Furong dengan Tiket', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/udmqnsf5j9ma4xxxcybf.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 7, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 10, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Perjalanan ke Zhangjiajie | Kota Kuno Fenghuang, Zhangjiajie, Hunan 5 Hari 4 Malam', 'perjalanan-ke-zhangjiajie-kota-kuno-fenghuang-zhangjiajie-hunan-5-hari-4-malam', 'Hangzhou', 'Perjalanan ke Zhangjiajie | Kota Kuno Fenghuang, Zhangjiajie, Hunan 5 Hari 4 Malam
@@ -1103,7 +1103,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/usu8wtotau5m9svs4ea2.jpg', 'Perjalanan ke Zhangjiajie | Kota Kuno Fenghuang, Zhangjiajie, Hunan 5 Hari 4 Malam', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/usu8wtotau5m9svs4ea2.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 16, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 14, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur beberapa hari eksklusif Zhangjiajie Avatar Ajaib + Tianmen Secret Realm (pemandu berbahasa Inggris opsional)', 'tur-beberapa-hari-eksklusif-zhangjiajie-avatar-ajaib-tianmen-secret-realm-pemandu-berbahasa-inggris-opsional', 'Hangzhou', 'Tur beberapa hari eksklusif Zhangjiajie Avatar Ajaib + Tianmen Secret Realm (pemandu berbahasa Inggris opsional)
@@ -1119,7 +1119,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/zvg3gqdcmrmnezeombfl.jpg', 'Tur beberapa hari eksklusif Zhangjiajie Avatar Ajaib + Tianmen Secret Realm (pemandu berbahasa Inggris opsional)', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/zvg3gqdcmrmnezeombfl.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 10, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 5, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Dali Lisong Banquet: Pengalaman Perjamuan Kerajaan yang Imersif', 'dali-lisong-banquet-pengalaman-perjamuan-kerajaan-yang-imersif', 'Zhangjiajie', 'Dali Lisong Banquet: Pengalaman Perjamuan Kerajaan yang Imersif
@@ -1135,7 +1135,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/dbuo5scbbinxulud2aan.jpg', 'Dali Lisong Banquet: Pengalaman Perjamuan Kerajaan yang Imersif', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/dbuo5scbbinxulud2aan.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 16, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 7, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tuan rumah suku Naxi mengajak Anda menjelajahi pasar etnis minoritas, membuat makanan khas Naxi', 'tuan-rumah-suku-naxi-mengajak-anda-menjelajahi-pasar-etnis-minoritas-membuat-makanan-khas-naxi', 'Zhangjiajie', 'Tuan rumah suku Naxi mengajak Anda menjelajahi pasar etnis minoritas, membuat makanan khas Naxi
@@ -1151,7 +1151,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/sso5ffkn7odynagxwypj.jpg', 'Tuan rumah suku Naxi mengajak Anda menjelajahi pasar etnis minoritas, membuat makanan khas Naxi', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/sso5ffkn7odynagxwypj.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 5, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 19, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur wisata sehari penuh Pemandangan Danau Fuxian Kunming', 'tur-wisata-sehari-penuh-pemandangan-danau-fuxian-kunming', 'Zhangjiajie', 'Tur wisata sehari penuh Pemandangan Danau Fuxian Kunming
@@ -1183,7 +1183,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/p9sa0vxsrwtps8ctgmrq.jpg', 'Tur Yunnan 7 hari ke tempat-tempat wisata utama', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/p9sa0vxsrwtps8ctgmrq.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 6, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 16, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur Pribadi 5 Hari 4 Malam ke Kunming, Dali, Lijiang, dan Shangri-La', 'tur-pribadi-5-hari-4-malam-ke-kunming-dali-lijiang-dan-shangri-la', 'Zhangjiajie', 'Tur Pribadi 5 Hari 4 Malam ke Kunming, Dali, Lijiang, dan Shangri-La
@@ -1199,7 +1199,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/xf0hs653kwxucxkedcrm.jpg', 'Tur Pribadi 5 Hari 4 Malam ke Kunming, Dali, Lijiang, dan Shangri-La', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/xf0hs653kwxucxkedcrm.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 13, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 8, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Perjalanan 5/7 Hari ke Yunnan, Dali, Lijiang & Shangri-La', 'perjalanan-57-hari-ke-yunnan-dali-lijiang-shangri-la', 'Zhangjiajie', 'Perjalanan 5/7 Hari ke Yunnan, Dali, Lijiang & Shangri-La
@@ -1215,7 +1215,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/roqyimlqtm04srfcguvw.jpg', 'Perjalanan 5/7 Hari ke Yunnan, Dali, Lijiang & Shangri-La', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/roqyimlqtm04srfcguvw.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 10, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 6, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT '【Tur Pribadi】Jianshui+Maitreya+Danau Fuxian+Puzhehei/Kamteng/Yuanyang 5 Hari Tur Pribadi di Yunnan Tenggara', 'tur-pribadijianshuimaitreyadanau-fuxianpuzheheikamtengyuanyang-5-hari-tur-pribadi-di-yunnan-tenggara', 'Zhangjiajie', '【Tur Pribadi】Jianshui+Maitreya+Danau Fuxian+Puzhehei/Kamteng/Yuanyang 5 Hari Tur Pribadi di Yunnan Tenggara
@@ -1231,7 +1231,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/ejmzoedb3n4cb7ccpz80.jpg', '【Tur Pribadi】Jianshui+Maitreya+Danau Fuxian+Puzhehei/Kamteng/Yuanyang 5 Hari Tur Pribadi di Yunnan Tenggara', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/ejmzoedb3n4cb7ccpz80.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 9, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 5, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur sehari grup kecil mandiri dari Lijiang ke Shangri-La, Ngarai Harimau Melompat, Danau Napa, dan Biara Songzanlin', 'tur-sehari-grup-kecil-mandiri-dari-lijiang-ke-shangri-la-ngarai-harimau-melompat-danau-napa-dan-biara-songzanlin', 'Zhangjiajie', 'Tur sehari grup kecil mandiri dari Lijiang ke Shangri-La, Ngarai Harimau Melompat, Danau Napa, dan Biara Songzanlin
@@ -1247,7 +1247,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/faryleyid93cpmznib2p.jpg', 'Tur sehari grup kecil mandiri dari Lijiang ke Shangri-La, Ngarai Harimau Melompat, Danau Napa, dan Biara Songzanlin', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/faryleyid93cpmznib2p.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 12, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 8, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur 3 hari Lijiang Meili Snow Mountain dan Grup Kecil Shangri-La', 'tur-3-hari-lijiang-meili-snow-mountain-dan-grup-kecil-shangri-la', 'Zhangjiajie', 'Tur 3 hari Lijiang Meili Snow Mountain dan Grup Kecil Shangri-La
@@ -1279,7 +1279,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/q5dg2wmcuzrwvriat9z6.jpg', 'Tur Pribadi Lijiang 1 Hari: Gunung Salju Yulong, Padang Rumput Spruce, Kereta Gantung Yak Meadow, Kota Kuno Baisha', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/q5dg2wmcuzrwvriat9z6.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 15, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 14, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur Pribadi 6 Hari Harbin Ice and Snow World & Snow Town', 'tur-pribadi-6-hari-harbin-ice-and-snow-world-snow-town', 'Chongqing', 'Tur Pribadi 6 Hari Harbin Ice and Snow World & Snow Town
@@ -1295,7 +1295,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/o9xi2tpapnmvrysqpgbl.jpg', 'Tur Pribadi 6 Hari Harbin Ice and Snow World & Snow Town', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/o9xi2tpapnmvrysqpgbl.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 16, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 14, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur 10 Hari Harbin & Xuexiang & Gunung Changbai & Mohe', 'tur-10-hari-harbin-xuexiang-gunung-changbai-mohe', 'Chongqing', 'Tur 10 Hari Harbin & Xuexiang & Gunung Changbai & Mohe
@@ -1311,7 +1311,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/ms1fflmhykyolq0hilzw.jpg', 'Tur 10 Hari Harbin & Xuexiang & Gunung Changbai & Mohe', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/ms1fflmhykyolq0hilzw.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 20, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 12, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur 4 Hari Dongeng Es dan Salju di Harbin Yabuli Xuexiang, Tiongkok Timur Laut', 'tur-4-hari-dongeng-es-dan-salju-di-harbin-yabuli-xuexiang-tiongkok-timur-laut', 'Chongqing', 'Tur 4 Hari Dongeng Es dan Salju di Harbin Yabuli Xuexiang, Tiongkok Timur Laut
@@ -1327,7 +1327,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/aamncwfmz0jjlm5vnhnd.jpg', 'Tur 4 Hari Dongeng Es dan Salju di Harbin Yabuli Xuexiang, Tiongkok Timur Laut', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/aamncwfmz0jjlm5vnhnd.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 19, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 9, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur berpemandu kelompok kecil ke Museum Unit 731 selama 1,5 jam', 'tur-berpemandu-kelompok-kecil-ke-museum-unit-731-selama-15-jam', 'Chongqing', 'Tur berpemandu kelompok kecil ke Museum Unit 731 selama 1,5 jam
@@ -1343,7 +1343,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/rsqtdkypr8mq70lp2rrn.jpg', 'Tur berpemandu kelompok kecil ke Museum Unit 731 selama 1,5 jam', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/rsqtdkypr8mq70lp2rrn.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 8, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 7, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Mohe bertemu Xuexiang | Tur 7 Hari Harbin + Mohe + Xuexiang di Timur Laut', 'mohe-bertemu-xuexiang-tur-7-hari-harbin-mohe-xuexiang-di-timur-laut', 'Chongqing', 'Mohe bertemu Xuexiang | Tur 7 Hari Harbin + Mohe + Xuexiang di Timur Laut
@@ -1359,7 +1359,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/ysbtufrexkuy6nktqcp0.jpg', 'Mohe bertemu Xuexiang | Tur 7 Hari Harbin + Mohe + Xuexiang di Timur Laut', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/ysbtufrexkuy6nktqcp0.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 19, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 14, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Eksplorasi Salju Musim Dingin Multi-Hari Yabuli & Snow Village', 'eksplorasi-salju-musim-dingin-multi-hari-yabuli-snow-village', 'Chongqing', 'Eksplorasi Salju Musim Dingin Multi-Hari Yabuli & Snow Village
@@ -1375,7 +1375,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/thvyqh9jjkv6gclwduge.jpg', 'Eksplorasi Salju Musim Dingin Multi-Hari Yabuli & Snow Village', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/thvyqh9jjkv6gclwduge.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 16, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 13, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur 5 hari Dunia Es dan Salju Harbin & Yabuli & Desa Salju', 'tur-5-hari-dunia-es-dan-salju-harbin-yabuli-desa-salju', 'Chongqing', 'Tur 5 hari Dunia Es dan Salju Harbin & Yabuli & Desa Salju
@@ -1391,7 +1391,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/rbbyamkbutjzbuoekwc9.jpg', 'Tur 5 hari Dunia Es dan Salju Harbin & Yabuli & Desa Salju', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/rbbyamkbutjzbuoekwc9.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 5, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 9, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT '【Pra-penjualan Musim Dingin】Perjalanan Kereta Api Negeri Salju Harbin ke Mohe Pulang Pergi 5 Hari', 'pra-penjualan-musim-dinginperjalanan-kereta-api-negeri-salju-harbin-ke-mohe-pulang-pergi-5-hari', 'Chongqing', '【Pra-penjualan Musim Dingin】Perjalanan Kereta Api Negeri Salju Harbin ke Mohe Pulang Pergi 5 Hari
@@ -1423,7 +1423,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/lsvxlsbfsntwx6u3xoex.jpg', 'Tur Sehari ke Desa Salju', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/lsvxlsbfsntwx6u3xoex.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 14, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 8, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Perjalanan Klook Tiongkok Timur Laut yang Disesuaikan (Harbin/Jilin/Yanji/Shenyang)', 'perjalanan-klook-tiongkok-timur-laut-yang-disesuaikan-harbinjilinyanjishenyang', 'Chongqing', 'Perjalanan Klook Tiongkok Timur Laut yang Disesuaikan (Harbin/Jilin/Yanji/Shenyang)
@@ -1439,7 +1439,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/yebsjzf4eihchiqmtzrh.jpg', 'Perjalanan Klook Tiongkok Timur Laut yang Disesuaikan (Harbin/Jilin/Yanji/Shenyang)', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/yebsjzf4eihchiqmtzrh.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 5, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 14, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Perjalanan Kustom Pribadi Klook di Daratan Tiongkok, Fujian, Xiamen (Xiamen/Zhangzhou/Quanzhou)', 'perjalanan-kustom-pribadi-klook-di-daratan-tiongkok-fujian-xiamen-xiamenzhangzhouquanzhou', 'Yunnan', 'Perjalanan Kustom Pribadi Klook di Daratan Tiongkok, Fujian, Xiamen (Xiamen/Zhangzhou/Quanzhou)
@@ -1455,7 +1455,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/jjmiwrp88ixf4uwlanqw.jpg', 'Perjalanan Kustom Pribadi Klook di Daratan Tiongkok, Fujian, Xiamen (Xiamen/Zhangzhou/Quanzhou)', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/jjmiwrp88ixf4uwlanqw.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 15, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 5, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur Pribadi Sepanjang Hari Xiamen Yongding Tulou dan Yunshuiyao dengan Mobil Sewaan', 'tur-pribadi-sepanjang-hari-xiamen-yongding-tulou-dan-yunshuiyao-dengan-mobil-sewaan', 'Yunnan', 'Tur Pribadi Sepanjang Hari Xiamen Yongding Tulou dan Yunshuiyao dengan Mobil Sewaan
@@ -1471,7 +1471,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/cncphvmh15ojderrppy0.jpg', 'Tur Pribadi Sepanjang Hari Xiamen Yongding Tulou dan Yunshuiyao dengan Mobil Sewaan', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/cncphvmh15ojderrppy0.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 12, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 17, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Pengalaman Kapal Pesiar 1,5 Jam di Xiamen Kinmen', 'pengalaman-kapal-pesiar-15-jam-di-xiamen-kinmen', 'Yunnan', 'Pengalaman Kapal Pesiar 1,5 Jam di Xiamen Kinmen
@@ -1487,7 +1487,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/oljmx5tfohljyt6xhdp2.jpg', 'Pengalaman Kapal Pesiar 1,5 Jam di Xiamen Kinmen', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/oljmx5tfohljyt6xhdp2.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 12, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 13, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Tur sehari di Gulangyu, Xiamen, Fujian + Fan Po Lou', 'tur-sehari-di-gulangyu-xiamen-fujian-fan-po-lou', 'Yunnan', 'Tur sehari di Gulangyu, Xiamen, Fujian + Fan Po Lou
@@ -1503,7 +1503,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/z8xh1ksexkapalboc6en.jpg', 'Tur sehari di Gulangyu, Xiamen, Fujian + Fan Po Lou', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/z8xh1ksexkapalboc6en.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 12, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 20, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Pengalaman Berlayar di Xiamen (Upgrade Gratis ke Perahu Layar + Pengalaman Berlayar di Ombak + Cagar Alam Lumba-lumba Liar + Termasuk Asuransi Kecelakaan)', 'pengalaman-berlayar-di-xiamen-upgrade-gratis-ke-perahu-layar-pengalaman-berlayar-di-ombak-cagar-alam-lumba-lumba-liar-termasuk-asuransi-kecelakaan', 'Yunnan', 'Pengalaman Berlayar di Xiamen (Upgrade Gratis ke Perahu Layar + Pengalaman Berlayar di Ombak + Cagar Alam Lumba-lumba Liar + Termasuk Asuransi Kecelakaan)
@@ -1519,7 +1519,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/az6sljcq5b3chaq9uifv.jpg', 'Pengalaman Berlayar di Xiamen (Upgrade Gratis ke Perahu Layar + Pengalaman Berlayar di Ombak + Cagar Alam Lumba-lumba Liar + Termasuk Asuransi Kecelakaan)', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/az6sljcq5b3chaq9uifv.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 17, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 11, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Perjamuan Kekaisaran Imersif Xiamen Huangdu Liyan', 'perjamuan-kekaisaran-imersif-xiamen-huangdu-liyan', 'Yunnan', 'Perjamuan Kekaisaran Imersif Xiamen Huangdu Liyan
@@ -1535,7 +1535,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/szwkdiimmfbynclihebn.jpg', 'Perjamuan Kekaisaran Imersif Xiamen Huangdu Liyan', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/szwkdiimmfbynclihebn.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 9, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 16, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Perjalanan Romantis 3 Hari ke Yunshuiyao & Gulangyu, Fujian', 'perjalanan-romantis-3-hari-ke-yunshuiyao-gulangyu-fujian', 'Yunnan', 'Perjalanan Romantis 3 Hari ke Yunshuiyao & Gulangyu, Fujian
@@ -1551,7 +1551,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/mpxd6vsrsbgrbwjdzmj9.jpg', 'Perjalanan Romantis 3 Hari ke Yunshuiyao & Gulangyu, Fujian', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/mpxd6vsrsbgrbwjdzmj9.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 8, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 6, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Xiamen Yongding Tulou & Chengqilou Full-Day Tour', 'xiamen-yongding-tulou-chengqilou-full-day-tour', 'Yunnan', 'Xiamen Yongding Tulou & Chengqilou Full-Day Tour
@@ -1567,7 +1567,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/jkvyy9n2ucakcmrolx4g.jpg', 'Xiamen Yongding Tulou & Chengqilou Full-Day Tour', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/jkvyy9n2ucakcmrolx4g.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 20, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 6, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Pengalaman Pemotretan Zanhua di Xiamen Gulangyu (Foto Zanhua Super Keren + Riasan Opsional + Fotografer Opsional Mengikuti Pemotretan Luar Ruangan + Berbagai Pilihan Gaya)', 'pengalaman-pemotretan-zanhua-di-xiamen-gulangyu-foto-zanhua-super-keren-riasan-opsional-fotografer-opsional-mengikuti-pemotretan-luar-ruangan-berbagai-pilihan-gaya', 'Yunnan', 'Pengalaman Pemotretan Zanhua di Xiamen Gulangyu (Foto Zanhua Super Keren + Riasan Opsional + Fotografer Opsional Mengikuti Pemotretan Luar Ruangan + Berbagai Pilihan Gaya)
@@ -1583,7 +1583,7 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/jvtkfj8eblc63e9dzyeb.jpg', 'Pengalaman Pemotretan Zanhua di Xiamen Gulangyu (Foto Zanhua Super Keren + Riasan Opsional + Fotografer Opsional Mengikuti Pemotretan Luar Ruangan + Berbagai Pilihan Gaya)', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/jvtkfj8eblc63e9dzyeb.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 7, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 6, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
 INSERT IGNORE INTO tours (title, slug, category, description, price, price_currency, original_price, max_participants, rating, total_reviews, cover_image, is_active)
 SELECT 'Perjalanan Sastra dan Seni 4 Hari di Xiamen', 'perjalanan-sastra-dan-seni-4-hari-di-xiamen', 'Yunnan', 'Perjalanan Sastra dan Seni 4 Hari di Xiamen
@@ -1599,5 +1599,5 @@ INSERT IGNORE INTO itineraries (tour_id, day_number, title, description, meals, 
 
 INSERT IGNORE INTO tour_images (tour_id, image_path, caption, sort_order) SELECT @tid, 'https://res.klook.com/image/upload/activities/uidxows12nyag8ckrxoz.jpg', 'Perjalanan Sastra dan Seni 4 Hari di Xiamen', 0 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_images WHERE tour_id = @tid AND image_path = 'https://res.klook.com/image/upload/activities/uidxows12nyag8ckrxoz.jpg') LIMIT 1;
 
-INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 10, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
+INSERT IGNORE INTO tour_dates (tour_id, departure_date, return_date, available_slots, is_active) SELECT @tid, DATE_ADD(CURDATE(), INTERVAL 30 DAY), DATE_ADD(CURDATE(), INTERVAL 37 DAY), 8, 1 WHERE @tid IS NOT NULL AND NOT EXISTS (SELECT 1 FROM tour_dates WHERE tour_id = @tid) LIMIT 1;
 
