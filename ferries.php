@@ -107,8 +107,8 @@ require_once 'includes/header-klook.php';
   <div class="hero-bg-shape hero-bg-shape--1"></div>
   <div class="hero-bg-shape hero-bg-shape--2"></div>
   <div class="hero-content">
-    <h1 class="hero-headline">Jelajahi Lebih Banyak,<br><span>Nikmati Perjalanannya.</span></h1>
-    <p class="hero-sub">Pesan tiket ferry, pesawat, dan kereta api dalam satu tempat.</p>
+    <h1 class="hero-headline"><?= t('Jelajahi Lebih Banyak,') ?><br><span><?= t('Nikmati Perjalanannya.') ?></span></h1>
+    <p class="hero-sub"><?= t('Pesan tiket ferry, pesawat, dan kereta api dalam satu tempat.') ?></p>
   </div>
   <div class="booking-card">
     <div class="booking-card-inner">

@@ -53,6 +53,10 @@ $manual = [
     'Lihat' => 'View', 'Detail' => 'Details', 'Simpan' => 'Save', 'Batal' => 'Cancel',
     'Tambah' => 'Add', 'Edit' => 'Edit', 'Hapus' => 'Delete', 'Salin' => 'Copy',
     'Berikutnya' => 'Next', 'Sebelumnya' => 'Previous', 'Kembali' => 'Back',
+    // hero booking
+    'Jelajahi Lebih Banyak,' => 'Explore More,', 'Nikmati Perjalanannya.' => 'Enjoy the Journey.',
+    'Pesan tiket pesawat, ferry, dan kereta api dalam satu tempat.' => 'Book flights, ferries, and train tickets in one place.',
+    'Pesan tiket ferry, pesawat, dan kereta api dalam satu tempat.' => 'Book ferry, flight, and train tickets in one place.',
     // layanan
     'Paket Tour' => 'Tour Packages', 'Pesawat' => 'Flights', 'Ferry' => 'Ferry',
     'Rental Mobil' => 'Car Rental', 'Rental' => 'Rental', 'Kereta' => 'Trains',

@@ -235,6 +235,19 @@ function setLang($lang) {
 /**
  * Get translation from DB cache (with fallback to key)
  */
+/**
+ * Perbaiki string double-encoded (mojibake): UTF-8 yang sempat terbaca
+ * Windows-1252 lalu di-re-encode jadi UTF-8. Contoh: "首页" korup jadi
+ * "é¦–é¡µ". Round-trip iconv UTF-8 → CP1252 → UTF-8: hanya string korup yang
+ * berubah jadi UTF-8 valid; teks normal tetap (iconv gagal atau hasil sama).
+ */
+function fixMojibake($s) {
+    if (!is_string($s) || $s === '') return $s;
+    $re = @iconv('UTF-8', 'CP1252', $s);
+    if ($re === false || $re === $s) return $s;
+    return mb_check_encoding($re, 'UTF-8') ? $re : $s;
+}
+
 function t($key, $fallback = null, $sourceLang = 'id') {
     static $cache = [];
     static $preloaded = [];
@@ -253,7 +266,7 @@ function t($key, $fallback = null, $sourceLang = 'id') {
         try {
             $stmt = db()->query("SELECT `key`, value FROM translations WHERE lang = " . db()->quote($lang));
             foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
-                $cache[$lang . ':id:' . $row['key']] = $row['value'];
+                $cache[$lang . ':id:' . $row['key']] = fixMojibake($row['value']);
             }
         } catch (Throwable $e) {
             $preloaded[$lang] = false;
@@ -267,7 +280,15 @@ function t($key, $fallback = null, $sourceLang = 'id') {
         $stmt->execute([$key, $lang]);
         $row = $stmt->fetch();
         if ($row) {
-            $cache[$cacheKey] = $row['value'];
+            // self-heal: DB ter-seed lewat client latin1 → value double-encoded
+            $fixed = fixMojibake($row['value']);
+            if ($fixed !== $row['value']) {
+                try {
+                    db()->prepare("UPDATE translations SET value = ? WHERE `key` = ? AND lang = ?")
+                        ->execute([$fixed, $key, $lang]);
+                } catch (Throwable $e) {}
+            }
+            $cache[$cacheKey] = $fixed;
             return $cache[$cacheKey];
         }
     } catch (Throwable $e) {}
