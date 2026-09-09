@@ -266,14 +266,25 @@ function t($key, $fallback = null, $sourceLang = 'id') {
         try {
             $stmt = db()->query("SELECT `key`, value FROM translations WHERE lang = " . db()->quote($lang));
             foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
-                $cache[$lang . ':id:' . $row['key']] = fixMojibake($row['value']);
+                $cache[$lang . ':id:' . $row['key']] = $row['value'];
             }
         } catch (Throwable $e) {
             $preloaded[$lang] = false;
         }
     }
 
-    if (isset($cache[$cacheKey])) return $cache[$cacheKey];
+    if (isset($cache[$cacheKey])) {
+        // self-heal: DB ter-seed lewat client latin1 → value double-encoded
+        $fixed = fixMojibake($cache[$cacheKey]);
+        if ($fixed !== $cache[$cacheKey]) {
+            $cache[$cacheKey] = $fixed;
+            try {
+                db()->prepare("UPDATE translations SET value = ? WHERE `key` = ? AND lang = ?")
+                    ->execute([$fixed, $key, $lang]);
+            } catch (Throwable $e) {}
+        }
+        return $cache[$cacheKey];
+    }
 
     try {
         $stmt = db()->prepare("SELECT value FROM translations WHERE `key` = ? AND lang = ? LIMIT 1");

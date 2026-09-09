@@ -35,7 +35,10 @@ require_once 'includes/header-klook.php';
                     <div class="card-body p-3">
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <h6 class="fw-semibold mb-0"><?= e($it['title']) ?></h6>
-                            <button class="btn btn-sm btn-link text-danger p-0 itin-del-btn" data-id="<?= (int)$it['id'] ?>" title="<?= t('Hapus') ?>"><i class="bi bi-trash"></i></button>
+                            <div class="d-flex gap-1">
+                                <a href="itinerary-pdf.php?id=<?= (int)$it['id'] ?>" class="btn btn-sm btn-outline-primary p-1 px-2" title="<?= t('Download PDF') ?>" target="_blank"><i class="bi bi-download"></i></a>
+                                <button class="btn btn-sm btn-link text-danger p-0 itin-del-btn" data-id="<?= (int)$it['id'] ?>" title="<?= t('Hapus') ?>"><i class="bi bi-trash"></i></button>
+                            </div>
                         </div>
                         <p class="small text-muted mb-2">
                             <i class="bi bi-calendar3 me-1"></i><?= $it['start_date'] ? date('d M Y', strtotime($it['start_date'])) : t('Tanggal belum diset') ?>
