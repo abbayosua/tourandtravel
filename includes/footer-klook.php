@@ -167,6 +167,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <?php require_once __DIR__ . '/components/social-proof.php'; ?>
 <?php require_once __DIR__ . '/components/live-chat.php'; ?>
+<?php require_once __DIR__ . '/components/bottom-nav.php'; ?>
 
 <script>
 // ===== Flash sale countdown (reusable) =====
@@ -184,6 +185,11 @@ document.addEventListener('DOMContentLoaded', function() {
     setInterval(tick, 1000);
 })();
 </script>
+
+<!-- GLightbox CSS + JS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox@3.3.0/dist/css/glightbox.min.css">
+<script src="https://cdn.jsdelivr.net/npm/glightbox@3.3.0/dist/js/glightbox.min.js"></script>
+
 </body>
 </html><script>
 // Recently viewed: catat tour-detail & render baris kecil
@@ -198,3 +204,26 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 })();
 </script>
+
+<!-- Lazy Loading with Blur Effect -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var lazyImages = document.querySelectorAll('.lazy-image');
+    lazyImages.forEach(function(img) {
+        if (img.complete) {
+            img.classList.add('loaded');
+        } else {
+            img.addEventListener('load', function() {
+                this.classList.add('loaded');
+            });
+            img.addEventListener('error', function() {
+                this.classList.add('loaded');
+            });
+        }
+    });
+});
+</script>
+
+<!-- Flatpickr CSS + JS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>

@@ -13,6 +13,9 @@ function renderHotelCard($hotel, $maxDescription = 90) {
     $desc = trim((string)tContent($hotel, 'description'));
     $link = 'hotel-detail.php?slug=' . e($hotel['slug']);
     $img = 'https://placehold.co/640x480?text=' . urlencode($name);
+    $flash = getFlashSalePrice((float)$hotel['price_per_night'], 'hotel', (int)$hotel['id']);
+    $flashSale = $flash['flash'];
+    $displayPrice = $flash['price'];
     ?>
     <div class="col-md-6 col-lg-4">
         <div class="card border-0 shadow-sm h-100 klook-hover-card overflow-hidden">
@@ -43,7 +46,13 @@ function renderHotelCard($hotel, $maxDescription = 90) {
                 <?php endif; ?>
                 <div class="mt-auto d-flex justify-content-between align-items-center pt-2 border-top">
                     <div>
-                        <span class="fw-bold text-primary"><?= formatRupiah($hotel['price_per_night']) ?></span>
+                        <span class="fw-bold text-primary klook-price" data-testid="card-price"><?= formatRupiah($displayPrice) ?></span>
+                        <?php if ($flashSale): ?>
+                            <small class="text-decoration-line-through text-muted ms-1"><?= formatRupiah($hotel['price_per_night']) ?></small>
+                            <span class="badge bg-danger ms-1">-<?= (int)$flashSale['discount_percent'] ?>%</span>
+                            <?php if ($flashSale['stock_limit'] !== null): ?><small class="d-block text-danger" data-testid="card-flash-stock"><?= t('Sisa') ?> <?= max(0, (int)$flashSale['stock_limit'] - (int)$flashSale['sold_count']) ?> <?= t('slot') ?></small><?php endif; ?>
+                            <small class="d-block text-muted flash-countdown" data-deadline="<?= e(date('c', strtotime($flashSale['ends_at']))) ?>" data-testid="card-countdown"></small>
+                        <?php endif; ?>
                         <small class="text-muted">/<?= t('malam') ?></small>
                     </div>
                     <a href="<?= $link ?>" class="btn btn-sm btn-primary rounded-pill px-3"><?= t('Lihat') ?></a>

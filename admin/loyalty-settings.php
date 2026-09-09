@@ -39,6 +39,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_loyalty'])) {
         $values[$f] = $val;
     }
     $message = t('Pengaturan loyalty berhasil disimpan');
+
+    // Sync earning_rate ke user_tiers table
+    try {
+        $rateMap = [
+            'explorer' => $values['loyalty_earning_rate'],
+            'silver'   => $values['loyalty_silver_rate'],
+            'gold'     => $values['loyalty_gold_rate'],
+            'platinum' => $values['loyalty_joyplus_rate'],
+        ];
+        $updTier = db()->prepare("UPDATE user_tiers SET earning_rate = ? WHERE tier_name = ?");
+        foreach ($rateMap as $tn => $rate) {
+            $updTier->execute([(float)$rate, $tn]);
+        }
+    } catch (Throwable $e) {}
 }
 ?>
 <?php require_once __DIR__ . '/includes/admin-header.php'; ?>

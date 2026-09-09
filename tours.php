@@ -146,14 +146,42 @@ require_once 'includes/header-klook.php';
 
             <!-- Tour Grid -->
             <div class="col-lg-9">
+                <!-- Skeleton Loading (shown initially, hidden after content loads) -->
+                <div id="tourSkeleton" class="row g-3">
+                    <?php for ($i = 0; $i < 6; $i++): ?>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="skeleton skeleton-card">
+                            <div class="skeleton skeleton-img mb-3"></div>
+                            <div class="skeleton skeleton-text"></div>
+                            <div class="skeleton skeleton-text" style="width: 70%;"></div>
+                            <div class="d-flex justify-content-between mt-3">
+                                <div class="skeleton skeleton-text" style="width: 40%;"></div>
+                                <div class="skeleton skeleton-btn"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endfor; ?>
+                </div>
+
+                <!-- Actual Content (hidden initially, shown after load) -->
+                <div id="tourContent" style="display: none;">
                 <?php if (count($tours) > 0): ?>
-                <div class="row g-3">
+                <div class="row g-3" id="tourGrid">
                     <?php foreach ($tours as $tour): ?>
                         <?php renderTourCard($tour, $wishlistIds); ?>
                     <?php endforeach; ?>
                 </div>
 
-                <!-- Pagination -->
+                <!-- Load More Trigger (sentinel for infinite scroll) -->
+                <?php if ($lastPage > $currentPage): ?>
+                <div class="load-more-trigger text-center py-4" data-page="<?= $currentPage ?>" data-last-page="<?= $lastPage ?>">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <?php endif; ?>
+
+                <!-- Pagination (fallback for no-JS) -->
                 <?php if ($lastPage > 1): ?>
                     <?php $baseUrl = $_SERVER['PHP_SELF'] . '?' . http_build_query(array_merge(array_diff_key($_GET, ['page' => 1]), ['page' => '__PAGE__'])); ?>
                     <?php renderPagination($currentPage, $lastPage, $baseUrl); ?>
@@ -165,11 +193,72 @@ require_once 'includes/header-klook.php';
                     <a href="tours.php" class="btn btn-primary rounded-pill px-4"><?= t('Reset Filter') ?></a>
                 </div>
                 <?php endif; ?>
+                </div>
             </div>
         </div>
     </div>
 </section>
 <?php require_once 'includes/footer-klook.php'; ?>
+<script>
+// Show skeleton initially, then reveal content
+document.addEventListener('DOMContentLoaded', function() {
+    var skeleton = document.getElementById('tourSkeleton');
+    var content = document.getElementById('tourContent');
+    if (skeleton && content) {
+        // Small delay to show skeleton effect
+        setTimeout(function() {
+            skeleton.style.display = 'none';
+            content.style.display = 'block';
+        }, 300);
+    }
+
+    // Infinite Scroll with IntersectionObserver
+    var loadMoreTrigger = document.querySelector('.load-more-trigger');
+    if (loadMoreTrigger) {
+        var currentPage = parseInt(loadMoreTrigger.dataset.page);
+        var lastPage = parseInt(loadMoreTrigger.dataset.lastPage);
+        var loading = false;
+
+        var observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting && !loading && currentPage < lastPage) {
+                    loading = true;
+                    currentPage++;
+                    
+                    // Build AJAX URL
+                    var params = new URLSearchParams(window.location.search);
+                    params.set('page', currentPage);
+                    var ajaxUrl = 'tours-ajax.php?' + params.toString();
+                    
+                    fetch(ajaxUrl)
+                        .then(function(response) { return response.text(); })
+                        .then(function(html) {
+                            var temp = document.createElement('div');
+                            temp.innerHTML = html;
+                            var newCards = temp.querySelector('.row.g-3');
+                            if (newCards) {
+                                var grid = document.getElementById('tourGrid');
+                                grid.insertAdjacentHTML('beforeend', newCards.innerHTML);
+                            }
+                            
+                            // Update trigger
+                            loadMoreTrigger.dataset.page = currentPage;
+                            if (currentPage >= lastPage) {
+                                loadMoreTrigger.remove();
+                            }
+                            loading = false;
+                        })
+                        .catch(function() {
+                            loading = false;
+                        });
+                }
+            });
+        }, { rootMargin: '200px' });
+
+        observer.observe(loadMoreTrigger);
+    }
+});
+</script>
 <script>
 (function() {
     var minR = document.getElementById('priceMinRange'), maxR = document.getElementById('priceMaxRange');

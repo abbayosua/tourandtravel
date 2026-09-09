@@ -391,6 +391,56 @@ require_once 'includes/header-klook.php';
             </div>
 
             <div class="col-lg-9">
+                <!-- Skeleton Loading (shown initially, hidden after content loads) -->
+                <div id="flightSkeleton">
+                    <?php for ($i = 0; $i < 4; $i++): ?>
+                    <div class="col-12 mb-3">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-3 p-md-4">
+                                <div class="row align-items-center g-3">
+                                    <div class="col-md-2 d-flex align-items-center gap-2">
+                                        <div class="skeleton" style="width:44px;height:44px;border-radius:8px;"></div>
+                                        <div class="flex-grow-1">
+                                            <div class="skeleton skeleton-text" style="width:80%;"></div>
+                                            <div class="skeleton skeleton-text" style="width:50%;"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="d-flex align-items-center justify-content-center gap-2">
+                                            <div class="text-center">
+                                                <div class="skeleton skeleton-text" style="width:50px;height:20px;margin:0 auto;"></div>
+                                                <div class="skeleton skeleton-text" style="width:30px;margin:0 auto;"></div>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="skeleton" style="height:2px;width:100%;"></div>
+                                                <div class="skeleton skeleton-text" style="width:40px;margin:4px auto 0;"></div>
+                                            </div>
+                                            <div class="text-center">
+                                                <div class="skeleton skeleton-text" style="width:50px;height:20px;margin:0 auto;"></div>
+                                                <div class="skeleton skeleton-text" style="width:30px;margin:0 auto;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-center">
+                                        <div class="skeleton skeleton-text" style="width:60px;height:18px;margin:0 auto;"></div>
+                                        <div class="skeleton skeleton-text" style="width:40px;margin:4px auto 0;"></div>
+                                    </div>
+                                    <div class="col-md-2 text-center">
+                                        <div class="skeleton skeleton-text" style="width:80px;height:24px;margin:0 auto;"></div>
+                                        <div class="skeleton skeleton-text" style="width:40px;margin:4px auto 0;"></div>
+                                    </div>
+                                    <div class="col-md-2 text-md-end">
+                                        <div class="skeleton skeleton-btn" style="width:100%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endfor; ?>
+                </div>
+
+                <!-- Actual Content (hidden initially, shown after load) -->
+                <div id="flightContent" style="display: none;">
         <?php if ($doSearch): ?>
             <?php if (!empty($duffelOffers)): ?>
             <?php
@@ -500,6 +550,20 @@ if ($isFL) {
     </div>
 </section>
 <?php require_once 'includes/footer-klook.php'; ?>
+<script>
+// Show skeleton initially, then reveal content
+document.addEventListener('DOMContentLoaded', function() {
+    var skeleton = document.getElementById('flightSkeleton');
+    var content = document.getElementById('flightContent');
+    if (skeleton && content) {
+        // Small delay to show skeleton effect
+        setTimeout(function() {
+            skeleton.style.display = 'none';
+            content.style.display = 'block';
+        }, 300);
+    }
+});
+</script>
 <script>
 document.querySelectorAll('.city-search').forEach(function(input) {
     var dropdownId = input.getAttribute('data-target');

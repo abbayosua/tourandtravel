@@ -8,23 +8,19 @@ if (!isLoggedIn()) {
     exit;
 }
 
-$tourId = (int)($_POST['tour_id'] ?? 0);
+$hotelId = (int)($_POST['hotel_id'] ?? 0);
 $rating = (int)($_POST['rating'] ?? 0);
 $comment = trim($_POST['comment'] ?? '');
 $userId = $_SESSION['user_id'];
 
-if (!$tourId || $rating < 1 || $rating > 5 || !$comment) {
-    header('Location: tours.php');
+if (!$hotelId || $rating < 1 || $rating > 5 || !$comment) {
+    header('Location: hotels.php');
     exit;
 }
 
-if (!canReview($userId, $tourId)) {
-    header("Location: tour-detail.php?slug=" . ($_POST['slug'] ?? ''));
-    exit;
-}
-
-$stmt = db()->prepare("INSERT INTO reviews (tour_id, user_id, rating, comment) VALUES (?, ?, ?, ?)");
-$stmt->execute([$tourId, $userId, $rating, $comment]);
+$slug = $_POST['slug'] ?? '';
+$stmt = db()->prepare("INSERT INTO reviews (hotel_id, user_id, rating, comment) VALUES (?, ?, ?, ?)");
+$stmt->execute([$hotelId, $userId, $rating, $comment]);
 $reviewId = (int)db()->lastInsertId();
 
 // Simpan sub-rating per aspek
@@ -42,7 +38,6 @@ if (is_array($subratings) && $reviewId > 0) {
 }
 
 // Simpan hingga 3 foto ulasan
-require_once 'includes/functions.php';
 if (!is_dir(__DIR__ . '/uploads/reviews')) mkdir(__DIR__ . '/uploads/reviews', 0775, true);
 for ($i = 1; $i <= 3; $i++) {
     if (!empty($_FILES['review_photo']['name'][$i - 1])) {
@@ -54,7 +49,5 @@ for ($i = 1; $i <= 3; $i++) {
     }
 }
 
-// Ambil slug untuk redirect
-$tour = getTourById($tourId);
-header("Location: tour-detail.php?slug=" . e($tour['slug']) . "&review=success");
+header("Location: hotel-detail.php?slug=" . e($slug) . "&review=success");
 exit;

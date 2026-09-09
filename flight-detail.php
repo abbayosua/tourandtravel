@@ -288,4 +288,5 @@ require_once 'includes/header.php';
         </div>
     </div>
 </section>
+<?php $siteFocus = 'flight'; require_once 'includes/homepage/trust.php'; ?>
 <?php require_once 'includes/footer.php'; ?>

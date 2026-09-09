@@ -72,6 +72,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
         $totalPrice = $unitPrice * $participants;
         $bookingCode = generateBookingCode();
 
+        // Points redeem sederhana: checkbox use_points → tukar maksimal 100 point (Rp 10.000)
+        $pointsUsed = 0;
+        if (!empty($_SESSION['user_id']) && !empty($_POST['use_points'])) {
+            require_once 'includes/points.php';
+            $avail = getPointsBalance((int)$_SESSION['user_id']);
+            $pts = min(100, $avail);
+            $value = $pts * 100; // 1 point = Rp 100
+            if ($pts > 0 && redeemPoints((int)$_SESSION['user_id'], $pts, 'tour', null, 'Redeem checkout')) {
+                $pointsUsed = $pts;
+                $totalPrice = max(0, $totalPrice - $value);
+            }
+        }
+
         // KlookCash: kurangi total jika user memakai saldo
         $walletDeduct = 0;
         if (!empty($_SESSION['user_id']) && !empty($_POST['use_wallet'])) {
@@ -101,6 +114,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
 
         require_once 'includes/send-wa.php';
         sendBookingNotification($tour, $bookingCode, $name, $phone, $participants, $totalPrice, tglIndonesia($selectedDate['departure_date']));
+
+        // Push notification ke admin
+        if (defined('FCM_SERVER_KEY') && FCM_SERVER_KEY !== '') {
+            $adminIds = [];
+            try {
+                $admStmt = db()->query("SELECT id FROM admins LIMIT 10");
+                $adminIds = $admStmt->fetchAll(PDO::FETCH_COLUMN);
+            } catch (Throwable $e) {}
+            if (!empty($adminIds)) {
+                sendPushNotification($adminIds, 'Booking Baru!', "Booking #{$bookingCode} dari {$name}", ['type' => 'booking', 'deeplink' => '/admin/bookings']);
+            }
+        }
+
+        // Save passenger profile if checkbox checked
+        if (!empty($_SESSION['user_id']) && !empty($_POST['save_passenger'])) {
+            $hasProfile = db()->prepare("SELECT COUNT(*) FROM passenger_profiles WHERE user_id = ? AND full_name = ?");
+            $hasProfile->execute([(int)$_SESSION['user_id'], $name]);
+            if ((int)$hasProfile->fetchColumn() === 0) {
+                db()->prepare("INSERT INTO passenger_profiles (user_id, full_name, phone, is_default) VALUES (?, ?, ?, 0)")
+                    ->execute([(int)$_SESSION['user_id'], $name, $phone ?: null]);
+            }
+        }
 
         error_log("PRD-DBG booking-created email fired");
         // Notifikasi in-app utk user (bila login)
@@ -150,7 +185,9 @@ require_once 'includes/header-klook.php';
             <div class="row g-2 mb-4">
                 <?php if (count($galleryImages) > 0): ?>
                 <div class="col-12">
-                    <img src="<?= getTourImage($tour, 'large') ?>" onerror="this.src='<?= getTourImageFallback($tour, 'large') ?>'" class="w-100 rounded-4" style="max-height: 450px; object-fit: cover; cursor: pointer;" alt="<?= e($tour['title']) ?>" onclick="openGallery(0)">
+                    <a href="<?= getTourImage($tour, 'large') ?>" class="glightbox" data-gallery="tour-gallery" data-title="<?= e($tour['title']) ?>">
+                        <img src="<?= getTourImage($tour, 'large') ?>" onerror="this.src='<?= getTourImageFallback($tour, 'large') ?>'" class="w-100 rounded-4 lazy-image" style="max-height: 450px; object-fit: cover; cursor: pointer;" alt="<?= e($tour['title']) ?>" loading="lazy">
+                    </a>
                 </div>
                 <?php if (count($galleryImages) > 1): ?>
                 <div class="col-12">
@@ -159,7 +196,9 @@ require_once 'includes/header-klook.php';
                             $thumbUrl = str_contains($galleryUrl, 'loremflickr.com') ? str_replace('800/600', '320/240', $galleryUrl) : $galleryUrl;
                         ?>
                         <div class="col-3">
-                            <img src="<?= e($thumbUrl) ?>" class="w-100 rounded-3 gallery-thumb" style="height: 100px; object-fit: cover; cursor: pointer;" alt="<?= e($tour['title']) ?>" loading="lazy" onerror="this.remove()" data-index="<?= $i ?>" onclick="openGallery(<?= $i ?>)">
+                            <a href="<?= e($galleryUrl) ?>" class="glightbox" data-gallery="tour-gallery" data-title="<?= e($tour['title']) ?> - <?= $i + 1 ?>">
+                                <img src="<?= e($thumbUrl) ?>" class="w-100 rounded-3 gallery-thumb lazy-image" style="height: 100px; object-fit: cover; cursor: pointer;" alt="<?= e($tour['title']) ?>" loading="lazy" onerror="this.remove()">
+                            </a>
                         </div>
                         <?php endforeach; ?>
                     </div>
@@ -310,6 +349,28 @@ require_once 'includes/header-klook.php';
                     </div>
                     <?php endforeach; ?>
                 </div>
+                <?php
+                // Sub-rating averages
+                $subAvg = [];
+                try {
+                    $srStmt = db()->prepare("SELECT aspect, AVG(rating) AS avg_r, COUNT(*) AS cnt FROM review_subratings sr JOIN reviews r ON sr.review_id = r.id WHERE r.tour_id = ? GROUP BY aspect ORDER BY FIELD(aspect, 'cleanliness','location','staff','value','facilities','comfort')");
+                    $srStmt->execute([(int)$tour['id']]);
+                    $subAvg = $srStmt->fetchAll();
+                } catch (Throwable $e) {}
+                $subLabels = ['cleanliness' => 'Kebersihan', 'location' => 'Lokasi', 'staff' => 'Staff', 'value' => 'Nilai', 'facilities' => 'Fasilitas', 'comfort' => 'Kenyamanan'];
+                ?>
+                <?php if (count($subAvg) > 0): ?>
+                <div class="mb-3">
+                    <small class="fw-semibold text-muted d-block mb-2"><?= t('Rating per Aspek') ?></small>
+                    <?php foreach ($subAvg as $sa): ?>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <small class="text-muted" style="width:80px;"><?= t($subLabels[$sa['aspect']] ?? $sa['aspect']) ?></small>
+                        <div class="progress flex-grow-1" style="height:6px;"><div class="progress-bar bg-warning" style="width:<?= (int)($sa['avg_r'] / 5 * 100) ?>%"></div></div>
+                        <small class="text-muted" style="width:30px;"><?= number_format((float)$sa['avg_r'], 1) ?></small>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+                <?php endif; ?>
                 <div class="d-flex gap-2 mb-3">
                     <a href="?rev_sort=new&rev_star=<?= $revStar ?>" class="btn btn-sm <?= $revSort === 'new' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Terbaru') ?></a>
                     <a href="?rev_sort=high&rev_star=<?= $revStar ?>" class="btn btn-sm <?= $revSort === 'high' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Rating Tertinggi') ?></a>
@@ -328,7 +389,9 @@ require_once 'includes/header-klook.php';
                                 <?php if (!empty($reviewImages[$r['id']])): ?>
                                 <div class="d-flex gap-1 mb-2">
                                     <?php foreach ($reviewImages[$r['id']] as $img): ?>
-                                        <img src="<?= e($img) ?>" style="width:60px;height:60px;object-fit:cover;" class="rounded" alt="">
+                                        <a href="<?= e($img) ?>" class="glightbox" data-gallery="review-gallery" data-title="<?= e($r['user_name']) ?> - <?= t('Foto Ulasan') ?>">
+                                            <img src="<?= e($img) ?>" style="width:60px;height:60px;object-fit:cover;" class="rounded lazy-image" alt="" loading="lazy">
+                                        </a>
                                     <?php endforeach; ?>
                                 </div>
                                 <?php endif; ?>
@@ -356,6 +419,21 @@ require_once 'includes/header-klook.php';
                         <form method="POST" action="review-submit.php" enctype="multipart/form-data">
                             <input type="hidden" name="tour_id" value="<?= $tour['id'] ?>">
                             <input type="hidden" name="slug" value="<?= e($tour['slug']) ?>">
+                            <div class="mb-2">
+                                <label class="form-label small fw-semibold"><?= t('Rating per Aspek') ?></label>
+                                <?php $aspects = ['cleanliness' => 'Kebersihan', 'location' => 'Lokasi', 'staff' => 'Staff', 'value' => 'Nilai', 'facilities' => 'Fasilitas', 'comfort' => 'Kenyamanan']; ?>
+                                <?php foreach ($aspects as $akey => $alabel): ?>
+                                <div class="d-flex align-items-center gap-2 mb-1 rating-aspects">
+                                    <small class="text-muted" style="width:90px;"><?= t($alabel) ?></small>
+                                    <?php for ($s = 1; $s <= 5; $s++): ?>
+                                    <label class="text-warning" style="cursor:pointer;font-size:14px;">
+                                        <input type="radio" name="subrating[<?= $akey ?>]" value="<?= $s ?>" class="d-none" <?= $s === 5 ? 'checked' : '' ?>>
+                                        <i class="bi bi-star-fill"></i>
+                                    </label>
+                                    <?php endfor; ?>
+                                </div>
+                                <?php endforeach; ?>
+                            </div>
                             <div class="mb-2">
                                 <label class="form-label small"><?= t('Rating') ?></label>
                                 <div class="rating-input">
@@ -402,12 +480,57 @@ require_once 'includes/header-klook.php';
                     <?php endif; ?>
                     <p class="text-muted">/ <?= t('orang') ?></p>
 
+                    <!-- Price Alert -->
+                    <?php if (isLoggedIn()): ?>
+                    <div class="mb-3">
+                        <button type="button" class="btn btn-outline-warning btn-sm w-100" data-bs-toggle="modal" data-bs-target="#priceAlertModal" id="priceAlertBtn">
+                            <i class="bi bi-bell me-1"></i><?= t('Set Price Alert') ?>
+                        </button>
+                    </div>
+                    <?php else: ?>
+                    <div class="mb-3">
+                        <a href="login.php?redirect=<?= urlencode('tour-detail.php?slug=' . e($tour['slug'])) ?>" class="btn btn-outline-warning btn-sm w-100">
+                            <i class="bi bi-bell me-1"></i><?= t('Login untuk Set Price Alert') ?>
+                        </a>
+                    </div>
+                    <?php endif; ?>
+
+                    <!-- Price Alert Modal -->
+                    <div class="modal fade" id="priceAlertModal" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <form method="POST" action="price-alert-ajax.php">
+                                    <div class="modal-header">
+                                        <h6 class="modal-title fw-bold"><i class="bi bi-bell me-2"></i><?= t('Price Alert') ?></h6>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p class="small text-muted mb-3"><?= t('Kami akan memberi tahu Anda jika harga turun ke target.') ?></p>
+                                        <input type="hidden" name="action" value="create">
+                                        <input type="hidden" name="item_type" value="tour">
+                                        <input type="hidden" name="item_id" value="<?= (int)$tour['id'] ?>">
+                                        <input type="hidden" name="currency" value="<?= e($tour['price_currency'] ?? 'IDR') ?>">
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-semibold"><?= t('Harga Target') ?></label>
+                                            <input type="number" name="target_price" class="form-control" min="1" step="1000" required
+                                                placeholder="<?= t('Masukkan harga target') ?>"
+                                                value="<?= (int)($flashDetail['price'] * 0.9) ?>">
+                                            <small class="text-muted"><?= t('Harga saat ini') ?>: <?= formatCurrencySpan($flashDetail['price'], $tour['price_currency'] ?? 'IDR') ?></small>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-warning"><?= t('Simpan Alert') ?></button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Harga per tanggal (price_calendar) -->
                     <?php if (!empty($priceCalendar)): ?>
                     <div class="mb-3 p-2 rounded border bg-light" id="priceDatePicker">
                         <label class="form-label small fw-semibold mb-1" for="datePriceInput"><?= t('Cek Harga per Tanggal') ?></label>
-                        <input type="date" id="datePriceInput" class="form-control form-control-sm"
-                               min="<?= e($priceCalendar[0]['date']) ?>" max="<?= e($priceCalendar[count($priceCalendar) - 1]['date']) ?>">
+                        <input type="text" id="datePriceInput" class="form-control form-control-sm" placeholder="<?= t('Pilih tanggal') ?>">
                         <div class="small mt-1" id="datePriceResult" aria-live="polite"></div>
                     </div>
                     <?php endif; ?>
@@ -465,9 +588,17 @@ require_once 'includes/header-klook.php';
                                 <?php endforeach; ?>
                             </select>
                         </div>
+                        <?php if (isLoggedIn()): ?>
+                        <div class="mb-2">
+                            <label class="form-label small"><?= t('Gunakan Profil Tersimpan') ?></label>
+                            <select id="passengerSelect" class="form-select form-select-sm" onchange="fillPassenger(this)">
+                                <option value=""><?= t('-- Pilih Profil --') ?></option>
+                            </select>
+                        </div>
+                        <?php endif; ?>
                         <div class="mb-2">
                             <label class="form-label small"><?= t('Nama Lengkap') ?></label>
-                            <input type="text" name="name" class="form-control form-control-sm" required>
+                            <input type="text" name="name" class="form-control form-control-sm" id="bookingName" required>
                         </div>
                         <div class="mb-2">
                             <label class="form-label small"><?= t('Email (opsional)') ?></label>
@@ -475,7 +606,7 @@ require_once 'includes/header-klook.php';
                         </div>
                         <div class="mb-2">
                             <label class="form-label small"><?= t('No. WhatsApp') ?></label>
-                            <input type="text" name="phone" class="form-control form-control-sm" placeholder="0812xxxx" required>
+                            <input type="text" name="phone" class="form-control form-control-sm" id="bookingPhone" placeholder="0812xxxx" required>
                         </div>
                         <div class="mb-2">
                             <label class="form-label small"><?= t('Jumlah Peserta') ?></label>
@@ -492,6 +623,15 @@ require_once 'includes/header-klook.php';
                         </div>
                         <?php if (!empty($_SESSION['user_id'])): require_once 'includes/wallet.php'; $walletBal = getWalletBalance($_SESSION['user_id']); ?>
                             <?php if ($walletBal > 0): ?>
+                            <?php $ptBal = $_SESSION['user_id'] ?? null ? getPointsBalance((int)$_SESSION['user_id']) : 0; ?>
+                            <?php if ($ptBal >= 100): ?>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="use_points" value="1" id="usePointsTour">
+                                <label class="form-check-label small" for="usePointsTour">
+                                    <?= t('Gunakan') ?> 100 <?= t('points') ?> (<?= formatRupiah(10000) ?> <?= t('diskon') ?>) · <?= t('Saldo') ?>: <?= $ptBal ?>
+                                </label>
+                            </div>
+                            <?php endif; ?>
                             <div class="form-check mb-3">
                                 <input class="form-check-input" type="checkbox" name="use_wallet" value="1" id="useWalletTour">
                                 <label class="form-check-label small" for="useWalletTour">
@@ -499,6 +639,14 @@ require_once 'includes/header-klook.php';
                                 </label>
                             </div>
                             <?php endif; ?>
+                        <?php endif; ?>
+                        <?php if (isLoggedIn()): ?>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" name="save_passenger" value="1" id="savePassengerTour">
+                            <label class="form-check-label small" for="savePassengerTour">
+                                <i class="bi bi-person-plus me-1"></i><?= t('Simpan sebagai profil penumpang') ?>
+                            </label>
+                        </div>
                         <?php endif; ?>
                         <button type="submit" class="btn btn-primary w-100 fw-semibold" id="bookingSubmitBtn" onclick="var btn=this;btn.disabled=true;btn.innerHTML='<span class=\'spinner-border spinner-border-sm me-2\'></span><?= t('Memproses...') ?>';setTimeout(function(){btn.form.submit();},100);return false;"><?= t('Pesan Sekarang') ?></button>
                         <?php if (!isLoggedIn()): ?>
@@ -515,6 +663,7 @@ require_once 'includes/header-klook.php';
         </div>
     </div>
 </div>
+<?php $siteFocus = 'tour'; require_once 'includes/homepage/trust.php'; ?>
 <?php require_once 'includes/footer-klook.php'; ?>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -563,7 +712,26 @@ function datePriceText(d) {
 document.addEventListener('DOMContentLoaded', function() {
     var input = document.getElementById('datePriceInput');
     var out = document.getElementById('datePriceResult');
-    if (input && out) {
+    if (input && typeof flatpickr !== 'undefined') {
+        flatpickr(input, {
+            inline: true,
+            showMonths: 2,
+            dateFormat: 'Y-m-d',
+            minDate: PRICE_CAL.length > 0 ? PRICE_CAL[0].date : 'today',
+            maxDate: new Date(new Date().setMonth(new Date().getMonth() + 3)),
+            onChange: function(selectedDates, dateStr) {
+                out.textContent = dateStr ? datePriceText(dateStr) : '';
+            },
+            onDayCreate: function(dObj, dStr, fp, dayElem) {
+                var dateStr = dayElem.dateObj.toISOString().split('T')[0];
+                var cal = PRICE_CAL.find(function(r) { return r.date === dateStr; });
+                if (cal) {
+                    dayElem.style.color = cal.price <= PRICE_BASE ? '#198754' : '#dc3545';
+                    dayElem.title = formatPriceLocal(cal.price, PRICE_CUR);
+                }
+            }
+        });
+    } else if (input && out) {
         input.addEventListener('change', function() {
             out.textContent = input.value ? datePriceText(input.value) : '';
         });
@@ -584,5 +752,42 @@ document.addEventListener('DOMContentLoaded', function() {
         sel.addEventListener('change', updSel);
         updSel();
     }
+});
+// ===== Passenger Profile Auto-fill =====
+<?php if (isLoggedIn()): ?>
+(function() {
+    var sel = document.getElementById('passengerSelect');
+    if (!sel) return;
+    fetch('profile-ajax.php').then(function(r){return r.json()}).then(function(d){
+        (d.profiles||[]).forEach(function(p){
+            var opt = document.createElement('option');
+            opt.value = JSON.stringify(p);
+            opt.textContent = p.full_name + (p.passport_no ? ' ('+p.passport_no+')' : '');
+            sel.appendChild(opt);
+        });
+    });
+})();
+function fillPassenger(sel) {
+    if (!sel.value) return;
+    try {
+        var p = JSON.parse(sel.value);
+        var nameEl = document.getElementById('bookingName');
+        var phoneEl = document.getElementById('bookingPhone');
+        if (nameEl) nameEl.value = p.full_name || '';
+        if (phoneEl) phoneEl.value = p.phone || '';
+    } catch(e) {}
+}
+<?php endif; ?>
+</script>
+
+<!-- GLightbox Initialization -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    GLightbox({
+        selector: '.glightbox',
+        touchNavigation: true,
+        loop: true,
+        autoplayVideos: true
+    });
 });
 </script>

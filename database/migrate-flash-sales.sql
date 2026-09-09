@@ -39,3 +39,17 @@ SELECT 'tour', t.id, 25, NOW() - INTERVAL 1 DAY, NOW() + INTERVAL 30 DAY, 5, 5, 
 FROM tours t
 WHERE t.id = 64
   AND NOT EXISTS (SELECT 1 FROM flash_sales fs WHERE fs.item_type = 'tour' AND fs.item_id = t.id);
+
+-- Seed flash sale hotel: hotel 37, 38 aktif -20%
+INSERT INTO flash_sales (item_type, item_id, discount_percent, starts_at, ends_at, stock_limit, is_active)
+SELECT 'hotel', h.id, 20, NOW() - INTERVAL 1 HOUR, NOW() + INTERVAL 90 DAY, 30, 1
+FROM hotels h
+WHERE h.id IN (37, 38)
+  AND NOT EXISTS (SELECT 1 FROM flash_sales fs WHERE fs.item_type = 'hotel' AND fs.item_id = h.id);
+
+-- Seed flash sale hotel: hotel 39 kadaluarsa (sad path)
+INSERT INTO flash_sales (item_type, item_id, discount_percent, starts_at, ends_at, stock_limit, is_active)
+SELECT 'hotel', h.id, 15, NOW() - INTERVAL 30 DAY, NOW() - INTERVAL 1 DAY, 20, 1
+FROM hotels h
+WHERE h.id = 39
+  AND NOT EXISTS (SELECT 1 FROM flash_sales fs WHERE fs.item_type = 'hotel' AND fs.item_id = h.id);

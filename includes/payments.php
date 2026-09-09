@@ -239,8 +239,17 @@ function handleMidtransNotification(array $notif): bool {
             $uid = (int)($bk2['user_id'] ?? 0);
             if ($uid > 0) {
                 awardPointsForPaidBooking($payment['booking_type'], (int)$payment['booking_id'], $uid, (float)$bk2['total_price'], $bk2['booking_code'] ?? null);
+                autoAssignTier($uid);
             }
         }
+    }
+
+    // Check price alerts (throttled: max 1x per hour via session timestamp)
+    require_once __DIR__ . '/price-alert-checker.php';
+    $lastCheck = $_SESSION['price_alert_check'] ?? 0;
+    if (time() - $lastCheck > 3600) {
+        $_SESSION['price_alert_check'] = time();
+        try { checkPriceAlerts(); } catch (Throwable $e) { error_log('price-alert-check: ' . $e->getMessage()); }
     }
 
     return true;

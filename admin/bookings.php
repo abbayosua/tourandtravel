@@ -59,6 +59,11 @@ if (isset($_GET['update_status'])) {
                     'subject' => 'Status Booking - ' . $code,
                 ], null);
             }
+
+            // Push notification ke user
+            if ($userId > 0 && defined('FCM_SERVER_KEY') && FCM_SERVER_KEY !== '') {
+                sendPushNotification([$userId], 'Status Booking: ' . ucfirst($status), 'Booking ' . $code . ($status === 'confirmed' ? ' telah dikonfirmasi' : ''), ['type' => 'booking', 'deeplink' => '/my-bookings/' . $code]);
+            }
         }
 
         header('Location: bookings.php?msg=updated'); exit;

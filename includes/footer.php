@@ -76,5 +76,26 @@ function toggleWishlist(btn, tourId, itemType) {
 </script>
 <?php require_once __DIR__ . '/components/social-proof.php'; ?>
 <?php require_once __DIR__ . '/components/live-chat.php'; ?>
+<?php require_once __DIR__ . '/components/bottom-nav.php'; ?>
+
+<!-- GLightbox CSS + JS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox@3.3.0/dist/css/glightbox.min.css">
+<script src="https://cdn.jsdelivr.net/npm/glightbox@3.3.0/dist/js/glightbox.min.js"></script>
+
+<script>
+const isAndroidApp = typeof window.AndroidBridge !== 'undefined';
+const AppBridge = {
+  showToast: (msg) => { if (isAndroidApp) window.AndroidBridge.showToast(msg); },
+  share: (title, text, url) => { if (isAndroidApp) window.AndroidBridge.shareContent(title, text, url); },
+  openExternal: (url) => { if (isAndroidApp) window.AndroidBridge.openExternalLink(url); },
+  vibrate: (ms = 200) => { if (isAndroidApp) window.AndroidBridge.vibrate(ms); },
+  isNotificationEnabled: () => { if (isAndroidApp) return window.AndroidBridge.isNotificationEnabled(); return true; },
+  requestNotification: () => { if (isAndroidApp) window.AndroidBridge.requestNotificationPermission(); },
+  getFcmToken: () => { if (isAndroidApp) window.AndroidBridge.getFcmToken(); },
+  closeApp: () => { if (isAndroidApp) window.AndroidBridge.closeApp(); }
+};
+window.onFcmToken = function(token) { console.log('FCM Token:', token); };
+</script>
+
 </body>
 </html>

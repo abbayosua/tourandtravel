@@ -176,6 +176,43 @@ require_once 'includes/header-klook.php';
 
             <!-- Results: Agoda list view -->
             <div class="col-lg-9">
+                <!-- Skeleton Loading (shown initially, hidden after content loads) -->
+                <div id="hotelSkeleton">
+                    <?php for ($i = 0; $i < 4; $i++): ?>
+                    <div class="card border-0 shadow-sm mb-3 overflow-hidden">
+                        <div class="row g-0">
+                            <div class="col-md-3 col-4">
+                                <div class="skeleton skeleton-img" style="min-height: 160px;"></div>
+                            </div>
+                            <div class="col-md-9 col-8">
+                                <div class="card-body p-3">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <div class="skeleton skeleton-text" style="width: 60%; height: 16px;"></div>
+                                            <div class="skeleton skeleton-text" style="width: 30%; height: 12px;"></div>
+                                            <div class="skeleton skeleton-text" style="width: 40%; height: 12px;"></div>
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="skeleton skeleton-text" style="width: 80px; height: 20px; margin-left: auto;"></div>
+                                            <div class="skeleton skeleton-text" style="width: 60px; height: 12px; margin-left: auto;"></div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex gap-1 mt-3">
+                                        <div class="skeleton skeleton-text" style="width: 60px; height: 18px;"></div>
+                                        <div class="skeleton skeleton-text" style="width: 50px; height: 18px;"></div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <div class="skeleton skeleton-btn"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endfor; ?>
+                </div>
+
+                <!-- Actual Content (hidden initially, shown after load) -->
+                <div id="hotelContent" style="display: none;">
                 <?php if (count($hotels) > 0): ?>
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <small class="text-muted"><?= count($hotels) ?> <?= t('hotel ditemukan') ?></small>
@@ -185,9 +222,12 @@ require_once 'includes/header-klook.php';
                         <a href="?<?= e(http_build_query(array_merge($_GET, ['sort' => 'stars']))) ?>" class="btn btn-sm <?= $sort === 'stars' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Bintang Tertinggi') ?></a>
                     </div>
                 </div>
-                <?php foreach ($hotels as $h): 
+                <?php foreach ($hotels as $h):
                     $amenities = array_filter(array_map('trim', explode(',', $h['amenities'] ?? '')));
                     $linkParams = 'slug=' . e($h['slug']) . '&checkin=' . urlencode($checkin ?: date('Y-m-d')) . '&checkout=' . urlencode($checkout ?: date('Y-m-d', strtotime('+2 days'))) . '&guests=' . $guests;
+                    $flashH = getFlashSalePrice((float)$h['price_per_night'], 'hotel', (int)$h['id']);
+                    $flashSaleH = $flashH['flash'];
+                    $displayPriceH = $flashH['price'];
                 ?>
                 <div class="card border-0 shadow-sm mb-3 overflow-hidden klook-hover-card position-relative">
                     <button class="btn btn-sm position-absolute top-0 end-0 m-1 like-btn wishlist-btn klook-wishlist-btn text-white bg-dark bg-opacity-25" style="z-index:5;"
@@ -207,7 +247,13 @@ require_once 'includes/header-klook.php';
                                         <small class="text-muted"><i class="bi bi-geo-alt me-1"></i><?= e($h['city']) ?></small>
                                     </div>
                                     <div class="text-end">
-                                        <span class="fw-bold text-primary fs-5"><?= formatRupiah($h['price_per_night']) ?></span>
+                                        <span class="fw-bold text-primary fs-5" data-testid="card-price"><?= formatRupiah($displayPriceH) ?></span>
+                                        <?php if ($flashSaleH): ?>
+                                            <small class="text-decoration-line-through text-muted d-block" style="font-size: 11px;"><?= formatRupiah($h['price_per_night']) ?></small>
+                                            <span class="badge bg-danger" style="font-size: 10px;">-<?= (int)$flashSaleH['discount_percent'] ?>%</span>
+                                            <?php if ($flashSaleH['stock_limit'] !== null): ?><small class="d-block text-danger" style="font-size: 11px;" data-testid="card-flash-stock"><?= t('Sisa') ?> <?= max(0, (int)$flashSaleH['stock_limit'] - (int)$flashSaleH['sold_count']) ?> <?= t('slot') ?></small><?php endif; ?>
+                                            <small class="d-block text-muted flash-countdown" data-deadline="<?= e(date('c', strtotime($flashSaleH['ends_at']))) ?>" data-testid="card-countdown"></small>
+                                        <?php endif; ?>
                                         <small class="d-block text-muted" style="font-size: 11px;"><?= t('/malam termasuk pajak') ?></small>
                                     </div>
                                 </div>
@@ -238,6 +284,7 @@ require_once 'includes/header-klook.php';
                     <a href="hotels.php" class="btn btn-primary rounded-pill px-4"><?= t('Reset') ?></a>
                 </div>
                 <?php endif; ?>
+                </div>
             </div>
         </div>
     </div>
@@ -263,6 +310,20 @@ require_once 'includes/header-klook.php';
     </div>
 </section>
 <?php require_once 'includes/footer-klook.php'; ?>
+<script>
+// Show skeleton initially, then reveal content
+document.addEventListener('DOMContentLoaded', function() {
+    var skeleton = document.getElementById('hotelSkeleton');
+    var content = document.getElementById('hotelContent');
+    if (skeleton && content) {
+        // Small delay to show skeleton effect
+        setTimeout(function() {
+            skeleton.style.display = 'none';
+            content.style.display = 'block';
+        }, 300);
+    }
+});
+</script>
 <script>
 (function() {
     var minR = document.getElementById('hPriceMinRange'), maxR = document.getElementById('hPriceMaxRange');

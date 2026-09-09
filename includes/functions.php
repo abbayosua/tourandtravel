@@ -1009,4 +1009,6 @@ function uploadWebP($file, $targetDir, $quality = 70) {
     
     return ['success' => true, 'filename' => $filename, 'size' => filesize($dest)];
 }
+
+require_once __DIR__ . '/fcm-push.php';
 ?>

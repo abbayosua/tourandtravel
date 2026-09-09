@@ -28,6 +28,13 @@ function recordPoints(int $userId, int $points, string $reason, ?string $booking
     }
 }
 
+function getTierMultiplier(int $userId): float {
+    $stmt = db()->prepare("SELECT ut.earning_rate FROM users u JOIN user_tiers ut ON u.tier = ut.tier_name WHERE u.id = ?");
+    $stmt->execute([$userId]);
+    $rate = $stmt->fetchColumn();
+    return $rate ? (float)$rate : 1.0;
+}
+
 /** Earn otomatis saat booking jadi paid. Idempotent — dipanggil berulang aman. */
 function awardPointsForPaidBooking(string $bookingType, int $bookingId, int $userId, float $totalPrice, ?string $bookingCode = null): int {
     if ($userId <= 0 || $totalPrice <= 0) return 0;
@@ -35,7 +42,34 @@ function awardPointsForPaidBooking(string $bookingType, int $bookingId, int $use
     if ($ratePct <= 0) return 0;
     $points = (int)floor($totalPrice * $ratePct / 100 / 100); // 1 point per 100 IDR
     if ($points < 1) $points = 1;
-    return recordPoints($userId, $points, 'earn', $bookingType, $bookingId, $bookingCode, 'Earn ' . $ratePct . '% dari booking');
+    $multiplier = getTierMultiplier($userId);
+    $points = (int)ceil($points * $multiplier);
+    $note = 'Earn ' . $ratePct . '% dari booking';
+    if ($multiplier > 1) $note .= ' (x' . $multiplier . ' ' . ($_SESSION['user_tier'] ?? 'explorer') . ')';
+    return recordPoints($userId, $points, 'earn', $bookingType, $bookingId, $bookingCode, $note);
+}
+
+/**
+ * Auto-assign tier based on completed booking count.
+ * Called after payment. Reads thresholds from settings.
+ */
+function autoAssignTier(int $userId): string {
+    if ($userId <= 0) return 'explorer';
+    $stmt = db()->prepare("SELECT COUNT(*) FROM bookings WHERE user_id = ? AND status IN ('confirmed')");
+    $stmt->execute([$userId]);
+    $bookingCount = (int)$stmt->fetchColumn();
+
+    $silver = (int)getSetting('loyalty_silver_threshold', '2');
+    $gold = (int)getSetting('loyalty_gold_threshold', '5');
+    $platinum = (int)getSetting('loyalty_joyplus_threshold', '10');
+
+    if ($bookingCount >= $platinum) $tier = 'platinum';
+    elseif ($bookingCount >= $gold) $tier = 'gold';
+    elseif ($bookingCount >= $silver) $tier = 'silver';
+    else $tier = 'explorer';
+
+    db()->prepare("UPDATE users SET tier = ? WHERE id = ? AND tier != ?")->execute([$tier, $userId, $tier]);
+    return $tier;
 }
 
 /** Redeem — tolak bila saldo kurang. Return saldo baru atau null bila gagal. */

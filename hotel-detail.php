@@ -64,6 +64,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 spendWallet($_SESSION['user_id'], $walletDeduct, 'hotel_booking', $bookingId);
             }
             $bookingSuccess = "Booking berhasil! Total: " . formatRupiah($total);
+
+            // Save passenger profile if checkbox checked
+            if (!empty($_SESSION['user_id']) && !empty($_POST['save_passenger'])) {
+                $hasProfile = db()->prepare("SELECT COUNT(*) FROM passenger_profiles WHERE user_id = ? AND full_name = ?");
+                $hasProfile->execute([(int)$_SESSION['user_id'], $name]);
+                if ((int)$hasProfile->fetchColumn() === 0) {
+                    db()->prepare("INSERT INTO passenger_profiles (user_id, full_name, phone, is_default) VALUES (?, ?, ?, 0)")
+                        ->execute([(int)$_SESSION['user_id'], $name, $phone ?: null]);
+                }
+            }
         }
     }
 }
@@ -112,13 +122,17 @@ require_once 'includes/header-klook.php';
             <div class="col-12 mb-3">
                 <div class="row g-2">
                     <div class="col-md-8">
-                        <img src="https://placehold.co/800x400?text=<?= urlencode($hotel['name']) ?>" class="w-100 rounded-4 shadow-sm" style="height: 350px; object-fit: cover;" alt="">
+                        <a href="https://placehold.co/800x400?text=<?= urlencode($hotel['name']) ?>" class="glightbox" data-gallery="hotel-gallery" data-title="<?= e(tContent($hotel, 'name')) ?>">
+                            <img src="https://placehold.co/800x400?text=<?= urlencode($hotel['name']) ?>" class="w-100 rounded-4 shadow-sm lazy-image" style="height: 350px; object-fit: cover;" alt="" loading="lazy">
+                        </a>
                     </div>
                     <div class="col-md-4">
                         <div class="row g-2">
                             <?php for ($i=1; $i<=2; $i++): ?>
                             <div class="col-6 col-md-12">
-                                <img src="https://placehold.co/400x200?text=Gallery+<?= $i ?>" class="w-100 rounded-3 shadow-sm" style="height: 170px; object-fit: cover;" alt="">
+                                <a href="https://placehold.co/400x200?text=Gallery+<?= $i ?>" class="glightbox" data-gallery="hotel-gallery" data-title="<?= e(tContent($hotel, 'name')) ?> - Gallery <?= $i ?>">
+                                    <img src="https://placehold.co/400x200?text=Gallery+<?= $i ?>" class="w-100 rounded-3 shadow-sm lazy-image" style="height: 170px; object-fit: cover;" alt="" loading="lazy">
+                                </a>
                             </div>
                             <?php endfor; ?>
                         </div>
@@ -245,6 +259,100 @@ require_once 'includes/header-klook.php';
                     <?php endforeach; ?>
                 </div>
                 <?php endif; ?>
+
+            <!-- Hotel Reviews -->
+            <h5 class="fw-bold mt-4 mb-3"><i class="bi bi-chat-square-text me-2"></i><?= t('Ulasan') ?></h5>
+            <?php
+                $hotelReviews = [];
+                try {
+                    $hrStmt = db()->prepare("SELECT r.*, u.name AS user_name FROM reviews r LEFT JOIN users u ON r.user_id = u.id WHERE r.hotel_id = ? ORDER BY r.created_at DESC");
+                    $hrStmt->execute([(int)$hotel['id']]);
+                    $hotelReviews = $hrStmt->fetchAll();
+                } catch (Throwable $e) {}
+            ?>
+            <?php if (count($hotelReviews) > 0): ?>
+                <?php
+                $hSubAvg = [];
+                try {
+                    $hsStmt = db()->prepare("SELECT aspect, AVG(rating) AS avg_r, COUNT(*) AS cnt FROM review_subratings sr JOIN reviews r ON sr.review_id = r.id WHERE r.hotel_id = ? GROUP BY aspect ORDER BY FIELD(aspect, 'cleanliness','location','staff','value','facilities','comfort')");
+                    $hsStmt->execute([(int)$hotel['id']]);
+                    $hSubAvg = $hsStmt->fetchAll();
+                } catch (Throwable $e) {}
+                $hSubLabels = ['cleanliness' => 'Kebersihan', 'location' => 'Lokasi', 'staff' => 'Staff', 'value' => 'Nilai', 'facilities' => 'Fasilitas', 'comfort' => 'Kenyamanan'];
+                ?>
+                <?php if (count($hSubAvg) > 0): ?>
+                <div class="mb-3">
+                    <small class="fw-semibold text-muted d-block mb-2"><?= t('Rating per Aspek') ?></small>
+                    <?php foreach ($hSubAvg as $hsa): ?>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <small class="text-muted" style="width:80px;"><?= t($hSubLabels[$hsa['aspect']] ?? $hsa['aspect']) ?></small>
+                        <div class="progress flex-grow-1" style="height:6px;"><div class="progress-bar bg-warning" style="width:<?= (int)($hsa['avg_r'] / 5 * 100) ?>%"></div></div>
+                        <small class="text-muted" style="width:30px;"><?= number_format((float)$hsa['avg_r'], 1) ?></small>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+                <?php endif; ?>
+                <div class="row g-3 mb-4">
+                <?php foreach ($hotelReviews as $hr): ?>
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body p-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="fw-semibold small"><?= e($hr['user_name'] ?? 'Tamu') ?></span>
+                                    <span class="text-warning small"><?= renderStars($hr['rating']) ?></span>
+                                </div>
+                                <p class="small text-muted mb-2"><?= nl2br(e($hr['comment'])) ?></p>
+                                <small class="text-muted" style="font-size: 10px;"><?= date('d M Y', strtotime($hr['created_at'])) ?></small>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <p class="text-muted small mb-4"><?= t('Belum ada ulasan untuk hotel ini.') ?></p>
+            <?php endif; ?>
+
+            <!-- Hotel Review Form -->
+            <?php if (isLoggedIn()): ?>
+                <div class="card border-0 shadow-sm mb-4 bg-light">
+                    <div class="card-body p-3">
+                        <h6 class="fw-semibold mb-2"><?= t('Tulis Ulasan') ?></h6>
+                        <form method="POST" action="hotel-review-submit.php" enctype="multipart/form-data">
+                            <input type="hidden" name="hotel_id" value="<?= $hotel['id'] ?>">
+                            <input type="hidden" name="slug" value="<?= e($hotel['slug']) ?>">
+                            <div class="mb-2">
+                                <label class="form-label small fw-semibold"><?= t('Rating per Aspek') ?></label>
+                                <?php $hAspects = ['cleanliness' => 'Kebersihan', 'location' => 'Lokasi', 'staff' => 'Staff', 'value' => 'Nilai', 'facilities' => 'Fasilitas', 'comfort' => 'Kenyamanan']; ?>
+                                <?php foreach ($hAspects as $akey => $alabel): ?>
+                                <div class="d-flex align-items-center gap-2 mb-1 rating-aspects">
+                                    <small class="text-muted" style="width:90px;"><?= t($alabel) ?></small>
+                                    <?php for ($s = 1; $s <= 5; $s++): ?>
+                                    <label class="text-warning" style="cursor:pointer;font-size:14px;">
+                                        <input type="radio" name="subrating[<?= $akey ?>]" value="<?= $s ?>" class="d-none" <?= $s === 5 ? 'checked' : '' ?>>
+                                        <i class="bi bi-star-fill"></i>
+                                    </label>
+                                    <?php endfor; ?>
+                                </div>
+                                <?php endforeach; ?>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label small"><?= t('Rating') ?></label>
+                                <div class="rating-input">
+                                    <?php for ($i = 5; $i >= 1; $i--): ?>
+                                    <input type="radio" name="rating" value="<?= $i ?>" id="hstar<?= $i ?>" <?= $i === 5 ? 'checked' : '' ?>>
+                                    <label for="hstar<?= $i ?>" class="text-warning fs-5" style="cursor: pointer;"><i class="bi bi-star<?= $i === 5 ? '-fill' : '' ?>"></i></label>
+                                    <?php endfor; ?>
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <textarea name="comment" class="form-control form-control-sm" rows="3" placeholder="<?= t('Bagikan pengalaman Anda...') ?>" required></textarea>
+                                <input type="file" name="review_photo[]" class="form-control form-control-sm mt-2" accept="image/*" multiple>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm"><?= t('Kirim Ulasan') ?></button>
+                        </form>
+                    </div>
+                </div>
+            <?php endif; ?>
             </div>
 
             <!-- Booking Sidebar -->
@@ -252,6 +360,52 @@ require_once 'includes/header-klook.php';
                 <div class="card border-0 shadow-sm sticky-top" style="top: 100px;">
                     <div class="card-body p-4">
                         <h5 class="fw-bold text-primary mb-3"><?= formatRupiah($hotel['price_per_night']) ?> <small class="fw-normal text-muted fs-6">/malam</small></h5>
+
+                        <!-- Price Alert -->
+                        <?php if (isLoggedIn()): ?>
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-outline-warning btn-sm w-100" data-bs-toggle="modal" data-bs-target="#priceAlertModalHotel">
+                                <i class="bi bi-bell me-1"></i><?= t('Set Price Alert') ?>
+                            </button>
+                        </div>
+                        <?php else: ?>
+                        <div class="mb-3">
+                            <a href="login.php?redirect=<?= urlencode('hotel-detail.php?slug=' . e($hotel['slug'])) ?>" class="btn btn-outline-warning btn-sm w-100">
+                                <i class="bi bi-bell me-1"></i><?= t('Login untuk Set Price Alert') ?>
+                            </a>
+                        </div>
+                        <?php endif; ?>
+
+                        <!-- Price Alert Modal -->
+                        <div class="modal fade" id="priceAlertModalHotel" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <form method="POST" action="price-alert-ajax.php">
+                                        <div class="modal-header">
+                                            <h6 class="modal-title fw-bold"><i class="bi bi-bell me-2"></i><?= t('Price Alert') ?></h6>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p class="small text-muted mb-3"><?= t('Kami akan memberi tahu Anda jika harga turun ke target.') ?></p>
+                                            <input type="hidden" name="action" value="create">
+                                            <input type="hidden" name="item_type" value="hotel">
+                                            <input type="hidden" name="item_id" value="<?= (int)$hotel['id'] ?>">
+                                            <input type="hidden" name="currency" value="IDR">
+                                            <div class="mb-3">
+                                                <label class="form-label small fw-semibold"><?= t('Harga Target per Malam') ?></label>
+                                                <input type="number" name="target_price" class="form-control" min="1" step="1000" required
+                                                    placeholder="<?= t('Masukkan harga target') ?>"
+                                                    value="<?= (int)($hotel['price_per_night'] * 0.9) ?>">
+                                                <small class="text-muted"><?= t('Harga saat ini') ?>: <?= formatRupiah($hotel['price_per_night']) ?>/malam</small>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-warning"><?= t('Simpan Alert') ?></button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
 
                         <?php if ($bookingSuccess): ?>
                             <div class="alert alert-success py-2 small"><?= $bookingSuccess ?></div>
@@ -288,11 +442,11 @@ require_once 'includes/header-klook.php';
                             </div>
                             <div class="mb-2">
                                 <label class="form-label small"><?= t('Check-in') ?></label>
-                                <input type="date" name="checkin" class="form-control" value="<?= e($checkin) ?>" onchange="updateTotal()">
+                                <input type="text" name="checkin" class="form-control flatpickr-hotel" value="<?= e($checkin) ?>" data-input="checkin" readonly>
                             </div>
                             <div class="mb-2">
                                 <label class="form-label small"><?= t('Check-out') ?></label>
-                                <input type="date" name="checkout" class="form-control" value="<?= e($checkout) ?>" onchange="updateTotal()">
+                                <input type="text" name="checkout" class="form-control flatpickr-hotel" value="<?= e($checkout) ?>" data-input="checkout" readonly>
                             </div>
                             <div class="row g-2 mb-3">
                                 <div class="col-6">
@@ -326,13 +480,21 @@ require_once 'includes/header-klook.php';
                                 </div>
                             </div>
 
+                            <?php if (isLoggedIn()): ?>
+                            <div class="mb-2">
+                                <label class="form-label small"><?= t('Gunakan Profil Tersimpan') ?></label>
+                                <select id="passengerSelectHotel" class="form-select form-select-sm" onchange="fillPassengerHotel(this)">
+                                    <option value=""><?= t('-- Pilih Profil --') ?></option>
+                                </select>
+                            </div>
+                            <?php endif; ?>
                             <div class="mb-2">
                                 <label class="form-label small"><?= t('Nama Lengkap') ?></label>
-                                <input type="text" name="name" class="form-control" value="<?= e(getUser()['name'] ?? '') ?>" required>
+                                <input type="text" name="name" class="form-control" id="hotelBookingName" value="<?= e(getUser()['name'] ?? '') ?>" required>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label small"><?= t('No. Telepon') ?></label>
-                                <input type="text" name="phone" class="form-control" value="<?= e(getUser()['phone'] ?? '') ?>" required>
+                                <input type="text" name="phone" class="form-control" id="hotelBookingPhone" value="<?= e(getUser()['phone'] ?? '') ?>" required>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label small"><?= t('Email') ?></label>
@@ -345,6 +507,14 @@ require_once 'includes/header-klook.php';
                                     <label class="form-check-label small" for="useWalletHotel"><?= t('Gunakan KlookCash') ?> <strong><?= formatRupiah($walletBal) ?></strong></label>
                                 </div>
                                 <?php endif; ?>
+                            <?php endif; ?>
+                            <?php if (isLoggedIn()): ?>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="save_passenger" value="1" id="savePassengerHotel">
+                                <label class="form-check-label small" for="savePassengerHotel">
+                                    <i class="bi bi-person-plus me-1"></i><?= t('Simpan sebagai profil penumpang') ?>
+                                </label>
+                            </div>
                             <?php endif; ?>
                             <button type="submit" class="btn btn-primary w-100 fw-semibold py-2" id="bookingSubmitBtn"><?= t('Pesan Sekarang') ?></button>
                         </form>
@@ -408,6 +578,54 @@ require_once 'includes/header-klook.php';
                                 sel.addEventListener('change', updateTotal);
                                 document.getElementById('guestsSelect').addEventListener('change', syncRoomUI);
                             }
+                            // Initialize flatpickr for hotel date range
+                            if (typeof flatpickr !== 'undefined') {
+                                var hotelDatepickers = document.querySelectorAll('.flatpickr-hotel');
+                                if (hotelDatepickers.length === 2) {
+                                    var hotelAvgPrice = HOTEL_CAL.length > 0 ? HOTEL_CAL.reduce(function(a, b) { return a + b.price; }, 0) / HOTEL_CAL.length : pricePerNight;
+                                    flatpickr(hotelDatepickers[0], {
+                                        inline: true,
+                                        showMonths: 2,
+                                        dateFormat: 'Y-m-d',
+                                        minDate: 'today',
+                                        maxDate: new Date(new Date().setMonth(new Date().getMonth() + 6)),
+                                        onChange: function(selectedDates, dateStr) {
+                                            checkinInput.value = dateStr;
+                                            if (selectedDates[1]) {
+                                                checkoutInput.value = flatpickr.formatDate(selectedDates[1], 'Y-m-d');
+                                            }
+                                            updateTotal();
+                                        },
+                                        onDayCreate: function(dObj, dStr, fp, dayElem) {
+                                            var dateStr = dayElem.dateObj.toISOString().split('T')[0];
+                                            var cal = HOTEL_CAL.find(function(r) { return r.date === dateStr; });
+                                            if (cal) {
+                                                dayElem.style.color = cal.price <= hotelAvgPrice ? '#198754' : '#dc3545';
+                                                dayElem.title = 'Rp ' + cal.price.toLocaleString('id-ID') + '/malam';
+                                            }
+                                        }
+                                    });
+                                    flatpickr(hotelDatepickers[1], {
+                                        inline: true,
+                                        showMonths: 2,
+                                        dateFormat: 'Y-m-d',
+                                        minDate: 'today',
+                                        maxDate: new Date(new Date().setMonth(new Date().getMonth() + 6)),
+                                        onChange: function(selectedDates, dateStr) {
+                                            checkoutInput.value = dateStr;
+                                            updateTotal();
+                                        },
+                                        onDayCreate: function(dObj, dStr, fp, dayElem) {
+                                            var dateStr = dayElem.dateObj.toISOString().split('T')[0];
+                                            var cal = HOTEL_CAL.find(function(r) { return r.date === dateStr; });
+                                            if (cal) {
+                                                dayElem.style.color = cal.price <= hotelAvgPrice ? '#198754' : '#dc3545';
+                                                dayElem.title = 'Rp ' + cal.price.toLocaleString('id-ID') + '/malam';
+                                            }
+                                        }
+                                    });
+                                }
+                            }
                         });
                         document.querySelectorAll('.room-select-btn').forEach(function(btn) {
                             btn.addEventListener('click', function() {
@@ -418,6 +636,43 @@ require_once 'includes/header-klook.php';
                                 updateTotal();
                             });
                         });
+                        // ===== Passenger Profile Auto-fill =====
+                        <?php if (isLoggedIn()): ?>
+                        (function() {
+                            var sel = document.getElementById('passengerSelectHotel');
+                            if (!sel) return;
+                            fetch('profile-ajax.php').then(function(r){return r.json()}).then(function(d){
+                                (d.profiles||[]).forEach(function(p){
+                                    var opt = document.createElement('option');
+                                    opt.value = JSON.stringify(p);
+                                    opt.textContent = p.full_name + (p.passport_no ? ' ('+p.passport_no+')' : '');
+                                    sel.appendChild(opt);
+                                });
+                            });
+                        })();
+                        function fillPassengerHotel(sel) {
+                            if (!sel.value) return;
+                            try {
+                                var p = JSON.parse(sel.value);
+                                var nameEl = document.getElementById('hotelBookingName');
+                                var phoneEl = document.getElementById('hotelBookingPhone');
+                                if (nameEl) nameEl.value = p.full_name || '';
+                                if (phoneEl) phoneEl.value = p.phone || '';
+                            } catch(e) {}
+                        }
+                        <?php endif; ?>
+                        </script>
+
+                        <!-- GLightbox Initialization -->
+                        <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            GLightbox({
+                                selector: '.glightbox',
+                                touchNavigation: true,
+                                loop: true,
+                                autoplayVideos: true
+                            });
+                        });
                         </script>
                     </div>
                 </div>
@@ -425,4 +680,5 @@ require_once 'includes/header-klook.php';
         </div>
     </div>
 </section>
+<?php $siteFocus = 'hotel'; require_once 'includes/homepage/trust.php'; ?>
 <?php require_once 'includes/footer-klook.php'; ?>
