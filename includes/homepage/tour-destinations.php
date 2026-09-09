@@ -1,4 +1,4 @@
-<!-- Destinasi Populer -->
+<!-- [HIDDEN] Destinasi Populer — dihide sementara, jangan dihapus
 <section class="py-4">
     <div class="container">
         <h5 class="fw-bold mb-3"><?= t('Destinasi Populer') ?></h5>
@@ -19,4 +19,5 @@
         <?php endif; ?>
     </div>
 </section>
+-->
 

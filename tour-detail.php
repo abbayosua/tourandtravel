@@ -269,7 +269,7 @@ require_once 'includes/header-klook.php';
                 <?php endforeach; ?>
             </div>
 
-            <!-- Peta -->
+            <!-- [HIDDEN] Peta Lokasi — dihide sementara, jangan dihapus
             <h5 class="fw-bold mt-4 mb-3"><i class="bi bi-geo-alt me-2"></i><?= t('Lokasi') ?></h5>
             <div class="rounded-3 overflow-hidden mb-4 border" data-testid="tour-map">
                 <?php
@@ -282,6 +282,7 @@ require_once 'includes/header-klook.php';
                     ], $lat, $lng, 5);
                 ?>
             </div>
+            -->
 
             <!-- Itinerary Accordion -->
             <?php if (count($itineraries) > 0): ?>
