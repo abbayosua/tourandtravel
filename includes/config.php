@@ -1,21 +1,33 @@
 <?php
-// Konfigurasi database
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'tourandtravel');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+// Konfigurasi database — override via environment variables (lihat DEPLOY.md)
+define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
+define('DB_NAME', getenv('DB_NAME') ?: 'tourandtravel');
+define('DB_USER', getenv('DB_USER') ?: 'root');
+define('DB_PASS', getenv('DB_PASS') !== false ? getenv('DB_PASS') : '');
 
 // URL website (sesuaikan dengan localhost)
-define('BASE_URL', 'http://localhost/tourandtravel');
+define('BASE_URL', getenv('BASE_URL') ?: 'https://tourandtravel.web.id');
 define('SITE_NAME', 'TourAndTravel');
 
 // Firebase Cloud Messaging (isi dengan server key dari Firebase Console)
 if (!defined('FCM_SERVER_KEY')) {
-    define('FCM_SERVER_KEY', '');
+    define('FCM_SERVER_KEY', getenv('FCM_SERVER_KEY') ?: '');
+}
+
+// Duffel API (flight live) — override via env agar token live tidak ter-commit
+if (!defined('DUFFEL_TOKEN') && getenv('DUFFEL_TOKEN')) {
+    define('DUFFEL_TOKEN', getenv('DUFFEL_TOKEN'));
 }
 
 // Session
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_set_cookie_params([
+        'httponly' => true,
+        'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+        'samesite' => 'Lax',
+    ]);
+    session_start();
+}
 
 // Language switcher (validasi via registry bahasa — getSupportedLanguages)
 if (!function_exists('getSupportedLanguages')) {

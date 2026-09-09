@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS fcm_tokens (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NULL,
+    token VARCHAR(500) NOT NULL,
+    platform ENUM('android', 'ios') DEFAULT 'android',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_token (token),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB;

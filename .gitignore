@@ -7,3 +7,4 @@ includes/config.php
 node_modules/
 test-results/
 scripts/out/social-proof-cache.json
+.env

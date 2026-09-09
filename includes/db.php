@@ -13,7 +13,9 @@ class Database {
             $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
             $this->conn->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
         } catch (PDOException $e) {
-            die("Koneksi database gagal: " . $e->getMessage());
+            error_log('DB connection failed: ' . $e->getMessage());
+            http_response_code(500);
+            die('Koneksi database gagal. Silakan coba lagi nanti.');
         }
     }
 

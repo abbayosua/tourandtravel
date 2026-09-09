@@ -14,10 +14,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $stmt->fetch();
 
     if ($user && password_verify($password, $user['password_hash'])) {
+        session_regenerate_id(true);
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user_name'] = $user['name'];
         $redirect = $_GET['redirect'] ?? 'index.php';
-        header("Location: $redirect");
+        if (!preg_match('#^/[^/]#', $redirect) || strpos($redirect, '//') !== false) {
+            $redirect = 'index.php';
+        }
+        header('Location: ' . $redirect);
         exit;
     } else {
         $error = t('Email atau password salah');

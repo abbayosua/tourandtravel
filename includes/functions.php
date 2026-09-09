@@ -927,13 +927,13 @@ function countToursByCity($city) {
  */
 function getTourReviews($tourId) {
     $stmt = db()->prepare("
-        SELECT r.*, u.name as user_name 
-        FROM reviews r 
-        JOIN users u ON r.user_id = u.id 
-        WHERE r.tour_id = ? 
+        SELECT r.*, u.name as user_name
+        FROM reviews r
+        JOIN users u ON r.user_id = u.id
+        WHERE r.tour_id = ? AND r.lang = ?
         ORDER BY r.created_at DESC
     ");
-    $stmt->execute([$tourId]);
+    $stmt->execute([$tourId, getCurrentLang()]);
     return $stmt->fetchAll();
 }
 
@@ -1008,6 +1008,75 @@ function uploadWebP($file, $targetDir, $quality = 70) {
     imagedestroy($gd);
     
     return ['success' => true, 'filename' => $filename, 'size' => filesize($dest)];
+}
+
+/* ---------- A/B testing ringan (FOLLOW-20260909-104850) ---------- */
+
+/** Varian untuk user/session ini. Deterministik per session, persist di session. */
+function abVariant(string $testName): string {
+    if (session_status() === PHP_SESSION_NONE) session_start();
+    if (isset($_SESSION['ab_variants'][$testName])) return $_SESSION['ab_variants'][$testName];
+
+    $stmt = db()->prepare("SELECT is_active FROM ab_tests WHERE test_name = ?");
+    $stmt->execute([$testName]);
+    $row = $stmt->fetch();
+    if (!$row || !(int)$row['is_active']) return '';
+
+    $stmt = db()->prepare("SELECT variant FROM ab_variants WHERE test_name = ? ORDER BY variant ASC");
+    $stmt->execute([$testName]);
+    $variants = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    if (count($variants) < 2) return '';
+
+    $sid = session_id() ?: bin2hex(random_bytes(8));
+    $hash = crc32($testName . '|' . $sid);
+    $variant = $variants[$hash % count($variants)];
+
+    $_SESSION['ab_variants'][$testName] = $variant;
+    abTrack($testName, $variant);
+    return $variant;
+}
+
+/** Catat impression (sekali per test/session via unique key). */
+function abTrack(string $testName, string $variant): void {
+    try {
+        $stmt = db()->prepare("INSERT IGNORE INTO ab_impressions (test_name, variant, user_id, session_id) VALUES (?, ?, ?, ?)");
+        $stmt->execute([$testName, $variant, $_SESSION['user_id'] ?? null, session_id() ?: bin2hex(random_bytes(8))]);
+    } catch (Throwable $e) {
+    }
+}
+
+/** Tandai konversi untuk test/session ini. */
+function abConvert(string $testName): void {
+    try {
+        $sid = session_id() ?: '';
+        if ($sid === '') return;
+        db()->prepare("UPDATE ab_impressions SET converted = 1 WHERE test_name = ? AND session_id = ?")->execute([$testName, $sid]);
+    } catch (Throwable $e) {
+    }
+}
+
+/** Ringkasan hasil per test: impressions + konversi per varian. */
+function abResults(string $testName): array {
+    $stmt = db()->prepare("SELECT variant, COUNT(*) AS impressions, SUM(converted) AS conversions FROM ab_impressions WHERE test_name = ? GROUP BY variant ORDER BY variant");
+    $stmt->execute([$testName]);
+    return $stmt->fetchAll();
+}
+
+/* ---------- Corporate rates (FOLLOW-20260909-104850) ---------- */
+
+/** Diskon corporate user (0 jika bukan anggota / nonaktif). */
+function getCorporateDiscount(int $userId): float {
+    if ($userId <= 0) return 0.0;
+    $stmt = db()->prepare("SELECT cc.discount_percent FROM users u JOIN corporate_companies cc ON cc.id = u.corporate_company_id WHERE u.id = ? AND cc.is_active = 1");
+    $stmt->execute([$userId]);
+    $pct = $stmt->fetchColumn();
+    return $pct !== false ? min(100.0, max(0.0, (float)$pct)) : 0.0;
+}
+
+/** Harga final setelah corporate discount. */
+function applyCorporateDiscount(int $userId, float $price): float {
+    $pct = getCorporateDiscount($userId);
+    return $pct > 0 ? round($price * (100 - $pct) / 100, 2) : $price;
 }
 
 require_once __DIR__ . '/fcm-push.php';

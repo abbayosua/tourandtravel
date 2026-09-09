@@ -70,6 +70,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
         // Flash sale berlaku pada harga final (kalender atau dasar)
         $unitPrice = getFlashSalePrice((float)$unitPrice, 'tour', (int)$tour['id'])['price'];
         $totalPrice = $unitPrice * $participants;
+        // Corporate rate (FOLLOW item 5): diskon % untuk user korporat
+        $corporateDiscountPct = !empty($_SESSION['user_id']) ? getCorporateDiscount((int)$_SESSION['user_id']) : 0.0;
+        if ($corporateDiscountPct > 0) {
+            $totalPrice = applyCorporateDiscount((int)$_SESSION['user_id'], $totalPrice);
+        }
         $bookingCode = generateBookingCode();
 
         // Points redeem sederhana: checkbox use_points → tukar maksimal 100 point (Rp 10.000)
@@ -446,6 +451,10 @@ require_once 'includes/header-klook.php';
                             <div class="mb-2">
                                 <textarea name="comment" class="form-control form-control-sm" rows="3" placeholder="<?= t('Bagikan pengalaman Anda...') ?>" required></textarea>
                                 <input type="file" name="review_photo[]" class="form-control form-control-sm mt-2" accept="image/*" multiple>
+                                <select name="review_lang" class="form-select form-select-sm mt-2" aria-label="<?= t('Bahasa ulasan') ?>">
+                                    <option value="id" <?= getCurrentLang() === 'id' ? 'selected' : '' ?>>🇮🇩 <?= t('Bahasa Indonesia') ?></option>
+                                    <option value="en" <?= getCurrentLang() === 'en' ? 'selected' : '' ?>>🇬🇧 English</option>
+                                </select>
                             </div>
                             <button type="submit" class="btn btn-primary btn-sm"><?= t('Kirim Ulasan') ?></button>
                         </form>
@@ -621,6 +630,12 @@ require_once 'includes/header-klook.php';
                             <label class="form-label small"><?= t('Catatan (opsional)') ?></label>
                             <textarea name="notes" class="form-control form-control-sm" rows="2"></textarea>
                         </div>
+                        <?php $corporatePct = isLoggedIn() ? getCorporateDiscount((int)$_SESSION['user_id']) : 0.0; ?>
+                        <?php if ($corporatePct > 0): ?>
+                        <div class="alert alert-success py-2 small" data-testid="corporate-discount-note">
+                            <i class="bi bi-building me-1"></i><?= t('Diskon korporat') ?> -<?= $corporatePct ?>% <?= t('diterapkan') ?>
+                        </div>
+                        <?php endif; ?>
                         <?php if (!empty($_SESSION['user_id'])): require_once 'includes/wallet.php'; $walletBal = getWalletBalance($_SESSION['user_id']); ?>
                             <?php if ($walletBal > 0): ?>
                             <?php $ptBal = $_SESSION['user_id'] ?? null ? getPointsBalance((int)$_SESSION['user_id']) : 0; ?>
@@ -648,7 +663,7 @@ require_once 'includes/header-klook.php';
                             </label>
                         </div>
                         <?php endif; ?>
-                        <button type="submit" class="btn btn-primary w-100 fw-semibold" id="bookingSubmitBtn" onclick="var btn=this;btn.disabled=true;btn.innerHTML='<span class=\'spinner-border spinner-border-sm me-2\'></span><?= t('Memproses...') ?>';setTimeout(function(){btn.form.submit();},100);return false;"><?= t('Pesan Sekarang') ?></button>
+                        <button type="submit" class="btn btn-primary w-100 fw-semibold" id="bookingSubmitBtn" onclick="var btn=this;btn.disabled=true;btn.innerHTML='<span class=\'spinner-border spinner-border-sm me-2\'></span><?= t('Memproses...') ?>';setTimeout(function(){btn.form.submit();},100);return false;"><?= t(abVariant('tour_cta_text') === 'B' ? 'Booking Sekarang — Gratis Batal' : 'Pesan Sekarang') ?></button>
                         <?php if (!isLoggedIn()): ?>
                         <div class="alert alert-warning py-2 small mt-2 mb-0"><i class="bi bi-info-circle me-1"></i><?= t('Anda booking sebagai tamu. Masuk akun untuk melacak booking.') ?></div>
                         <?php endif; ?>
@@ -665,6 +680,132 @@ require_once 'includes/header-klook.php';
 </div>
 <?php $siteFocus = 'tour'; require_once 'includes/homepage/trust.php'; ?>
 <?php require_once 'includes/footer-klook.php'; ?>
+
+<!-- Itinerary Builder (FOLLOW item 2) -->
+<div class="modal fade" id="itinBuilderModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-calendar-week me-2"></i><?= t('Simpan ke Itinerary Saya') ?></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<?= t('Tutup') ?>"></button>
+      </div>
+      <div class="modal-body">
+        <div id="itinLoginHint" class="alert alert-warning d-none">
+          <?= t('Silakan') ?> <a href="login.php?redirect=tour-detail.php?id=<?= (int)$tour['id'] ?>"><?= t('Masuk') ?></a> <?= t('untuk menyimpan itinerary') ?>.
+        </div>
+        <div id="itinMain">
+          <div class="input-group input-group-sm mb-2">
+            <input type="text" class="form-control" id="itinTitle" placeholder="<?= t('Nama itinerary, mis: Trip Bali 3 Hari') ?>">
+            <button class="btn btn-primary" id="itinCreateBtn" type="button"><?= t('Buat Itinerary') ?></button>
+          </div>
+          <div id="itinDays"></div>
+          <div class="input-group input-group-sm mt-2">
+            <input type="text" class="form-control" id="itinItemTitle" placeholder="<?= t('Aktivitas, mis: Kintamani Tour 08:00') ?>">
+            <button class="btn btn-outline-primary" id="itinAddItemBtn" type="button"><?= t('Tambah Item') ?></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function () {
+  var tourId = <?= (int)$tour['id'] ?>;
+  var tourTitle = <?= json_encode($tour['title']) ?>;
+  var modalEl = document.getElementById('itinBuilderModal');
+  var btn = document.createElement('button');
+  btn.className = 'btn btn-outline-primary btn-sm rounded-pill px-3 mb-3';
+  btn.innerHTML = '<i class="bi bi-calendar-plus me-1"></i><?= t('Simpan ke Itinerary') ?>';
+  btn.setAttribute('data-bs-toggle', 'modal');
+  btn.setAttribute('data-bs-target', '#itinBuilderModal');
+  modalEl.parentNode.insertBefore(btn, modalEl);
+
+  var currentItin = null, selectedDay = null;
+  function api(data, cb) {
+    var xhr = new XMLHttpRequest();
+    if (data && data.action) {
+      xhr.open('POST', 'itinerary-ajax.php');
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+      xhr.onload = function () { try { cb(JSON.parse(xhr.responseText), xhr.status); } catch (e) {} };
+      xhr.send(new URLSearchParams(data));
+    } else {
+      var qs = data && data.itinerary_id ? '?action=get&itinerary_id=' + data.itinerary_id : '?action=list';
+      xhr.open('GET', 'itinerary-ajax.php' + qs);
+      xhr.onload = function () { try { cb(JSON.parse(xhr.responseText), xhr.status); } catch (e) {} };
+      xhr.send();
+    }
+  }
+  function esc(s) { var d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+  function loadDays(itinId) {
+    api({ itinerary_id: itinId }, function (res) {
+      var rows = (res.itinerary && res.itinerary.days) || [];
+      var byDay = {};
+      rows.forEach(function (r) { (byDay[r.day_id] = byDay[r.day_id] || { day_number: r.day_number, items: [] }).items.push(r); });
+      var html = '';
+      Object.keys(byDay).forEach(function (k) {
+        var d = byDay[k];
+        html += '<div class="border rounded p-2 mb-2 itin-day" data-day="' + k + '"><strong><?= t('Hari') ?> ' + d.day_number + '</strong>';
+        d.items.filter(function (i) { return i.item_id; }).forEach(function (i) {
+          html += '<div class="d-flex justify-content-between align-items-center small"><span>' + (i.time_label ? '<span class="badge bg-secondary me-1">' + esc(i.time_label) + '</span>' : '') + esc(i.title) + '</span>' +
+            '<button class="btn btn-sm btn-link text-danger p-0 itin-del" data-item="' + i.item_id + '" title="<?= t('Hapus') ?>">&times;</button></div>';
+        });
+        html += '</div>';
+      });
+      document.getElementById('itinDays').innerHTML = html;
+      var firstDay = document.querySelector('#itinDays .itin-day');
+      if (firstDay) firstDay.classList.add('border-primary');
+      selectedDay = firstDay ? firstDay.getAttribute('data-day') : null;
+      document.querySelectorAll('#itinDays .itin-day').forEach(function (el) {
+        el.addEventListener('click', function () {
+          document.querySelectorAll('#itinDays .itin-day').forEach(function (x) { x.classList.remove('border-primary'); });
+          el.classList.add('border-primary');
+          selectedDay = el.getAttribute('data-day');
+        });
+      });
+      document.querySelectorAll('#itinDays .itin-del').forEach(function (el) {
+        el.addEventListener('click', function (e) {
+          e.stopPropagation();
+          api({ action: 'delete_item', item_id: el.getAttribute('data-item') }, function () { loadDays(currentItin); });
+        });
+      });
+    });
+  }
+  document.getElementById('itinCreateBtn').addEventListener('click', function () {
+    var title = document.getElementById('itinTitle').value.trim();
+    if (!title) return;
+    api({ action: 'create_itinerary', title: title }, function (res) {
+      if (!res.ok) return;
+      currentItin = res.itinerary_id;
+      api({ itinerary_id: currentItin }, function (det) {
+        var firstDay = det.itinerary && det.itinerary.days && det.itinerary.days.length ? det.itinerary.days[0].day_id : null;
+        if (!firstDay) return;
+        api({ action: 'add_item', day_id: firstDay, title: tourTitle, item_type: 'tour', tour_id: tourId }, function (added) {
+          loadDays(currentItin);
+        });
+      });
+    });
+  });
+  document.getElementById('itinAddItemBtn').addEventListener('click', function () {
+    var title = document.getElementById('itinItemTitle').value.trim();
+    if (!title || !selectedDay) return;
+    api({ action: 'add_item', day_id: selectedDay, title: title, item_type: 'custom' }, function () {
+      document.getElementById('itinItemTitle').value = '';
+      loadDays(currentItin);
+    });
+  });
+  modalEl.addEventListener('show.bs.modal', function () {
+    var logged = <?= isset($_SESSION['user_id']) ? 'true' : 'false' ?>;
+    document.getElementById('itinLoginHint').classList.toggle('d-none', logged);
+    document.getElementById('itinMain').classList.toggle('d-none', !logged);
+    if (logged) {
+      api(null, function (res) {
+        var list = res.user_itineraries || [];
+        if (list.length) { currentItin = list[0].id; loadDays(currentItin); }
+      });
+    }
+  });
+})();
+</script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof bootstrap === 'undefined') return;

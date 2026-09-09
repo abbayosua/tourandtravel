@@ -61,7 +61,11 @@ function toggleWishlist(btn, tourId, itemType) {
     return;
     <?php endif; ?>
     var icon = btn.querySelector('i');
-    fetch('wishlist-ajax.php?tour_id=' + tourId + '&item_type=' + itemType + '&action=toggle')
+    fetch('wishlist-ajax.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'tour_id=' + encodeURIComponent(tourId) + '&item_type=' + encodeURIComponent(itemType) + '&action=toggle'
+    })
         .then(function(r) { return r.json(); })
         .then(function(d) {
             if (d.status === 'added') {

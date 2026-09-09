@@ -3,14 +3,19 @@ require_once 'includes/config.php';
 require_once 'includes/db.php';
 require_once 'includes/functions.php';
 
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    echo json_encode(['status' => 'error', 'message' => 'method_not_allowed']);
+    exit;
+}
+
 if (!isLoggedIn()) {
     echo json_encode(['status' => 'error', 'message' => 'not_logged_in']);
     exit;
 }
 
-$itemId = (int)($_GET['tour_id'] ?? $_GET['item_id'] ?? 0);
-$itemType = in_array($_GET['item_type'] ?? 'tour', ['tour', 'hotel', 'attraction', 'esim'], true) ? ($_GET['item_type'] ?? 'tour') : 'tour';
-$action = $_GET['action'] ?? 'toggle';
+$itemId = (int)($_POST['tour_id'] ?? $_POST['item_id'] ?? 0);
+$itemType = in_array($_POST['item_type'] ?? 'tour', ['tour', 'hotel', 'attraction', 'esim'], true) ? ($_POST['item_type'] ?? 'tour') : 'tour';
+$action = $_POST['action'] ?? 'toggle';
 
 if (!$itemId) {
     echo json_encode(['status' => 'error']);
