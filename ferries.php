@@ -191,7 +191,11 @@ require_once 'includes/header-klook.php';
                             $isCheapest = (float)$f['price'] === (float)$minPrice;
                         ?>
                         <tr class="<?= $isCheapest ? 'table-success' : '' ?>">
-                            <td><strong><?= e($f['company']) ?></strong></td>
+                            <td>
+                                <?php $logo = easybookCompanyLogo($f['company']); ?>
+                                <?php if ($logo): ?><img src="<?= e($logo) ?>" alt="<?= e($f['company']) ?>" class="me-2" style="height:20px;vertical-align:middle;"><?php endif; ?>
+                                <strong><?= e($f['company']) ?></strong>
+                            </td>
                             <td><?= e($f['vessel_name'] ?? '-') ?></td>
                             <td><span class="fw-semibold"><?= e($f['departure_time']) ?></span><br><small class="text-muted"><?= e($f['from_terminal'] ?: $from) ?></small></td>
                             <td><span class="fw-semibold"><?= e($f['arrival_time'] ?? '-') ?></span><br><small class="text-muted"><?= e($f['to_terminal'] ?: $to) ?></small></td>
@@ -200,8 +204,8 @@ require_once 'includes/header-klook.php';
                                 <?php if ($isCheapest): ?><span class="badge bg-success ms-1" style="font-size:10px;"><?= t('Hemat') ?></span><?php endif; ?>
                             </td>
                             <td class="text-center">
-                                <a href="https://www.easybook.com/id-id/ferry?fromplace=<?= $fromPlaceId ?>&toplace=<?= $toPlaceId ?>&departtime=<?= e($date) ?>" 
-                                   class="btn btn-sm btn-primary rounded-pill px-3" target="_blank">
+                                <a href="ferry-booking.php?company=<?= urlencode($f['company']) ?>&from=<?= urlencode($f['from_terminal'] ?: $from) ?>&to=<?= urlencode($f['to_terminal'] ?: $to) ?>&date=<?= e($f['date'] ?? $date) ?>&time=<?= urlencode($f['departure_time']) ?>&price=<?= (float)$f['price'] ?>&passengers=<?= $passengers ?? 1 ?>&vessel=<?= urlencode($f['vessel_name'] ?? '') ?>&from_terminal=<?= urlencode($f['from_terminal'] ?? '') ?>&to_terminal=<?= urlencode($f['to_terminal'] ?? '') ?>&arrival_time=<?= urlencode($f['arrival_time'] ?? '') ?>"
+                                   class="btn btn-sm btn-primary rounded-pill px-3" data-testid="btn-book-ferry">
                                     <?= t('Pesan') ?>
                                 </a>
                             </td>

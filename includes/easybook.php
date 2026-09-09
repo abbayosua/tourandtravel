@@ -14,6 +14,19 @@ $EASYBOOK_COMPANY_MAP = [
     '1234' => 'Majestic Fast Ferry',
 ];
 
+// Local logo asset per Easybook company (downloaded from easycdn CDN)
+$EASYBOOK_COMPANY_LOGO = [
+    'Sindo Ferry'       => 'assets/img/ferry/sindo.png',
+    'Horizon Fast Ferry' => 'assets/img/ferry/horizon.png',
+    'Batam Fast Ferry'  => 'assets/img/ferry/batam.jpg',
+    'Majestic Fast Ferry' => 'assets/img/ferry/majestic.png',
+];
+
+function easybookCompanyLogo($company) {
+    global $EASYBOOK_COMPANY_LOGO;
+    return $EASYBOOK_COMPANY_LOGO[$company] ?? '';
+}
+
 /**
  * Search place by name
  * Returns array of places with pid (place ID) and spid (sub-place/terminal ID)
