@@ -8,3 +8,8 @@ node_modules/
 test-results/
 scripts/out/social-proof-cache.json
 .env
+android-app/build/
+android-app/app/build/
+android-app/.gradle/
+android-app/local.properties
+

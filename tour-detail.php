@@ -452,8 +452,9 @@ require_once 'includes/header-klook.php';
                                 <textarea name="comment" class="form-control form-control-sm" rows="3" placeholder="<?= t('Bagikan pengalaman Anda...') ?>" required></textarea>
                                 <input type="file" name="review_photo[]" class="form-control form-control-sm mt-2" accept="image/*" multiple>
                                 <select name="review_lang" class="form-select form-select-sm mt-2" aria-label="<?= t('Bahasa ulasan') ?>">
-                                    <option value="id" <?= getCurrentLang() === 'id' ? 'selected' : '' ?>>🇮🇩 <?= t('Bahasa Indonesia') ?></option>
-                                    <option value="en" <?= getCurrentLang() === 'en' ? 'selected' : '' ?>>🇬🇧 English</option>
+                                    <?php foreach (getSupportedLanguages() as $langCode => $langMeta): ?>
+                                    <option value="<?= e($langCode) ?>" <?= getCurrentLang() === $langCode ? 'selected' : '' ?>><?= $langMeta['flag'] ?> <?= e($langMeta['label']) ?></option>
+                                    <?php endforeach; ?>
                                 </select>
                             </div>
                             <button type="submit" class="btn btn-primary btn-sm"><?= t('Kirim Ulasan') ?></button>
@@ -855,7 +856,8 @@ document.addEventListener('DOMContentLoaded', function() {
     var out = document.getElementById('datePriceResult');
     if (input && typeof flatpickr !== 'undefined') {
         flatpickr(input, {
-            inline: true,
+            inline: false,
+            clickOpens: true,
             showMonths: 2,
             dateFormat: 'Y-m-d',
             minDate: PRICE_CAL.length > 0 ? PRICE_CAL[0].date : 'today',

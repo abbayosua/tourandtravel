@@ -13,7 +13,7 @@ define('SITE_NAME', 'TourAndTravel');
 session_start();
 
 // Language switcher
-if (isset($_GET['lang']) && in_array($_GET['lang'], ['id', 'en'])) {
+if (isset($_GET['lang']) && in_array($_GET['lang'], ['id', 'en', 'zh'])) {
     $_SESSION['lang'] = $_GET['lang'];
     setcookie('lang', $_GET['lang'], time() + (86400 * 365), '/');
     $params = $_GET;

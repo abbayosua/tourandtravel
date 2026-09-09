@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:background="#0d6efd">
+
+    <ImageView
+        android:id="@+id/splashIcon"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@drawable/ic_notification"
+        android:contentDescription="Tour and Travel" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tour &amp; Travel"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp" />
+
+</LinearLayout>

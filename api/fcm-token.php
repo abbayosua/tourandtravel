@@ -9,14 +9,18 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $input = json_decode(file_get_contents('php://input'), true);
 $token = trim($input['token'] ?? '');
+$lang = trim($input['lang'] ?? '') ?: getCurrentLang();
 
 if ($token === '' || strlen($token) < 32 || strlen($token) > 500) {
     jsonError('invalid_token', 'Format token tidak valid');
 }
+if ($lang !== '' && !isValidLang($lang)) {
+    jsonError('invalid_lang', 'Bahasa tidak didukung');
+}
 
 $userId = getAuthUserId();
 
-$stmt = db()->prepare("INSERT INTO fcm_tokens (user_id, token, platform) VALUES (?, ?, 'android') ON DUPLICATE KEY UPDATE user_id = VALUES(user_id), updated_at = NOW()");
-$stmt->execute([$userId, $token]);
+$stmt = db()->prepare("INSERT INTO fcm_tokens (user_id, token, platform, lang) VALUES (?, ?, 'android', NULLIF(?, '')) ON DUPLICATE KEY UPDATE user_id = VALUES(user_id), lang = VALUES(lang), updated_at = NOW()");
+$stmt->execute([$userId, $token, $lang ?: null]);
 
 jsonOk();

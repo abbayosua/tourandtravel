@@ -6,7 +6,7 @@ const PHP_ERROR = /(Fatal error|Deprecated|Notice:|Parse error|Uncaught|Undefine
 async function loginAdmin(page) {
   await page.goto(`${BASE}/admin/login.php`, { waitUntil: 'load' });
   await page.fill('input[name="username"]', 'admin');
-  await page.fill('input[name="password"]', 'password');
+  await page.fill('input[name="password"]', 'admin123');
   await page.click('button[type="submit"]');
   await page.waitForLoadState('load');
 }
@@ -18,7 +18,7 @@ test.describe('Admin Currency Settings', () => {
     await page.goto(`${BASE}/admin/currency-settings.php`, { waitUntil: 'load' });
     const body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
-    expect(body).toMatch(/Pengaturan Mata Uang/i);
+    expect(body).toMatch(/Pengaturan Mata Uang|Currency Settings/i);
     await expect(page.locator('select[name="default_currency"]')).toBeVisible();
     await expect(page.locator('button[name="save_currency"]')).toBeVisible();
     await expect(page.locator('button[name="refresh_rates"]')).toBeVisible();
@@ -71,7 +71,7 @@ test.describe('Admin WA Settings', () => {
     await page.click('button[type="submit"]');
     await page.waitForLoadState('load');
     const body = await page.textContent('body');
-    expect(body).toMatch(/Pengaturan WhatsApp berhasil disimpan/i);
+    expect(body).toMatch(/Pengaturan WhatsApp berhasil disimpan|WhatsApp settings saved/i);
   });
 
   test('save dengan phone invalid (tanpa 62): error', async ({ page }) => {

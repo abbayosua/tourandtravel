@@ -38,7 +38,7 @@ test.describe('Admin login/logout', () => {
   test('login benar: redirect ke dashboard', async ({ page }) => {
     await page.goto(`${BASE}/admin/login.php`, { waitUntil: 'load' });
     await page.fill('input[name="username"]', 'admin');
-    await page.fill('input[name="password"]', 'password');
+    await page.fill('input[name="password"]', 'admin123');
     await page.click('button[type="submit"]');
     await page.waitForLoadState('load');
     expect(page.url()).toContain('admin/dashboard.php');
@@ -50,7 +50,7 @@ test.describe('Admin login/logout', () => {
     // Login dulu
     await page.goto(`${BASE}/admin/login.php`, { waitUntil: 'load' });
     await page.fill('input[name="username"]', 'admin');
-    await page.fill('input[name="password"]', 'password');
+    await page.fill('input[name="password"]', 'admin123');
     await page.click('button[type="submit"]');
     await page.waitForLoadState('load');
 

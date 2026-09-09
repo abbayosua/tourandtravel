@@ -79,3 +79,40 @@ function testSendEmailTemplateLogsEvent() {
         assertContains('TAT-9', $row['subject']);
     } finally { emailTestTeardown($old); }
 }
+
+function testRenderEmailTemplateTrilingualZh() {
+    $zhCreated = renderEmailTemplate('booking-created', ['booking_code' => 'TAT-2', 'total' => 'Rp 100', 'pay_link' => 'http://x/pay'], 'zh');
+    assertContains('预订编号', $zhCreated['html']);
+    assertContains('立即支付', $zhCreated['html']);
+
+    $zhStatus = renderEmailTemplate('booking-status', ['booking_code' => 'TAT-3', 'status' => 'paid', 'track_link' => 'http://x/track'], 'zh');
+    assertContains('您的订单状态已更新', $zhStatus['html']);
+    assertContains('查询订单', $zhStatus['html']);
+
+    $zhReset = renderEmailTemplate('reset-password', ['reset_link' => 'http://x/reset'], 'zh');
+    assertContains('设置新密码', $zhReset['html']);
+    assertContains('忽略此邮件', $zhReset['html']);
+
+    $zhWelcome = renderEmailTemplate('welcome', [], 'zh');
+    assertContains('欢迎来到', $zhWelcome['html']);
+
+    $zhInvoice = renderEmailTemplate('invoice', ['order_id' => 'ORD-1', 'amount' => 'Rp 50'], 'zh');
+    assertContains('已收到付款', $zhInvoice['html']);
+    assertContains('订单', $zhInvoice['html']);
+    assertContains('金额', $zhInvoice['html']);
+}
+
+function testRenderEmailTemplateZhSubjectAndShell() {
+    $t = renderEmailTemplate('booking-created', ['booking_code' => 'TAT-ZH', 'total' => 'Rp 1', 'subject' => '您的预订已收到'], 'zh');
+    assertSame('您的预订已收到', $t['subject'], 'subject custom dipakai apa pun bahasanya');
+    assertContains(SITE_NAME, $t['html'], 'brand shell tetap tampil untuk zh');
+    assertContains('<div style="background:#0d6efd', $t['html'], 'shell html utuh');
+
+    $t2 = renderEmailTemplate('welcome', [], 'zh');
+    assertContains('欢迎来到', $t2['html']);
+}
+
+function testRenderEmailTemplateUnknownLangFallsBackToId() {
+    $t = renderEmailTemplate('booking-created', ['booking_code' => 'TAT-X', 'total' => 'Rp 1', 'pay_link' => 'http://x'], 'fr');
+    assertContains('Kode Booking', $t['html'], 'lang tak dikenal fallback ke id');
+}

@@ -22,7 +22,7 @@ function dbOne(sql: string): string {
 async function adminLogin(page: import('@playwright/test').Page) {
   await page.goto(`${BASE}/admin/login.php`);
   await page.fill('input[name="username"]', 'admin');
-  await page.fill('input[name="password"]', 'password');
+  await page.fill('input[name="password"]', 'admin123');
   await page.click('button[type="submit"]');
   await page.waitForLoadState('load');
 }

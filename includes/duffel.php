@@ -1,8 +1,11 @@
 <?php
-// Duffel API v2 client - test mode
-define('DUFFEL_TOKEN', 'duffel_test_ghVya5DdJhoM2xlZ8Vxn-PWmWilHZy4shiNbBBrrG0p');
+// Duffel API v2 client — token override via env DUFFEL_TOKEN (lihat DEPLOY.md)
+if (!defined('DUFFEL_TOKEN')) {
+    define('DUFFEL_TOKEN', 'duffel_test_ghVya5DdJhoM2xlZ8Vxn-PWmWilHZy4shiNbBBrrG0p');
+}
 define('DUFFEL_BASE', 'https://api.duffel.com');
 define('DUFFEL_VERSION', 'v2');
+require_once __DIR__ . '/flight-cache.php';
 
 function duffelRequest($method, $path, $body = null) {
     $ch = curl_init(DUFFEL_BASE . $path);
@@ -64,6 +67,16 @@ function duffelSearchOffers($origin, $dest, $date, $cabinClass = 'economy', $pas
     $allowed = ['economy','premium_economy','business','first'];
     if (!in_array($cabinClass, $allowed)) $cabinClass = 'economy';
     $passengers = max(1, min(9, (int)$passengers));
+    // Cache only single-city searches (not multi-city)
+    $useCache = count($parsedSlices) === 1;
+    if ($useCache) {
+        $cacheKey = flightCacheKey('duffel', $parsedSlices[0]['origin'], $parsedSlices[0]['destination'], $parsedSlices[0]['departure_date'], $cabinClass, $passengers);
+        $cached = flightCacheGet($cacheKey);
+        if ($cached !== null) {
+            $cached['_from_cache'] = true;
+            return $cached;
+        }
+    }
     $pax = array_fill(0, $passengers, ['type' => 'adult']);
     $res = duffelRequest('POST', '/air/offer_requests', [
         'data' => ['slices' => $parsedSlices, 'passengers' => $pax, 'cabin_class' => $cabinClass]
@@ -71,7 +84,12 @@ function duffelSearchOffers($origin, $dest, $date, $cabinClass = 'economy', $pas
     if (isset($res['error'])) return $res;
     // offer_requests returns {data:{id, offers:[]}}
     $offers = $res['data']['offers'] ?? [];
-    return ['offers' => $offers, 'offer_request_id' => $res['data']['id'] ?? null];
+    $result = ['offers' => $offers, 'offer_request_id' => $res['data']['id'] ?? null];
+    // Store in cache (single-city only)
+    if ($useCache) {
+        flightCacheSet($cacheKey, 'duffel', $result, count($offers));
+    }
+    return $result;
 }
 
 function duffelGetOffer($offerId) {

@@ -17,7 +17,7 @@ if (isset($_GET['delete'])) {
 // Bulk set content language
 $bulkMsg = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bulk_set_lang'])) {
-    $lang = in_array($_POST['bulk_lang'] ?? '', ['id', 'en']) ? $_POST['bulk_lang'] : 'id';
+    $lang = isValidLang($_POST['bulk_lang'] ?? '') ? $_POST['bulk_lang'] : 'id';
     $ids = $_POST['tour_ids'] ?? [];
     if (!empty($ids)) {
         $placeholders = implode(',', array_fill(0, count($ids), '?'));
@@ -75,8 +75,9 @@ require_once 'includes/admin-header.php';
             <input type="hidden" name="bulk_set_lang" value="1">
             <strong class="small"><?= t('Bulk Bahasa Konten:') ?></strong>
             <select name="bulk_lang" class="form-select form-select-sm" style="width: auto;">
-                <option value="id"><?= t('🇮🇩 Indonesia') ?></option>
-                <option value="en"><?= t('🇬🇧 English') ?></option>
+                <?php foreach (getSupportedLanguages() as $langCode => $langMeta): ?>
+                <option value="<?= e($langCode) ?>"><?= $langMeta['flag'] ?> <?= e($langMeta['label']) ?></option>
+                <?php endforeach; ?>
             </select>
             <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('Set bahasa konten untuk tour yang dipilih?')">
                 <i class="bi bi-translate me-1"></i><?= t('Terapkan') ?></button>

@@ -117,6 +117,49 @@ $manual = [
     'Hapus slide ini?' => 'Delete this slide?',
     'Belum ada slide.' => 'No slides yet.',
 
+    // === admin dashboard operational system (ADMINPRD.md) ===
+    'Sales Report' => 'Sales Report', 'Accounting' => 'Accounting',
+    'Profit & Loss' => 'Profit & Loss', 'Laba Rugi' => 'Profit & Loss',
+    'COGS' => 'COGS', 'Harga Pokok Penjualan' => 'Cost of Goods Sold',
+    'Total HPP' => 'Total COGS',
+    'Gross Profit' => 'Gross Profit', 'Laba Kotor' => 'Gross Profit',
+    'Net Profit' => 'Net Profit', 'Laba Bersih' => 'Net Profit',
+    'Expenses' => 'Expenses', 'Pengeluaran' => 'Expenses',
+    'Tambah Pengeluaran' => 'Add Expense', 'Edit Pengeluaran' => 'Edit Expense',
+    'Hapus Pengeluaran' => 'Delete Expense', 'Hapus pengeluaran ini?' => 'Delete this expense?',
+    'Daftar Pengeluaran' => 'Expense List', 'Breakdown Pengeluaran' => 'Expense Breakdown',
+    'Export CSV' => 'Export CSV', 'Perbandingan Bulanan' => 'Monthly Comparison',
+    'Revenue Breakdown' => 'Revenue Breakdown', 'Breakdown Pendapatan' => 'Revenue Breakdown',
+    'Avg Order Value' => 'Avg Order Value', 'Rata-rata per Transaksi' => 'Average per Transaction',
+    'Conversion Rate' => 'Conversion Rate', 'Tingkat Konversi' => 'Conversion Rate',
+    'Total Pendapatan' => 'Total Revenue', 'Total Pengeluaran' => 'Total Expenses',
+    'Pendapatan' => 'Revenue', 'Revenue' => 'Revenue',
+    'Tren Pendapatan' => 'Revenue Trend', '30 hari terakhir' => 'Last 30 days',
+    'Booking per Vertikal' => 'Bookings per Vertical',
+    'Aktivitas Terakhir' => 'Recent Activity', 'Booking baru' => 'New booking',
+    'Aksi Cepat' => 'Quick Actions', 'Tambah Tour' => 'Add Tour',
+    'Vertikal' => 'Vertical', 'Semua Tipe' => 'All Types',
+    'Detail Transaksi' => 'Transaction Details', 'transaksi' => 'transactions',
+    'Pelanggan' => 'Customer', 'Qty' => 'Qty', 'Metode' => 'Method',
+    'Vertikal Teratas' => 'Top Vertical',
+    'Belum ada transaksi pada periode ini' => 'No transactions in this period',
+    'Menampilkan 200 dari' => 'Showing 200 of',
+    'gunakan filter atau Export CSV untuk data lengkap' => 'use filters or Export CSV for full data',
+    'Periode' => 'Period', 'Biaya' => 'Costs',
+    'dari pendapatan' => 'of revenue',
+    'Kategori' => 'Category', 'Deskripsi' => 'Description',
+    'Pengeluaran berhasil ditambahkan' => 'Expense added successfully',
+    'Pengeluaran berhasil diperbarui' => 'Expense updated successfully',
+    'Pengeluaran berhasil dihapus' => 'Expense deleted successfully',
+    'Deskripsi dan jumlah wajib diisi (jumlah > 0)' => 'Description and amount are required (amount > 0)',
+    'Belum ada pengeluaran pada periode ini' => 'No expenses in this period',
+    'Simpan COGS' => 'Save COGS',
+    'bulan' => 'months', 'Bulan' => 'Month',
+    'Overview' => 'Overview', 'Inventory' => 'Inventory', 'Finance' => 'Finance',
+    'Content' => 'Content', 'Settings' => 'Settings', 'Eksternal' => 'External',
+    'Marketing' => 'Marketing', 'Operasional' => 'Operations', 'Gaji' => 'Salaries',
+    'Sewa' => 'Rent', 'Utilitas' => 'Utilities', 'Lainnya' => 'Others',
+
     // === preset Hotel (Agoda-style) ===
     'Menginap Nyaman, Harga Terbaik' => 'Comfortable Stays, Best Rates',
     'Dari budget sampai bintang 5 — bandingkan dan pesan sekarang.' => 'From budget to 5-star — compare and book now.',
@@ -182,6 +225,21 @@ foreach ($codeKeys as $key) {
 }
 echo "Baru dari kamus manual: $newFromManual\n";
 echo "Baru identity (fallback): $newIdentity\n";
+
+// ---------- 3b. Key dinamis (t($var) — tidak tertangkap scanner) ----------
+$dynamicKeys = [
+    ["Gross Profit", "Gross Profit"], ["Hapus Pengeluaran", "Delete Expense"],
+    ["Operasional", "Operations"], ["Gaji", "Salaries"],
+    ["Utilitas", "Utilities"], ["Lainnya", "Others"],
+];
+$newDynamic = 0;
+foreach ($dynamicKeys as [$dk, $dv]) {
+    if (isset($dbKeys[mb_strtolower($dk)])) continue;
+    $insert->execute([$dk, $dv]);
+    $newDynamic++;
+}
+echo "Baru dinamis (t(\$var)): $newDynamic
+";
 
 // ---------- 4. Verifikasi: regenerate missing_keys.txt ----------
 $stmtKeys = db()->query("SELECT `key` FROM translations WHERE lang = 'en'");

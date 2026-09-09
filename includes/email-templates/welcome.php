@@ -1,3 +1,9 @@
-<?php $lang = $lang ?? 'id'; ?>
-<p><?= $lang === 'en' ? 'Welcome to ' : 'Selamat datang di ' . SITE_NAME . '!' ?></p>
-<?php if ($lang === 'en'): ?><p>Welcome to <?= SITE_NAME ?>! Your account is ready.</p><?php endif; ?>
+<?php $lang = $lang ?? 'id';
+
+$MESSAGES = [
+    'id' => 'Selamat datang di ' . SITE_NAME . '!',
+    'en' => 'Welcome to ' . SITE_NAME . '!',
+    'zh' => '欢迎来到 ' . SITE_NAME . '！您的账户已就绪。',
+];
+?>
+<p><?= $MESSAGES[$lang] ?? $MESSAGES['id'] ?></p>

@@ -1,0 +1,3 @@
+-- Step 16: kolom konten zh (title_zh, excerpt_zh, body_zh di posts; name_zh, description_zh di hotels; name_zh di hotel_rooms)
+-- Idempotent: ADD COLUMN bila belum ada (cek information_schema di runner PHP).
+-- Jalankan: php database/migrate-content-zh.php

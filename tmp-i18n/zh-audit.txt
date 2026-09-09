@@ -1,0 +1,58 @@
+=== AUDIT ULANG ?lang=zh — 2026-09-09 (SETELAH seed zh massal step 11) ===
+Format: halaman | jumlah karakter Mandarin tampil | kata Indonesia tersisa (heuristik)
+
+index.php                  zh=398   leak=tidak,Masuk,Kode*
+tours.php                  zh=180   leak=(bersih)
+tour-detail.php            zh=212   leak=Harga*,Tanggal*
+hotels.php                 zh=189   leak=(bersih)
+hotel-detail.php          zh=229   leak=(bersih)
+flights.php                zh=62    leak=Harga*,Tanggal*,pesawat*
+ferries.php                zh=30    leak=pesawat*
+trains.php                 zh=55    leak=(bersih)
+esim.php                   zh=35    leak=(bersih)
+attractions.php            zh=65    leak=Masuk*
+attraction-detail.php      zh=20    leak=(bersih)
+transfers.php              zh=77    leak=(bersih)
+transfer-detail.php        zh=38    leak=(bersih)
+destinasi.php              zh=254   leak=tidak*,Masuk*,Kode*
+blog.php                   zh=13    leak=yang*,untuk*,wajib*
+blog-detail.php            zh=4     leak=untuk*,dengan*
+about.php                  zh=0     leak=(konten hardcoded non-t())
+contact.php                zh=0     leak=(idem)
+faq.php                    zh=28    leak=yang*,untuk*,dengan*,tidak*,Belum*,Pilih*,Tanggal*,Kembali*
+login.php                  zh=27    leak=(bersih)
+register.php               zh=35    leak=(bersih)
+forgot-password.php        zh=28    leak=(bersih)
+reset-password.php         zh=15    leak=(bersih)
+profile.php                zh=63    leak=(bersih)
+my-bookings.php            zh=12    leak=(bersih)
+my-coupons.php             zh=25    leak=(bersih)
+my-points.php              zh=44    leak=(bersih)
+my-itinerary.php           zh=52    leak=(bersih)
+my-alerts.php              zh=38    leak=(bersih)
+my-profiles.php            zh=56    leak=(bersih)
+referral.php               zh=80    leak=(bersih)
+notifications.php          zh=85    leak=(bersih)
+wishlist.php               zh=38    leak=(bersih)
+rental-cars.php            zh=56    leak=(bersih)
+rental-car-detail.php      zh=70    leak=(bersih)
+collection.php             zh=83    leak=(bersih)
+booking-success.php        zh=110   leak=(bersih)
+
+=== STATUS ===
+- DB: 1078 baris translations lang='zh' (1114 kunci unik; 36 kunci uppercase
+  ter-cover otomatis lewat collation case-insensitive uniq_key_lang).
+- 26/37 halaman kini 100% bersih dari kata Indonesia.
+- * Sisa leak adalah string yang TIDAK melewati t() (hardcoded di PHP/JS/konten DB):
+  header/footer statis, data-attribute/aria-label, konten FAQ & blog dari DB
+  (content_language='id'). Refactor string non-t() = kerja terpisah, tidak
+  mempengaruhi fungsi switching bahasa.
+
+=== FILE ===
+- database/migrate-translations-zh.sql     (seed utama, 1114 pasangan)
+- database/migrate-translations-zh.php     (runner utama)
+- database/migrate-translations-zh-extra.sql (37 kunci case-varian)
+- database/migrate-translations-zh-extra.php (runner extra)
+
+=== TEST ===
+Unit: LULUS 124 / GAGAL 1 (FlashSales data-dependent, pre-existing).

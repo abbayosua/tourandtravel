@@ -6,6 +6,7 @@
 
 define('EASYBOOK_BASE', 'https://www.easybook.com');
 define('EASYBOOK_PRODUCT_ID', 2); // Ferry
+require_once __DIR__ . '/flight-cache.php';
 
 $EASYBOOK_COMPANY_MAP = [
     '6738' => 'Sindo Ferry',
@@ -62,6 +63,13 @@ function easybookSearchPlace($query) {
  * Returns array of trip data
  */
 function easybookSearchTrips($fromPlace, $toPlace, $date, $fromSubPlace = 0, $toSubPlace = 0, $passengers = 1) {
+    // Check cache first
+    $cacheKey = 'ferry:' . $fromPlace . ':' . $toPlace . ':' . $date . ':' . $fromSubPlace . ':' . $toSubPlace . ':' . $passengers;
+    $cached = flightCacheGet($cacheKey);
+    if ($cached !== null && isset($cached['trips'])) {
+        return $cached['trips'];
+    }
+
     $params = [
         'fromplace'      => $fromPlace,
         'fromsubplace'   => $fromSubPlace,
@@ -96,7 +104,12 @@ function easybookSearchTrips($fromPlace, $toPlace, $date, $fromSubPlace = 0, $to
 
     if (!$html) return [];
 
-    return easybookParseTrips($html, $date);
+    $trips = easybookParseTrips($html, $date);
+    // Store in cache (ferry schedules are stable within a day)
+    if (!empty($trips)) {
+        flightCacheSet($cacheKey, 'ferry', ['trips' => $trips], count($trips));
+    }
+    return $trips;
 }
 
 /**

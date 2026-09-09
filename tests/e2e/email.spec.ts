@@ -82,7 +82,7 @@ test.describe('Email Log — event → log + admin resend', () => {
 
     await page.goto(`${BASE}/admin/login.php`);
     await page.fill('input[name="username"]', 'admin');
-    await page.fill('input[name="password"]', 'password');
+    await page.fill('input[name="password"]', 'admin123');
     await page.click('button[type="submit"]');
     await page.goto(`${BASE}/admin/bookings.php?update_status=${bid}&status=confirmed&type=tour`);
     expect(waitForLog(`SELECT event FROM email_log WHERE to_email='${email}' AND event='booking-status'`)).toBe('booking-status');
@@ -98,7 +98,7 @@ test.describe('Email Log — event → log + admin resend', () => {
 
     await page.goto(`${BASE}/admin/login.php`);
     await page.fill('input[name="username"]', 'admin');
-    await page.fill('input[name="password"]', 'password');
+    await page.fill('input[name="password"]', 'admin123');
     await page.click('button[type="submit"]');
     await page.goto(`${BASE}/admin/bookings.php?update_status=${bid}&status=confirmed&type=tour`);
     // Admin set confirmed → booking-status email terkirim (terbukti di test lain)
@@ -111,7 +111,7 @@ test.describe('Email Log — event → log + admin resend', () => {
 
     await page.goto(`${BASE}/admin/login.php`);
     await page.fill('input[name="username"]', 'admin');
-    await page.fill('input[name="password"]', 'password');
+    await page.fill('input[name="password"]', 'admin123');
     await page.click('button[type="submit"]');
 
     await page.goto(`${BASE}/admin/email-log.php`);

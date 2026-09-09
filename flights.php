@@ -11,7 +11,7 @@ $to = trim($_GET['to'] ?? '');
 $date = $_GET['date'] ?? date('Y-m-d', strtotime('+3 days'));
 $class = $_GET['class'] ?? '';
 $passengers = max(1, min(9, (int)($_GET['passengers'] ?? 1)));
-$tripType = in_array($_GET['trip_type'] ?? 'oneway', ['oneway', 'roundtrip', 'multicity'], true) ? $_GET['trip_type'] : 'oneway';
+$tripType = in_array($_GET['trip_type'] ?? 'oneway', ['oneway', 'roundtrip', 'multicity'], true) ? ($_GET['trip_type'] ?? 'oneway') : 'oneway';
 $returnDate = $_GET['return_date'] ?? '';
 
 // Multi-city legs: leg_from[], leg_to[], leg_date[]
@@ -135,12 +135,30 @@ if ($doSearch && $tripType === 'multicity' && count($legs) >= 2) {
 } elseif ($doSearch && (!$from || !$to)) {
     $duffelError = 'Silakan isi kota asal dan tujuan.';
 } else {
-    $st=db()->prepare("SELECT fs.*, f.airline, f.flight_number, f.from_city, f.to_city, f.departure_time, f.arrival_time, f.duration, f.class FROM flight_schedules fs JOIN flights f ON fs.flight_id=f.id WHERE fs.is_active=1 AND fs.departure_date>=CURDATE() ORDER BY fs.departure_date ASC, fs.price ASC LIMIT 10");
+    $st=db()->prepare("SELECT SQL_CALC_FOUND_ROWS fs.*, f.airline, f.flight_number, f.from_city, f.to_city, f.departure_time, f.arrival_time, f.duration, f.class FROM flight_schedules fs JOIN flights f ON fs.flight_id=f.id WHERE fs.is_active=1 AND fs.departure_date>=CURDATE() ORDER BY fs.departure_date ASC, fs.price ASC LIMIT 10 OFFSET " . ((max(1, (int)($_GET['page'] ?? 1)) - 1) * 10));
     $st->execute([]);
     $localSchedules=$st->fetchAll();
+    $totalSchedules = (int)db()->query("SELECT FOUND_ROWS()")->fetchColumn();
+    $lastPage = max(1, (int)ceil($totalSchedules / 10));
+    $currentPage = max(1, (int)($_GET['page'] ?? 1));
 }
 $allDates = db()->query("SELECT DISTINCT departure_date FROM flight_schedules WHERE is_active=1 AND departure_date>=CURDATE() ORDER BY departure_date LIMIT 14")->fetchAll(PDO::FETCH_COLUMN);
-$allAirlines = db()->query("SELECT DISTINCT airline FROM flights WHERE is_active=1 AND airline IS NOT NULL AND airline != '' ORDER BY airline")->fetchAll(PDO::FETCH_COLUMN);
+// Extract airlines from actual search results (not hardcoded from DB)
+$allAirlines = [];
+if (!empty($duffelOffers)) {
+    foreach ($duffelOffers as $o) {
+        $isFL = isset($o['route']) && isset($o['flyFrom']);
+        $airline = $isFL ? ($o['airlines'][0] ?? '') : (($o['slices'][0]['segments'][0]['marketing_carrier']['name'] ?? '') ?: ($o['slices'][0]['segments'][0]['marketing_carrier']['iata_code'] ?? ''));
+        if ($airline && !in_array($airline, $allAirlines)) $allAirlines[] = $airline;
+    }
+}
+if (!empty($localSchedules)) {
+    foreach ($localSchedules as $s) {
+        $airline = $s['airline'] ?? '';
+        if ($airline && !in_array($airline, $allAirlines)) $allAirlines[] = $airline;
+    }
+}
+sort($allAirlines);
 // Filter live/local schedules by airline/min/max price/departure time/stops
 if (!empty($duffelOffers) && (!empty($airlineFilter) || $minPrice !== '' || $maxPrice !== '' || $depFilter !== '' || $stopsFilter !== '')) {
     $duffelOffers = array_values(array_filter($duffelOffers, function ($o) use ($airlineFilter, $minPrice, $maxPrice, $depFilter, $stopsFilter) {
@@ -215,112 +233,93 @@ if ($sort === 'price' || $sort === 'rating') {
 require_once 'includes/components/breadcrumb.php';
 require_once 'includes/header-klook.php';
 ?>
-<section class="py-4 bg-light" style="min-height: 80vh;">
-    <div class="container">
-        <?php renderBreadcrumb([['label' => t('Pesawat'), 'url' => null]]); ?>
-        <div class="card border-0 shadow-sm mb-4 overflow-hidden">
-            <div class="card-body p-3 p-md-4">
-                <?php if ($duffelError): ?>
-                    <div class="alert alert-warning py-2 small"><?= e($duffelError) ?></div>
-                <?php endif; ?>
-                <!-- Transport tabs ala Traveloka -->
-                <div class="d-flex gap-3 gap-md-4 mb-3 pb-2 border-bottom overflow-auto">
-                    <a href="flights.php" class="traveloka-tab active"><i class="bi bi-airplane"></i><?= t('Pesawat') ?></a>
-                    <a href="trains.php" class="traveloka-tab"><i class="bi bi-train-front"></i><?= t('Kereta') ?></a>
-                    <a href="ferries.php" class="traveloka-tab"><i class="bi bi-water"></i><?= t('Ferry') ?></a>
-                    <a href="rental-cars.php" class="traveloka-tab"><i class="bi bi-car-front"></i><?= t('Rental') ?></a>
-                </div>
-                <form method="GET" id="flightSearchForm">
-                    <div class="d-flex gap-3 mb-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="trip_type" value="oneway" id="tripOneway" <?= $tripType === 'oneway' ? 'checked' : '' ?>>
-                            <label class="form-check-label fw-semibold small" for="tripOneway"><i class="bi bi-arrow-right me-1"></i><?= t('One Way') ?></label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="trip_type" value="roundtrip" id="tripRoundtrip" <?= $tripType === 'roundtrip' ? 'checked' : '' ?>>
-                            <label class="form-check-label fw-semibold small" for="tripRoundtrip"><i class="bi bi-arrow-left-right me-1"></i><?= t('Round Trip') ?></label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="trip_type" value="multicity" id="tripMulticity" <?= $tripType === 'multicity' ? 'checked' : '' ?> data-testid="trip-multicity">
-                            <label class="form-check-label fw-semibold small" for="tripMulticity"><i class="bi bi-diagram-3 me-1"></i><?= t('Multi-Kota') ?></label>
-                        </div>
-                    </div>
-                    <!-- Multi-city leg editor -->
-                    <div id="multiCityLegs" class="mb-3 d-none" data-testid="multicity-legs">
-                        <div id="legContainer"></div>
-                        <button type="button" class="btn btn-sm btn-outline-primary" id="addLegBtn" data-testid="add-leg"><i class="bi bi-plus-lg me-1"></i><?= t('Tambah leg') ?></button>
-                        <div class="form-text"><?= t('Maksimal 6 leg. Format kota: Kota (IATA), contoh: Jakarta (CGK).') ?></div>
-                    </div>
-                    <div class="row g-2 g-md-3">
-                    <div class="col-md">
-                        <div class="traveloka-search-field">
-                            <div class="form-label"><?= t('Dari') ?></div>
-                            <div class="search-wrapper">
-                                <input type="text" name="from" class="form-control city-search" placeholder="<?= t('Kota asal (CGK)...') ?>" value="<?= e($from) ?>" autocomplete="off" data-target="fromDropdown" id="fromInput">
-                                <div class="search-dropdown" id="fromDropdown"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md">
-                        <div class="traveloka-search-field">
-                            <div class="form-label"><?= t('Ke') ?></div>
-                            <div class="search-wrapper">
-                                <input type="text" name="to" class="form-control city-search" placeholder="<?= t('Kota tujuan (DPS)...') ?>" value="<?= e($to) ?>" autocomplete="off" data-target="toDropdown" id="toInput">
-                                <div class="search-dropdown" id="toDropdown"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md return-date-col" style="<?= $tripType === 'roundtrip' ? '' : 'display:none' ?>">
-                        <div class="traveloka-search-field">
-                            <div class="form-label"><?= t('Tanggal Pulang') ?></div>
-                            <input type="date" name="return_date" class="form-control" value="<?= e($returnDate) ?>" min="<?= $date ?>" max="<?= date('Y-m-d', strtotime('+360 days')) ?>">
-                        </div>
-                    </div>
-                    <div class="col-md main-date-col" data-testid="main-date-col">
-                        <div class="traveloka-search-field">
-                            <div class="form-label"><?= $tripType === 'roundtrip' ? t('Pergi') : t('Tanggal') ?></div>
-                            <input type="date" name="date" class="form-control" value="<?= e($date) ?>" min="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d', strtotime('+360 days')) ?>">
-                            <?php if (!empty($flightCal)): ?>
-                            <div class="small text-primary fw-semibold mt-1 d-none" id="flightCalHint" data-testid="flight-cal-hint"></div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                    <div class="col-md">
-                        <div class="traveloka-search-field">
-                            <div class="form-label"><?= t('Penumpang') ?></div>
-                            <select name="passengers" class="form-select">
-                                <?php for($p=1;$p<=9;$p++): ?><option value="<?= $p ?>" <?= $passengers===$p?'selected':'' ?>><?= $p ?></option><?php endfor; ?>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md">
-                        <div class="traveloka-search-field">
-                            <div class="form-label"><?= t('Kelas') ?></div>
-                            <select name="class" class="form-select">
-                                <option value=""><?= t('Semua') ?></option>
-                                <option value="economy" <?= $class === 'economy' ? 'selected' : '' ?>><?= t('Ekonomi') ?></option>
-                                <option value="business" <?= $class === 'business' ? 'selected' : '' ?>><?= t('Bisnis') ?></option>
-                                <option value="first" <?= $class === 'first' ? 'selected' : '' ?>><?= t('First') ?></option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-auto d-grid">
-                        <button class="btn btn-primary traveloka-search-btn px-4" type="submit" name="search" value="1"><i class="bi bi-search me-1"></i><?= t('Cari') ?></button>
-                    </div>
-                    </div>
-                </form>
-                <?php if (count($allDates) > 0): ?>
-                <div class="d-flex gap-1 overflow-auto mt-3 pb-1">
-                    <?php foreach (array_slice($allDates, 0, 7) as $d):
-                        $dayName = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'][(int)date('w', strtotime($d))];
-                    ?>
-                    <a href="?<?= http_build_query(array_merge($_GET, ['date' => $d, 'search'=>1])) ?>" class="btn btn-sm <?= $date === $d ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill flex-shrink-0"><?= $dayName ?><br><strong><?= date('d', strtotime($d)) ?></strong></a>
-                    <?php endforeach; ?>
-                </div>
-                <?php endif; ?>
+<?php if (!$doSearch): ?>
+<section class="hero-uifactory">
+  <div class="hero-bg-shape hero-bg-shape--1"></div>
+  <div class="hero-bg-shape hero-bg-shape--2"></div>
+  <div class="hero-content">
+    <h1 class="hero-headline">Jelajahi Lebih Banyak,<br><span>Nikmati Perjalanannya.</span></h1>
+    <p class="hero-sub">Pesan tiket pesawat, ferry, dan kereta api dalam satu tempat.</p>
+  </div>
+  <div class="booking-card">
+    <div class="booking-card-inner">
+      <div class="booking-tabs" role="tablist">
+        <a href="flights.php" class="booking-tab active" role="tab"><i class="bi bi-airplane"></i> <?= t('Pesawat') ?></a>
+        <a href="ferries.php" class="booking-tab" role="tab"><i class="bi bi-water"></i> <?= t('Ferry') ?></a>
+        <a href="trains.php" class="booking-tab" role="tab"><i class="bi bi-train-front"></i> <?= t('Kereta') ?></a>
+        <a href="rental-cars.php" class="booking-tab" role="tab"><i class="bi bi-car-front"></i> <?= t('Rental') ?></a>
+      </div>
+      <div class="booking-form">
+        <?php if ($duffelError): ?>
+          <div class="alert alert-warning py-2 small mb-3"><?= e($duffelError) ?></div>
+        <?php endif; ?>
+        <form method="GET" id="flightSearchForm">
+          <div class="form-row-options">
+            <div class="trip-type-group">
+              <button type="button" class="trip-type-btn <?= $tripType === 'roundtrip' ? 'active' : '' ?>" onclick="document.getElementById('tripTypeHidden').value='roundtrip';document.querySelectorAll('.trip-type-btn').forEach(function(b){b.classList.remove('active')});this.classList.add('active');document.querySelectorAll('.return-date-col').forEach(function(c){c.style.display=''});" data-type="roundtrip"><?= t('Pulang Pergi') ?></button>
+              <button type="button" class="trip-type-btn <?= $tripType === 'oneway' ? 'active' : '' ?>" onclick="document.getElementById('tripTypeHidden').value='oneway';document.querySelectorAll('.trip-type-btn').forEach(function(b){b.classList.remove('active')});this.classList.add('active');document.querySelectorAll('.return-date-col').forEach(function(c){c.style.display='none'});" data-type="oneway"><?= t('Sekali Jalan') ?></button>
+              <button type="button" class="trip-type-btn <?= $tripType === 'multicity' ? 'active' : '' ?>" onclick="document.getElementById('tripTypeHidden').value='multicity';document.querySelectorAll('.trip-type-btn').forEach(function(b){b.classList.remove('active')});this.classList.add('active');" data-type="multicity"><?= t('Multi-Kota') ?></button>
             </div>
-        </div>
+            <input type="hidden" name="trip_type" value="<?= e($tripType) ?>" id="tripTypeHidden">
+            <div class="custom-select">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              <select name="passengers">
+                <?php for($p=1;$p<=9;$p++): ?><option value="<?= $p ?>" <?= $passengers===$p?'selected':'' ?>><?= $p ?> <?= t('orang') ?></option><?php endfor; ?>
+              </select>
+            </div>
+            <div class="custom-select">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <select name="class">
+                <option value=""><?= t('Semua Kelas') ?></option>
+                <option value="economy" <?= $class === 'economy' ? 'selected' : '' ?>><?= t('Ekonomi') ?></option>
+                <option value="business" <?= $class === 'business' ? 'selected' : '' ?>><?= t('Bisnis') ?></option>
+                <option value="first" <?= $class === 'first' ? 'selected' : '' ?>><?= t('First Class') ?></option>
+              </select>
+            </div>
+          </div>
+          <div id="multiCityLegs" class="mb-3 d-none" data-testid="multicity-legs">
+            <div id="legContainer"></div>
+            <button type="button" class="btn btn-sm btn-outline-primary" id="addLegBtn" data-testid="add-leg"><i class="bi bi-plus-lg me-1"></i><?= t('Tambah leg') ?></button>
+            <div class="form-text"><?= t('Maksimal 6 leg.') ?></div>
+          </div>
+          <div class="form-search-row">
+            <div class="search-field">
+              <span class="search-field-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 7 11.5 7.3 11.8a1 1 0 0 0 1.4 0C13 21.5 20 15.4 20 10a8 8 0 0 0-8-8z"/></svg> <?= t('Dari') ?></span>
+              <input type="text" name="from" class="city-search" placeholder="<?= t('Kota atau bandara') ?>" value="<?= e($from) ?>" autocomplete="off" data-target="fromDropdown" id="fromInput">
+              <div class="search-dropdown" id="fromDropdown"></div>
+            </div>
+            <button type="button" class="swap-btn" onclick="var f=document.querySelector('[name=from]'),t=document.querySelector('[name=to]'),tmp=f.value;f.value=t.value;t.value=tmp;" aria-label="Tukar"><div class="swap-btn-inner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 16l-4-4 4-4"/><path d="M17 8l4 4-4 4"/><line x1="3" y1="12" x2="21" y2="12"/></svg></div></button>
+            <div class="search-field">
+              <span class="search-field-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 7 11.5 7.3 11.8a1 1 0 0 0 1.4 0C13 21.5 20 15.4 20 10a8 8 0 0 0-8-8z"/></svg> <?= t('Ke') ?></span>
+              <input type="text" name="to" class="city-search" placeholder="<?= t('Kota atau bandara') ?>" value="<?= e($to) ?>" autocomplete="off" data-target="toDropdown" id="toInput">
+              <div class="search-dropdown" id="toDropdown"></div>
+            </div>
+            <div class="search-field return-date-col" style="<?= $tripType === 'roundtrip' ? '' : 'display:none' ?>">
+              <span class="search-field-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> <?= t('Tanggal Pulang') ?></span>
+              <input type="date" name="return_date" value="<?= e($returnDate) ?>" min="<?= $date ?>" max="<?= date('Y-m-d', strtotime('+360 days')) ?>">
+            </div>
+            <div class="search-field">
+              <span class="search-field-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> <?= $tripType === 'roundtrip' ? t('Tanggal Pergi') : t('Tanggal') ?></span>
+              <input type="date" name="date" value="<?= e($date) ?>" min="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d', strtotime('+360 days')) ?>">
+              <?php if (!empty($flightCal)): ?>
+              <div class="small text-primary fw-semibold mt-1 d-none" id="flightCalHint" data-testid="flight-cal-hint"></div>
+              <?php endif; ?>
+            </div>
+            <button class="search-btn" type="submit" name="search" value="1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <?= t('Cari') ?>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+<?php endif; ?>
 
+<?php if ($doSearch): ?>
+<section class="py-4 bg-light" style="min-height:60vh;">
+    <div class="container">
         <div class="row">
             <!-- Sidebar Filter Traveloka -->
             <div class="col-lg-3 mb-3">
@@ -493,7 +492,9 @@ require_once 'includes/header-klook.php';
                         <div class="card-body p-3 p-md-4">
                             <div class="row align-items-center g-3">
                                 <div class="col-md-2 d-flex align-items-center gap-2">
-                                    <?php if (!empty($carrier['logo_symbol_url'])): ?><img src="<?= e($carrier['logo_symbol_url']) ?>" alt="" style="width:44px;height:44px;object-fit:contain" class="bg-white rounded-2 border"><?php else: ?><div class="flight-logo d-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary fw-bold rounded-2" style="width:44px;height:44px;"><?= e(substr($carrier['name']??'ZZ',0,2)) ?></div><?php endif; ?>
+                                    <?php $logoUrl = 'https://images.kiwi.com/airlines/64/' . e($carrier['iata_code'] ?? 'ZZ') . '.png'; ?>
+                                    <img src="<?= $logoUrl ?>" alt="<?= e($carrier['name'] ?? '') ?>" style="width:44px;height:44px;object-fit:contain" class="bg-white rounded-2 border" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                    <div class="flight-logo d-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary fw-bold rounded-2" style="width:44px;height:44px;display:none;"><?= e(substr($carrier['name']??'ZZ',0,2)) ?></div>
                                     <div><div class="fw-semibold small"><?= e($carrier['name'] ?? 'Duffel Airways') ?></div><small class="text-muted" style="font-size:11px;"><?= e($carrier['iata_code'] ?? 'ZZ') ?> <?= e($seg['marketing_carrier_flight_number'] ?? '') ?></small></div>
                                 </div>
                                 <div class="col-md-4">
@@ -527,7 +528,7 @@ if ($isFL) {
             <div class="row g-3">
                 <?php foreach ($localSchedules as $s): $dep = date('H:i', strtotime($s['departure_time'])); $arr = date('H:i', strtotime($s['arrival_time'])); $airlineCode = substr($s['airline'], 0, 2); $fromShort = explode('(', $s['from_city'])[0]; $toShort = explode('(', $s['to_city'])[0]; ?>
                 <div class="col-12"><div class="card border-0 shadow-sm flight-card"><div class="card-body p-3 p-md-4"><div class="row align-items-center g-3">
-                    <div class="col-md-2 d-flex align-items-center gap-2"><div class="flight-logo d-flex align-items-center justify-content-center bg-secondary bg-opacity-10 text-secondary fw-bold rounded-2" style="width:44px;height:44px;"><?= $airlineCode ?></div><div><div class="fw-semibold small"><?= e($s['airline']) ?></div><small class="text-muted" style="font-size:11px;"><?= e($s['flight_number']) ?></small></div></div>
+                    <div class="col-md-2 d-flex align-items-center gap-2"><img src="https://images.kiwi.com/airlines/64/<?= $airlineCode ?>.png" alt="<?= e($s['airline']) ?>" style="width:44px;height:44px;object-fit:contain" class="bg-white rounded-2 border" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="flight-logo d-flex align-items-center justify-content-center bg-secondary bg-opacity-10 text-secondary fw-bold rounded-2" style="width:44px;height:44px;display:none;"><?= $airlineCode ?></div><div><div class="fw-semibold small"><?= e($s['airline']) ?></div><small class="text-muted" style="font-size:11px;"><?= e($s['flight_number']) ?></small></div></div>
                     <div class="col-md-4"><div class="d-flex align-items-center justify-content-center gap-2"><div class="text-center" style="min-width:70px;"><div class="fs-5 fw-bold"><?= $dep ?></div><small class="text-muted"><?= e(trim($fromShort)) ?></small></div><div class="flex-grow-1 text-center px-2"><div class="border-top border-2 border-secondary position-relative"><i class="bi bi-airplane-fill text-secondary position-absolute top-0 start-50 translate-middle" style="font-size:12px;"></i></div><small class="text-muted d-block mt-1"><?= e($s['duration']) ?></small></div><div class="text-center" style="min-width:70px;"><div class="fs-5 fw-bold"><?= $arr ?></div><small class="text-muted"><?= e(trim($toShort)) ?></small></div></div></div>
                     <div class="col-md-2 text-center"><span class="badge bg-secondary rounded-pill"><?= ucfirst($s['class']) ?></span><small class="d-block text-muted mt-1"><?= t('Sisa') ?> <?= $s['available_seats'] ?> <?= t('kursi') ?></small></div>
                     <div class="col-md-2 text-center"><div class="fs-5 fw-bold text-primary"><?= formatCurrencySpan($s['price']) ?></div><small class="text-muted">/ <?= t('orang') ?></small></div>
@@ -539,9 +540,17 @@ if ($isFL) {
             <div class="text-center py-5" id="noResults"><i class="bi bi-airplane fs-1 text-muted"></i><p class="mt-2 text-muted"><?= t('Tidak ada penerbangan untuk rute/tanggal tersebut.') ?></p><p class="small text-muted"><?= t('Coba: CGK → DPS, SIN → CGK, atau ubah tanggal.') ?></p><a href="flights.php" class="btn btn-primary rounded-pill px-4"><?= t('Reset') ?></a></div>
             <?php endif; ?>
         <?php else: ?>
-            <?php if (count($localSchedules) > 0): ?><p class="small text-muted mb-2"><?= t('Jadwal lokal (contoh). Gunakan pencarian di atas untuk hasil live Duffel.') ?></p><div class="row g-3"><?php foreach ($localSchedules as $s): $dep = date('H:i', strtotime($s['departure_time'])); $arr = date('H:i', strtotime($s['arrival_time'])); $airlineCode = substr($s['airline'], 0, 2); ?>
-                <div class="col-12"><div class="card border-0 shadow-sm flight-card"><div class="card-body p-3 d-flex justify-content-between align-items-center"><div class="d-flex align-items-center gap-2"><div class="flight-logo bg-light border rounded-2 d-flex align-items-center justify-content-center fw-bold" style="width:36px;height:36px;font-size:12px"><?= $airlineCode ?></div><div><div class="fw-semibold small"><?= e($s['airline']) ?> <?= e($s['flight_number']) ?></div><small class="text-muted"><?= e($s['from_city']) ?> → <?= e($s['to_city']) ?> · <?= e($s['duration']) ?></small></div></div><div class="text-end"><div class="fw-bold text-primary small"><?= formatCurrencySpan($s['price']) ?></div><a href="flight-detail.php?schedule_id=<?= $s['id'] ?>" class="btn btn-sm btn-outline-primary rounded-pill mt-1"><?= t('Lihat') ?></a></div></div></div></div>
-                <?php endforeach; ?></div><?php else: ?>
+            <?php if (count($localSchedules) > 0): ?><p class="small text-muted mb-2"></p><div class="row g-3" id="flightGrid"><?php foreach ($localSchedules as $s): $dep = date('H:i', strtotime($s['departure_time'])); $arr = date('H:i', strtotime($s['arrival_time'])); $airlineCode = substr($s['airline'], 0, 2); ?>
+                <div class="col-12"><div class="card border-0 shadow-sm flight-card"><div class="card-body p-3 d-flex justify-content-between align-items-center"><div class="d-flex align-items-center gap-2"><img src="https://images.kiwi.com/airlines/64/<?= $airlineCode ?>.png" alt="<?= e($s['airline']) ?>" style="width:36px;height:36px;object-fit:contain" class="bg-white rounded-2 border" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="flight-logo bg-light border rounded-2 d-flex align-items-center justify-content-center fw-bold" style="width:36px;height:36px;font-size:12px;display:none;"><?= $airlineCode ?></div><div><div class="fw-semibold small"><?= e($s['airline']) ?> <?= e($s['flight_number']) ?></div><small class="text-muted"><?= e($s['from_city']) ?> → <?= e($s['to_city']) ?> · <?= e($s['duration']) ?></small></div></div><div class="text-end"><div class="fw-bold text-primary small"><?= formatCurrencySpan($s['price']) ?></div><a href="flight-detail.php?schedule_id=<?= $s['id'] ?>" class="btn btn-sm btn-outline-primary rounded-pill mt-1"><?= t('Lihat') ?></a></div></div></div></div>
+                <?php endforeach; ?></div>
+                <?php if (isset($lastPage) && $lastPage > $currentPage): ?>
+                <div class="load-more-trigger text-center py-4" data-page="<?= $currentPage ?>" data-last-page="<?= $lastPage ?>" data-testid="flight-load-more">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <?php endif; ?>
+                <?php else: ?>
                 <div class="text-center py-5" id="noLocalResults"><i class="bi bi-airplane fs-1 text-muted"></i><p class="mt-2 text-muted"><?= t('Tidak ada jadwal lokal yang cocok dengan filter.') ?></p><a href="flights.php" class="btn btn-primary rounded-pill px-4"><?= t('Reset') ?></a></div>
                 <?php endif; ?>
         <?php endif; ?>
@@ -549,6 +558,7 @@ if ($isFL) {
         </div><!-- /.row -->
     </div>
 </section>
+<?php endif; ?>
 <?php require_once 'includes/footer-klook.php'; ?>
 <script>
 // Show skeleton initially, then reveal content
@@ -561,6 +571,53 @@ document.addEventListener('DOMContentLoaded', function() {
             skeleton.style.display = 'none';
             content.style.display = 'block';
         }, 300);
+    }
+
+    // Infinite Scroll with IntersectionObserver (port dari tours.php)
+    var loadMoreTrigger = document.querySelector('.load-more-trigger');
+    if (loadMoreTrigger) {
+        var currentPage = parseInt(loadMoreTrigger.dataset.page);
+        var lastPage = parseInt(loadMoreTrigger.dataset.lastPage);
+        var loading = false;
+
+        var observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting && !loading && currentPage < lastPage) {
+                    loading = true;
+                    currentPage++;
+
+                    var params = new URLSearchParams(window.location.search);
+                    params.set('page', currentPage);
+                    var ajaxUrl = 'flights-ajax.php?' + params.toString();
+
+                    fetch(ajaxUrl)
+                        .then(function(response) { return response.text(); })
+                        .then(function(html) {
+                            var temp = document.createElement('div');
+                            temp.innerHTML = html;
+                            if (temp.querySelector('[data-empty]')) {
+                                loadMoreTrigger.remove();
+                                loading = false;
+                                return;
+                            }
+                            var grid = document.getElementById('flightGrid');
+                            if (grid) {
+                                grid.insertAdjacentHTML('beforeend', temp.innerHTML);
+                            }
+                            loadMoreTrigger.dataset.page = currentPage;
+                            if (currentPage >= lastPage) {
+                                loadMoreTrigger.remove();
+                            }
+                            loading = false;
+                        })
+                        .catch(function() {
+                            loading = false;
+                        });
+                }
+            });
+        }, { rootMargin: '200px' });
+
+        observer.observe(loadMoreTrigger);
     }
 });
 </script>
@@ -595,35 +652,29 @@ document.querySelectorAll('.city-search').forEach(function(input) {
         }, 200);
     });
     document.addEventListener('click', function(e) {
-        if (!input.closest('.search-wrapper').contains(e.target)) dropdown.classList.remove('show');
+        var wrapper = input.closest('.search-field') || input.closest('.search-wrapper');
+        if (wrapper && !wrapper.contains(e.target)) dropdown.classList.remove('show');
     });
 });
-document.querySelectorAll('input[name="trip_type"]').forEach(function(radio) {
-    radio.addEventListener('change', function() {
+document.querySelectorAll('.trip-type-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        document.getElementById('tripTypeHidden').value = btn.dataset.type;
         initTripUi();
     });
 });
 function initTripUi() {
     (function() {
+        var tripType = document.getElementById('tripTypeHidden').value;
         var returnCol = document.querySelector('.return-date-col');
-        var dateLabel = document.querySelector('input[name="date"]').closest('.traveloka-search-field').querySelector('.form-label');
-        var isMc = document.getElementById('tripMulticity').checked;
+        var searchField = document.querySelector('input[name="date"]').closest('.search-field');
+        var dateLabel = searchField ? searchField.querySelector('.search-field-label') : null;
+        var isMc = tripType === 'multicity';
         document.getElementById('multiCityLegs').classList.toggle('d-none', !isMc);
-        document.querySelector('.main-date-col').style.display = isMc ? 'none' : '';
-        if (document.getElementById('tripRoundtrip').checked) {
-            returnCol.style.display = '';
-            dateLabel.textContent = '<?= t('Pergi') ?>';
-        } else if (isMc) {
-            returnCol.style.display = 'none';
-        } else {
-            returnCol.style.display = 'none';
-            dateLabel.textContent = '<?= t('Tanggal') ?>';
-        }
-    });
-    if (document.getElementById('tripMulticity').checked) {
+        if (returnCol) returnCol.style.display = tripType === 'roundtrip' ? '' : 'none';
+        if (dateLabel) dateLabel.textContent = tripType === 'roundtrip' ? '<?= t('Tanggal Pergi') ?>' : '<?= t('Tanggal') ?>';
+    })();
+    if (document.getElementById('tripTypeHidden').value === 'multicity') {
         document.getElementById('multiCityLegs').classList.remove('d-none');
-        var mainCol = document.querySelector('.main-date-col');
-        if (mainCol) mainCol.style.display = 'none';
     }
 }
 initTripUi();
@@ -635,9 +686,9 @@ initTripUi();
         var row = document.createElement('div');
         row.className = 'row g-2 mb-2 leg-row';
         row.innerHTML = ''
-            + '<div class="col-md-4"><input type="text" class="form-control form-control-sm city-search" name="leg_from[]" placeholder="<?= t('Dari (CGK)...') ?>" value="' + (fromVal || '') + '" autocomplete="off" required></div>'
-            + '<div class="col-md-4"><input type="text" class="form-control form-control-sm city-search" name="leg_to[]" placeholder="<?= t('Ke (DPS)...') ?>" value="' + (toVal || '') + '" autocomplete="off" required></div>'
-            + '<div class="col-md-3"><input type="date" class="form-control form-control-sm" name="leg_date[]" value="' + (dateVal || '') + '" min="<?= date('Y-m-d') ?>" required></div>'
+            + '<div class="col-md-4"><input type="text" class="form-control form-control-sm city-search" name="leg_from[]" placeholder="<?= t('Dari (CGK)...') ?>" value="' + (fromVal || '') + '" autocomplete="off"></div>'
+            + '<div class="col-md-4"><input type="text" class="form-control form-control-sm city-search" name="leg_to[]" placeholder="<?= t('Ke (DPS)...') ?>" value="' + (toVal || '') + '" autocomplete="off"></div>'
+            + '<div class="col-md-3"><input type="date" class="form-control form-control-sm" name="leg_date[]" value="' + (dateVal || '') + '" min="<?= date('Y-m-d') ?>"></div>'
             + '<div class="col-md-1"><button type="button" class="btn btn-sm btn-outline-danger w-100 leg-del" title="<?= t('Hapus') ?>">×</button></div>';
         row.querySelector('.leg-del').addEventListener('click', function() {
             row.remove();

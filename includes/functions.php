@@ -3,7 +3,7 @@
  * Format angka ke Rupiah
  */
 function formatRupiah($angka) {
-    $sep = (getCurrentLang() === 'en') ? [',', '.'] : ['.', ','];
+    $sep = in_array(getCurrentLang(), ['en', 'zh'], true) ? [',', '.'] : ['.', ','];
     return 'Rp ' . number_format((float)$angka, 0, $sep[1], $sep[0]);
 }
 
@@ -160,7 +160,7 @@ function formatCurrency($amount, $currency = null, $sourceCurrency = null) {
     $converted = convertCurrency($amount, $sourceCurrency, $currency);
     $config = getSupportedCurrencies()[$currency] ?? getSupportedCurrencies()['IDR'];
 
-    $sep = (getCurrentLang() === 'en') ? [',', '.'] : ['.', ','];
+    $sep = in_array(getCurrentLang(), ['en', 'zh'], true) ? [',', '.'] : ['.', ','];
     $formatted = number_format($converted, $config['decimals'], $sep[1], $sep[0]);
     return $config['position'] === 'before'
         ? $config['symbol'] . ' ' . $formatted
@@ -195,6 +195,7 @@ function getSupportedLanguages() {
     return [
         'id' => ['label' => 'Bahasa Indonesia', 'flag' => '🇮🇩', 'locale' => 'id_ID'],
         'en' => ['label' => 'English',          'flag' => '🇬🇧', 'locale' => 'en_US'],
+        'zh' => ['label' => '中文',             'flag' => '🇨🇳', 'locale' => 'zh_CN'],
     ];
 }
 
@@ -226,7 +227,7 @@ function getCurrentLang() {
  * Set current language
  */
 function setLang($lang) {
-    $lang = in_array($lang, ['id', 'en']) ? $lang : 'id';
+    $lang = isValidLang($lang) ? $lang : 'id';
     $_SESSION['lang'] = $lang;
     setcookie('lang', $lang, time() + (86400 * 365), '/');
 }
@@ -392,7 +393,7 @@ function formatDate($date) {
  * (id: 1.000,5 — en: 1,000.5).
  */
 function formatNumber($n) {
-    $sep = (getCurrentLang() === 'en') ? [',', '.'] : ['.', ','];
+    $sep = in_array(getCurrentLang(), ['en', 'zh'], true) ? [',', '.'] : ['.', ','];
     return number_format((float)$n, 0, $sep[1], $sep[0]);
 }
 

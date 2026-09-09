@@ -2,6 +2,7 @@
 // FlightList (Kiwi/Tequila proxy) - gratis tanpa auth
 // Primary source for demo; fallback ke Duffel/DB jika tidak terjangkau
 define('FLIGHTLIST_BASE', 'https://www.flightlist.io/api/search.php');
+require_once __DIR__ . '/flight-cache.php';
 
 function flightlistCabin($cabin) {
     return match($cabin) {
@@ -24,6 +25,13 @@ function flightlistSearchOffers($origin, $dest, $date, $cabinClass = 'economy', 
     if ($dateStr > date('Y-m-d', strtotime('+360 days'))) return ['error' => 'Tanggal terlalu jauh (maks 360 hari).'];
     $passengers = max(1, min(9, (int)$passengers));
     $cabin = flightlistCabin($cabinClass);
+    // Check cache first
+    $cacheKey = flightCacheKey('flightlist', $originCode, $destCode, $dateStr, $cabin, $passengers);
+    $cached = flightCacheGet($cacheKey);
+    if ($cached !== null) {
+        $cached['_from_cache'] = true;
+        return $cached;
+    }
     // FlightList expects DD/MM/YYYY
     $df = date('d/m/Y', $ts);
     $dt = $df; // oneway single date range same
@@ -65,6 +73,9 @@ function flightlistSearchOffers($origin, $dest, $date, $cabinClass = 'economy', 
         return ['error' => 'Format FlightList tidak valid', 'unreachable' => true];
     }
     $offers = $data['data'];
+    // Store in cache
+    $result = ['offers' => $offers, 'search_id' => $data['search_id'] ?? null, 'currency' => $data['currency'] ?? 'USD'];
+    flightCacheSet($cacheKey, 'flightlist', $result, count($offers));
     // Persist to session for detail page
     if (session_status() === PHP_SESSION_NONE) {
         @session_start();
@@ -77,7 +88,7 @@ function flightlistSearchOffers($origin, $dest, $date, $cabinClass = 'economy', 
     if (count($_SESSION['flightlist_offers']) > 200) {
         $_SESSION['flightlist_offers'] = array_slice($_SESSION['flightlist_offers'], -200, null, true);
     }
-    return ['offers' => $offers, 'search_id' => $data['search_id'] ?? null, 'currency' => $data['currency'] ?? 'USD'];
+    return $result;
 }
 
 function flightlistFormatPrice($priceUsd) {

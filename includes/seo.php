@@ -5,6 +5,10 @@
  */
 function seoCanonical(): string {
     $uri = $_SERVER['REQUEST_URI'] ?? '/';
+    // On localhost, REQUEST_URI already includes subdirectory — don't double it
+    if (str_contains($_SERVER['HTTP_HOST'] ?? '', 'localhost')) {
+        return 'http://localhost' . $uri;
+    }
     return BASE_URL . $uri;
 }
 
@@ -14,6 +18,13 @@ function seoHead(?string $metaDesc = null, ?string $ogImage = null, ?array $json
     $ogImg = $ogImage ?: BASE_URL . '/assets/img/og-default.jpg';
     echo '<meta name="description" content="' . e(mb_substr($desc, 0, 160)) . '">' . "\n";
     echo '<link rel="canonical" href="' . e($canon) . '">' . "\n";
+    // hreflang alternates per bahasa yang didukung (query ?lang= per varian)
+    $uri = $_SERVER['REQUEST_URI'] ?? '/';
+    foreach (getSupportedLanguages() as $langCode => $langMeta) {
+        $altUrl = (str_contains($_SERVER['HTTP_HOST'] ?? '', 'localhost') ? 'http://localhost' : BASE_URL)
+            . $uri . (str_contains($uri, '?') ? '&' : '?') . 'lang=' . $langCode;
+        echo '<link rel="alternate" hreflang="' . e($langMeta['locale']) . '" href="' . e($altUrl) . '">' . "\n";
+    }
     echo '<meta property="og:type" content="website">' . "\n";
     echo '<meta property="og:title" content="' . e($pageTitle ?? SITE_NAME) . '">' . "\n";
     echo '<meta property="og:description" content="' . e(mb_substr($desc, 0, 160)) . '">' . "\n";

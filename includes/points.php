@@ -22,10 +22,31 @@ function recordPoints(int $userId, int $points, string $reason, ?string $booking
     try {
         $stmt = db()->prepare("INSERT IGNORE INTO points_ledger (user_id, points, booking_type, booking_id, booking_code, reason, note) VALUES (?, ?, ?, ?, ?, ?, ?)");
         $stmt->execute([$userId, $points, $bookingType, $bookingId, $bookingCode, $reason, $note]);
+        if ($stmt->rowCount() > 0 && isset($_SESSION['tier_badge'][$userId])) unset($_SESSION['tier_badge'][$userId]);
         return $stmt->rowCount() > 0 ? $points : 0;
     } catch (Throwable $e) {
         return 0;
     }
+}
+
+/** Data tier + poin untuk header badge. Cache per session, bust saat points berubah. */
+function getTierBadgeInfo(int $userId): array {
+    if ($userId <= 0) return [];
+    if (isset($_SESSION['tier_badge'][$userId])) return $_SESSION['tier_badge'][$userId];
+    $stmt = db()->prepare("SELECT u.tier, ut.display_name, ut.icon, ut.color FROM users u LEFT JOIN user_tiers ut ON ut.tier_name = u.tier WHERE u.id = ?");
+    $stmt->execute([$userId]);
+    $row = $stmt->fetch();
+    if (!$row) return [];
+    $tier = $row['tier'] ?: 'explorer';
+    $info = [
+        'tier'         => $tier,
+        'display_name' => $row['display_name'] ?: ucfirst($tier),
+        'icon'         => $row['icon'] ?: 'bi-compass',
+        'color'        => $row['color'] ?: '#6c757d',
+        'points'       => getPointsBalance($userId),
+    ];
+    $_SESSION['tier_badge'][$userId] = $info;
+    return $info;
 }
 
 function getTierMultiplier(int $userId): float {

@@ -6,7 +6,7 @@ const PHP_ERROR = /(Fatal error|Deprecated|Notice:|Parse error|Uncaught|Undefine
 async function loginAdmin(page) {
   await page.goto(`${BASE}/admin/login.php`, { waitUntil: 'load' });
   await page.fill('input[name="username"]', 'admin');
-  await page.fill('input[name="password"]', 'password');
+  await page.fill('input[name="password"]', 'admin123');
   await page.click('button[type="submit"]');
   await page.waitForLoadState('load');
 }

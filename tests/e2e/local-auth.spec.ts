@@ -9,7 +9,7 @@ test.describe('Local Auth - Admin Login', () => {
     await page.waitForLoadState('networkidle');
 
     await page.fill('input[name="username"]', 'admin');
-    await page.fill('input[name="password"]', 'password');
+    await page.fill('input[name="password"]', 'admin123');
     await page.click('button[type="submit"]');
     await page.waitForLoadState('networkidle');
 

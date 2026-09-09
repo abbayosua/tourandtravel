@@ -91,7 +91,7 @@ test.describe('Translation Completeness — Admin (lang=en 0 bocor)', () => {
   async function loginAdmin(page) {
     await page.goto(`${BASE}/admin/login.php`, { waitUntil: 'load' });
     await page.fill('input[name="username"]', 'admin');
-    await page.fill('input[name="password"]', 'password');
+    await page.fill('input[name="password"]', 'admin123');
     await page.click('button[type="submit"]');
     await page.waitForURL('**/admin/dashboard.php');
   }

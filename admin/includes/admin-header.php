@@ -32,6 +32,9 @@
     #adminSidebar.icon-only .nav-link span.nav-label {
         display: none;
     }
+    #adminSidebar.icon-only .nav-section-label {
+        display: none;
+    }
     #adminSidebar.icon-only .nav-link i {
         margin-right: 0;
         width: auto;
@@ -100,95 +103,79 @@
         <!-- Sidebar -->
         <div class="bg-dark sidebar p-3" id="adminSidebar">
             <nav class="nav flex-column">
-                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'dashboard.php' ? 'active' : '' ?>" href="dashboard.php">
-                    <i class="bi bi-speedometer2"></i><span class="nav-label"> <?= t('Dashboard') ?></span>
+                <?php
+                $currentPage = basename($_SERVER['PHP_SELF']);
+                $sectionHdr = function (string $label) { ?>
+                <div class="nav-section-label small text-secondary text-uppercase fw-bold px-2 pt-2 pb-1" style="letter-spacing:.08em; font-size:.68rem;"><?= $label ?></div>
+                <?php };
+                $navItem = function (string $href, string $icon, string $label, array $activePages, string $testid = '') use ($currentPage) { ?>
+                <a class="nav-link <?= in_array($currentPage, $activePages, true) ? 'active' : '' ?>" href="<?= $href ?>"<?= $testid ? " data-testid=\"$testid\"" : '' ?>>
+                    <i class="bi <?= $icon ?>"></i><span class="nav-label"> <?= $label ?></span>
                 </a>
-                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'tours.php' ? 'active' : '' ?>" href="tours.php">
-                    <i class="bi bi-map"></i><span class="nav-label"> <?= t('Kelola Tour') ?></span>
-                </a>
-                <a class="nav-link <?= in_array(basename($_SERVER['PHP_SELF']), ['hotels.php', 'hotel-edit.php', 'hotel-rooms.php']) ? 'active' : '' ?>" href="hotels.php">
-                    <i class="bi bi-building"></i><span class="nav-label"> <?= t('Kelola Hotel') ?></span>
-                </a>
-                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'flights.php' || basename($_SERVER['PHP_SELF']) === 'flight-edit.php' ? 'active' : '' ?>" href="flights.php">
-                    <i class="bi bi-airplane"></i><span class="nav-label"> <?= t('Kelola Pesawat') ?></span>
-                </a>
-                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'ferries.php' || basename($_SERVER['PHP_SELF']) === 'ferry-edit.php' ? 'active' : '' ?>" href="ferries.php">
-                    <i class="bi bi-ship"></i><span class="nav-label"> <?= t('Kelola Ferry') ?></span>
-                </a>
-                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'rental-cars.php' || basename($_SERVER['PHP_SELF']) === 'rental-car-edit.php' ? 'active' : '' ?>" href="rental-cars.php">
-                    <i class="bi bi-car-front"></i><span class="nav-label"> <?= t('Kelola Rental') ?></span>
-                </a>
-                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'bookings.php' ? 'active' : '' ?>" href="bookings.php">
-                    <i class="bi bi-ticket-perforated"></i><span class="nav-label"> <?= t('Kelola Booking') ?></span>
-                </a>
-                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'attractions.php' || basename($_SERVER['PHP_SELF']) === 'attraction-edit.php' ? 'active' : '' ?>" href="attractions.php">
-                    <i class="bi bi-signpost-2"></i><span class="nav-label"> <?= t('Kelola Atraksi') ?></span>
-                </a>
-                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'transfers.php' || basename($_SERVER['PHP_SELF']) === 'transfer-edit.php' ? 'active' : '' ?>" href="transfers.php">
-                    <i class="bi bi-car-front"></i><span class="nav-label"> <?= t('Kelola Transfer') ?></span>
-                </a>
-                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'trains.php' || basename($_SERVER['PHP_SELF']) === 'train-edit.php' ? 'active' : '' ?>" href="trains.php">
-                    <i class="bi bi-train-front"></i><span class="nav-label"> <?= t('Kelola Kereta') ?></span>
-                </a>
-                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'esim.php' || basename($_SERVER['PHP_SELF']) === 'esim-edit.php' ? 'active' : '' ?>" href="esim.php">
-                    <i class="bi bi-sim"></i><span class="nav-label"> <?= t('Kelola eSIM') ?></span>
-                </a>
-                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'promo-codes.php' ? 'active' : '' ?>" href="promo-codes.php">
-                    <i class="bi bi-tag"></i><span class="nav-label"> <?= t('Kode Promo') ?></span>
-                </a>
-                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'collections.php' ? 'active' : '' ?>" href="collections.php">
-                    <i class="bi bi-collection"></i><span class="nav-label"> <?= t('Koleksi') ?></span>
-                </a>
-                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'faq.php' || basename($_SERVER['PHP_SELF']) === 'faq-edit.php' || basename($_SERVER['PHP_SELF']) === 'faq-category.php' || basename($_SERVER['PHP_SELF']) === 'faq-category-edit.php' ? 'active' : '' ?>" href="faq.php">
-                    <i class="bi bi-question-circle"></i><span class="nav-label"> <?= t('Kelola FAQ') ?></span>
-                </a>
-                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'loyalty-settings.php' ? 'active' : '' ?>" href="loyalty-settings.php">
-                    <i class="bi bi-award"></i><span class="nav-label"> <?= t('Loyalty Settings') ?></span>
-                </a>
-                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'appearance.php' ? 'active' : '' ?>" href="appearance.php">
-                    <i class="bi bi-layout-text-window-reverse text-info"></i><span class="nav-label"> <?= t('Tampilan Homepage') ?></span>
-                </a>
-                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'posts.php' ? 'active' : '' ?>" href="posts.php">
-                    <i class="bi bi-journal-richtext text-primary"></i><span class="nav-label"> <?= t('Blog') ?></span>
-                </a>
-                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'reviews.php' ? 'active' : '' ?>" href="reviews.php">
-                    <i class="bi bi-chat-square-heart text-danger"></i><span class="nav-label"> <?= t('Ulasan') ?></span>
-                </a>
-                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'analytics.php' ? 'active' : '' ?>" href="analytics.php">
-                    <i class="bi bi-graph-up-arrow text-info"></i><span class="nav-label"> <?= t('Analytics') ?></span>
-                </a>
-                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'payments.php' ? 'active' : '' ?>" href="payments.php">
-                    <i class="bi bi-credit-card text-success"></i><span class="nav-label"> <?= t('Pembayaran') ?></span>
-                </a>
-                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'email-log.php' ? 'active' : '' ?>" href="email-log.php">
-                    <i class="bi bi-envelope-paper text-warning"></i><span class="nav-label"> <?= t('Log Email') ?></span>
-                </a>
-                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'wa-settings.php' ? 'active' : '' ?>" href="wa-settings.php">
-                    <i class="bi bi-whatsapp text-success"></i><span class="nav-label"> <?= t('Pengaturan WA') ?></span>
-                </a>
-                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'chat-settings.php' ? 'active' : '' ?>" href="chat-settings.php" data-testid="nav-chat-settings">
-                    <i class="bi bi-chat-dots text-info"></i><span class="nav-label"> <?= t('Live Chat') ?></span>
-                </a>
-                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'flash-sales.php' ? 'active' : '' ?>" href="flash-sales.php" data-testid="nav-flash-sales">
-                    <i class="bi bi-lightning-charge text-warning"></i><span class="nav-label"> <?= t('Flash Sale') ?></span>
-                </a>
-                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'price-alerts.php' ? 'active' : '' ?>" href="price-alerts.php">
-                    <i class="bi bi-bell text-warning"></i><span class="nav-label"> <?= t('Price Alerts') ?></span>
-                </a>
-                <a class="nav-link <?= basename($_SERVER['PHP_SELF']) === 'currency-settings.php' ? 'active' : '' ?>" href="currency-settings.php">
-                    <i class="bi bi-currency-exchange text-warning"></i><span class="nav-label"> <?= t('Mata Uang') ?></span>
-                </a>
-                <hr class="border-secondary">
-                <a class="nav-link" href="../index.php" target="_blank">
-                    <i class="bi bi-globe"></i><span class="nav-label"> <?= t('Lihat Website') ?></span>
-                </a>
+                <?php };
+
+                // ===== OVERVIEW =====
+                $sectionHdr(t('Overview'));
+                $navItem('dashboard.php', 'bi-speedometer2', t('Dashboard'), ['dashboard.php']);
+                $navItem('analytics.php', 'bi-graph-up-arrow', t('Analytics'), ['analytics.php']);
+
+                // ===== INVENTORY =====
+                $sectionHdr(t('Inventory'));
+                $navItem('tours.php', 'bi-map', t('Kelola Tour'), ['tours.php', 'tour-edit.php', 'tour-add.php']);
+                $navItem('hotels.php', 'bi-building', t('Kelola Hotel'), ['hotels.php', 'hotel-edit.php', 'hotel-rooms.php']);
+                $navItem('flights.php', 'bi-airplane', t('Kelola Pesawat'), ['flights.php', 'flight-edit.php']);
+                $navItem('ferries.php', 'bi-ship', t('Kelola Ferry'), ['ferries.php', 'ferry-edit.php']);
+                $navItem('rental-cars.php', 'bi-car-front', t('Kelola Rental'), ['rental-cars.php', 'rental-car-edit.php']);
+                $navItem('attractions.php', 'bi-signpost-2', t('Kelola Atraksi'), ['attractions.php', 'attraction-edit.php']);
+                $navItem('transfers.php', 'bi-car-front', t('Kelola Transfer'), ['transfers.php', 'transfer-edit.php']);
+                $navItem('trains.php', 'bi-train-front', t('Kelola Kereta'), ['trains.php', 'train-edit.php']);
+                $navItem('esim.php', 'bi-sim', t('Kelola eSIM'), ['esim.php', 'esim-edit.php']);
+
+                // ===== BOOKINGS =====
+                $sectionHdr(t('Bookings'));
+                $navItem('bookings.php', 'bi-ticket-perforated', t('Kelola Booking'), ['bookings.php']);
+                $navItem('payments.php', 'bi-credit-card', t('Pembayaran'), ['payments.php']);
+
+                // ===== MARKETING =====
+                $sectionHdr(t('Marketing'));
+                $navItem('flash-sales.php', 'bi-lightning-charge', t('Flash Sale'), ['flash-sales.php'], 'nav-flash-sales');
+                $navItem('promo-codes.php', 'bi-tag', t('Kode Promo'), ['promo-codes.php']);
+                $navItem('price-alerts.php', 'bi-bell', t('Price Alerts'), ['price-alerts.php']);
+                $navItem('corporate-rates.php', 'bi-building', t('Corporate Rates'), ['corporate-rates.php']);
+                $navItem('collections.php', 'bi-collection', t('Koleksi'), ['collections.php']);
+
+                // ===== FINANCE =====
+                $sectionHdr(t('Finance'));
+                $navItem('sales-report.php', 'bi-graph-up', t('Sales Report'), ['sales-report.php'], 'nav-sales-report');
+                $navItem('accounting.php', 'bi-cash-stack', t('Accounting'), ['accounting.php'], 'nav-accounting');
+                $navItem('loyalty-settings.php', 'bi-award', t('Loyalty Settings'), ['loyalty-settings.php']);
+
+                // ===== CONTENT =====
+                $sectionHdr(t('Content'));
+                $navItem('posts.php', 'bi-journal-richtext', t('Blog'), ['posts.php', 'post-edit.php']);
+                $navItem('reviews.php', 'bi-chat-square-heart', t('Ulasan'), ['reviews.php']);
+                $navItem('faq.php', 'bi-question-circle', t('Kelola FAQ'), ['faq.php', 'faq-edit.php', 'faq-category.php', 'faq-category-edit.php']);
+                $navItem('appearance.php', 'bi-layout-text-window-reverse', t('Tampilan Homepage'), ['appearance.php']);
+
+                // ===== SETTINGS =====
+                $sectionHdr(t('Settings'));
+                $navItem('wa-settings.php', 'bi-whatsapp', t('Pengaturan WA'), ['wa-settings.php']);
+                $navItem('chat-settings.php', 'bi-chat-dots', t('Live Chat'), ['chat-settings.php'], 'nav-chat-settings');
+                $navItem('email-log.php', 'bi-envelope-paper', t('Log Email'), ['email-log.php']);
+                $navItem('currency-settings.php', 'bi-currency-exchange', t('Mata Uang'), ['currency-settings.php']);
+
+                // ===== EXTERNAL =====
+                $sectionHdr(t('Eksternal'));
+                $navItem('../index.php', 'bi-globe', t('Lihat Website'), []);
+                ?>
                 <hr class="border-secondary">
                 <!-- Language toggle -->
                 <div class="nav-link d-flex align-items-center justify-content-between px-2">
                     <span class="nav-label small text-secondary"><i class="bi bi-translate me-1"></i><?= strtoupper(getCurrentLang()) ?></span>
                     <span class="d-flex gap-1">
-                        <a href="?<?= e(http_build_query(array_merge($_GET, ['lang' => 'id']))) ?>" class="badge text-decoration-none <?= getCurrentLang() === 'id' ? 'bg-primary' : 'bg-secondary' ?>">🇮🇩</a>
-                        <a href="?<?= e(http_build_query(array_merge($_GET, ['lang' => 'en']))) ?>" class="badge text-decoration-none <?= getCurrentLang() === 'en' ? 'bg-primary' : 'bg-secondary' ?>">🇬🇧</a>
+                        <?php foreach (getSupportedLanguages() as $langCode => $langMeta): ?>
+                        <a href="?<?= e(http_build_query(array_merge($_GET, ['lang' => $langCode]))) ?>" class="badge text-decoration-none <?= getCurrentLang() === $langCode ? 'bg-primary' : 'bg-secondary' ?>" title="<?= e($langMeta['label']) ?>"><?= $langMeta['flag'] ?></a>
+                        <?php endforeach; ?>
                     </span>
                 </div>
             </nav>

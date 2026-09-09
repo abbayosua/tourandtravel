@@ -190,7 +190,7 @@ require_once 'includes/header-klook.php';
                                 <?php foreach ($hotelRooms as $hr): ?>
                                     <tr data-room-id="<?= $hr['id'] ?>" data-room-rate="<?= (float)$hr['rate'] ?>" data-room-stock="<?= (int)$hr['stock'] ?>" data-room-breakfast="<?= (int)$hr['breakfast'] ?>" data-room-refundable="<?= (int)$hr['refundable'] ?>" data-room-max-guest="<?= (int)$hr['max_guest'] ?>">
                                         <td>
-                                            <strong><?= e(getCurrentLang() === 'en' && $hr['name_en'] ? $hr['name_en'] : $hr['name']) ?></strong>
+                                            <strong><?= e(match(true) { getCurrentLang() === 'zh' && !empty($hr['name_zh']) => $hr['name_zh'], getCurrentLang() === 'en' && !empty($hr['name_en']) => $hr['name_en'], default => $hr['name'] }) ?></strong>
                                             <?php if ($hr['stock'] <= 2): ?><span class="badge bg-warning text-dark ms-1"><?= str_replace(':n', (string)$hr['stock'], t('Sisa :n')) ?></span><?php endif; ?>
                                         </td>
                                         <td class="small"><?= t(ucfirst($hr['bed_type'])) ?></td>
@@ -265,8 +265,8 @@ require_once 'includes/header-klook.php';
             <?php
                 $hotelReviews = [];
                 try {
-                    $hrStmt = db()->prepare("SELECT r.*, u.name AS user_name FROM reviews r LEFT JOIN users u ON r.user_id = u.id WHERE r.hotel_id = ? ORDER BY r.created_at DESC");
-                    $hrStmt->execute([(int)$hotel['id']]);
+                    $hrStmt = db()->prepare("SELECT r.*, u.name AS user_name FROM reviews r LEFT JOIN users u ON r.user_id = u.id WHERE r.hotel_id = ? AND r.lang = ? ORDER BY r.created_at DESC");
+                    $hrStmt->execute([(int)$hotel['id'], getCurrentLang()]);
                     $hotelReviews = $hrStmt->fetchAll();
                 } catch (Throwable $e) {}
             ?>
@@ -347,6 +347,11 @@ require_once 'includes/header-klook.php';
                             <div class="mb-2">
                                 <textarea name="comment" class="form-control form-control-sm" rows="3" placeholder="<?= t('Bagikan pengalaman Anda...') ?>" required></textarea>
                                 <input type="file" name="review_photo[]" class="form-control form-control-sm mt-2" accept="image/*" multiple>
+                                <select name="review_lang" class="form-select form-select-sm mt-2" aria-label="<?= t('Bahasa ulasan') ?>">
+                                    <?php foreach (getSupportedLanguages() as $langCode => $langMeta): ?>
+                                    <option value="<?= e($langCode) ?>" <?= getCurrentLang() === $langCode ? 'selected' : '' ?>><?= $langMeta['flag'] ?> <?= e($langMeta['label']) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
                             </div>
                             <button type="submit" class="btn btn-primary btn-sm"><?= t('Kirim Ulasan') ?></button>
                         </form>
@@ -426,7 +431,7 @@ require_once 'includes/header-klook.php';
                                     <option value=""><?= t('Pilih tipe kamar') ?></option>
                                     <?php foreach ($hotelRooms as $hr): if ($hr['stock'] < 1) continue; ?>
                                         <option value="<?= $hr['id'] ?>" data-rate="<?= (float)$hr['rate'] ?>" data-breakfast="<?= (int)$hr['breakfast'] ?>" data-refundable="<?= (int)$hr['refundable'] ?>" data-max-guest="<?= (int)$hr['max_guest'] ?>" data-stock="<?= (int)$hr['stock'] ?>">
-                                            <?= e(getCurrentLang() === 'en' && $hr['name_en'] ? $hr['name_en'] : $hr['name']) ?> — <?= formatRupiah($hr['rate']) ?>
+                                            <?= e(match(true) { getCurrentLang() === 'zh' && !empty($hr['name_zh']) => $hr['name_zh'], getCurrentLang() === 'en' && !empty($hr['name_en']) => $hr['name_en'], default => $hr['name'] }) ?> — <?= formatRupiah($hr['rate']) ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>

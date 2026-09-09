@@ -8,7 +8,7 @@ const SLUG_DETAIL = 'tiket-masuk-taman-mini-indonesia-indah';
 async function loginAdmin(page) {
   await page.goto(`${BASE}/admin/login.php`, { waitUntil: 'load' });
   await page.fill('input[name="username"]', 'admin');
-  await page.fill('input[name="password"]', 'password');
+  await page.fill('input[name="password"]', 'admin123');
   await page.click('button[type="submit"]');
   await page.waitForLoadState('load');
 }

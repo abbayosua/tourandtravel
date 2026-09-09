@@ -234,7 +234,7 @@ test.describe('Homepage Templates — fokus website (tour/hotel/flight)', () => 
   test('admin: appearance page fokus tersimpan via UI', async ({ page }) => {
     await page.goto(`${BASE}/admin/login.php`);
     await page.fill('input[name="username"]', 'admin');
-    await page.fill('input[name="password"]', 'password');
+    await page.fill('input[name="password"]', 'admin123');
     await page.click('button[type="submit"]');
     await page.waitForLoadState('load');
 

@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $priceCurrency = in_array($_POST['price_currency'] ?? '', ['IDR', 'SGD', 'USD']) ? $_POST['price_currency'] : 'IDR';
     $maxParticipants = (int)($_POST['max_participants'] ?? 1);
     $isActive = isset($_POST['is_active']) ? 1 : 0;
-    $contentLanguage = in_array($_POST['content_language'] ?? '', ['id', 'en']) ? $_POST['content_language'] : 'id';
+    $contentLanguage = isValidLang($_POST['content_language'] ?? '') ? $_POST['content_language'] : 'id';
 
     // Validasi
     if (!$title) $error = 'Judul tour harus diisi';
@@ -112,8 +112,9 @@ require_once 'includes/admin-header.php';
                     <div class="mb-3">
                         <label class="form-label fw-semibold"><?= t('Bahasa Konten') ?></label>
                         <select name="content_language" class="form-select">
-                            <option value="id"><?= t('🇮🇩 Indonesia (asli)') ?></option>
-                            <option value="en"><?= t('🇬🇧 English (asli)') ?></option>
+                            <?php foreach (getSupportedLanguages() as $langCode => $langMeta): ?>
+                            <option value="<?= e($langCode) ?>"><?= $langMeta['flag'] ?> <?= e($langMeta['label']) ?><?= $langCode === 'id' ? ' (' . t('asli') . ')' : '' ?></option>
+                            <?php endforeach; ?>
                         </select>
                         <div class="form-text"><?= t('Konten akan otomatis diterjemahkan ke bahasa lain') ?></div>
                     </div>

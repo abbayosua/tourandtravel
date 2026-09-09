@@ -3,22 +3,47 @@
 + rooms +
 <i class=
 ></i>
+A/B Testing
+Aktif
 Akun: ${name}
+Belum ada impresi.
+Belum ada perusahaan.
 Berhasil! Cek email Anda.
+Corporate Rates
+Daftar Perusahaan
+Diskon %
 Gagal. Coba lagi.
 IDR
+Impresi
 Jakarta → Denpasar
 Jakarta → Kuala Lumpur
 Jakarta → Singapore
+Jelajahi Lebih Banyak,
 KlookCash
 Kode promo tidak valid
+Konversi
+Loading...
 Masukkan kode promo
+NOW() AND (stock_limit IS NULL OR sold_count
+Nama
+Nikmati Perjalanannya.
+Nonaktif
+Pesan tiket ferry, pesawat, dan kereta api dalam satu tempat.
+Pesan tiket pesawat, ferry, dan kereta api dalam satu tempat.
+Rate
+Simpan
+Status
+Tambah Perusahaan
+Tautkan
+Tautkan User
 Terjadi kesalahan. Coba lagi nanti.
 Test.php — berisi satu atau lebih fungsi
  *   function test
+Varian
 Webhook URL:
 Welcome to
 ada 5 paket
 ada :n paket
 id-ID
 · #
+· Target:

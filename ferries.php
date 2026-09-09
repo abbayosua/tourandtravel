@@ -102,67 +102,70 @@ if (empty($ferries)) {
 require_once 'includes/components/breadcrumb.php';
 require_once 'includes/header-klook.php';
 ?>
-<section class="py-4 bg-light" style="min-height: 80vh;">
-    <div class="container">
-        <?php renderBreadcrumb([['label' => t('Ferry'), 'url' => null]]); ?>
-        <div class="card border-0 shadow-sm mb-4 overflow-hidden">
-            <div class="card-body p-3 p-md-4">
-                <?php if ($easybookError): ?>
-                    <div class="alert alert-warning py-2 small"><?= e($easybookError) ?></div>
-                <?php endif; ?>
-                <!-- Easybook-style 3-step search -->
-                <div class="d-flex gap-3 gap-md-4 mb-3 pb-2 border-bottom overflow-auto">
-                    <a href="ferries.php" class="traveloka-tab active"><i class="bi bi-water"></i><?= t('Ferry') ?></a>
-                    <a href="flights.php" class="traveloka-tab"><i class="bi bi-airplane"></i><?= t('Pesawat') ?></a>
-                    <a href="trains.php" class="traveloka-tab"><i class="bi bi-train-front"></i><?= t('Kereta') ?></a>
-                    <a href="rental-cars.php" class="traveloka-tab"><i class="bi bi-car-front"></i><?= t('Rental') ?></a>
-                </div>
-                <form method="GET" class="row g-2 g-md-3 align-items-end" id="ferrySearchForm">
-                    <div class="col-md-3">
-                        <div class="traveloka-search-field">
-                            <div class="form-label"><span class="badge bg-primary rounded-pill me-1" style="font-size:10px;">1</span><?= t('Dari') ?></div>
-                            <div class="search-wrapper">
-                                <input type="text" name="from" class="form-control ferry-search" placeholder="<?= t('Kota atau terminal...') ?>" value="<?= e($from) ?>" autocomplete="off" data-target="fromDropdown" id="fromInput">
-                                <div class="search-dropdown" id="fromDropdown"></div>
-                            </div>
-                        </div>
-                        <input type="hidden" name="from_pid" value="<?= $fromPlaceId ?>">
-                        <input type="hidden" name="from_spid" value="<?= $fromSubPlace ?>">
-                    </div>
-                    <div class="col-md-3">
-                        <div class="traveloka-search-field">
-                            <div class="form-label"><span class="badge bg-primary rounded-pill me-1" style="font-size:10px;">2</span><?= t('Ke') ?></div>
-                            <div class="search-wrapper">
-                                <input type="text" name="to" class="form-control ferry-search" placeholder="<?= t('Kota atau terminal...') ?>" value="<?= e($to) ?>" autocomplete="off" data-target="toDropdown" id="toInput">
-                                <div class="search-dropdown" id="toDropdown"></div>
-                            </div>
-                        </div>
-                        <input type="hidden" name="to_pid" value="<?= $toPlaceId ?>">
-                        <input type="hidden" name="to_spid" value="<?= $toSubPlace ?>">
-                    </div>
-                    <div class="col-md-2">
-                        <div class="traveloka-search-field">
-                            <div class="form-label"><?= t('Tanggal') ?></div>
-                            <input type="date" name="date" class="form-control" value="<?= e($date) ?>" min="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d', strtotime('+360 days')) ?>">
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="traveloka-search-field">
-                            <div class="form-label"><?= t('Penumpang') ?></div>
-                            <select name="passengers" class="form-select">
-                                <?php for ($p=1; $p<=9; $p++): ?>
-                                <option value="<?= $p ?>" <?= ((int)($_GET['passengers'] ?? 1)) === $p ? 'selected' : '' ?>><?= $p ?> <?= t('orang') ?></option>
-                                <?php endfor; ?>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-2 d-grid">
-                        <button class="btn btn-primary traveloka-search-btn" type="submit" name="search" value="1"><i class="bi bi-search me-1"></i><?= t('Cari') ?></button>
-                    </div>
-                </form>
+<?php if (!$search): ?>
+<section class="hero-uifactory">
+  <div class="hero-bg-shape hero-bg-shape--1"></div>
+  <div class="hero-bg-shape hero-bg-shape--2"></div>
+  <div class="hero-content">
+    <h1 class="hero-headline">Jelajahi Lebih Banyak,<br><span>Nikmati Perjalanannya.</span></h1>
+    <p class="hero-sub">Pesan tiket ferry, pesawat, dan kereta api dalam satu tempat.</p>
+  </div>
+  <div class="booking-card">
+    <div class="booking-card-inner">
+      <div class="booking-tabs" role="tablist">
+        <a href="ferries.php" class="booking-tab active" role="tab"><i class="bi bi-water"></i> <?= t('Ferry') ?></a>
+        <a href="flights.php" class="booking-tab" role="tab"><i class="bi bi-airplane"></i> <?= t('Pesawat') ?></a>
+        <a href="trains.php" class="booking-tab" role="tab"><i class="bi bi-train-front"></i> <?= t('Kereta') ?></a>
+        <a href="rental-cars.php" class="booking-tab" role="tab"><i class="bi bi-car-front"></i> <?= t('Rental') ?></a>
+      </div>
+      <div class="booking-form">
+        <?php if ($easybookError): ?>
+          <div class="alert alert-warning py-2 small mb-3"><?= e($easybookError) ?></div>
+        <?php endif; ?>
+        <form method="GET" id="ferrySearchForm">
+          <div class="form-search-row">
+            <div class="search-field">
+              <span class="search-field-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 7 11.5 7.3 11.8a1 1 0 0 0 1.4 0C13 21.5 20 15.4 20 10a8 8 0 0 0-8-8z"/></svg> <?= t('Dari') ?></span>
+              <input type="text" name="from" class="ferry-search" placeholder="<?= t('Kota atau terminal') ?>" value="<?= e($from) ?>" autocomplete="off" data-target="fromDropdown" id="fromInput">
+              <div class="search-dropdown" id="fromDropdown"></div>
+              <input type="hidden" name="from_pid" value="<?= $fromPlaceId ?>">
+              <input type="hidden" name="from_spid" value="<?= $fromSubPlace ?>">
             </div>
-        </div>
+            <button type="button" class="swap-btn" onclick="var f=document.querySelector('[name=from]'),t=document.querySelector('[name=to]'),tmp=f.value;f.value=t.value;t.value=tmp;" aria-label="Tukar"><div class="swap-btn-inner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 16l-4-4 4-4"/><path d="M17 8l4 4-4 4"/><line x1="3" y1="12" x2="21" y2="12"/></svg></div></button>
+            <div class="search-field">
+              <span class="search-field-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 7 11.5 7.3 11.8a1 1 0 0 0 1.4 0C13 21.5 20 15.4 20 10a8 8 0 0 0-8-8z"/></svg> <?= t('Ke') ?></span>
+              <input type="text" name="to" class="ferry-search" placeholder="<?= t('Kota atau terminal') ?>" value="<?= e($to) ?>" autocomplete="off" data-target="toDropdown" id="toInput">
+              <div class="search-dropdown" id="toDropdown"></div>
+              <input type="hidden" name="to_pid" value="<?= $toPlaceId ?>">
+              <input type="hidden" name="to_spid" value="<?= $toSubPlace ?>">
+            </div>
+            <div class="search-field">
+              <span class="search-field-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> <?= t('Tanggal') ?></span>
+              <input type="date" name="date" value="<?= e($date) ?>" min="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d', strtotime('+360 days')) ?>">
+            </div>
+            <div class="search-field">
+              <span class="search-field-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> <?= t('Penumpang') ?></span>
+              <select name="passengers">
+                <?php for ($p=1; $p<=9; $p++): ?>
+                <option value="<?= $p ?>" <?= ((int)($_GET['passengers'] ?? 1)) === $p ? 'selected' : '' ?>><?= $p ?> <?= t('orang') ?></option>
+                <?php endfor; ?>
+              </select>
+            </div>
+            <button class="search-btn" type="submit" name="search" value="1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <?= t('Cari') ?>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+<?php endif; ?>
 
+<?php if ($search): ?>
+<section class="py-4 bg-light" style="min-height:60vh;">
+    <div class="container">
         <?php if ($search && !empty($ferries)): ?>
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
@@ -234,6 +237,7 @@ require_once 'includes/header-klook.php';
         <?php endif; ?>
     </div>
 </section>
+<?php endif; ?>
 <?php require_once 'includes/footer-klook.php'; ?>
 <script>
 document.querySelectorAll('.ferry-search').forEach(function(input) {

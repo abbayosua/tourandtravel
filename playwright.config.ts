@@ -7,11 +7,12 @@ export default defineConfig({
   workers: 1,
   globalSetup: './tests/e2e/global-setup.ts',
   use: {
-    baseURL: 'http://127.0.0.1:8080',
+    baseURL: process.env.E2E_BASE_URL || 'http://localhost/tourandtravel',
     browserName: 'chromium',
     headless: true,
     viewport: { width: 1280, height: 720 },
     ignoreHTTPSErrors: true,
+    acceptDownloads: true,
   },
   reporter: [['list']],
 });

@@ -11,6 +11,7 @@ if (!isLoggedIn()) {
 $tourId = (int)($_POST['tour_id'] ?? 0);
 $rating = (int)($_POST['rating'] ?? 0);
 $comment = trim($_POST['comment'] ?? '');
+$reviewLang = in_array($_POST['review_lang'] ?? 'id', ['id', 'en'], true) ? ($_POST['review_lang'] ?? 'id') : 'id';
 $userId = $_SESSION['user_id'];
 
 if (!$tourId || $rating < 1 || $rating > 5 || !$comment) {
@@ -23,8 +24,8 @@ if (!canReview($userId, $tourId)) {
     exit;
 }
 
-$stmt = db()->prepare("INSERT INTO reviews (tour_id, user_id, rating, comment) VALUES (?, ?, ?, ?)");
-$stmt->execute([$tourId, $userId, $rating, $comment]);
+$stmt = db()->prepare("INSERT INTO reviews (tour_id, user_id, rating, comment, lang) VALUES (?, ?, ?, ?, ?)");
+$stmt->execute([$tourId, $userId, $rating, $comment, $reviewLang]);
 $reviewId = (int)db()->lastInsertId();
 
 // Simpan sub-rating per aspek

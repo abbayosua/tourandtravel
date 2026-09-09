@@ -51,6 +51,7 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
+            <?php $tierBadge = isset($_SESSION['user_id']) ? getTierBadgeInfo((int)$_SESSION['user_id']) : []; ?>
             <ul class="navbar-nav ms-auto align-items-lg-center">
                 <li class="nav-item dropdown">
                     <a class="nav-link py-2 dropdown-toggle" href="#" data-bs-toggle="dropdown"><?= t('Layanan') ?></a>
@@ -70,8 +71,21 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle py-2" href="#" data-bs-toggle="dropdown">
                         <i class="bi bi-person-circle me-1"></i><?= e($_SESSION['user_name'] ?? 'User') ?>
+                        <?php if (!empty($tierBadge)): ?>
+                        <span class="badge tier-badge ms-1" id="headerTierBadge" style="background: <?= e($tierBadge['color']) ?>; font-size: 10px;" title="<?= e($tierBadge['display_name']) ?> — <?= number_format($tierBadge['points']) ?> <?= t('poin') ?>">
+                            <i class="bi <?= e($tierBadge['icon']) ?>"></i> <?= e($tierBadge['display_name']) ?>
+                        </span>
+                        <?php endif; ?>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
+                        <?php if (!empty($tierBadge)): ?>
+                        <li class="px-3 py-2 small">
+                            <span class="fw-semibold" style="color: <?= e($tierBadge['color']) ?>;"><i class="bi <?= e($tierBadge['icon']) ?> me-1"></i><?= e($tierBadge['display_name']) ?></span>
+                            <span class="text-muted ms-1" id="headerPoints"><?= number_format($tierBadge['points']) ?> <?= t('poin') ?></span>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <?php endif; ?>
+                        <li><a class="dropdown-item" href="my-points.php"><i class="bi bi-star me-2"></i><?= t('Poin Saya') ?></a></li>
                         <li><a class="dropdown-item" href="profile.php"><i class="bi bi-person-circle me-2"></i><?= t('Profil') ?></a></li>
                         <li><a class="dropdown-item" href="my-bookings.php"><i class="bi bi-ticket-perforated me-2"></i><?= t('Booking Saya') ?></a></li>
                         <li><a class="dropdown-item" href="wishlist.php"><i class="bi bi-heart me-2"></i><?= t('Wishlist') ?></a></li>

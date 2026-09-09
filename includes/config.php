@@ -5,8 +5,16 @@ define('DB_NAME', getenv('DB_NAME') ?: 'tourandtravel');
 define('DB_USER', getenv('DB_USER') ?: 'root');
 define('DB_PASS', getenv('DB_PASS') !== false ? getenv('DB_PASS') : '');
 
-// URL website (sesuaikan dengan localhost)
-define('BASE_URL', getenv('BASE_URL') ?: 'https://tourandtravel.web.id');
+// URL website — auto-detect localhost
+if (getenv('BASE_URL')) {
+    define('BASE_URL', getenv('BASE_URL'));
+} elseif (($_SERVER['HTTP_HOST'] ?? '') === 'localhost' || str_starts_with($_SERVER['HTTP_HOST'] ?? '', '127.')) {
+    // Detect subdirectory from SCRIPT_NAME (e.g. /tourandtravel/index.php → /tourandtravel)
+    $scriptDir = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/\\');
+    define('BASE_URL', 'http://localhost' . $scriptDir);
+} else {
+    define('BASE_URL', 'https://tourandtravel.web.id');
+}
 define('SITE_NAME', 'TourAndTravel');
 
 // Firebase Cloud Messaging (isi dengan server key dari Firebase Console)
@@ -39,8 +47,7 @@ if (!function_exists('getFlashSalePrice')) {
 if (!function_exists('awardPointsForPaidBooking')) {
     require_once __DIR__ . '/points.php';
 }
-if (isset($_GET['lang']) && preg_match('/^[a-z]{2,5}$/', $_GET['lang'])
-    && in_array($_GET['lang'], array_keys(getSupportedLanguages()))) {
+if (isset($_GET['lang']) && isValidLang($_GET['lang'])) {
     $_SESSION['lang'] = $_GET['lang'];
     setcookie('lang', $_GET['lang'], time() + (86400 * 365), '/');
     $params = $_GET;

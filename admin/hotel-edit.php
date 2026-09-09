@@ -23,8 +23,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $slug = buatSlug($name);
         $nameEn = trim($_POST['name_en'] ?? '');
         $descEn = trim($_POST['description_en'] ?? '');
-        $st = db()->prepare("UPDATE hotels SET name=?, slug=?, city=?, star_rating=?, price_per_night=?, description=?, name_en=?, description_en=? WHERE id=?");
-        $st->execute([$name, $slug, $city, $stars, $price, $desc, $nameEn ?: null, $descEn ?: null, $id]);
+        $nameZh = trim($_POST['name_zh'] ?? '');
+        $descZh = trim($_POST['description_zh'] ?? '');
+        $st = db()->prepare("UPDATE hotels SET name=?, slug=?, city=?, star_rating=?, price_per_night=?, description=?, name_en=?, description_en=?, name_zh=?, description_zh=? WHERE id=?");
+        $st->execute([$name, $slug, $city, $stars, $price, $desc, $nameEn ?: null, $descEn ?: null, $nameZh ?: null, $descZh ?: null, $id]);
         header('Location: hotels.php?msg=updated'); exit;
     }
 }
@@ -40,8 +42,10 @@ require_once 'includes/admin-header.php';
 <div class="card border-0 shadow-sm mb-3"><div class="card-body">
 <div class="mb-3"><label class="form-label"><?= t('Nama Hotel') ?> (ID)</label><input name="name" class="form-control" value="<?=e($item['name'])?>" required></div>
 <div class="mb-3"><label class="form-label"><?= t('Nama Hotel') ?> (EN)</label><input name="name_en" class="form-control" value="<?=e($item['name_en'] ?? '')?>" placeholder="<?= t('Kosongkan untuk memakai versi ID') ?>"></div>
+<div class="mb-3"><label class="form-label"><?= t('Nama Hotel') ?> (中文)</label><input name="name_zh" class="form-control" value="<?=e($item['name_zh'] ?? '')?>" placeholder="<?= t('Kosongkan untuk memakai versi ID') ?>"></div>
 <div class="mb-3"><label class="form-label"><?= t('Deskripsi') ?> (ID)</label><textarea name="description" class="form-control" rows="5"><?=e($item['description'])?></textarea></div>
 <div class="mb-3"><label class="form-label"><?= t('Deskripsi') ?> (EN)</label><textarea name="description_en" class="form-control" rows="3" placeholder="<?= t('Kosongkan untuk memakai versi ID') ?>"><?=e($item['description_en'] ?? '')?></textarea></div>
+<div class="mb-3"><label class="form-label"><?= t('Deskripsi') ?> (中文)</label><textarea name="description_zh" class="form-control" rows="3" placeholder="<?= t('Kosongkan untuk memakai versi ID') ?>"><?=e($item['description_zh'] ?? '')?></textarea></div>
 </div></div></div>
 <div class="col-md-4">
 <div class="card border-0 shadow-sm mb-3"><div class="card-body">

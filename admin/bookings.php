@@ -15,7 +15,11 @@ $tableMap = [
     'train' => 'train_bookings',
     'esim' => 'connectivity_bookings',
     'hotel' => 'hotel_bookings',
+    'flight' => 'flight_bookings',
+    'ferry' => 'ferry_bookings',
 ];
+
+
 
 if (isset($_GET['update_status'])) {
     $id = (int)$_GET['update_status'];
@@ -24,11 +28,15 @@ if (isset($_GET['update_status'])) {
     $note = trim($_POST['admin_note'] ?? ($_GET['note'] ?? ''));
     if (in_array($status, ['pending', 'confirmed', 'cancelled', 'paid', 'refunded']) && isset($tableMap[$type])) {
         $table = $tableMap[$type];
-        if ($note !== '') {
-            db()->prepare("UPDATE `$table` SET status = ?, admin_note = ? WHERE id = ?")->execute([$status, $note, $id]);
-        } else {
-            db()->prepare("UPDATE `$table` SET status = ? WHERE id = ?")->execute([$status, $id]);
-        }
+        $hasAdminNote = (bool)db()->query("SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = " . db()->quote($table) . " AND COLUMN_NAME = 'admin_note'")->fetchColumn();
+        $hasCogs = (bool)db()->query("SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = " . db()->quote($table) . " AND COLUMN_NAME = 'cogs'")->fetchColumn();
+        $cogs = isset($_POST['cogs']) && $_POST['cogs'] !== '' ? max(0, (float)$_POST['cogs']) : null;
+        $sets = ["status = ?"];
+        $vals = [$status];
+        if ($hasAdminNote && $note !== '') { $sets[] = "admin_note = ?"; $vals[] = $note; }
+        if ($hasCogs && $cogs !== null) { $sets[] = "cogs = ?"; $vals[] = $cogs; }
+        $vals[] = $id;
+        db()->prepare("UPDATE `$table` SET " . implode(", ", $sets) . " WHERE id = ?")->execute($vals);
 
         require_once '../includes/notifications.php';
         require_once '../includes/email.php';
@@ -60,9 +68,22 @@ if (isset($_GET['update_status'])) {
                 ], null);
             }
 
-            // Push notification ke user
+            // Push notification ke user (bahasa sesuai cookie pref user, fallback id)
             if ($userId > 0 && defined('FCM_SERVER_KEY') && FCM_SERVER_KEY !== '') {
-                sendPushNotification([$userId], 'Status Booking: ' . ucfirst($status), 'Booking ' . $code . ($status === 'confirmed' ? ' telah dikonfirmasi' : ''), ['type' => 'booking', 'deeplink' => '/my-bookings/' . $code]);
+                $pushLang = 'id';
+                try {
+                    $lu = db()->prepare("SELECT lang FROM fcm_tokens WHERE user_id = ? AND lang IS NOT NULL ORDER BY updated_at DESC LIMIT 1");
+                    $lu->execute([$userId]);
+                    $langPref = $lu->fetchColumn();
+                    if (isValidLang($langPref)) $pushLang = $langPref;
+                } catch (Throwable $e) {}
+                $pushMsgs = [
+                    'id' => ['Status Booking: ' . ucfirst($status), 'Booking ' . $code . ($status === 'confirmed' ? ' telah dikonfirmasi' : '')],
+                    'en' => ['Booking Status: ' . ucfirst($status), 'Booking ' . $code . ($status === 'confirmed' ? ' has been confirmed' : '')],
+                    'zh' => ['订单状态：' . ucfirst($status), '订单 ' . $code . ($status === 'confirmed' ? ' 已确认' : '')],
+                ];
+                $pm = $pushMsgs[$pushLang] ?? $pushMsgs['id'];
+                sendPushNotification([$userId], $pm[0], $pm[1], ['type' => 'booking', 'deeplink' => '/my-bookings/' . $code]);
             }
         }
 
@@ -175,6 +196,20 @@ if (!$typeFilter || $typeFilter === 'flight') {
     } catch (Throwable $e) { /* tabel flight_bookings belum ada */ }
 }
 
+// Ferries
+if (!$typeFilter || $typeFilter === 'ferry') {
+    try {
+        $sql = "SELECT fb.*, CONCAT(fb.company, ': ', fb.route_from, ' → ', fb.route_to) as item_title,
+                       'ferry' AS btype, CONCAT(fb.passengers, ' pax') AS qty_label, fb.departure_date AS date_label
+                FROM ferry_bookings fb";
+        $params = [];
+        if ($statusFilter) { $sql .= " WHERE fb.status = ?"; $params[] = $statusFilter; }
+        $sql .= " ORDER BY fb.created_at DESC";
+        $st = db()->prepare($sql); $st->execute($params);
+        $all = array_merge($all, $st->fetchAll());
+    } catch (Throwable $e) { /* tabel ferry_bookings belum ada */ }
+}
+
 usort($all, function ($a, $b) { return strtotime($b['created_at']) - strtotime($a['created_at']); });
 
 $typeName = ['tour' => t('Tour'), 'attraction' => t('Atraksi'), 'transfer' => t('Transfer'), 'train' => t('Kereta'), 'esim' => 'eSIM', 'hotel' => t('Hotel'), 'flight' => t('Pesawat')];
@@ -220,6 +255,7 @@ require_once 'includes/admin-header.php';
                         <th><?= t('Tanggal') ?></th>
                         <th><?= t('Qty') ?></th>
                         <th><?= t('Total') ?></th>
+                        <th><?= t('COGS') ?></th>
                         <th><?= t('Kontak') ?></th>
                         <th><?= t('Status') ?></th>
                         <th><?= t('Aksi') ?></th>
@@ -237,6 +273,13 @@ require_once 'includes/admin-header.php';
                         <td><small><?= !empty($b['date_label']) ? tglIndonesia($b['date_label']) : '-' ?></small></td>
                         <td><?= $b['qty_label'] ?></td>
                         <td><?= formatRupiah($b['total_price']) ?></td>
+                        <td data-testid="cogs-cell">
+                            <small class="text-muted"><?= formatRupiah($b['cogs'] ?? 0) ?></small>
+                            <form method="POST" action="bookings.php?update_status=<?= $b['id'] ?>&status=<?= e($b['status']) ?>&type=<?= $btype ?>" class="d-flex gap-1 mt-1" style="max-width:130px;">
+                                <input type="number" name="cogs" class="form-control form-control-sm" value="<?= e($b['cogs'] ?? 0) ?>" min="0" step="0.01" aria-label="COGS">
+                                <button type="submit" class="btn btn-sm btn-outline-secondary" title="<?= t('Simpan COGS') ?>"><i class="bi bi-check"></i></button>
+                            </form>
+                        </td>
                         <td>
                             <?php if ($btype === 'hotel'): ?>
                                 <small class="d-block" data-testid="hotel-room-detail"><?= t('Kamar') ?>: <strong><?= e($b['room_name'] ?? '-') ?></strong></small>
@@ -286,7 +329,7 @@ require_once 'includes/admin-header.php';
                     </tr>
                     <?php endforeach; ?>
                     <?php if (empty($all)): ?>
-                    <tr><td colspan="11" class="text-center py-4 text-muted"><?= t('Belum ada booking') ?></td></tr>
+                    <tr><td colspan="12" class="text-center py-4 text-muted"><?= t('Belum ada booking') ?></td></tr>
                     <?php endif; ?>
                 </tbody>
             </table>

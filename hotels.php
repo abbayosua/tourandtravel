@@ -22,27 +22,36 @@ $bestSeller = (int)($_GET['best'] ?? 0);
 
 $cities = db()->query("SELECT DISTINCT city FROM hotels WHERE is_active = 1 ORDER BY city")->fetchAll(PDO::FETCH_COLUMN);
 
-$sql = "SELECT * FROM hotels WHERE is_active = 1";
+$whereSql = '';
 $params = [];
-if ($city) { $sql .= " AND city LIKE ?"; $params[] = "%$city%"; }
-if ($stars) { $sql .= " AND star_rating = ?"; $params[] = (int)$stars; }
-if ($minPrice !== '') { $sql .= " AND price_per_night >= ?"; $params[] = (float)$minPrice; }
-if ($maxPrice !== '') { $sql .= " AND price_per_night <= ?"; $params[] = (float)$maxPrice; }
+if ($city) { $whereSql .= " AND city LIKE ?"; $params[] = "%$city%"; }
+if ($stars) { $whereSql .= " AND star_rating = ?"; $params[] = (int)$stars; }
+if ($minPrice !== '') { $whereSql .= " AND price_per_night >= ?"; $params[] = (float)$minPrice; }
+if ($maxPrice !== '') { $whereSql .= " AND price_per_night <= ?"; $params[] = (float)$maxPrice; }
 if (count($amenities)) {
     foreach ($amenities as $am) {
-        $sql .= " AND amenities LIKE ?";
+        $whereSql .= " AND amenities LIKE ?";
         $params[] = "%$am%";
     }
 }
-if ($freeCancel) { $sql .= " AND free_cancellation = 1"; }
-if ($instantConf) { $sql .= " AND instant_confirmation = 1"; }
-if ($bestSeller) { $sql .= " AND best_seller = 1"; }
-$sql .= match($sort) {
+if ($freeCancel) { $whereSql .= " AND free_cancellation = 1"; }
+if ($instantConf) { $whereSql .= " AND instant_confirmation = 1"; }
+if ($bestSeller) { $whereSql .= " AND best_seller = 1"; }
+$sql = "SELECT * FROM hotels WHERE is_active = 1" . $whereSql . match($sort) {
     'price' => " ORDER BY price_per_night ASC",
     'price_desc' => " ORDER BY price_per_night DESC",
     'stars' => " ORDER BY star_rating DESC, price_per_night ASC",
     default => " ORDER BY price_per_night ASC"
 };
+
+$perPage = 10;
+$currentPage = max(1, (int)($_GET['page'] ?? 1));
+$totalHotels = db()->prepare("SELECT COUNT(*) FROM hotels WHERE is_active = 1" . $whereSql);
+$totalHotels->execute($params);
+$totalHotels = (int)$totalHotels->fetchColumn();
+$lastPage = max(1, (int)ceil($totalHotels / $perPage));
+$sql .= " LIMIT $perPage OFFSET " . (($currentPage - 1) * $perPage);
+
 $hotels = db()->prepare($sql);
 $hotels->execute($params);
 $hotels = $hotels->fetchAll();
@@ -285,6 +294,13 @@ require_once 'includes/header-klook.php';
                 </div>
                 <?php endif; ?>
                 </div>
+                <?php if ($lastPage > $currentPage): ?>
+                <div class="load-more-trigger text-center py-4" data-page="<?= $currentPage ?>" data-last-page="<?= $lastPage ?>" data-testid="hotel-load-more">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -343,4 +359,54 @@ document.addEventListener('DOMContentLoaded', function() {
     maxR.addEventListener('change', function() { maxR.closest('form').submit(); });
     sync();
 })();
+</script>
+<script>
+// Infinite Scroll with IntersectionObserver (port dari tours.php)
+document.addEventListener('DOMContentLoaded', function() {
+    var loadMoreTrigger = document.querySelector('.load-more-trigger');
+    if (loadMoreTrigger) {
+        var currentPage = parseInt(loadMoreTrigger.dataset.page);
+        var lastPage = parseInt(loadMoreTrigger.dataset.lastPage);
+        var loading = false;
+
+        var observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting && !loading && currentPage < lastPage) {
+                    loading = true;
+                    currentPage++;
+
+                    var params = new URLSearchParams(window.location.search);
+                    params.set('page', currentPage);
+                    var ajaxUrl = 'hotels-ajax.php?' + params.toString();
+
+                    fetch(ajaxUrl)
+                        .then(function(response) { return response.text(); })
+                        .then(function(html) {
+                            var temp = document.createElement('div');
+                            temp.innerHTML = html;
+                            if (temp.querySelector('[data-empty]')) {
+                                loadMoreTrigger.remove();
+                                loading = false;
+                                return;
+                            }
+                            var grid = document.getElementById('hotelContent');
+                            if (grid) {
+                                grid.insertAdjacentHTML('beforeend', temp.innerHTML);
+                            }
+                            loadMoreTrigger.dataset.page = currentPage;
+                            if (currentPage >= lastPage) {
+                                loadMoreTrigger.remove();
+                            }
+                            loading = false;
+                        })
+                        .catch(function() {
+                            loading = false;
+                        });
+                }
+            });
+        }, { rootMargin: '200px' });
+
+        observer.observe(loadMoreTrigger);
+    }
+});
 </script>

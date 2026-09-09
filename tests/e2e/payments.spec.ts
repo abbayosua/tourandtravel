@@ -146,7 +146,7 @@ test.describe('Payments — Midtrans webhook, tombol bayar, admin', () => {
     createPendingBooking('E2E-PAY-08');
     await page.goto(`${BASE}/admin/login.php`);
     await page.fill('input[name="username"]', 'admin');
-    await page.fill('input[name="password"]', 'password');
+    await page.fill('input[name="password"]', 'admin123');
     await page.click('button[type="submit"]');
     await page.waitForLoadState('load');
 
@@ -169,7 +169,7 @@ test.describe('Payments — Midtrans webhook, tombol bayar, admin', () => {
     createPendingBooking('E2E-PAY-09');
     await page.goto(`${BASE}/admin/login.php`);
     await page.fill('input[name="username"]', 'admin');
-    await page.fill('input[name="password"]', 'password');
+    await page.fill('input[name="password"]', 'admin123');
     await page.click('button[type="submit"]');
     await page.goto(`${BASE}/admin/payments.php`);
     await page.click('tr:has-text("E2E-PAY-09") a[href*="expire"]');

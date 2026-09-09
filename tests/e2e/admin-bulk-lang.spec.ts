@@ -5,7 +5,7 @@ const LOCAL_ADMIN = 'http://localhost/tourandtravel/admin';
 async function loginAsAdmin(page: Page) {
     await page.goto(`${LOCAL_ADMIN}/login.php`);
     await page.fill('input[name="username"]', 'admin');
-    await page.fill('input[name="password"]', 'password');
+    await page.fill('input[name="password"]', 'admin123');
     await page.click('button[type="submit"]');
     await page.waitForLoadState('networkidle');
 }
@@ -19,7 +19,7 @@ test.describe('Admin Bulk Set Content Language', () => {
 
         await expect(page.locator('form#bulkLangForm')).toBeVisible();
         await expect(page.locator('select[name="bulk_lang"]')).toBeVisible();
-        await expect(page.locator('button:has-text("Terapkan")')).toBeVisible();
+        await expect(page.locator('button:has-text("Terapkan"), button:has-text("Apply")')).toBeVisible();
     });
 
     test('checkboxes exist on each tour row', async ({ page }) => {
@@ -81,7 +81,7 @@ test.describe('Admin Bulk Set Content Language', () => {
         await page.locator('select[name="bulk_lang"]').selectOption('en');
 
         page.on('dialog', dialog => dialog.accept());
-        await page.locator('button:has-text("Terapkan")').click();
+        await page.locator('button:has-text("Terapkan"), button:has-text("Apply")').click();
         await page.waitForLoadState('networkidle');
 
         expect(page.url()).toContain('msg=bulk_lang');

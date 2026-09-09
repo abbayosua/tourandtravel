@@ -1,0 +1,208 @@
+/* ===== UIFactory-style hero for ferry & flights ===== */
+.hero-uifactory {
+  position: relative;
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 24px 60px;
+  overflow: hidden;
+  background: linear-gradient(170deg, #E8F1FC 0%, #F0F4FA 40%, #FFFFFF 100%);
+}
+.hero-uifactory .hero-bg-shape {
+  position: absolute;
+  border-radius: 50%;
+  opacity: .35;
+  pointer-events: none;
+}
+.hero-uifactory .hero-bg-shape--1 {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(0,100,210,.12) 0%, transparent 70%);
+  top: -180px; right: -80px;
+}
+.hero-uifactory .hero-bg-shape--2 {
+  width: 350px; height: 350px;
+  background: radial-gradient(circle, rgba(0,180,130,.08) 0%, transparent 70%);
+  bottom: -80px; left: -60px;
+}
+.hero-uifactory .hero-headline {
+  font-size: 42px; font-weight: 800; line-height: 1.15;
+  letter-spacing: -.6px; color: #1A1A2E; margin-bottom: 12px;
+  text-align: center;
+}
+.hero-uifactory .hero-headline span { color: #0064D2; }
+.hero-uifactory .hero-sub {
+  font-size: 16px; color: #5A6178; text-align: center;
+  max-width: 480px; margin: 0 auto 0;
+}
+
+/* Booking Card */
+.hero-uifactory .booking-card {
+  position: relative; z-index: 10;
+  width: 100%; max-width: 1000px; margin-top: 40px;
+  background: #fff; border-radius: 24px;
+  box-shadow: 0 16px 48px rgba(0,0,0,.10);
+  overflow: visible;
+}
+
+/* Tabs inside card */
+.hero-uifactory .booking-tabs {
+  display: flex; gap: 0; padding: 20px 28px 0;
+  border-bottom: 1px solid #E4E7EE;
+  overflow-x: auto; scrollbar-width: none;
+}
+.hero-uifactory .booking-tabs::-webkit-scrollbar { display: none; }
+.hero-uifactory .booking-tab {
+  display: flex; align-items: center; gap: 7px;
+  padding: 10px 18px 12px; font-size: 14px; font-weight: 600;
+  color: #8B90A0; background: none; border: none; cursor: pointer;
+  white-space: nowrap; position: relative;
+  border-bottom: 2.5px solid transparent;
+  transition: color .2s;
+}
+.hero-uifactory .booking-tab:hover { color: #1A1A2E; }
+.hero-uifactory .booking-tab.active { color: #0064D2; border-bottom-color: #0064D2; }
+.hero-uifactory .booking-tab svg { flex-shrink: 0; }
+
+/* Form area */
+.hero-uifactory .booking-form { padding: 24px 28px 28px; }
+
+/* Options row */
+.hero-uifactory .form-row-options {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 16px; flex-wrap: wrap;
+}
+.hero-uifactory .trip-type-group {
+  display: flex; background: #F5F7FA; border-radius: 100px;
+  padding: 3px; gap: 2px;
+}
+.hero-uifactory .trip-type-btn {
+  padding: 7px 16px; border: none; background: transparent;
+  font-size: 13px; font-weight: 600; color: #5A6178;
+  border-radius: 100px; cursor: pointer; transition: all .2s;
+  white-space: nowrap;
+}
+.hero-uifactory .trip-type-btn.active {
+  background: #fff; color: #0064D2; box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+.hero-uifactory .trip-type-btn:hover:not(.active) { color: #1A1A2E; }
+
+.hero-uifactory .custom-select {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; background: #F5F7FA;
+  border: 1.5px solid #E4E7EE; border-radius: 100px;
+  font-size: 13px; font-weight: 500; color: #5A6178;
+  cursor: pointer; transition: all .2s;
+}
+.hero-uifactory .custom-select:hover { border-color: #0064D2; }
+.hero-uifactory .custom-select select {
+  appearance: none; -webkit-appearance: none; border: none;
+  background: transparent; font-size: 13px; font-weight: 500;
+  color: #5A6178; font-family: inherit; cursor: pointer;
+}
+.hero-uifactory .custom-select svg { width: 14px; height: 14px; color: #8B90A0; flex-shrink: 0; }
+
+/* Search row */
+.hero-uifactory .form-search-row {
+  display: flex; align-items: stretch; gap: 0;
+  background: #F5F7FA; border-radius: 16px;
+  border: 1.5px solid #E4E7EE; overflow: hidden;
+  transition: border-color .2s;
+}
+.hero-uifactory .form-search-row:focus-within {
+  border-color: #0064D2; box-shadow: 0 0 0 3px rgba(0,100,210,.08);
+}
+
+/* Search field */
+.hero-uifactory .search-field {
+  flex: 1; display: flex; flex-direction: column;
+  padding: 12px 18px; border-right: 1px solid #E4E7EE;
+  cursor: pointer; transition: background .2s; min-width: 0;
+}
+.hero-uifactory .search-field:last-of-type { border-right: none; }
+.hero-uifactory .search-field:hover { background: rgba(255,255,255,.6); }
+.hero-uifactory .search-field-label {
+  font-size: 11px; font-weight: 600; color: #8B90A0;
+  text-transform: uppercase; letter-spacing: .5px;
+  margin-bottom: 3px; display: flex; align-items: center; gap: 5px;
+}
+.hero-uifactory .search-field-label svg { width: 13px; height: 13px; color: #0064D2; }
+.hero-uifactory .search-field input,
+.hero-uifactory .search-field .field-value {
+  border: none; background: transparent;
+  font-size: 14px; font-weight: 600; color: #1A1A2E;
+  font-family: inherit; outline: none; width: 100%; cursor: pointer;
+}
+.hero-uifactory .search-field input::placeholder { color: #5A6178; font-weight: 500; }
+
+/* Swap button */
+.hero-uifactory .swap-btn {
+  position: relative; display: flex; align-items: center;
+  justify-content: center; width: 36px; flex-shrink: 0;
+  cursor: pointer; z-index: 2; background: none; border: none;
+}
+.hero-uifactory .swap-btn-inner {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: #fff; border: 1.5px solid #E4E7EE;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s; box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+.hero-uifactory .swap-btn:hover .swap-btn-inner {
+  border-color: #0064D2; color: #0064D2; transform: rotate(180deg);
+}
+.hero-uifactory .swap-btn-inner svg { width: 16px; height: 16px; color: #5A6178; }
+.hero-uifactory .swap-btn:hover .swap-btn-inner svg { color: #0064D2; }
+
+/* Search button */
+.hero-uifactory .search-btn {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px; padding: 0 32px;
+  background: #0064D2; color: #fff; border: none; cursor: pointer;
+  font-size: 15px; font-weight: 700; font-family: inherit;
+  transition: all .2s; white-space: nowrap; min-width: 120px;
+}
+.hero-uifactory .search-btn:hover { background: #0055B3; }
+.hero-uifactory .search-btn:active { transform: scale(.97); }
+.hero-uifactory .search-btn svg { width: 18px; height: 18px; }
+
+/* Search dropdown */
+.hero-uifactory .search-dropdown {
+  background: #fff; border-radius: 0 0 12px 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+  border: 1px solid #E4E7EE; border-top: 0;
+  max-height: 240px; overflow-y: auto;
+}
+.hero-uifactory .search-dropdown .search-item {
+  padding: 10px 16px; cursor: pointer; display: flex;
+  align-items: center; gap: 10px; transition: background .15s;
+}
+.hero-uifactory .search-dropdown .search-item:hover { background: #F0F7FF; }
+.hero-uifactory .search-dropdown .search-item .search-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+}
+
+/* Breadcrumb on light background */
+.hero-uifactory .breadcrumb {
+  background: transparent; margin-bottom: 1rem;
+}
+.hero-uifactory .breadcrumb-item a { color: #5A6178; }
+.hero-uifactory .breadcrumb-item.active { color: #1A1A2E; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .hero-uifactory { min-height: auto; padding: 80px 16px 40px; }
+  .hero-uifactory .hero-headline { font-size: 28px; }
+  .hero-uifactory .booking-card { border-radius: 16px; }
+  .hero-uifactory .booking-tabs { padding: 14px 14px 0; }
+  .hero-uifactory .booking-tab { padding: 8px 12px 10px; font-size: 13px; }
+  .hero-uifactory .booking-form { padding: 16px 14px 20px; }
+  .hero-uifactory .form-search-row { flex-direction: column; border-radius: 12px; }
+  .hero-uifactory .search-field { border-right: none; border-bottom: 1px solid #E4E7EE; padding: 10px 14px; }
+  .hero-uifactory .search-field:last-of-type { border-bottom: none; }
+  .hero-uifactory .swap-btn { position: absolute; right: 14px; top: 52px; }
+  .hero-uifactory .form-search-row { position: relative; }
+  .hero-uifactory .search-btn { width: 100%; padding: 14px; border-radius: 0 0 14px 14px; min-width: unset; }
+}

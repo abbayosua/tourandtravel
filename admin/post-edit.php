@@ -7,7 +7,7 @@ cekLogin();
 
 $id = (int)($_GET['id'] ?? 0);
 $isAdd = $id === 0;
-$item = ['title' => '', 'slug' => '', 'excerpt' => '', 'body' => '', 'cover_image' => '', 'category' => '', 'status' => 'draft', 'title_en' => '', 'excerpt_en' => '', 'body_en' => ''];
+$item = ['title' => '', 'slug' => '', 'excerpt' => '', 'body' => '', 'cover_image' => '', 'category' => '', 'status' => 'draft', 'title_en' => '', 'excerpt_en' => '', 'body_en' => '', 'title_zh' => '', 'excerpt_zh' => '', 'body_zh' => ''];
 if (!$isAdd) {
     $st = db()->prepare("SELECT * FROM posts WHERE id = ?");
     $st->execute([$id]);
@@ -29,14 +29,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     if (!$error) {
         $fields = [trim($_POST['title_en'] ?? ''), trim($_POST['excerpt'] ?? ''), trim($_POST['body'] ?? ''), $cover ?: null, trim($_POST['category'] ?? ''), $_POST['status'] ?? 'draft',
-                   trim($_POST['title_en'] ?? ''), trim($_POST['excerpt_en'] ?? ''), trim($_POST['body_en'] ?? '')];
+                   trim($_POST['title_en'] ?? ''), trim($_POST['excerpt_en'] ?? ''), trim($_POST['body_en'] ?? ''),
+                   trim($_POST['title_zh'] ?? ''), trim($_POST['excerpt_zh'] ?? ''), trim($_POST['body_zh'] ?? '')];
         if ($isAdd) {
             $pub = ($_POST['status'] ?? '') === 'published' ? date('Y-m-d H:i:s') : null;
-            db()->prepare("INSERT INTO posts (title, slug, excerpt, body, cover_image, category, status, published_at, title_en, excerpt_en, body_en) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-                ->execute([$title, $slug, $fields[1], $fields[2], $fields[3], $fields[4], $fields[5], $pub, $fields[6], $fields[7], $fields[8]]);
+            db()->prepare("INSERT INTO posts (title, slug, excerpt, body, cover_image, category, status, published_at, title_en, excerpt_en, body_en, title_zh, excerpt_zh, body_zh) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+                ->execute([$title, $slug, $fields[1], $fields[2], $fields[3], $fields[4], $fields[5], $pub, $fields[6], $fields[7], $fields[8], $fields[9], $fields[10], $fields[11]]);
         } else {
-            db()->prepare("UPDATE posts SET title=?, slug=?, excerpt=?, body=?, cover_image=?, category=?, status=?, title_en=?, excerpt_en=?, body_en=? WHERE id=?")
-                ->execute([$title, $slug, $fields[1], $fields[2], $fields[3], $fields[4], $fields[5], $fields[6], $fields[7], $fields[8], $id]);
+            db()->prepare("UPDATE posts SET title=?, slug=?, excerpt=?, body=?, cover_image=?, category=?, status=?, title_en=?, excerpt_en=?, body_en=?, title_zh=?, excerpt_zh=?, body_zh=? WHERE id=?")
+                ->execute([$title, $slug, $fields[1], $fields[2], $fields[3], $fields[4], $fields[5], $fields[6], $fields[7], $fields[8], $fields[9], $fields[10], $fields[11], $id]);
         }
         header('Location: posts.php?msg=updated');
         exit;
@@ -54,10 +55,13 @@ require_once __DIR__ . '/includes/admin-header.php';
             <div class="card border-0 shadow-sm mb-3"><div class="card-body p-4">
                 <div class="mb-3"><label class="form-label"><?= t('Judul') ?> (ID) *</label><input name="title" class="form-control" value="<?= e($item['title']) ?>" required></div>
                 <div class="mb-3"><label class="form-label"><?= t('Judul') ?> (EN)</label><input name="title_en" class="form-control" value="<?= e($item['title_en']) ?>"></div>
+                <div class="mb-3"><label class="form-label"><?= t('Judul') ?> (中文)</label><input name="title_zh" class="form-control" value="<?= e($item['title_zh']) ?>"></div>
                 <div class="mb-3"><label class="form-label"><?= t('Ringkasan') ?> (ID)</label><textarea name="excerpt" class="form-control" rows="2"><?= e($item['excerpt']) ?></textarea></div>
                 <div class="mb-3"><label class="form-label"><?= t('Ringkasan') ?> (EN)</label><textarea name="excerpt_en" class="form-control" rows="2"><?= e($item['excerpt_en']) ?></textarea></div>
+                <div class="mb-3"><label class="form-label"><?= t('Ringkasan') ?> (中文)</label><textarea name="excerpt_zh" class="form-control" rows="2"><?= e($item['excerpt_zh']) ?></textarea></div>
                 <div class="mb-3"><label class="form-label"><?= t('Isi') ?> (ID)</label><textarea name="body" class="form-control" rows="8"><?= e($item['body']) ?></textarea></div>
                 <div class="mb-3"><label class="form-label"><?= t('Isi') ?> (EN)</label><textarea name="body_en" class="form-control" rows="6"><?= e($item['body_en']) ?></textarea></div>
+                <div class="mb-3"><label class="form-label"><?= t('Isi') ?> (中文)</label><textarea name="body_zh" class="form-control" rows="6"><?= e($item['body_zh']) ?></textarea></div>
             </div></div>
         </div>
         <div class="col-md-4">

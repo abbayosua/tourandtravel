@@ -61,7 +61,7 @@ test.describe('Reviews kaya — foto, balasan, sort/filter, distribusi', () => {
     // admin balas
     await page.goto(`${BASE}/admin/login.php`, { waitUntil: 'domcontentloaded' });
     await page.fill('input[name="username"]', 'admin');
-    await page.fill('input[name="password"]', 'password');
+    await page.fill('input[name="password"]', 'admin123');
     await page.click('button[type="submit"]');
     await page.waitForLoadState('domcontentloaded');
     await page.goto(`${BASE}/admin/reviews.php`, { waitUntil: 'domcontentloaded' });

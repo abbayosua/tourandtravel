@@ -19,8 +19,9 @@ if (!$hotelId || $rating < 1 || $rating > 5 || !$comment) {
 }
 
 $slug = $_POST['slug'] ?? '';
-$stmt = db()->prepare("INSERT INTO reviews (hotel_id, user_id, rating, comment) VALUES (?, ?, ?, ?)");
-$stmt->execute([$hotelId, $userId, $rating, $comment]);
+$reviewLang = in_array($_POST['review_lang'] ?? 'id', ['id', 'en'], true) ? ($_POST['review_lang'] ?? 'id') : 'id';
+$stmt = db()->prepare("INSERT INTO reviews (hotel_id, user_id, rating, comment, lang) VALUES (?, ?, ?, ?, ?)");
+$stmt->execute([$hotelId, $userId, $rating, $comment, $reviewLang]);
 $reviewId = (int)db()->lastInsertId();
 
 // Simpan sub-rating per aspek

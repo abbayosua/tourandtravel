@@ -51,7 +51,7 @@ test.describe('Polish — dark mode, PWA, manifest, editor EN', () => {
   test('editor EN transfer: simpan name_en → tersimpan di DB', async ({ page }) => {
     await page.goto(`${BASE}/admin/login.php`);
     await page.fill('input[name="username"]', 'admin');
-    await page.fill('input[name="password"]', 'password');
+    await page.fill('input[name="password"]', 'admin123');
     await page.click('button[type="submit"]');
     await page.waitForLoadState('load');
     await page.goto(`${BASE}/admin/transfer-edit.php?id=1`);

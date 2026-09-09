@@ -609,3 +609,113 @@ footer a:hover {
     opacity: 1;
     filter: blur(0);
 }
+
+/* Tier badge in header */
+.tier-badge{color:#fff !important;font-weight:600;letter-spacing:.2px;}
+
+/* ===== Tiket.com-style hero search (ferry & flights) ===== */
+.hero-search-section {
+    background: #003580;
+    padding: 0 0 0;
+    margin-bottom: 0;
+}
+.hero-search-section .traveloka-tab {
+    color: rgba(255,255,255,0.65);
+    border-bottom: 3px solid transparent;
+    padding: 0.75rem 0.5rem;
+    font-weight: 500;
+    font-size: 14px;
+}
+.hero-search-section .traveloka-tab:hover {
+    color: #fff;
+}
+.hero-search-section .traveloka-tab.active {
+    color: #fff;
+    border-bottom-color: #fff;
+    font-weight: 700;
+}
+.hero-search-section .traveloka-search-field {
+    background: #f5f5f5;
+    border-radius: 8px;
+    padding: 10px 14px;
+    transition: box-shadow 0.2s;
+    border: 1px solid #e0e0e0;
+}
+.hero-search-section .traveloka-search-field:focus-within {
+    background: #fff;
+    box-shadow: 0 0 0 2px #003580;
+    border-color: #003580;
+}
+.hero-search-section .traveloka-search-field .form-label {
+    color: #6c757d;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 4px;
+}
+.hero-search-section .traveloka-search-field .form-control,
+.hero-search-section .traveloka-search-field .form-select {
+    color: #212529;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    padding: 0;
+    font-size: 14px;
+}
+.hero-search-section .traveloka-search-field .form-control::placeholder {
+    color: #adb5bd;
+}
+.hero-search-section .traveloka-search-btn {
+    background: #003580;
+    color: #fff;
+    border: 0;
+    font-weight: 700;
+    border-radius: 8px;
+    min-height: 52px;
+    padding: 0 24px;
+}
+.hero-search-section .traveloka-search-btn:hover {
+    background: #002a66;
+}
+.hero-search-section .form-check-input:checked {
+    background-color: #003580;
+    border-color: #003580;
+}
+.hero-search-section .form-check-label {
+    color: #333;
+    font-size: 13px;
+}
+.hero-search-section .badge.bg-primary {
+    background: #003580 !important;
+    color: #fff !important;
+}
+.hero-search-section .card {
+    background: #fff;
+    border-radius: 12px;
+    border: 0;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+.hero-search-section .breadcrumb {
+    background: transparent;
+    margin-bottom: 1rem;
+}
+.hero-search-section .breadcrumb-item a,
+.hero-search-section .breadcrumb-item.active {
+    color: rgba(255,255,255,0.85);
+}
+.hero-search-section .breadcrumb-item + .breadcrumb-item::before {
+    color: rgba(255,255,255,0.5);
+}
+.hero-search-section .search-dropdown {
+    background: #fff;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    border: 1px solid #e0e0e0;
+    border-top: 0;
+}
+.hero-search-section .search-dropdown .search-item:hover {
+    background: #f0f7ff;
+}
+.hero-search-section .form-text {
+    color: #6c757d;
+}
