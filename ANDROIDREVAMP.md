@@ -6,7 +6,7 @@ Revamp Android app experience: hilangkan top header & footer website via CSS inj
 
 ---
 
-## 1. Hilangkan ActionBar Android (Top Bar Native)
+## 1. ✅ Hilangkan ActionBar Android (Top Bar Native)
 
 **File:** `android-app/app/src/main/res/values/themes.xml`
 
@@ -16,7 +16,7 @@ Ubah parent theme `Theme.MaterialComponents.DayNight.DarkActionBar` → `Theme.M
 
 ---
 
-## 2. Sembunyikan Header & Footer Website via CSS Injection
+## 2. ✅ Sembunyikan Header & Footer Website via CSS Injection
 
 **Strategy:** Inject CSS dari `MainActivity.java` via `webView.evaluateJavascript()` setelah page load, bukan edit file PHP.
 
@@ -50,7 +50,7 @@ webView.setWebViewClient(new WebViewClient() {
 
 ---
 
-## 3. Dedicated Push Notification Admin Page
+## 3. ✅ Dedicated Push Notification Admin Page
 
 **New file:** `admin/push-notifications.php`
 
@@ -93,7 +93,7 @@ Pesan push notification support 3 bahasa (id/en/zh). Admin bisa compose 3 versi,
 
 ---
 
-## 4. E2E Testing Strategy
+## 4. E2E Testing Strategy — ⏳ Playwright pending, AVD pending (skenario tray SKIP bila FCM key kosong, lihat §8)
 
 ### 4.1 AVD Heypico — Android Native Testing
 
@@ -186,14 +186,16 @@ Sebelum testing:
 
 ## 6. Execution Order
 
-1. Edit `themes.xml` — NoActionBar
-2. Edit `MainActivity.java` — CSS injection + send `lang` in FCM token registration
-3. Buat `admin/push-notifications.php` — form + send logic
-4. Buat `admin/ajax/send-push.php` — AJAX handler
-5. Edit `admin-header.php` — sidebar link
-6. Test: WebView fullscreen, header/footer hidden
-7. Test: Admin push notification page
-8. Update `WEBVIEWBRIDGE.md` jika ada perubahan API
+| # | Step | Status |
+|---|---|---|
+| 1 | Edit `themes.xml` — NoActionBar | ✅ Done (`processDebugResources` OK) |
+| 2 | Edit `MainActivity.java` — CSS injection + `lang` di registrasi token | ✅ Done (`compileDebugJavaWithJavac` OK) |
+| 3 | Buat `admin/push-notifications.php` | ✅ Done (`php -l` OK) |
+| 4 | Buat `admin/ajax/send-push.php` | ✅ Done (CSRF + per-lang + `push_log`) |
+| 5 | Edit `admin-header.php` — sidebar link | ✅ Done (Marketing, setelah Price Alerts) |
+| 6 | Test: WebView fullscreen, header/footer hidden | ⏳ AVD pending |
+| 7 | Test: Admin push notification page | ⏳ Playwright pending |
+| 8 | Update `WEBVIEWBRIDGE.md` | ✅ Done (§13 baru) |
 
 ---
 
@@ -205,3 +207,15 @@ Sebelum testing:
 | `.sticky-top` class berubah di masa depan | Pakai multiple selector, tambah komentar di Android code |
 | ActionBar hilang tapi WebView masih ada notch/status bar | Test di real device, adjust `fitsSystemWindows` jika perlu |
 | Push notification butuh FCM key | Sudah ada `FCM_SERVER_KEY` di config, tinggal isi |
+
+---
+
+## 8. Status FCM_SERVER_KEY (Update Testing)
+
+Saat implementasi: `FCM_SERVER_KEY` **KOSONG** (`.env` + env var). Maka:
+
+- `admin/ajax/send-push.php` guard key sebelum kirim → balas HTTP 500 `{ok:false, error:"FCM_SERVER_KEY belum dikonfigurasi"}` — UI tampilkan pesan error di `#pushStatus` (graceful skip, tidak crash)
+- **Playwright** (`tests/e2e/admin-push.spec.ts`): test submit valid assert **deterministik** — jika key kosong expect error message tersebut (bukan FCM sukses). Real FCM test = skip otomatis.
+- **AVD**: skenario #5 (notifikasi masuk tray) hanya bisa dijalankan bila `FCM_SERVER_KEY` diisi dengan Firebase server key asli; selain itu ditandai SKIP.
+
+Untuk E2E FCM penuh: isi `FCM_SERVER_KEY` di `.env` (Firebase Console → Project Settings → Cloud Messaging → Server key / OAuth token HTTP v1).

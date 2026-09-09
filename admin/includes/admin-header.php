@@ -141,6 +141,7 @@
                 $navItem('flash-sales.php', 'bi-lightning-charge', t('Flash Sale'), ['flash-sales.php'], 'nav-flash-sales');
                 $navItem('promo-codes.php', 'bi-tag', t('Kode Promo'), ['promo-codes.php']);
                 $navItem('price-alerts.php', 'bi-bell', t('Price Alerts'), ['price-alerts.php']);
+                $navItem('push-notifications.php', 'bi-bell-fill', t('Push Notifikasi'), ['push-notifications.php']);
                 $navItem('corporate-rates.php', 'bi-building', t('Corporate Rates'), ['corporate-rates.php']);
                 $navItem('collections.php', 'bi-collection', t('Koleksi'), ['collections.php']);
 

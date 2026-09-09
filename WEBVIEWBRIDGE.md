@@ -685,3 +685,38 @@ sendPushNotification([$userId], 'Booking Dikonfirmasi!', "Booking #{$code} sudah
 - [ ] Handle deep link dari notifikasi ke halaman spesifik
 - [ ] Test notifikasi di real device
 - [ ] Build & sign APK
+
+---
+
+## 13. Android Revamp: CSS Injection + `lang` Registrasi (ANDROIDREVAMP)
+
+### CSS Injection — Header/Footer Hidden di WebView
+
+`MainActivity.java` sekarang override `onPageFinished()` pada `WebViewClient`.
+Setiap selesai page load, inject `<style id="android-hide-elements">` (idempotent,
+ada guard `getElementById`) via `evaluateJavascript`:
+
+```css
+.sticky-top { display: none !important; }
+footer, .footer, .site-footer { display: none !important; }
+```
+
+Efek: navbar sticky (2 baris) dan footer website tersembunyi **hanya di dalam
+app** — zero change ke PHP codebase, browser biasa tidak terdampak.
+
+### Registrasi Token Kirim `lang`
+
+`getFcmToken()` membaca `localStorage.getItem('lang')` via `evaluateJavascript`,
+sanitasi ke `id|en|zh` (kosong jika tidak valid), lalu `sendTokenToServer(token, lang)`
+POST JSON `{"token":"...","lang":"..."}` ke `api/fcm-token.php`.
+Jika `lang` kosong, server fallback ke `getCurrentLang()` (api/fcm-token.php:12).
+
+### Admin Push Notification Panel
+
+- `admin/push-notifications.php` — compose form (target: all / per-lang / user ID,
+  tab 3 bahasa id/en/zh) + riwayat pengiriman (tabel `push_log`, auto-create idempotent)
+- `admin/ajax/send-push.php` — endpoint POST JSON (CSRF via header `X-CSRF-Token`),
+  kirim per-token dengan pesan sesuai `fcm_tokens.lang` → response `{ok, sent, failed}`
+- `includes/fcm-push.php` — helper baru `sendFcmToToken($token, $title, $body, $data): bool`;
+  `sendPushNotification()` (by user IDs) tetap kompatibel
+- Nav item "Push Notifikasi" ada di sidebar admin section Marketing

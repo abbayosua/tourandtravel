@@ -65,6 +65,20 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 return true;
             }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                view.evaluateJavascript(
+                    "(function() {" +
+                    "  if (document.getElementById('android-hide-elements')) return;" +
+                    "  var style = document.createElement('style');" +
+                    "  style.id = 'android-hide-elements';" +
+                    "  style.textContent = '.sticky-top { display: none !important; }" +
+                    "    footer, .footer, .site-footer { display: none !important; }';" +
+                    "  document.head.appendChild(style);" +
+                    "})();", null);
+            }
         });
 
         webView.setWebChromeClient(new WebChromeClient());
@@ -86,11 +100,17 @@ public class MainActivity extends AppCompatActivity {
         FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
             if (!task.isSuccessful()) return;
             String token = task.getResult();
-            sendTokenToServer(token);
+            webView.evaluateJavascript("(localStorage.getItem('lang') || '')", lang -> {
+                String cleanLang = lang != null ? lang.replace("\"", "").trim() : "";
+                if (!cleanLang.equals("id") && !cleanLang.equals("en") && !cleanLang.equals("zh")) {
+                    cleanLang = "";
+                }
+                sendTokenToServer(token, cleanLang);
+            });
         });
     }
 
-    private void sendTokenToServer(String token) {
+    private void sendTokenToServer(String token, String lang) {
         new Thread(() -> {
             try {
                 java.net.HttpURLConnection conn = (java.net.HttpURLConnection)
@@ -99,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
                 conn.setRequestProperty("Content-Type", "application/json");
                 conn.setDoOutput(true);
 
-                String json = "{\"token\":\"" + token + "\"}";
+                String json = "{\"token\":\"" + token + "\",\"lang\":\"" + lang + "\"}";
                 conn.getOutputStream().write(json.getBytes());
                 conn.getResponseCode();
                 conn.disconnect();
