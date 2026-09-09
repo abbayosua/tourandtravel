@@ -22,7 +22,19 @@ $update = $db->prepare("UPDATE translations SET value = ? WHERE id = ?");
 foreach ($rows as $r) {
     $v = $r['value'];
     $re = @iconv('UTF-8', 'CP1252', $v);
-    if ($re === false || $re === $v || !mb_check_encoding($re, 'UTF-8')) {
+    if ($re !== false && $re !== $v && mb_check_encoding($re, 'UTF-8')) {
+        // OK via iconv
+    } elseif ($re === false) {
+        // iconv gagal (byte invalid) — coba mb, hanya terima hasil valid UTF-8,
+        // tanpa karakter pengganti, dan mengandung CJK (pasti decode Mandarin)
+        $mb = @mb_convert_encoding($v, 'CP1252', 'UTF-8');
+        if ($mb === false || $mb === $v || !mb_check_encoding($mb, 'UTF-8')
+            || preg_match('/\x{FFFD}/u', $mb) || !preg_match('/[\x{4E00}-\x{9FFF}]/u', $mb)) {
+            $skip++;
+            continue;
+        }
+        $re = $mb;
+    } else {
         $skip++;
         continue;
     }

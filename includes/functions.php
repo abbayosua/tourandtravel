@@ -244,8 +244,17 @@ function setLang($lang) {
 function fixMojibake($s) {
     if (!is_string($s) || $s === '') return $s;
     $re = @iconv('UTF-8', 'CP1252', $s);
-    if ($re === false || $re === $s) return $s;
-    return mb_check_encoding($re, 'UTF-8') ? $re : $s;
+    if ($re !== false && $re !== $s && mb_check_encoding($re, 'UTF-8')) return $re;
+    // iconv gagal karena byte invalid — coba mb, hanya terima bila hasil valid UTF-8,
+    // tanpa karakter pengganti, dan mengandung CJK (pasti hasil decode mojibake Mandarin)
+    if ($re === false) {
+        $mb = @mb_convert_encoding($s, 'CP1252', 'UTF-8');
+        if ($mb !== false && $mb !== $s && mb_check_encoding($mb, 'UTF-8')
+            && !preg_match('/\x{FFFD}/u', $mb) && preg_match('/[\x{4E00}-\x{9FFF}]/u', $mb)) {
+            return $mb;
+        }
+    }
+    return $s;
 }
 
 function t($key, $fallback = null, $sourceLang = 'id') {
