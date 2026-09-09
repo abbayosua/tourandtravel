@@ -285,7 +285,10 @@ require_once 'includes/header-klook.php';
 
             <!-- Itinerary Accordion -->
             <?php if (count($itineraries) > 0): ?>
-            <h4 class="fw-bold mt-5 mb-3"><i class="bi bi-journal-text me-2"></i><?= t('Itinerary') ?></h4>
+            <div class="d-flex align-items-center justify-content-between mt-5 mb-3">
+                <h4 class="fw-bold mb-0"><i class="bi bi-journal-text me-2"></i><?= t('Itinerary') ?></h4>
+                <a href="tour-itinerary-pdf.php?slug=<?= e($tour['slug']) ?>" class="btn btn-sm btn-outline-primary" target="_blank"><i class="bi bi-download me-1"></i><?= t('PDF') ?></a>
+            </div>
             <div class="accordion mb-4" id="itineraryAccordion">
                 <?php foreach ($itineraries as $idx => $it): ?>
                 <div class="accordion-item border-0 shadow-sm mb-3 rounded-3">
