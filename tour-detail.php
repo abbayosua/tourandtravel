@@ -682,9 +682,6 @@ require_once 'includes/header-klook.php';
         </div>
     </div>
 </div>
-<?php $siteFocus = 'tour'; require_once 'includes/homepage/trust.php'; ?>
-<?php require_once 'includes/footer-klook.php'; ?>
-
 <!-- Itinerary Builder (FOLLOW item 2) -->
 <div class="modal fade" id="itinBuilderModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg">
@@ -712,6 +709,10 @@ require_once 'includes/header-klook.php';
     </div>
   </div>
 </div>
+
+<?php $siteFocus = 'tour'; require_once 'includes/homepage/trust.php'; ?>
+<?php require_once 'includes/footer-klook.php'; ?>
+
 <script>
 (function () {
   var tourId = <?= (int)$tour['id'] ?>;
