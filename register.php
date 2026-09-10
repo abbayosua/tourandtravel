@@ -24,8 +24,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = t('Email sudah terdaftar');
         } else {
             $hash = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = db()->prepare("INSERT INTO users (name, email, phone, password_hash) VALUES (?, ?, ?, ?)");
-            $stmt->execute([$name, $email, $phone, $hash]);
+            $role = (!empty($_POST['as_reseller'])) ? 'reseller' : 'user';
+            $stmt = db()->prepare("INSERT INTO users (name, email, phone, password_hash, role) VALUES (?, ?, ?, ?, ?)");
+            $stmt->execute([$name, $email, $phone, $hash, $role]);
             $userId = (int)db()->lastInsertId();
 
             // Email welcome (tidak pernah throw)
@@ -103,6 +104,11 @@ require_once 'includes/header-klook.php';
                             <div class="mb-3">
                                 <label class="form-label small fw-semibold"><?= t('Konfirmasi Password') ?></label>
                                 <input type="password" name="confirm_password" class="form-control" required>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" name="as_reseller" value="1" class="form-check-input" id="asReseller">
+                                <label class="form-check-label small" for="asReseller"><?= t('Daftar sebagai Reseller') ?></label>
+                                <div class="form-text text-muted small"><?= t('Beli paket wisata dengan harga reseller dan kelola booking dari satu dashboard.') ?></div>
                             </div>
                             <button type="submit" class="btn btn-primary w-100 fw-semibold py-2"><?= t('Daftar') ?></button>
                         </form>

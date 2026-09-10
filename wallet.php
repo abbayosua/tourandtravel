@@ -108,6 +108,23 @@ require_once 'includes/header-klook.php';
                 </div>
             </div>
         </div>
+
+        <?php if (isLoggedIn() && isReseller($userId)): ?>
+        <!-- Kartu Reseller -->
+        <div class="card border-0 shadow-sm mb-4 overflow-hidden" style="background: linear-gradient(135deg, #198754 0%, #20c997 100%);">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <div>
+                        <small class="text-white-50"><?= t('Saldo Reseller') ?></small>
+                        <div class="text-white fs-2 fw-bold" data-testid="reseller-balance"><?= formatRupiah(getResellerBalance($userId)) ?></div>
+                        <small class="text-white-50"><?= t('Untuk booking paket wisata dengan harga reseller') ?></small>
+                    </div>
+                    <a href="reseller-topup.php" class="btn btn-light btn-sm fw-semibold"><i class="bi bi-plus-circle me-1"></i><?= t('Topup') ?></a>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
+
         <?php if ($redeemMsg): ?><div class="alert alert-success py-2" data-testid="redeem-success"><?= e($redeemMsg) ?></div><?php endif; ?>
         <?php if ($redeemErr): ?><div class="alert alert-danger py-2" data-testid="redeem-error"><?= e($redeemErr) ?></div><?php endif; ?>
 

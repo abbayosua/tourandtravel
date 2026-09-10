@@ -151,6 +151,12 @@
                 $navItem('accounting.php', 'bi-cash-stack', t('Accounting'), ['accounting.php'], 'nav-accounting');
                 $navItem('loyalty-settings.php', 'bi-award', t('Loyalty Settings'), ['loyalty-settings.php']);
 
+                // ===== RESELLER =====
+                $sectionHdr(t('Reseller'));
+                $navItem('resellers.php', 'bi-shop', t('Kelola Reseller'), ['resellers.php']);
+                $navItem('reseller-topups.php', 'bi-wallet2', t('Topup Reseller'), ['reseller-topups.php']);
+                $navItem('reseller-pricing.php', 'bi-tags', t('Harga Reseller'), ['reseller-pricing.php']);
+
                 // ===== CONTENT =====
                 $sectionHdr(t('Content'));
                 $navItem('posts.php', 'bi-journal-richtext', t('Blog'), ['posts.php', 'post-edit.php']);

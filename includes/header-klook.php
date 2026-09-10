@@ -157,6 +157,9 @@
                         <li><a class="dropdown-item" href="profile.php"><i class="bi bi-person-circle me-2"></i><?= t('Profil') ?></a></li>
                         <li><a class="dropdown-item" href="my-bookings.php"><i class="bi bi-ticket-perforated me-2"></i><?= t('Booking Saya') ?></a></li>
                         <li><a class="dropdown-item" href="wishlist.php"><i class="bi bi-heart me-2"></i><?= t('Wishlist') ?></a></li>
+                        <?php if (isLoggedIn() && isReseller((int)($_SESSION['user_id'] ?? 0))): ?>
+                        <li><a class="dropdown-item" href="reseller-topup.php"><i class="bi bi-wallet2 me-2"></i><?= t('Topup Saldo') ?></a></li>
+                        <?php endif; ?>
                         <?php if (!empty($isAdmin)): ?>
                         <li><a class="dropdown-item" href="<?= BASE_URL ?>/admin/dashboard.php"><i class="bi bi-shield-lock me-2"></i><?= t('Admin') ?></a></li>
                         <?php endif; ?>

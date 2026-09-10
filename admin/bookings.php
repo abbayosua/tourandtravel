@@ -38,6 +38,15 @@ if (isset($_GET['update_status'])) {
         $vals[] = $id;
         db()->prepare("UPDATE `$table` SET " . implode(", ", $sets) . " WHERE id = ?")->execute($vals);
 
+        // Refund reseller balance on cancellation
+        if ($status === 'cancelled' && $type === 'tour') {
+            $resRow = db()->prepare("SELECT user_id, total_price FROM bookings WHERE id = ? AND booking_source = 'reseller'");
+            $resRow->execute([$id]);
+            if ($res = $resRow->fetch()) {
+                topUpReseller((int)$res['user_id'], (float)$res['total_price']);
+            }
+        }
+
         require_once '../includes/notifications.php';
         require_once '../includes/email.php';
 
@@ -269,7 +278,7 @@ require_once 'includes/admin-header.php';
                         <td><strong class="small" style="font-size: 11px;"><?= e($b['booking_code'] ?? '-') ?></strong></td>
                         <td><strong><?= e($b['name']) ?></strong></td>
                         <td><small><?= e($b['item_title']) ?></small></td>
-                        <td><span class="badge bg-<?= $typeBadge[$btype] ?>"><?= $typeName[$btype] ?></span></td>
+                        <td><span class="badge bg-<?= $typeBadge[$btype] ?>"><?= $typeName[$btype] ?></span><?= !empty($b['booking_source']) && $b['booking_source'] === 'reseller' ? ' <span class="badge bg-success" title="Reseller booking"><i class="bi bi-shop"></i> Reseller</span>' : '' ?></td>
                         <td><small><?= !empty($b['date_label']) ? tglIndonesia($b['date_label']) : '-' ?></small></td>
                         <td><?= $b['qty_label'] ?></td>
                         <td><?= formatRupiah($b['total_price']) ?></td>

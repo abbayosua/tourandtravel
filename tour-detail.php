@@ -494,6 +494,21 @@ require_once 'includes/header-klook.php';
                     <?php endif; ?>
                     <p class="text-muted">/ <?= t('orang') ?></p>
 
+                    <?php
+                    $resPrice = null;
+                    if (isLoggedIn()) {
+                        $resPrice = getResellerTourPrice((int)$tour['id']);
+                    }
+                    ?>
+                    <?php if ($resPrice): ?>
+                    <div class="alert alert-info py-2 mb-3 small" data-testid="reseller-price">
+                        <i class="bi bi-tag me-1"></i>
+                        <strong><?= t('Harga Reseller') ?>:</strong> <?= formatRupiah($resPrice['price']) ?><?= t('/pax') ?>
+                        (<?= t('Min') ?> <?= $resPrice['min_pax'] ?> <?= t('pax') ?>)
+                        <a href="reseller-booking.php?tour_id=<?= $tour['id'] ?>" class="btn btn-sm btn-info text-white ms-2"><?= t('Booking Reseller') ?></a>
+                    </div>
+                    <?php endif; ?>
+
                     <!-- Price Alert -->
                     <?php if (isLoggedIn()): ?>
                     <div class="mb-3">
@@ -666,6 +681,12 @@ require_once 'includes/header-klook.php';
                             <label class="form-check-label small" for="savePassengerTour">
                                 <i class="bi bi-person-plus me-1"></i><?= t('Simpan sebagai profil penumpang') ?>
                             </label>
+                        </div>
+                        <?php endif; ?>
+                        <?php if (isLoggedIn() && isReseller((int)($_SESSION['user_id'] ?? 0)) && $resPrice): ?>
+                        <div class="alert alert-info py-2 small mb-2 d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-wallet2 me-1"></i><?= t('Saldo Reseller') ?>: <strong><?= formatRupiah(getResellerBalance((int)$_SESSION['user_id'])) ?></strong></span>
+                            <a href="reseller-booking.php?tour_id=<?= $tour['id'] ?>" class="btn btn-sm btn-info text-white"><?= t('Bayar dari Saldo') ?></a>
                         </div>
                         <?php endif; ?>
                         <button type="submit" class="btn btn-primary w-100 fw-semibold" id="bookingSubmitBtn" onclick="var btn=this;btn.disabled=true;btn.innerHTML='<span class=\'spinner-border spinner-border-sm me-2\'></span><?= t('Memproses...') ?>';setTimeout(function(){btn.form.submit();},100);return false;"><?= t(abVariant('tour_cta_text') === 'B' ? 'Booking Sekarang — Gratis Batal' : 'Pesan Sekarang') ?></button>

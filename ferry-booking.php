@@ -276,6 +276,12 @@ require_once 'includes/header-klook.php';
                     </div>
 
                     <!-- Submit -->
+                    <?php if (isLoggedIn() && isReseller((int)($_SESSION['user_id'] ?? 0))): ?>
+                    <div class="alert alert-info py-2 small mb-3 d-flex justify-content-between align-items-center" data-testid="reseller-balance-ferry">
+                        <span><i class="bi bi-wallet2 me-1"></i><?= t('Saldo Reseller') ?>: <strong><?= formatRupiah(getResellerBalance((int)$_SESSION['user_id'])) ?></strong></span>
+                        <a href="reseller-topup.php" class="btn btn-sm btn-outline-info"><?= t('Topup') ?></a>
+                    </div>
+                    <?php endif; ?>
                     <div class="d-flex gap-2 mb-4">
                         <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 flex-grow-1" data-testid="btn-confirm-booking">
                             <i class="bi bi-check2-circle me-2"></i><?= t('Konfirmasi Pesanan') ?>

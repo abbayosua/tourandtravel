@@ -94,6 +94,9 @@ function renderTourCard($tour, $wishlistIds = [], $options = []) {
                             <small class="text-decoration-line-through text-muted ms-1"><?= formatCurrencySpan($tour['original_price'], $tour['price_currency'] ?? 'IDR') ?></small>
                         <?php endif; ?>
                         <small class="d-block text-muted">/<?= t('orang') ?></small>
+                        <?php if (isLoggedIn()): $rp = getResellerTourPrice((int)$tour['id']); if ($rp): ?>
+                        <small class="d-block text-success fw-semibold" data-testid="card-reseller-price"><i class="bi bi-tag me-1"></i><?= t('Reseller') ?>: <?= formatRupiah($rp['price']) ?></small>
+                        <?php endif; endif; ?>
                     </div>
                     <a href="<?= $opts['link_target'] ?>" class="btn btn-sm btn-primary rounded-pill px-3 klook-cta"><?= t('Detail') ?></a>
                 </div>

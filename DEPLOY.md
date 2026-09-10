@@ -10,7 +10,7 @@ for f in database/migrate-*.sql; do
 done
 ```
 
-Daftar lengkap (32 file):
+Daftar lengkap (36 file):
 
 | # | File | Tujuan |
 |---|------|--------|
@@ -46,6 +46,10 @@ Daftar lengkap (32 file):
 | 30 | migrate-user-tiers.sql | Loyalty tiers (users.tier + user_tiers) |
 | 31 | migrate-wishlists-drop-fk.sql | Wishlist (lepas FK) |
 | 32 | migrate-wishlists-polymorphic.sql | Wishlist polymorphic |
+| 33 | migrate-reseller.sql | Reseller role + balance (users.role, users.reseller_balance) |
+| 34 | migrate-reseller-topups.sql | Reseller topup requests (reseller_topups) |
+| 35 | migrate-reseller-pricing.sql | Reseller tour pricing (reseller_tour_prices) |
+| 36 | migrate-reseller-bookings.sql | Reseller booking tracking (bookings.booking_source, bookings.reseller_id) |
 
 Catatan khusus:
 - `migrate-review-lang.sql` — juga membuat `reviews.tour_id` nullable (wajib untuk review hotel).

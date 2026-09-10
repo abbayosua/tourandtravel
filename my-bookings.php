@@ -35,6 +35,14 @@ if (isset($_GET['cancel']) && (int)$_GET['cancel'] > 0) {
                 refundWallet($userId, $paid, $type . '_booking', $cancelId);
             }
         }
+        // Refund reseller balance if booking was made via reseller
+        if ($type === 'tour') {
+            $resCheck = db()->prepare("SELECT booking_source, total_price FROM bookings WHERE id = ? AND user_id = ? AND booking_source = 'reseller'");
+            $resCheck->execute([$cancelId, $userId]);
+            if ($resRow = $resCheck->fetch()) {
+                topUpReseller($userId, (float)$resRow['total_price']);
+            }
+        }
         db()->prepare("UPDATE `$table` SET status = 'cancelled' WHERE id = ? AND user_id = ? AND status IN ('pending','confirmed')")->execute([$cancelId, $userId]);
     }
     header('Location: my-bookings.php?msg=cancelled');

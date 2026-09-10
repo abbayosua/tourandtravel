@@ -252,6 +252,12 @@ require_once 'includes/header.php';
                         <?php elseif (!isLoggedIn()): ?>
                             <div class="text-center py-3"><p class="fw-semibold mb-2"><?= t('Login untuk Memesan') ?></p><a href="login.php?redirect=<?= urlencode($_SERVER['REQUEST_URI']) ?>" class="btn btn-primary w-100"><?= t('Masuk / Daftar') ?></a></div>
                         <?php else: ?>
+                        <?php if (isLoggedIn() && isReseller((int)($_SESSION['user_id'] ?? 0))): ?>
+                        <div class="alert alert-info py-2 small mb-2 d-flex justify-content-between align-items-center" data-testid="reseller-balance-flight">
+                            <span><i class="bi bi-wallet2 me-1"></i><?= t('Saldo Reseller') ?>: <strong><?= formatRupiah(getResellerBalance((int)$_SESSION['user_id'])) ?></strong></span>
+                            <a href="reseller-topup.php" class="btn btn-sm btn-outline-info"><?= t('Topup') ?></a>
+                        </div>
+                        <?php endif; ?>
                         <form method="POST" id="duffelBookingForm">
                             <div class="row g-2">
                                 <div class="col-md-6"><input type="text" name="name" class="form-control" placeholder="<?= t('Nama Lengkap') ?>" value="<?= e(getUser()['name'] ?? '') ?>" required></div>

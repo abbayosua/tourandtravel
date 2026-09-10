@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/reseller.php';
+
 /**
  * Format angka ke Rupiah
  */
@@ -621,9 +623,16 @@ function isLoggedIn() {
 
 function getUser() {
     if (!isLoggedIn()) return null;
-    $stmt = db()->prepare("SELECT id, name, email, phone, referral_code FROM users WHERE id = ?");
+    $stmt = db()->prepare("SELECT id, name, email, phone, role, reseller_balance, referral_code FROM users WHERE id = ?");
     $stmt->execute([$_SESSION['user_id']]);
     return $stmt->fetch();
+}
+
+/** Ambil role user ('user', 'reseller', 'admin'). */
+function getUserRole(int $userId): string {
+    $stmt = db()->prepare("SELECT role FROM users WHERE id = ?");
+    $stmt->execute([$userId]);
+    return $stmt->fetchColumn() ?? 'user';
 }
 
 /**
