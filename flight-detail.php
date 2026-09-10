@@ -56,7 +56,8 @@ $bookingSuccess = '';
 $bookingError = '';
 $bookingResult = null;
 
-// FlightList booking (demo: no real order, redirect to Kiwi deep_link if present)
+// [HIDDEN] FlightList booking — dihide, redirect ke Kiwi
+/*
 if ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['book_fl'])) {
     if ($mode!=='flightlist' || !$offer) {
         $bookingError=t('Sesi penerbangan tidak valid. Silakan cari ulang.');
@@ -72,7 +73,9 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['book_fl'])) {
             $bookingResult = ['id'=>$offer['id'], 'deep_link'=>$deep, 'price'=>$price];
         }
     }
-} elseif ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['book_duffel'])) {
+}
+*/
+if ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['book_duffel'])) {
     if ($mode!=='duffel' || !$offer) {
         $bookingError=t('Sesi penerbangan tidak valid. Silakan cari ulang.');
     } elseif (!isLoggedIn()) {
@@ -159,6 +162,7 @@ require_once 'includes/header.php';
                         <?php endif; ?>
                     </div>
                 </div>
+                <!-- [HIDDEN] FlightList booking form — dihide, redirect ke Kiwi
                 <div class="card border-0 shadow-sm">
                     <div class="card-body p-4">
                         <h5 class="fw-bold mb-3"><?= t('Pesan Penerbangan') ?></h5>
@@ -183,6 +187,7 @@ require_once 'includes/header.php';
                         <?php endif; ?>
                     </div>
                 </div>
+                -->
                 <?php elseif ($mode==='duffel' && $offer):
                     $allSlices = $offer['slices'] ?? [];
                     $slice = $allSlices[0] ?? ['segments' => []]; $seg = $slice['segments'][0] ?? []; $carrier = $seg['marketing_carrier'] ?? $seg['operating_carrier'] ?? [];
