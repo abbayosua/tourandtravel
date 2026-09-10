@@ -85,6 +85,15 @@ $manual = [
     'Email' => 'Email', 'Password' => 'Password', 'Nama' => 'Name', 'Nama Lengkap' => 'Full Name',
     'No. Telepon' => 'Phone Number', 'Kota' => 'City', 'Tanggal' => 'Date', 'Durasi' => 'Duration',
     'Harga' => 'Price', 'Rating' => 'Rating', 'Kategori' => 'Category', 'Status' => 'Status',
+    // form booking
+    'Pulang Pergi' => 'Round Trip', 'Sekali Jalan' => 'One Way', 'Multi-Kota' => 'Multi-City',
+    'Semua Kelas' => 'All Classes', 'Ekonomi' => 'Economy', 'Bisnis' => 'Business', 'First Class' => 'First Class',
+    'Dari' => 'From', 'Ke' => 'To', 'Tanggal Pergi' => 'Departure Date', 'Tanggal Pulang' => 'Return Date',
+    'Tambah leg' => 'Add Leg', 'Maksimal 6 leg.' => 'Maximum 6 legs.',
+    'Kota atau bandara' => 'City or airport', 'Kota atau码头' => 'City or port',
+    'Penumpang' => 'Passengers', 'Cari' => 'Search', 'Cari destinasi...' => 'Search Destinations...',
+    'Kota atau nama hotel...' => 'City or hotel name...', 'Kota...' => 'City...',
+    'Out of' => 'From', 'Harga Termurah' => 'Lowest Price',
     'Total' => 'Total', 'Jumlah' => 'Amount', 'Tipe' => 'Type', 'Deskripsi' => 'Description',
     'Check-in' => 'Check-in', 'Check-out' => 'Check-out', 'Min' => 'Min', 'Max' => 'Max',
     // empty states
