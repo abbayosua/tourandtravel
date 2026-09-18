@@ -19,6 +19,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = trim($_POST['title'] ?? '');
     $category = trim($_POST['category'] ?? '');
     $description = trim($_POST['description'] ?? '');
+    $durationDays = (int)($_POST['duration_days'] ?? 0) ?: null;
+    $durationNights = (int)($_POST['duration_nights'] ?? 0) ?: null;
+    $routeCities = trim($_POST['route_cities'] ?? '');
+    $highlights = trim($_POST['highlights'] ?? '');
+    $includes = trim($_POST['includes'] ?? '');
+    $excludes = trim($_POST['excludes'] ?? '');
+    $flightInfo = trim($_POST['flight_info'] ?? '');
+    $meetingPoint = trim($_POST['meeting_point'] ?? '');
+    $importantNotes = trim($_POST['important_notes'] ?? '');
     $price = (float)($_POST['price'] ?? 0);
     $priceCurrency = in_array($_POST['price_currency'] ?? '', ['IDR', 'SGD', 'USD']) ? $_POST['price_currency'] : 'IDR';
     $maxParticipants = (int)($_POST['max_participants'] ?? 1);
@@ -52,8 +61,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $slug .= '-' . time();
         }
 
-        $stmt = db()->prepare("UPDATE tours SET title=?, slug=?, category=?, description=?, price=?, price_currency=?, content_language=?, max_participants=?, cover_image=?, is_active=? WHERE id=?");
-        $stmt->execute([$title, $slug, $category, $description, $price, $priceCurrency, $contentLanguage, $maxParticipants, $coverImage, $isActive, $id]);
+        $stmt = db()->prepare("UPDATE tours SET title=?, slug=?, category=?, description=?, highlights=?, includes=?, excludes=?, flight_info=?, meeting_point=?, important_notes=?, route_cities=?, duration_days=?, duration_nights=?, price=?, price_currency=?, content_language=?, max_participants=?, cover_image=?, is_active=? WHERE id=?");
+        $stmt->execute([$title, $slug, $category, $description, $highlights, $includes, $excludes, $flightInfo, $meetingPoint, $importantNotes, $routeCities, $durationDays, $durationNights, $price, $priceCurrency, $contentLanguage, $maxParticipants, $coverImage, $isActive, $id]);
 
         // Simpan konten tour untuk kedua bahasa (tanpa API — fallback konten asli)
         $targetLang = $contentLanguage === 'id' ? 'en' : 'id';
@@ -99,10 +108,14 @@ if (isset($_POST['add_date'])) {
     $departure = $_POST['departure_date'] ?? '';
     $return = $_POST['return_date'] ?? '';
     $slots = (int)($_POST['slots'] ?? 0);
+    $priceAdult = (float)($_POST['price_adult'] ?? 0) ?: null;
+    $priceChild = (float)($_POST['price_child'] ?? 0) ?: null;
+    $priceSingle = (float)($_POST['price_single'] ?? 0) ?: null;
+    $dateNote = trim($_POST['date_note'] ?? '');
 
     if ($departure && $return && $slots > 0) {
-        $stmt = db()->prepare("INSERT INTO tour_dates (tour_id, departure_date, return_date, available_slots) VALUES (?, ?, ?, ?)");
-        $stmt->execute([$id, $departure, $return, $slots]);
+        $stmt = db()->prepare("INSERT INTO tour_dates (tour_id, departure_date, return_date, available_slots, price_adult, price_child, price_single, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$id, $departure, $return, $slots, $priceAdult, $priceChild, $priceSingle, $dateNote ?: null]);
         header("Location: tour-edit.php?id=$id&msg=date_added");
         exit;
     }
@@ -187,6 +200,44 @@ require_once 'includes/admin-header.php';
                         <label class="form-label fw-semibold"><?= t('Deskripsi') ?></label>
                         <textarea name="description" class="form-control" rows="5"><?= e($tour['description']) ?></textarea>
                     </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Durasi (hari)</label>
+                            <input type="number" name="duration_days" class="form-control" min="0" value="<?= e($tour['duration_days'] ?? '') ?>" placeholder="8">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Durasi (malam)</label>
+                            <input type="number" name="duration_nights" class="form-control" min="0" value="<?= e($tour['duration_nights'] ?? '') ?>" placeholder="7">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Rute Kota (untuk brosur PDF)</label>
+                        <input type="text" name="route_cities" class="form-control" value="<?= e($tour['route_cities'] ?? '') ?>" placeholder="SHANGHAI - HANGZHOU - SUZHOU">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Highlights (satu per baris — tampil di brosur PDF)</label>
+                        <textarea name="highlights" class="form-control" rows="4" placeholder="The Bund — skyline ikonik Shanghai"><?= e($tour['highlights'] ?? '') ?></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Jadwal Penerbangan (satu per baris)</label>
+                        <textarea name="flight_info" class="form-control" rows="2" placeholder="CGK - PVG (bagasi 25KG)"><?= e($tour['flight_info'] ?? '') ?></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Titik Kumpul</label>
+                        <input type="text" name="meeting_point" class="form-control" value="<?= e($tour['meeting_point'] ?? '') ?>" placeholder="Bandara Soekarno-Hatta Terminal 3">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Paket Termasuk / Include (satu per baris)</label>
+                        <textarea name="includes" class="form-control" rows="4"><?= e($tour['includes'] ?? '') ?></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Paket Belum Termasuk / Exclude (satu per baris)</label>
+                        <textarea name="excludes" class="form-control" rows="4"><?= e($tour['excludes'] ?? '') ?></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Catatan Penting (satu per baris)</label>
+                        <textarea name="important_notes" class="form-control" rows="3"><?= e($tour['important_notes'] ?? '') ?></textarea>
+                    </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold"><?= t('Gambar Cover') ?></label>
                         <?php if ($tour['cover_image']): ?>
@@ -253,11 +304,11 @@ require_once 'includes/admin-header.php';
     <div class="card-body">
         <div class="collapse mb-3" id="addDateForm">
             <form method="POST" class="row g-2 bg-light p-3 rounded">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label small"><?= t('Tanggal Berangkat') ?></label>
                     <input type="date" name="departure_date" class="form-control form-control-sm" required>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label small"><?= t('Tanggal Kembali') ?></label>
                     <input type="date" name="return_date" class="form-control form-control-sm" required>
                 </div>
@@ -265,7 +316,23 @@ require_once 'includes/admin-header.php';
                     <label class="form-label small"><?= t('Slot') ?></label>
                     <input type="number" name="slots" class="form-control form-control-sm" min="1" value="20" required>
                 </div>
-                <div class="col-md-2 d-flex align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label small">Catatan (mis: Low Season)</label>
+                    <input type="text" name="date_note" class="form-control form-control-sm" placeholder="Low Season">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small">Harga Dewasa</label>
+                    <input type="number" name="price_adult" class="form-control form-control-sm" min="0" step="0.01">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small">Harga Anak</label>
+                    <input type="number" name="price_child" class="form-control form-control-sm" min="0" step="0.01">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small">Single Supp.</label>
+                    <input type="number" name="price_single" class="form-control form-control-sm" min="0" step="0.01">
+                </div>
+                <div class="col-12 d-flex align-items-end">
                     <button type="submit" name="add_date" class="btn btn-sm btn-primary w-100"><?= t('Simpan') ?></button>
                 </div>
             </form>
@@ -278,6 +345,10 @@ require_once 'includes/admin-header.php';
                     <th><?= t('Berangkat') ?></th>
                     <th><?= t('Kembali') ?></th>
                     <th><?= t('Slot') ?></th>
+                    <th>Dewasa</th>
+                    <th>Anak</th>
+                    <th>Single</th>
+                    <th>Catatan</th>
                     <th><?= t('Aksi') ?></th>
                 </tr>
             </thead>
@@ -287,6 +358,10 @@ require_once 'includes/admin-header.php';
                     <td><?= tglIndonesia($td['departure_date']) ?></td>
                     <td><?= tglIndonesia($td['return_date']) ?></td>
                     <td><?= $td['available_slots'] ?></td>
+                    <td><?= !empty($td['price_adult']) ? number_format((float)$td['price_adult'], 0, ',', '.') : '-' ?></td>
+                    <td><?= !empty($td['price_child']) ? number_format((float)$td['price_child'], 0, ',', '.') : '-' ?></td>
+                    <td><?= !empty($td['price_single']) ? number_format((float)$td['price_single'], 0, ',', '.') : '-' ?></td>
+                    <td><small><?= e($td['note'] ?? '') ?></small></td>
                     <td>
                         <a href="tour-edit.php?id=<?= $id ?>&delete_date=<?= $td['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Hapus tanggal ini?')"><i class="bi bi-trash"></i></a>
                     </td>

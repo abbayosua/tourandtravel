@@ -101,6 +101,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
             }
         }
 
+        // Fase 4: Travel insurance add-on — premi 3% ditambahkan SETELAH semua diskon
+        $insurancePremi = 0.0;
+        if (!empty($_POST['add_insurance']) && $totalPrice > 0) {
+            require_once 'includes/insurance.php';
+            $insurancePremi = calculateInsurancePremium((float)$totalPrice);
+            $totalPrice += $insurancePremi;
+        }
+
         $stmt = db()->prepare("INSERT INTO bookings (booking_code, tour_id, tour_date_id, name, email, phone, participants, total_price, notes, passport_photo, user_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
         $stmt->execute([$bookingCode, $tour['id'], $tourDateId, $name, $email, $phone, $participants, $totalPrice, $notes, $passportFile, $_SESSION['user_id'] ?? null]);
 
@@ -110,6 +118,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
             db()->prepare("UPDATE flash_sales SET sold_count = sold_count + ? WHERE id = ?")->execute([$participants, $fsNow['id']]);
         }
         $bookingId = (int)db()->lastInsertId();
+
+        // Fase 4: simpan add-on insurance (idempotent)
+        if ($insurancePremi > 0) {
+            require_once 'includes/insurance.php';
+            addInsuranceAddon('tour', $bookingId, $insurancePremi);
+        }
 
         // Process wallet spend
         if ($walletDeduct > 0 && !empty($_SESSION['user_id'])) {
@@ -269,6 +283,42 @@ require_once 'includes/header-klook.php';
                 <?php endforeach; ?>
             </div>
 
+            <?php if (!empty($tour['flight_info'])): ?>
+            <!-- Jadwal Penerbangan -->
+            <h5 class="fw-bold mt-4 mb-3"><i class="bi bi-airplane me-2"></i><?= t('Jadwal Penerbangan') ?></h5>
+            <div class="alert alert-primary py-2 small mb-4"><?= nl2br(e($tour['flight_info'])) ?><?= !empty($tour['meeting_point']) ? '<br><strong>' . t('Titik kumpul') . ':</strong> ' . e($tour['meeting_point']) : '' ?></div>
+            <?php endif; ?>
+
+            <?php if (!empty($tour['includes']) || !empty($tour['excludes'])): ?>
+            <!-- Termasuk / Tidak Termasuk -->
+            <div class="row g-3 mb-4">
+                <?php if (!empty($tour['includes'])): ?>
+                <div class="col-md-6">
+                    <h5 class="fw-bold mb-2 text-success"><i class="bi bi-check-circle me-2"></i><?= t('Paket Termasuk') ?></h5>
+                    <ul class="small mb-0"><?php foreach (preg_split('/\r?\n/', $tour['includes']) as $ln): $ln = trim($ln); if ($ln === '') continue; ?>
+                        <li><?= e(ltrim($ln, '-•* ')) ?></li><?php endforeach; ?>
+                    </ul>
+                </div>
+                <?php endif; ?>
+                <?php if (!empty($tour['excludes'])): ?>
+                <div class="col-md-6">
+                    <h5 class="fw-bold mb-2 text-danger"><i class="bi bi-x-circle me-2"></i><?= t('Tidak Termasuk') ?></h5>
+                    <ul class="small mb-0"><?php foreach (preg_split('/\r?\n/', $tour['excludes']) as $ln): $ln = trim($ln); if ($ln === '') continue; ?>
+                        <li><?= e(ltrim($ln, '-•* ')) ?></li><?php endforeach; ?>
+                    </ul>
+                </div>
+                <?php endif; ?>
+            </div>
+            <?php endif; ?>
+
+            <?php if (!empty($tour['important_notes'])): ?>
+            <!-- Catatan Penting -->
+            <h5 class="fw-bold mt-4 mb-2"><i class="bi bi-exclamation-triangle me-2"></i><?= t('Catatan Penting') ?></h5>
+            <ul class="small text-muted mb-4"><?php foreach (preg_split('/\r?\n/', $tour['important_notes']) as $ln): $ln = trim($ln); if ($ln === '') continue; ?>
+                <li><?= e(ltrim($ln, '-•* ')) ?></li><?php endforeach; ?>
+            </ul>
+            <?php endif; ?>
+
             <!-- [HIDDEN] Peta Lokasi — dihide sementara, jangan dihapus
             <h5 class="fw-bold mt-4 mb-3"><i class="bi bi-geo-alt me-2"></i><?= t('Lokasi') ?></h5>
             <div class="rounded-3 overflow-hidden mb-4 border" data-testid="tour-map">
@@ -323,6 +373,18 @@ require_once 'includes/header-klook.php';
                 $revSort = ($_GET['rev_sort'] ?? 'new') === 'high' ? 'high' : 'new';
                 $revStar = (int)($_GET['rev_star'] ?? 0);
                 $reviews = getTourReviews($tour['id']);
+                // Backlog #9: auto-generate terjemahan untuk review bahasa lain + fallback tampil
+                require_once 'includes/review-translations.php';
+                foreach ($reviews as &$rv) { rtGenerateForReview((int)$rv['id'], $rv['comment'], $rv['lang']); }
+                unset($rv);
+                // tambahkan review bahasa lain yang punya terjemahan ke $lang saat ini
+                $otherLangStmt = db()->prepare("SELECT r.*, u.name AS user_name FROM reviews r JOIN users u ON u.id = r.user_id
+                    WHERE r.tour_id = ? AND r.lang <> ? AND EXISTS (SELECT 1 FROM review_translations rt WHERE rt.review_id = r.id AND rt.lang = ?)");
+                $otherLangStmt->execute([$tour['id'], getCurrentLang(), getCurrentLang()]);
+                foreach ($otherLangStmt->fetchAll() as $orv) {
+                    $orv['display_comment'] = rtDisplayText($orv, getCurrentLang());
+                    $reviews[] = $orv;
+                }
                 if ($revSort === 'high') usort($reviews, fn($a, $b) => $b['rating'] <=> $a['rating']);
                 if ($revStar >= 1 && $revStar <= 5) $reviews = array_values(array_filter($reviews, fn($r) => (int)$r['rating'] === $revStar));
                 $realRating = getRealRating($tour['id']);
@@ -394,7 +456,7 @@ require_once 'includes/header-klook.php';
                                     <span class="fw-semibold small"><?= e($r['user_name']) ?></span>
                                     <span class="text-warning small"><?= renderStars($r['rating']) ?></span>
                                 </div>
-                                <p class="small text-muted mb-2"><?= nl2br(e($r['comment'])) ?></p>
+                                <p class="small text-muted mb-2"><?php if (isset($r['display_comment']) && $r['display_comment']['translated']): ?><span class="badge bg-info-subtle text-info me-1" data-testid="review-translated"><?= t('Diterjemahkan') ?></span><?php endif; ?><?= nl2br(e(isset($r['display_comment']) ? $r['display_comment']['text'] : $r['comment'])) ?></p>
                                 <?php if (!empty($reviewImages[$r['id']])): ?>
                                 <div class="d-flex gap-1 mb-2">
                                     <?php foreach ($reviewImages[$r['id']] as $img): ?>
@@ -650,6 +712,47 @@ require_once 'includes/header-klook.php';
                             <label class="form-label small"><?= t('Catatan (opsional)') ?></label>
                             <textarea name="notes" class="form-control form-control-sm" rows="2"></textarea>
                         </div>
+                        <div class="form-check mb-3" data-testid="insurance-option">
+                            <input class="form-check-input" type="checkbox" name="add_insurance" value="1" id="addInsuranceTour">
+                            <label class="form-check-label small" for="addInsuranceTour">
+                                <i class="bi bi-shield-check text-success me-1"></i><?= t('Tambah Asuransi Perjalanan') ?> (+3%)
+                                <span class="d-block text-muted"><?= t('Perlindungan pembatalan, keterlambatan, dan kehilangan barang.') ?></span>
+                            </label>
+                        </div>
+                        <?php
+                        $formBasePrice = (float)($tour['price']);
+                        $formCurrency = $tour['price_currency'] ?? 'IDR';
+                        ?>
+                        <div class="border rounded p-2 mb-3 bg-light small" data-testid="booking-summary">
+                            <div class="d-flex justify-content-between"><span><?= t('Harga × peserta') ?></span><span id="sumBase"><?= formatRupiah($formBasePrice) ?></span></div>
+                            <div class="d-flex justify-content-between text-success d-none" id="sumInsRow" data-testid="insurance-row"><span><?= t('Asuransi perjalanan') ?> (3%)</span><span id="sumIns">Rp 0</span></div>
+                            <hr class="my-1">
+                            <div class="d-flex justify-content-between fw-bold"><span><?= t('Total') ?></span><span id="sumTotal" data-testid="summary-total"><?= formatRupiah($formBasePrice) ?></span></div>
+                        </div>
+                        <script>
+                        (function () {
+                            var fmt = function (n) { return 'Rp ' + Math.round(n).toLocaleString('id-ID'); };
+                            var baseEl = document.querySelector('select[name="tour_date_id"]');
+                            var paxEl = document.querySelector('input[name="participants"]');
+                            var insEl = document.getElementById('addInsuranceTour');
+                            var base = <?= json_encode($formBasePrice) ?>;
+                            function recalc() {
+                                var pax = Math.max(1, parseInt(paxEl && paxEl.value, 10) || 1);
+                                var sel = baseEl && baseEl.selectedOptions && baseEl.selectedOptions[0];
+                                var unit = (sel && parseFloat(sel.getAttribute('data-price'))) || base;
+                                var sub = unit * pax;
+                                var premi = insEl && insEl.checked ? Math.round(sub * 0.03 / 100) * 100 : 0;
+                                document.getElementById('sumBase').textContent = fmt(sub);
+                                document.getElementById('sumIns').textContent = fmt(premi);
+                                document.getElementById('sumInsRow').classList.toggle('d-none', premi === 0);
+                                document.getElementById('sumTotal').textContent = fmt(sub + premi);
+                            }
+                            if (baseEl) baseEl.addEventListener('change', recalc);
+                            if (paxEl) paxEl.addEventListener('input', recalc);
+                            if (insEl) insEl.addEventListener('change', recalc);
+                            recalc();
+                        })();
+                        </script>
                         <?php $corporatePct = isLoggedIn() ? getCorporateDiscount((int)$_SESSION['user_id']) : 0.0; ?>
                         <?php if ($corporatePct > 0): ?>
                         <div class="alert alert-success py-2 small" data-testid="corporate-discount-note">
@@ -689,7 +792,13 @@ require_once 'includes/header-klook.php';
                             <a href="reseller-booking.php?tour_id=<?= $tour['id'] ?>" class="btn btn-sm btn-info text-white"><?= t('Bayar dari Saldo') ?></a>
                         </div>
                         <?php endif; ?>
+                        <?php $totalSisa = 0; foreach ($tourDates as $td) { $totalSisa += max(0, getSisaSlot($td['id'])); } ?>
+                        <?php if ($totalSisa < 1): ?>
+                        <button type="button" class="btn btn-danger w-100 fw-semibold" disabled data-testid="tour-full-btn"><i class="bi bi-x-circle me-1"></i><?= t('Penuh') ?></button>
+                        <div class="alert alert-warning py-2 small mt-2 mb-0"><i class="bi bi-info-circle me-1"></i><?= t('Semua jadwal keberangkatan sudah penuh. Silakan pilih tour lain.') ?></div>
+                        <?php else: ?>
                         <button type="submit" class="btn btn-primary w-100 fw-semibold" id="bookingSubmitBtn" onclick="var btn=this;btn.disabled=true;btn.innerHTML='<span class=\'spinner-border spinner-border-sm me-2\'></span><?= t('Memproses...') ?>';setTimeout(function(){btn.form.submit();},100);return false;"><?= t(abVariant('tour_cta_text') === 'B' ? 'Booking Sekarang — Gratis Batal' : 'Pesan Sekarang') ?></button>
+                        <?php endif; ?>
                         <?php if (!isLoggedIn()): ?>
                         <div class="alert alert-warning py-2 small mt-2 mb-0"><i class="bi bi-info-circle me-1"></i><?= t('Anda booking sebagai tamu. Masuk akun untuk melacak booking.') ?></div>
                         <?php endif; ?>

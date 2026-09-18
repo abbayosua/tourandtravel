@@ -1,0 +1,277 @@
+<?php
+/**
+ * pdf-brochure.php — Template brosur tour ala Balindo untuk Dompdf.
+ *
+ * Gaya: frame emas (#d4b86a), navy (#0f2b6b), hero durasi besar, tabel
+ * itinerary HARI|PROGRAM|HOTEL|MEALS, jadwal + tier harga, flight info,
+ * include/exclude, catatan penting, CTA. Semua dinamis dari DB:
+ * tours (highlights, includes, excludes, flight_info, meeting_point,
+ * important_notes, route_cities, duration_*) + itineraries + tour_dates.
+ * Layout pakai tabel (aman untuk Dompdf, tanpa flex/JS).
+ */
+
+function pdfBrochureCss(): string
+{
+    return <<<CSS
+    @page { size: A4 portrait; margin: 9mm 8mm 12mm 8mm; }
+    body { font-family: 'DejaVu Sans', sans-serif; font-size: 9pt; color: #1a1a2e; margin: 0; }
+    .page { border: 2.5px solid #d4b86a; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
+    .pagebreak { page-break-before: always; }
+    table.head { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+    table.head td { vertical-align: top; padding: 0; }
+    .brand { font-size: 13pt; font-weight: bold; color: #0f2b6b; letter-spacing: 2px; }
+    .brand-sub { font-size: 7pt; letter-spacing: 3px; color: #0f2b6b; font-weight: bold; }
+    .head-right { text-align: right; font-size: 7pt; color: #888; width: 170px; }
+    .hero { background: #0f2b6b; border-radius: 8px; padding: 12px 14px; margin: 6px 0 8px 0; }
+    .hero table { width: 100%; border-collapse: collapse; }
+    .hero table td { vertical-align: middle; padding: 0; }
+    .dur { color: #d4b86a; font-size: 34pt; font-weight: bold; width: 130px; }
+    .hero-title { color: #ffffff; font-size: 13pt; font-weight: bold; }
+    .hero-sub { color: #d4b86a; font-size: 8pt; margin-top: 2px; }
+    .tagline { font-size: 9pt; color: #33334d; margin: 6px 0 8px 0; }
+    .coverimg { width: 100%; display: block; border-radius: 6px; margin: 4px 0 8px 0; }
+    .secbar { background: #0f2b6b; color: #fff; font-weight: bold; font-size: 9pt;
+      letter-spacing: 1px; text-align: center; border-radius: 6px; padding: 6px 0; margin: 10px 0 6px 0; }
+    .secbar-green { background: #1a7a33; color: #fff; font-weight: bold; font-size: 9pt;
+      letter-spacing: 1px; text-align: center; border-radius: 6px; padding: 6px 0; margin: 10px 0 6px 0; }
+    .secbar-red { background: #b02a37; color: #fff; font-weight: bold; font-size: 9pt;
+      letter-spacing: 1px; text-align: center; border-radius: 6px; padding: 6px 0; margin: 10px 0 6px 0; }
+    table.chips { width: 100%; border-collapse: collapse; }
+    table.chips td { width: 50%; vertical-align: top; padding: 2px 3px; }
+    .chip { background: #faf6ea; border: 1px solid #d4b86a; border-radius: 6px;
+      padding: 4px 7px; font-size: 8pt; color: #5a4a1a; }
+    table.info { width: 100%; border-collapse: collapse; margin-top: 4px; }
+    table.info td { border: 1px solid #d4b86a; background: #faf6ea; padding: 5px 8px; font-size: 8pt; width: 25%; }
+    table.info .k { color: #888; font-size: 7pt; }
+    table.info .v { font-weight: bold; color: #0f2b6b; font-size: 9pt; }
+    .flight { background: #0f2b6b; color: #ffffff; border-radius: 6px; padding: 5px 9px; font-size: 8.5pt; margin: 3px 0; }
+    .meet { background: #faf6ea; border: 1px solid #d4b86a; border-radius: 6px; padding: 5px 9px; font-size: 8pt; color: #5a4a1a; margin-top: 4px; }
+    table.itin { width: 100%; border-collapse: collapse; }
+    table.itin th { background: #0f2b6b; color: #fff; font-size: 8pt; padding: 6px 6px; }
+    table.itin td { border: 1px solid #ddd; vertical-align: top; padding: 5px 6px; font-size: 8pt; }
+    .daybadge { background: #d4b86a; color: #0f2b6b; font-weight: bold; border-radius: 4px;
+      padding: 2px 6px; font-size: 8pt; white-space: nowrap; }
+    .daytitle { font-weight: bold; color: #0f2b6b; }
+    .prog { color: #33334d; margin-top: 2px; }
+    table.price { width: 100%; border-collapse: collapse; }
+    table.price th { background: #0f2b6b; color: #fff; font-size: 7.5pt; padding: 6px 4px; }
+    table.price td { border: 1px solid #ddd; padding: 5px 4px; font-size: 8pt; text-align: center; }
+    table.price td.l { text-align: left; }
+    .avail { color: #1a7a33; font-weight: bold; }
+    .full { color: #b02a37; font-weight: bold; }
+    ul.tick { margin: 4px 0 4px 2px; padding: 0; font-size: 8.5pt; color: #33334d; list-style: none; }
+    ul.tick li { margin-bottom: 3px; }
+    ul.notes { margin: 4px 0 4px 16px; padding: 0; font-size: 8.5pt; color: #33334d; }
+    ul.notes li { margin-bottom: 2px; }
+    .cta { background: #0f2b6b; border-radius: 8px; padding: 10px 14px; margin-top: 10px; text-align: center; }
+    .cta .t1 { color: #d4b86a; font-weight: bold; font-size: 11pt; }
+    .cta .t2 { color: #fff; font-size: 8pt; margin-top: 2px; }
+    .foot { text-align: center; color: #999; font-size: 7pt; margin-top: 8px; }
+    CSS;
+}
+
+/** Durasi brosur: kolom duration_* dulu, lalu parse judul ("8D ..."), lalu jumlah hari. */
+function pdfBrochureDuration(array $tour, array $days): string
+{
+    $d = (int)($tour['duration_days'] ?? 0);
+    $n = (int)($tour['duration_nights'] ?? 0);
+    if ($d <= 0 && preg_match('/(\d{1,2})\s*D/i', $tour['title'] ?? '', $m)) $d = (int)$m[1];
+    if ($d <= 0) $d = max(1, count($days));
+    if ($n <= 0 && $d > 1) $n = $d - 1;
+    return $n > 0 ? $d . 'D' . $n . 'N' : $d . 'D';
+}
+
+/** Ambil intro + highlight dari deskripsi tour (baris bullet -, •, emoji). */
+function pdfBrochureParseDesc(string $desc, string $title = ''): array
+{
+    $plain = strip_tags(str_replace(['<br>', '<br/>', '<br />', '</p>', '</li>'], "\n", $desc));
+    $intro = [];
+    $hi = [];
+    $addHi = function (string $x) use (&$hi) {
+        $x = trim($x);
+        if ($x === '' || count($hi) >= 6) return;
+        if (preg_match('/^(tour highlights|highlights|package includes|the package includes|itinerary|highlights\s*:)/i', $x)) return;
+        foreach ($hi as $old) {
+            if (mb_stripos($old, mb_substr($x, 0, 40)) !== false || mb_stripos($x, mb_substr($old, 0, 40)) !== false) return;
+        }
+        $hi[] = mb_substr($x, 0, 90);
+    };
+    foreach (preg_split('/\r?\n/', $plain) as $line) {
+        $line = trim($line);
+        if ($line === '') continue;
+        if ($title !== '' && mb_stripos($title, mb_substr($line, 0, 30)) !== false && mb_strlen($line) < mb_strlen($title) + 20) continue;
+        if (preg_match('/^[-•*▪·]+\s*(.+)$/u', $line, $m)) {
+            $addHi($m[1]);
+        } elseif (count($hi) === 0 && count($intro) < 2 && mb_strlen($line) > 20) {
+            $intro[] = $line;
+        } elseif (preg_match('/^[\x{1F300}-\x{1FAFF}\x{2600}-\x{27BF}]/u', $line)) {
+            $addHi(preg_replace('/^[\x{1F300}-\x{1FAFF}\x{2600}-\x{27BF}\x{FE0F}]+\s*/u', '', $line));
+        }
+    }
+    return [implode(' ', $intro), $hi];
+}
+
+/** Pecah teks satu-item-per-baris jadi list bersih (max $max). */
+function pdfBrochureLines(?string $text, int $max = 12): array
+{
+    $out = [];
+    foreach (preg_split('/\r?\n/', (string)$text) as $line) {
+        $line = trim(preg_replace('/^[-•*▪·\s]+/u', '', trim($line)));
+        if ($line === '') continue;
+        $out[] = mb_substr($line, 0, 160);
+        if (count($out) >= $max) break;
+    }
+    return $out;
+}
+
+/**
+ * HTML brosur tour. $tour: row tours. $days: rows itineraries.
+ * $coverImgTag: <img> data-URI atau ''. $deps: rows tour_dates
+ * (departure_date, return_date, available_slots, booked, price_adult,
+ * price_child, price_single, note) ATAU rows price_calendar lama
+ * (date, price, currency, slots, slots_booked).
+ */
+function pdfTourBrochureHtml(array $tour, array $days, string $coverImgTag, array $deps): string
+{
+    $dur = pdfBrochureDuration($tour, $days);
+    $route = trim(($tour['route_cities'] ?? '') ?: trim(($tour['location_city'] ?: '') . ($tour['category'] ? ' • ' . $tour['category'] : ''), ' •'));
+    $hiDb = pdfBrochureLines($tour['highlights'] ?? null, 8);
+    [$intro, $hiAuto] = pdfBrochureParseDesc($tour['description'] ?? '', $tour['title'] ?? '');
+    $hi = $hiDb ?: $hiAuto;
+    $inc = pdfBrochureLines($tour['includes'] ?? null);
+    $exc = pdfBrochureLines($tour['excludes'] ?? null);
+    $flights = pdfBrochureLines($tour['flight_info'] ?? null, 6);
+    $notes = pdfBrochureLines($tour['important_notes'] ?? null, 8);
+    $cur = $tour['price_currency'] ?? 'IDR';
+    $from = (float)$tour['price'];
+    foreach ($deps as $dp) {
+        if (isset($dp['price_adult']) && $dp['price_adult'] > 0) $from = min($from ?: PHP_FLOAT_MAX, (float)$dp['price_adult']);
+        elseif (isset($dp['price']) && $dp['price'] > 0) $from = min($from ?: PHP_FLOAT_MAX, (float)$dp['price']);
+    }
+    $price = formatCurrency($from, $cur, $cur);
+    $web = defined('BASE_URL') ? preg_replace('#^https?://#', '', BASE_URL) : 'tourandtravel.web.id';
+
+    $h = '<html><head><meta charset="utf-8"><style>' . pdfBrochureCss() . '</style></head><body>';
+
+    // ===== Halaman 1: cover =====
+    $h .= '<div class="page">';
+    $h .= '<table class="head"><tr><td><div class="brand">TOURANDTRAVEL</div>'
+        . '<div class="brand-sub">TOUR &amp; TRAVEL</div></td>'
+        . '<td class="head-right">YOUR WORLD OF JOY<br>' . e($web) . '</td></tr></table>';
+    $h .= '<div class="hero"><table><tr><td class="dur">' . $dur . '</td>'
+        . '<td><div class="hero-title">' . e($tour['title']) . '</div>'
+        . ($route !== '' ? '<div class="hero-sub">' . e($route) . '</div>' : '') . '</td></tr></table></div>';
+    if ($intro !== '') $h .= '<div class="tagline">' . e(mb_substr($intro, 0, 320)) . '</div>';
+    if ($coverImgTag !== '') $h .= '<div>' . $coverImgTag . '</div>';
+    if ($hi) {
+        $h .= '<div class="secbar">HIGHLIGHTS / DESTINASI UTAMA</div><table class="chips"><tr>';
+        $c = 0;
+        foreach ($hi as $x) {
+            if ($c > 0 && $c % 2 === 0) $h .= '</tr><tr>';
+            $h .= '<td><div class="chip">&#10003; ' . e($x) . '</div></td>';
+            $c++;
+        }
+        if ($c % 2 === 1) $h .= '<td></td>';
+        $h .= '</tr></table>';
+    }
+    $h .= '<div class="secbar">INFORMASI TOUR</div><table class="info"><tr>'
+        . '<td><div class="k">DURASI</div><div class="v">' . $dur . '</div></td>'
+        . '<td><div class="k">KATEGORI</div><div class="v">' . e($tour['category'] ?: '-') . '</div></td>'
+        . '<td><div class="k">MAX PESERTA</div><div class="v">' . (int)($tour['max_participants'] ?? 20) . ' pax</div></td>'
+        . '<td><div class="k">HARGA MULAI</div><div class="v">' . e($price) . '</div></td>'
+        . '</tr></table>';
+    if ($flights) {
+        $h .= '<div class="secbar">JADWAL PENERBANGAN / FLIGHT</div>';
+        foreach ($flights as $f) $h .= '<div class="flight">&#9992; ' . e($f) . '</div>';
+    }
+    if (!empty($tour['meeting_point'])) $h .= '<div class="meet">Titik kumpul: ' . e($tour['meeting_point']) . '</div>';
+    $h .= '</div>';
+
+    // ===== Halaman 2: itinerary =====
+    $h .= '<div class="page pagebreak">';
+    $h .= '<div class="secbar">PROGRAM PERJALANAN / ITINERARY</div>';
+    if (empty($days)) {
+        $h .= '<div class="tagline">Detail itinerary menyusul. Hubungi kami untuk info lengkap.</div>';
+    } else {
+        $h .= '<table class="itin"><tr><th width="60">HARI</th><th>PROGRAM PERJALANAN</th>'
+            . '<th width="100">HOTEL</th><th width="60">MEALS</th></tr>';
+        foreach ($days as $d) {
+            $dn = (int)$d['day_number'];
+            $title = trim($d['title'] ?? '');
+            $title = preg_match('/^day\s*\d+\s*[\x{2014}\x{2013}\-]/iu', $title)
+                ? trim(preg_replace('/^day\s*\d+\s*[\x{2014}\x{2013}\-]\s*/iu', '', $title))
+                : $title;
+            $h .= '<tr><td><span class="daybadge">D' . $dn . '</span></td><td>';
+            if ($title !== '') $h .= '<div class="daytitle">' . e($title) . '</div>';
+            if (!empty($d['description'])) $h .= '<div class="prog">' . e(mb_substr(strip_tags($d['description']), 0, 600)) . '</div>';
+            $h .= '</td><td>' . e($d['accommodation'] ?: '-') . '</td>'
+                . '<td>' . e($d['meals'] ?: '-') . '</td></tr>';
+        }
+        $h .= '</table>';
+    }
+    $h .= '</div>';
+
+    // ===== Halaman 3: jadwal + harga tier =====
+    if ($deps) {
+        $tier = isset($deps[0]['price_adult']) || isset($deps[0]['departure_date']);
+        $h .= '<div class="page pagebreak">';
+        $h .= '<div class="secbar">JADWAL KEBERANGKATAN / HARGA PAKET</div>';
+        if ($tier) {
+            $h .= '<table class="price"><tr><th>KEBERANGKATAN</th><th>KET</th><th>DEWASA</th><th>ANAK</th><th>SINGLE</th><th>STATUS</th></tr>';
+            foreach ($deps as $dp) {
+                $tgl = date('d M Y', strtotime($dp['departure_date'] ?? $dp['date']));
+                if (!empty($dp['return_date'])) $tgl .= "\n" . date('d M Y', strtotime($dp['return_date']));
+                $pa = !empty($dp['price_adult']) ? formatCurrency($dp['price_adult'], $cur, $cur) : '-';
+                $pc = !empty($dp['price_child']) ? formatCurrency($dp['price_child'], $cur, $cur) : '-';
+                $ps = !empty($dp['price_single']) ? formatCurrency($dp['price_single'], $cur, $cur) : '-';
+                $slots = (int)($dp['available_slots'] ?? $dp['slots'] ?? 0);
+                $booked = (int)($dp['booked'] ?? $dp['slots_booked'] ?? 0);
+                if ($slots > 0) {
+                    $sisa = $slots - $booked;
+                    $st = $sisa > 0 ? '<span class="avail">Sisa ' . $sisa . ' seat</span>' : '<span class="full">Penuh</span>';
+                } else $st = '<span class="avail">Tersedia</span>';
+                $h .= '<tr><td class="l">' . nl2br(e($tgl)) . '</td><td>' . e($dp['note'] ?? '-') . '</td>'
+                    . '<td>' . e($pa) . '</td><td>' . e($pc) . '</td><td>' . e($ps) . '</td><td>' . $st . '</td></tr>';
+            }
+        } else {
+            $h .= '<table class="price"><tr><th>KEBERANGKATAN</th><th>HARGA / PAX</th><th>STATUS</th></tr>';
+            foreach ($deps as $dp) {
+                $tgl = date('d M Y', strtotime($dp['date']));
+                $pr = formatCurrency($dp['price'], $dp['currency'] ?? 'IDR', $dp['currency'] ?? 'IDR');
+                $slots = (int)($dp['slots'] ?? 0);
+                $booked = (int)($dp['slots_booked'] ?? 0);
+                $st = ($slots > 0 && $slots - $booked <= 0)
+                    ? '<span class="full">Penuh</span>'
+                    : '<span class="avail">' . ($slots > 0 ? 'Sisa ' . ($slots - $booked) . ' seat' : 'Tersedia') . '</span>';
+                $h .= '<tr><td class="l">' . e($tgl) . '</td><td>' . e($pr) . '</td><td>' . $st . '</td></tr>';
+            }
+        }
+        $h .= '</table>';
+        $h .= '<div class="tagline">*Harga dalam ' . e($cur) . ' per orang. Dapat berubah mengikuti kurs &amp; kebijakan maskapai.</div>';
+        $h .= '</div>';
+    }
+
+    // ===== Halaman 4: include / exclude / catatan + CTA =====
+    $h .= '<div class="page pagebreak">';
+    if ($inc) {
+        $h .= '<div class="secbar-green">PAKET SUDAH TERMASUK / INCLUDE</div><ul class="tick">';
+        foreach ($inc as $x) $h .= '<li>&#10003; ' . e($x) . '</li>';
+        $h .= '</ul>';
+    }
+    if ($exc) {
+        $h .= '<div class="secbar-red">PAKET BELUM TERMASUK / EXCLUDE</div><ul class="tick">';
+        foreach ($exc as $x) $h .= '<li>&#10005; ' . e($x) . '</li>';
+        $h .= '</ul>';
+    }
+    if ($notes) {
+        $h .= '<div class="secbar">CATATAN PENTING / IMPORTANT NOTES</div><ul class="notes">';
+        foreach ($notes as $x) $h .= '<li>' . e($x) . '</li>';
+        $h .= '</ul>';
+    }
+    $h .= '<div class="cta"><div class="t1">DAFTAR SEKARANG &mdash; SEAT TERBATAS!</div>'
+        . '<div class="t2">' . e($web) . ' &bull; Syarat &amp; Ketentuan Berlaku</div></div>';
+    $h .= '<div class="foot">Generated by TourAndTravel &mdash; Your World of Joy</div>';
+    $h .= '</div>';
+
+    return $h . '</body></html>';
+}
