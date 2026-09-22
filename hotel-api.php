@@ -69,6 +69,7 @@ try {
             break;
 
         case 'nusatrip':
+            if (!nusaModuleEnabled()) { $out = ['error' => 'Modul NusaTrip nonaktif']; $status = 403; break; }
             $out = hotelApiNusatrip((string)($_GET['rkey'] ?? $_GET['key'] ?? $_GET['token'] ?? ''));
             if (isset($out['error'])) $status = 400;
             break;
@@ -93,18 +94,21 @@ try {
             break;
 
         case 'nusa_rates':
+            if (!nusaModuleEnabled()) { $out = ['error' => 'Modul NusaTrip nonaktif']; $status = 403; break; }
             $r = nusaHotelRates((string)($_GET['hotel_id'] ?? ''), (string)($_GET['checkin'] ?? ''), (string)($_GET['checkout'] ?? ''), (int)($_GET['guests'] ?? 1));
             $out = $r['data'] ?? ['error' => 'rates gagal'];
             if (empty($out['rooms'] ?? null)) $status = 502;
             break;
 
         case 'nusa_detail':
+            if (!nusaModuleEnabled()) { $out = ['error' => 'Modul NusaTrip nonaktif']; $status = 403; break; }
             $r = nusaHotelDetail((string)($_GET['hotel_id'] ?? ''));
             $out = $r['data'] ?? ['error' => 'detail gagal'];
             if (!isset($out['name'])) $status = 502;
             break;
 
         case 'nusa_policy':
+            if (!nusaModuleEnabled()) { $out = ['error' => 'Modul NusaTrip nonaktif']; $status = 403; break; }
             $r = nusaCancelPolicy((string)($_GET['location_id'] ?? ''), (string)($_GET['hotel_id'] ?? ''), (string)($_GET['checkin'] ?? ''), (string)($_GET['checkout'] ?? ''), (string)($_GET['room_ref'] ?? ''));
             $out = $r['data'] ?? ['error' => 'policy gagal'];
             break;

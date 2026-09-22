@@ -14,6 +14,11 @@ require_once 'includes/db.php';
 require_once 'includes/functions.php';
 require_once 'includes/hotelapi.php';
 
+if (!nusaModuleEnabled()) {
+    header('Location: hotels.php?live_error=1');
+    exit;
+}
+
 $step = $_GET['step'] ?? ($_POST['action'] ?? 'form');
 $err = '';
 

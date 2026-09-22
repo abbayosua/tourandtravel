@@ -56,9 +56,34 @@ function testHotelApiResolveSourceAutoPrefersNusatripWhenRkeySet() {
 }
 
 function testHotelApiResolveSourceHonorsExplicit() {
-    assertSame('nusatrip', hotelApiResolveSource('nusatrip'));
-    assertSame('oyo', hotelApiResolveSource('oyo'));
-    assertSame('oyo', hotelApiResolveSource('bogus'), 'sumber tak dikenal → oyo');
+    $prev = getSetting('nusatrip_module_enabled', '1');
+    setSetting('nusatrip_module_enabled', '1');
+    try {
+        assertSame('nusatrip', hotelApiResolveSource('nusatrip'));
+        assertSame('oyo', hotelApiResolveSource('oyo'));
+        assertSame('oyo', hotelApiResolveSource('bogus'), 'sumber tak dikenal → oyo');
+    } finally {
+        setSetting('nusatrip_module_enabled', $prev);
+    }
+}
+
+function testNusaModuleToggleFallsBackToOyo() {
+    $prev = getSetting('nusatrip_module_enabled', '1');
+    setSetting('nusatrip_module_enabled', '1');
+    try {
+        assertTrue(nusaModuleEnabled());
+        assertSame('nusatrip', hotelApiResolveSource('nusatrip'));
+    } finally {
+        setSetting('nusatrip_module_enabled', $prev);
+    }
+    setSetting('nusatrip_module_enabled', '0');
+    try {
+        assertTrue(!nusaModuleEnabled());
+        assertSame('oyo', hotelApiResolveSource('nusatrip'), 'modul off → paksa oyo');
+        assertSame('oyo', hotelApiResolveSource(null), 'auto + modul off → oyo');
+    } finally {
+        setSetting('nusatrip_module_enabled', $prev);
+    }
 }
 
 function testHotelApiEnabledIsBool() {

@@ -254,6 +254,7 @@ function hotelApiOyo(string $city): array {
 // ============================================================
 
 function hotelApiNusaAuto(string $q): array {
+    if (function_exists('nusaModuleEnabled') && !nusaModuleEnabled()) return ['error' => 'Modul NusaTrip nonaktif', 'results' => []];
     return hotelApiCached('nusatrip', hotelCacheKey('nusatrip', ['auto', strtolower(trim($q))]), function () use ($q) {
         $raw = hotelApiHttpGet('https://www.nusatrip.com/location/search?name=' . urlencode($q));
         $d = json_decode($raw, true);
@@ -268,6 +269,7 @@ function hotelApiNusaAuto(string $q): array {
 }
 
 function hotelApiNusatrip(string $token): array {
+    if (function_exists('nusaModuleEnabled') && !nusaModuleEnabled()) return ['error' => 'Modul NusaTrip nonaktif', 'hotels' => []];
     $token = trim($token);
     if ($token === '') return ['error' => 'Token NusaTrip kosong', 'hotels' => []];
     if (ctype_digit($token)) {
@@ -323,7 +325,8 @@ function hotelApiNusatrip(string $token): array {
  */
 function hotelApiResolveSource(?string $source = null): string {
     $source = $source ?: (string)getSetting('hotel_live_source', 'auto');
-    if ($source === 'auto') $source = 'nusatrip';
+    if ($source === 'auto') $source = function_exists('nusaModuleEnabled') && !nusaModuleEnabled() ? 'oyo' : 'nusatrip';
+    if ($source === 'nusatrip' && function_exists('nusaModuleEnabled') && !nusaModuleEnabled()) $source = 'oyo';
     return in_array($source, ['oyo', 'nusatrip'], true) ? $source : 'oyo';
 }
 

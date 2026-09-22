@@ -18,6 +18,12 @@ define('NUSA_KEY_STR', '38edee80bd05bd2c0baa5447a004da7e0c1509787fc16415e7a20d4f
 define('NUSA_PROXY', getenv('NUSA_PROXY') ?: '');
 define('NUSA_ESCAPE_KEYS', ['contact', 'items', 'payment', 'roomItems', 'frequentFlyer', 'ssrOutbound', 'ssrInbound', 'deviceInfo']);
 
+/** Modul NusaTrip aktif? Toggle dari admin (setting nusatrip_module_enabled, default aktif). */
+function nusaModuleEnabled(): bool {
+    if (!function_exists('getSetting')) return true;
+    return (string)getSetting('nusatrip_module_enabled', '1') === '1';
+}
+
 /** Bangun param JSON untuk CRC (B.g): sort alpha, escape " → \" utk key khusus. */
 function nusaParamJson(array $p): string {
     ksort($p, SORT_STRING);

@@ -37,7 +37,7 @@ if (!empty($_GET['live'])) {
         $lat = !empty($live['lat']) ? (float)$live['lat'] : null;
         $lng = !empty($live['lng']) ? (float)$live['lng'] : null;
         $srcLabel = ['oyorooms' => 'OYO', 'nusatrip' => 'NusaTrip', 'booking' => 'Booking.com'][$live['source'] ?? ''] ?? (string)($live['source'] ?? '');
-        $isNusatrip = (($live['source'] ?? $liveSrc) === 'nusatrip') && $liveExtId !== '';
+        $isNusatrip = (($live['source'] ?? $liveSrc) === 'nusatrip') && $liveExtId !== '' && nusaModuleEnabled();
         $nusaRooms = [];
         $nusaDetail = null;
         if ($isNusatrip) {
