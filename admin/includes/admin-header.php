@@ -163,6 +163,7 @@
                 $navItem('reviews.php', 'bi-chat-square-heart', t('Ulasan'), ['reviews.php']);
                 $navItem('faq.php', 'bi-question-circle', t('Kelola FAQ'), ['faq.php', 'faq-edit.php', 'faq-category.php', 'faq-category-edit.php']);
                 $navItem('appearance.php', 'bi-layout-text-window-reverse', t('Tampilan Homepage'), ['appearance.php']);
+                $navItem('nav-menus.php', 'bi-menu-button-wide', t('Menu Navigasi'), ['nav-menus.php']);
 
                 // ===== SETTINGS =====
                 $sectionHdr(t('Settings'));
