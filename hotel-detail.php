@@ -3,6 +3,185 @@ require_once 'includes/config.php';
 require_once 'includes/db.php';
 require_once 'includes/functions.php';
 require_once 'includes/seo.php';
+require_once 'includes/hotelapi.php';
+
+// ============================================================
+// Mode LIVE — detail hotel dari sumber live (Booking.com/OYO/NusaTrip).
+// Lihat HOTEL-ENDPOINTS.md + includes/hotelapi.php.
+// ============================================================
+if (!empty($_GET['live'])) {
+    $liveSrc = (string)($_GET['src'] ?? 'oyo');
+    $liveCity = trim((string)($_GET['city'] ?? ''));
+    $liveExtId = (string)($_GET['id'] ?? '');
+    $checkin = $_GET['checkin'] ?? date('Y-m-d');
+    $checkout = $_GET['checkout'] ?? date('Y-m-d', strtotime('+2 days'));
+    $guests = (int)($_GET['guests'] ?? 2);
+
+    if ($liveSrc === 'booking') {
+        $cc = (string)($_GET['cc'] ?? '');
+        $pg = (string)($_GET['pagename'] ?? '');
+        $live = hotelApiBookingHotel($cc, $pg, $checkin, 7, $guests, 1, (int)($_GET['hotel_id'] ?? 0));
+        if (!isset($live['error'])) $live['source'] = 'booking';
+    } else {
+        $live = hotelApiFind($liveSrc, $liveCity, $liveExtId, ['checkin' => $checkin, 'checkout' => $checkout, 'guests' => $guests]);
+    }
+
+    if (is_array($live) && empty($live['error'])) {
+        $pageTitle = (string)($live['name'] ?? 'Hotel');
+        $metaDesc = mb_substr(trim(strip_tags((string)($live['address'] ?? $live['desc'] ?? ''))), 0, 160);
+        $isBooking = ($liveSrc === 'booking');
+        $heroImgs = $isBooking ? ($live['images'] ?? []) : array_values(array_filter([$live['image'] ?? null]));
+        $hero = $heroImgs[0] ?? ('https://placehold.co/1200x500?text=' . urlencode($pageTitle));
+        $star = (int)($live['star'] ?? 0);
+        $priceText = $live['price_formatted'] ?? (($live['price'] ?? 0) ? formatRupiah((float)$live['price']) : '');
+        $lat = !empty($live['lat']) ? (float)$live['lat'] : null;
+        $lng = !empty($live['lng']) ? (float)$live['lng'] : null;
+        $srcLabel = ['oyorooms' => 'OYO', 'nusatrip' => 'NusaTrip', 'booking' => 'Booking.com'][$live['source'] ?? ''] ?? (string)($live['source'] ?? '');
+        $isNusatrip = (($live['source'] ?? $liveSrc) === 'nusatrip') && $liveExtId !== '';
+        $nusaRooms = [];
+        $nusaDetail = null;
+        if ($isNusatrip) {
+            $nusaDetail = nusaHotelDetail($liveExtId)['data'] ?? null;
+            $nusaRooms = nusaHotelRates($liveExtId, $checkin, $checkout, max(1, $guests))['data']['rooms'] ?? [];
+            if (is_array($nusaDetail)) {
+                if (!empty($nusaDetail['description'])) $live['desc'] = $nusaDetail['description'];
+                if (!empty($nusaDetail['address'])) $live['address'] = $nusaDetail['address'];
+                if (!empty($nusaDetail['hotelFacilities'])) $live['facility_names'] = array_column($nusaDetail['hotelFacilities'], 'name');
+            }
+        }
+        require_once 'includes/components/breadcrumb.php';
+        require_once 'includes/header-klook.php';
+        ?>
+        <section class="py-4 bg-light">
+            <div class="container">
+                <?php renderBreadcrumb([
+                    ['label' => t('Hotel'), 'url' => 'hotels.php'],
+                    ['label' => $liveCity !== '' ? $liveCity : t('Hasil'), 'url' => 'hotels.php?city=' . urlencode($liveCity)],
+                    ['label' => $pageTitle, 'url' => null],
+                ]); ?>
+                <div class="row g-3">
+                    <div class="col-lg-8">
+                        <div class="card border-0 shadow-sm overflow-hidden mb-3">
+                            <img src="<?= e($hero) ?>" class="w-100" style="height: 340px; object-fit: cover;" alt="<?= e($pageTitle) ?>"
+                                 onerror="this.src='https://placehold.co/1200x500?text=<?= urlencode($pageTitle) ?>'">
+                            <?php if (count($heroImgs) > 1): ?>
+                            <div class="d-flex gap-1 p-2 overflow-auto">
+                                <?php foreach (array_slice($heroImgs, 1, 5) as $im): ?>
+                                    <img src="<?= e($im) ?>" style="height:64px;width:88px;object-fit:cover;border-radius:6px;" loading="lazy" onerror="this.style.display='none'">
+                                <?php endforeach; ?>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                        <div class="card border-0 shadow-sm mb-3">
+                            <div class="card-body p-3">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h4 class="fw-bold mb-1"><?= e($pageTitle) ?></h4>
+                                        <?php if ($star > 0): ?><div class="text-warning mb-1"><?= str_repeat('★', $star) ?><?= str_repeat('☆', max(0, 5 - $star)) ?></div><?php endif; ?>
+                                        <?php if (!empty($live['address'])): ?>
+                                            <small class="text-muted d-block"><i class="bi bi-geo-alt"></i> <?= e($live['address']) ?></small>
+                                        <?php endif; ?>
+                                        <?php if ($isBooking && !empty($live['score'])): ?>
+                                            <span class="badge bg-primary mt-2"><?= e((string)$live['score']) ?> / 10 · <?= (int)($live['reviews_count'] ?? 0) ?> <?= t('review') ?></span>
+                                        <?php endif; ?>
+                                    </div>
+                                    <span class="badge bg-dark" style="font-size:11px;"><?= t('Data live') ?><?= $srcLabel ? ' · ' . e($srcLabel) : '' ?></span>
+                                </div>
+                                <?php if (!empty($live['desc'])): ?>
+                                    <p class="text-muted small mt-3 mb-0"><?= nl2br(e((string)$live['desc'])) ?></p>
+                                <?php endif; ?>
+                                <?php if ($isBooking && !empty($live['facility_icons'])): ?>
+                                    <div class="mt-3">
+                                        <?php foreach (array_slice($live['facility_icons'], 0, 12) as $fc): ?>
+                                            <span class="badge bg-light text-dark border mb-1" style="font-size:10px;"><?= e((string)$fc) ?></span>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php endif; ?>
+                                <?php if (!empty($live['facility_names'])): ?>
+                                    <div class="mt-3">
+                                        <?php foreach (array_slice($live['facility_names'], 0, 12) as $fc): ?>
+                                            <span class="badge bg-light text-dark border mb-1" style="font-size:10px;"><?= e((string)$fc) ?></span>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <?php if ($isNusatrip && !empty($nusaRooms)): ?>
+                        <div class="card border-0 shadow-sm mb-3">
+                            <div class="card-body p-3">
+                                <h6 class="fw-semibold mb-2"><i class="bi bi-door-open me-1"></i><?= t('Pilih Kamar') ?> <span class="badge bg-dark" style="font-size:10px">NusaTrip</span></h6>
+                                <?php foreach (array_slice($nusaRooms, 0, 10) as $ri => $rm): ?>
+                                    <?php $rt = (float)($rm['display_average_rate'] ?? $rm['average_rate'] ?? 0); $avail = (int)($rm['available_count'] ?? $rm['available_room'] ?? 0); ?>
+                                    <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                                        <div>
+                                            <div class="fw-semibold" style="font-size:14px"><?= e((string)($rm['room_category'] ?? 'Kamar')) ?></div>
+                                            <small class="text-muted"><?= e((string)($rm['board_type'] ?? '')) ?><?php if ($avail > 0): ?> · <?= t('Sisa') ?> <?= $avail ?><?php endif; ?></small>
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="fw-bold text-primary"><?= $rt > 0 ? formatRupiah($rt) : '-' ?></div>
+                                            <a href="nusatrip-book.php?<?= e(http_build_query(['hotel_id' => $liveExtId, 'checkin' => $checkin, 'checkout' => $checkout, 'guests' => $guests, 'city' => $liveCity, 'room_idx' => $ri])) ?>" class="btn btn-sm btn-primary rounded-pill mt-1"><?= t('Pesan') ?></a>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                        <?php if ($isBooking && !empty($live['prices'])): ?>
+                        <div class="card border-0 shadow-sm mb-3">
+                            <div class="card-body p-3">
+                                <h6 class="fw-semibold mb-2"><i class="bi bi-calendar3 me-1"></i><?= t('Kalender harga') ?></h6>
+                                <?php foreach (array_slice($live['prices'], 0, 14) as $d): ?>
+                                    <div class="d-flex justify-content-between border-bottom py-1">
+                                        <span><?= e((string)($d['checkin'] ?? '')) ?> <?= !empty($d['available']) ? '✅' : '❌' ?></span>
+                                        <b><?= e((string)($d['avgPriceFormatted'] ?? '-')) ?></b>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                        <?php if ($lat !== null && $lng !== null): ?>
+                        <div class="card border-0 shadow-sm mb-3">
+                            <div class="card-body p-3">
+                                <h6 class="fw-semibold mb-2"><i class="bi bi-geo-alt me-1"></i><?= t('Lokasi') ?></h6>
+                                <?php
+                                require_once 'includes/components/map-leaflet.php';
+                                renderMap('liveHotelMap', [['lat' => $lat, 'lng' => $lng, 'label' => $pageTitle, 'price' => $priceText, 'link' => null]], $lat, $lng, 14);
+                                ?>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card border-0 shadow-sm sticky-lg-top" style="top: 80px;">
+                            <div class="card-body p-3">
+                                <h5 class="fw-bold text-primary mb-1"><?= $priceText !== '' ? e($priceText) : '-' ?></h5>
+                                <small class="text-muted d-block mb-3"><?= t('/malam · harga live dari') ?> <?= e($srcLabel) ?></small>
+                                <?php if ($isNusatrip && !empty($nusaRooms)): ?>
+                                    <?php $cheapIdx = 0; $cheapRate = PHP_INT_MAX; foreach ($nusaRooms as $ri => $rm) { $rt = (float)($rm['display_average_rate'] ?? $rm['average_rate'] ?? PHP_INT_MAX); if ($rt < $cheapRate) { $cheapRate = $rt; $cheapIdx = $ri; } } ?>
+                                    <a href="nusatrip-book.php?<?= e(http_build_query(['hotel_id' => $liveExtId, 'checkin' => $checkin, 'checkout' => $checkout, 'guests' => $guests, 'city' => $liveCity, 'room_idx' => $cheapIdx])) ?>" class="btn btn-primary rounded-pill w-100 mb-2"><?= t('Pesan Sekarang') ?></a>
+                                    <small class="text-muted d-block mb-2"><?= count($nusaRooms) ?> <?= t('tipe kamar tersedia') ?> · <?= e($checkin) ?> → <?= e($checkout) ?></small>
+                                <?php elseif (!empty($live['url'])): ?>
+                                    <a href="<?= e($live['url']) ?>" target="_blank" rel="noopener nofollow" class="btn btn-primary rounded-pill w-100 mb-2"><?= t('Pesan di') ?> <?= e($srcLabel) ?></a>
+                                <?php elseif ($isBooking && !empty($live['booking_url'])): ?>
+                                    <a href="<?= e($live['booking_url']) ?>" target="_blank" rel="noopener nofollow" class="btn btn-primary rounded-pill w-100 mb-2"><?= t('Pesan di') ?> Booking.com</a>
+                                <?php endif; ?>
+                                <a href="hotels.php?city=<?= urlencode($liveCity) ?>" class="btn btn-outline-secondary rounded-pill w-100"><?= t('Kembali ke hasil') ?></a>
+                                <p class="text-muted small mt-3 mb-0"><?= t('Harga & ketersediaan dapat berubah. Pembelian dilakukan di penyedia.') ?></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <?php
+        require_once 'includes/footer-klook.php';
+        exit;
+    }
+
+    // Live gagal → kembali ke daftar dengan pesan.
+    header('Location: hotels.php?city=' . urlencode($liveCity) . '&live_error=1');
+    exit;
+}
 
 $slug = $_GET['slug'] ?? '';
 $stmt = db()->prepare("SELECT * FROM hotels WHERE slug = ? AND is_active = 1");
@@ -521,7 +700,13 @@ require_once 'includes/header-klook.php';
                                 </label>
                             </div>
                             <?php endif; ?>
+                            <?php $totalRoomStock = 0; foreach ($hotelRooms as $hr) { $totalRoomStock += max(0, (int)$hr['stock']); } ?>
+                            <?php if ($totalRoomStock < 1): ?>
+                            <button type="button" class="btn btn-danger w-100 fw-semibold py-2" disabled data-testid="hotel-full-btn"><i class="bi bi-x-circle me-1"></i><?= t('Penuh') ?></button>
+                            <div class="alert alert-warning py-2 small mt-2 mb-0"><i class="bi bi-info-circle me-1"></i><?= t('Semua tipe kamar sudah habis. Silakan pilih tanggal lain.') ?></div>
+                            <?php else: ?>
                             <button type="submit" class="btn btn-primary w-100 fw-semibold py-2" id="bookingSubmitBtn"><?= t('Pesan Sekarang') ?></button>
+                            <?php endif; ?>
                         </form>
 
                         <script>

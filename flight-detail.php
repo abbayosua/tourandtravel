@@ -104,8 +104,22 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['book_duffel'])) {
                     if (isset($orderRes['error'])) $bookingError = t('Gagal memesan: ').$orderRes['error'];
                     else {
                         $order = $orderRes['order'];
+                        // Backlog #6: tambah ancillary services (seat/baggage) yang dipilih user (array services[])
+                        $selectedServices = isset($_POST['services']) && is_array($_POST['services'])
+                            ? array_values(array_filter(array_map('trim', $_POST['services'])))
+                            : [];
+                        if (!empty($selectedServices) && !empty($order['id'])) {
+                            $svcRes = duffelAddServicesToOrder((string)$order['id'], $selectedServices);
+                            if (!empty($svcRes['error'])) {
+                                $bookingSuccess = t('Penerbangan berhasil dipesan! Booking ref: ') . ($order['booking_reference'] ?? $order['id']) . ' — ' . t('add-on gagal: ') . $svcRes['error'];
+                            } else {
+                                $order = $svcRes['order'] ?? $order;
+                                $bookingSuccess = t('Penerbangan berhasil dipesan (dengan add-on)! Booking ref: ') . ($order['booking_reference'] ?? $order['id']);
+                            }
+                        } else {
+                            $bookingSuccess = t('Penerbangan berhasil dipesan! Booking ref: ') . ($order['booking_reference'] ?? $order['id']);
+                        }
                         $bookingResult = $order;
-                        $bookingSuccess = t('Penerbangan berhasil dipesan! Booking ref: ').($order['booking_reference']??$order['id']);
                     }
                 }
             }
@@ -117,6 +131,13 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['book_duffel'])) {
     $passengers = (int)($_POST['passengers']??1);
     if ($name && $phone && $passengers>0) {
         $total = $schedule['price'] * $passengers;
+        if (isLoggedIn()) {
+            $insFb = db()->prepare("INSERT INTO flight_bookings (schedule_id, user_id, name, email, phone, departure_date, total_price, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'confirmed')");
+            $insFb->execute([$schedule['id'], $_SESSION['user_id'], $name, getUser()['email'] ?? '', $phone, $schedule['departure_date'], $total]);
+            $bookingCode = 'FLB-' . (int)db()->lastInsertId();
+            header('Location: booking-success.php?code=' . urlencode($bookingCode) . '&btype=flight');
+            exit;
+        }
         $bookingSuccess = t('Penerbangan berhasil dipesan! Total: ').formatRupiah($total);
     }
 }
@@ -266,6 +287,31 @@ require_once 'includes/header.php';
                                 <div class="col-md-3"><select name="passengers" class="form-select"><option value="1">1 <?= t('Penumpang') ?></option></select></div>
                                 <div class="col-md-3 d-grid"><button type="submit" name="book_duffel" value="1" class="btn btn-primary fw-semibold"><?= t('Pesan Sekarang') ?></button></div>
                             </div>
+                            <?php
+                            // Backlog #6: tampilkan ancillary services (seat/baggage) dari Duffel
+                            $duffelServices = [];
+                            $duffelServicesError = null;
+                            if ($mode === 'duffel' && $offerId) {
+                                $svcRes = duffelGetOfferServices((string)$offerId);
+                                $duffelServices = $svcRes['services'] ?? [];
+                                $duffelServicesError = $svcRes['error'] ?? null;
+                            }
+                            ?>
+                            <?php if (!empty($duffelServices)): ?>
+                            <div class="border rounded-3 p-2 mt-2" data-testid="duffel-services">
+                                <small class="fw-semibold d-block mb-1"><i class="bi bi-bag-plus me-1"></i><?= t('Add-on: Kursi & Bagasi') ?></small>
+                                <?php foreach ($duffelServices as $svc): ?>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="services[]" value="<?= e($svc['id']) ?>" id="svc-<?= e($svc['id']) ?>">
+                                    <label class="form-check-label small" for="svc-<?= e($svc['id']) ?>">
+                                        <?= e(ucfirst($svc['type'])) ?> — <?= e($svc['name']) ?> (<?= duffelFormatPrice($svc['total_amount'], $svc['total_currency']) ?>)
+                                    </label>
+                                </div>
+                                <?php endforeach; ?>
+                            </div>
+                            <?php elseif ($duffelServicesError && defined('DUFFEL_TOKEN') && DUFFEL_TOKEN): ?>
+                            <small class="text-muted d-block mt-2"><?= t('Add-on tidak tersedia untuk penerbangan ini.') ?></small>
+                            <?php endif; ?>
                             <small class="text-muted d-block mt-2"><?= t('Test mode: booking akan membuat order Duffel Airways dummy.') ?></small>
                         </form>
                         <?php endif; ?>

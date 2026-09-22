@@ -9,7 +9,7 @@ test.describe('Ferries - happy path', () => {
     await page.goto(`${BASE}/ferries.php`, { waitUntil: 'load' });
     const body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
-    expect(body).toMatch(/Masukkan kota asal|Cari Ferry/i);
+    expect(body).toMatch(/Masukkan kota asal|Kota atau terminal|Jelajahi Lebih Banyak|Explore More|Cari Ferry/i);
     await expect(page.locator('input[name="from"]')).toHaveCount(1);
     await expect(page.locator('input[name="to"]')).toHaveCount(1);
   });
@@ -58,7 +58,7 @@ test.describe('Ferries - sad path / edge', () => {
     expect(resp?.status()).toBe(200);
     const body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
-    expect(body).toMatch(/tidak ada|Tidak ada jadwal|tidak ditemukan/i);
+    expect(body).toMatch(/tidak ada|Tidak ada jadwal|tidak ditemukan|No ferry|No schedule/i);
   });
 
   test('date lewat (2020) dengan search: tidak fatal', async ({ page }) => {

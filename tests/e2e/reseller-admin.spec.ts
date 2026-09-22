@@ -127,3 +127,22 @@ test.describe('Reseller Admin', () => {
     expect(body).toMatch(/500[,.]?000/);
   });
 });
+
+test.describe('Admin Reseller - sad path & display', () => {
+  const GEMAIL = `guest_reseller_${Date.now()}@example.com`;
+
+  test('TC-713 halaman reseller tanpa login → redirect login', async ({ page }) => {
+    const resp = await page.goto(`${BASE}/reseller-booking.php?tour_id=1`);
+    expect(page.url()).toContain('login.php');
+    await page.goto(`${BASE}/reseller-topup.php`);
+    expect(page.url()).toContain('login.php');
+    await page.goto(`${BASE}/reseller-dashboard.php`);
+    expect(page.url()).toContain('login.php');
+  });
+
+  test('TC-710a non-reseller TIDAK melihat badge harga reseller di tour-detail', async ({ page }) => {
+    // guest (belum login) → tidak ada badge
+    await page.goto(`${BASE}/tour-detail.php?slug=chongqing-wulong-karst-national-park-day-tour`, { waitUntil: 'load' });
+    expect(await page.locator('[data-testid="reseller-price"]').count()).toBe(0);
+  });
+});

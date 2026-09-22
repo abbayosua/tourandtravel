@@ -170,6 +170,7 @@
                 $navItem('chat-settings.php', 'bi-chat-dots', t('Live Chat'), ['chat-settings.php'], 'nav-chat-settings');
                 $navItem('email-log.php', 'bi-envelope-paper', t('Log Email'), ['email-log.php']);
                 $navItem('currency-settings.php', 'bi-currency-exchange', t('Mata Uang'), ['currency-settings.php']);
+                $navItem('hotel-api-settings.php', 'bi-building-gear', t('Hotel API'), ['hotel-api-settings.php'], 'nav-hotel-api-settings');
 
                 // ===== EXTERNAL =====
                 $sectionHdr(t('Eksternal'));

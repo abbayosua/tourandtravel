@@ -10,12 +10,19 @@ if (getenv('BASE_URL')) {
     define('BASE_URL', getenv('BASE_URL'));
 } elseif (($_SERVER['HTTP_HOST'] ?? '') === 'localhost' || str_starts_with($_SERVER['HTTP_HOST'] ?? '', '127.')) {
     // Detect subdirectory from SCRIPT_NAME (e.g. /tourandtravel/index.php → /tourandtravel)
+    // Turunkan '/admin' agar BASE tetap root aplikasi walau dipanggil dari admin/*
     $scriptDir = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/\\');
+    if (preg_match('#/admin$#', $scriptDir)) {
+        $scriptDir = substr($scriptDir, 0, -6);
+    }
     define('BASE_URL', 'http://localhost' . $scriptDir);
 } else {
     define('BASE_URL', 'https://tourandtravel.web.id');
 }
 define('SITE_NAME', 'TourAndTravel');
+
+// Samakan timezone PHP dengan MySQL (WIB) agar perbandingan tanggal konsisten
+date_default_timezone_set('Asia/Jakarta');
 
 // Firebase Cloud Messaging (isi dengan server key dari Firebase Console)
 if (!defined('FCM_SERVER_KEY')) {
@@ -71,4 +78,11 @@ if (php_sapi_name() !== 'cli') {
         try { checkPriceAlerts(); } catch (Throwable $e) { error_log('price-alert-check: ' . $e->getMessage()); }
     }
 }
+
+// Google OAuth (Fase 1 social login) — kosongkan untuk menyembunyikan tombol Google
+if (!defined('GOOGLE_CLIENT_ID')) define('GOOGLE_CLIENT_ID', '');
+
+// PayPal (Backlog #7) — kosongkan untuk disable
+if (!defined('PAYPAL_CLIENT_ID')) define('PAYPAL_CLIENT_ID', '');
+if (!defined('PAYPAL_SECRET')) define('PAYPAL_SECRET', '');
 ?>

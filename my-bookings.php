@@ -10,6 +10,17 @@ if (!isLoggedIn()) {
 
 $userId = $_SESSION['user_id'];
 
+// Fase 3: refund self-service — ajukan refund
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'request_refund') {
+    require_once 'includes/refund.php';
+    $bookingId = (int)($_POST['booking_id'] ?? 0);
+    $reason = trim($_POST['reason'] ?? '');
+    if ($reason === '') $reason = t('Tidak disebutkan');
+    [$ok, $msg] = requestRefund($bookingId, (int)$userId, $reason);
+    header('Location: my-bookings.php?msg=' . ($ok ? 'refund_requested' : 'refund_fail') . '&rmsg=' . urlencode($msg));
+    exit;
+}
+
 // Handle cancel request (self-service cancellation) - supports all booking types
 if (isset($_GET['cancel']) && (int)$_GET['cancel'] > 0) {
     $cancelId = (int)$_GET['cancel'];
@@ -54,7 +65,8 @@ $all = [];
 
 $tourBookings = db()->prepare("
     SELECT b.*, t.title as item_title, t.slug as item_slug, t.cover_image, td.departure_date, 'tour' AS btype,
-           b.participants AS qty_num, 'peserta' AS qty_unit, b.total_price
+           b.participants AS qty_num, 'peserta' AS qty_unit, b.total_price,
+           (SELECT amount FROM booking_addons ba WHERE ba.booking_type='tour' AND ba.booking_id = b.id AND ba.type='insurance') AS insurance_premi
     FROM bookings b
     JOIN tours t ON b.tour_id = t.id
     JOIN tour_dates td ON b.tour_date_id = td.id
@@ -125,6 +137,12 @@ require_once 'includes/header-klook.php';
         <?php if (isset($_GET['msg']) && $_GET['msg'] === 'cancelled'): ?>
             <div class="alert alert-success py-2 small"><?= t('Booking berhasil dibatalkan. KlookCash yang digunakan telah dikembalikan.') ?></div>
         <?php endif; ?>
+        <?php if (isset($_GET['msg']) && $_GET['msg'] === 'refund_requested'): ?>
+            <div class="alert alert-success py-2 small" data-testid="refund-ok"><i class="bi bi-check-circle me-1"></i><?= e($_GET['rmsg'] ?? t('Pengajuan refund diterima')) ?></div>
+        <?php endif; ?>
+        <?php if (isset($_GET['msg']) && $_GET['msg'] === 'refund_fail'): ?>
+            <div class="alert alert-danger py-2 small" data-testid="refund-fail"><i class="bi bi-x-circle me-1"></i><?= e($_GET['rmsg'] ?? 'Pengajuan refund gagal') ?></div>
+        <?php endif; ?>
 
         <?php if (count($all) > 0): ?>
         <div class="row g-3">
@@ -163,6 +181,9 @@ require_once 'includes/header-klook.php';
                                     </div>
                                     <div class="col-6">
                                         <i class="bi bi-cash me-1"></i><?= formatRupiah($b['total_price']) ?>
+                                        <?php if (!empty($b['insurance_premi'])): ?>
+                                        <span class="badge bg-success-subtle text-success ms-1" data-testid="insurance-badge-<?= $b['id'] ?>" title="<?= t('Termasuk asuransi perjalanan') ?>"><i class="bi bi-shield-check"></i> +<?= formatRupiah((float)$b['insurance_premi']) ?></span>
+                                        <?php endif; ?>
                                     </div>
                                     <div class="col-6">
                                         <i class="bi bi-clock me-1"></i><?= date('d/m/Y', strtotime($b['created_at'])) ?>
@@ -173,7 +194,28 @@ require_once 'includes/header-klook.php';
                                     <?php if ($b['status'] === 'pending' || $b['status'] === 'confirmed'): ?>
                                     <a href="my-bookings.php?cancel=<?= $b['id'] ?>&type=<?= $btype ?>" class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="return confirm('<?= t('Batalkan booking ini?') ?>')"><i class="bi bi-x-circle me-1"></i><?= t('Batalkan') ?></a>
                                     <?php endif; ?>
+                                    <?php if ($btype === 'tour' && $b['status'] === 'confirmed' && ($b['refund_status'] ?? 'none') === 'none'): ?>
+                                    <button type="button" class="btn btn-sm btn-outline-warning rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#refundModal<?= $b['id'] ?>" data-testid="refund-btn-<?= $b['id'] ?>"><i class="bi bi-cash-coin me-1"></i><?= t('Minta Refund') ?></button>
+                                    <?php endif; ?>
                                 </div>
+                                <?php if ($btype === 'tour' && ($b['refund_status'] ?? 'none') !== 'none'): ?>
+                                <?php
+                                    $rs = $b['refund_status'];
+                                    $timeline = [
+                                        'requested' => ['bg-warning text-dark', 'Menunggu persetujuan admin'],
+                                        'approved'  => ['bg-success', 'Disetujui — refund ' . formatRupiah((float)($b['refund_amount'] ?? 0)) . ' ke KlookCash'],
+                                        'rejected'  => ['bg-danger', 'Ditolak admin'],
+                                    ];
+                                ?>
+                                <div class="mt-2 p-2 rounded bg-light" data-testid="refund-timeline-<?= $b['id'] ?>">
+                                    <div class="small fw-semibold mb-1"><i class="bi bi-arrow-repeat me-1"></i><?= t('Status Refund') ?></div>
+                                    <div class="d-flex align-items-center gap-1 small">
+                                        <span class="badge <?= $rs === 'requested' ? 'bg-warning text-dark' : 'bg-secondary' ?>">Diajukan</span>
+                                        <i class="bi bi-arrow-right text-muted"></i>
+                                        <span class="badge <?= $timeline[$rs][0] ?>"><?= $timeline[$rs][1] ?></span>
+                                    </div>
+                                </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -191,3 +233,30 @@ require_once 'includes/header-klook.php';
     </div>
 </section>
 <?php require_once 'includes/footer-klook.php'; ?>
+
+<?php $rfModalsRendered = $rfModalsRendered ?? []; ?>
+<?php foreach ($all as $b): if ($b['btype'] !== 'tour' || ($b['refund_status'] ?? 'none') !== 'none' || $b['status'] !== 'confirmed') continue; if (isset($rfModalsRendered[$b['id']])) continue; $rfModalsRendered[$b['id']] = true; ?>
+<div class="modal fade" id="refundModal<?= $b['id'] ?>" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="POST" action="my-bookings.php">
+                <input type="hidden" name="action" value="request_refund">
+                <input type="hidden" name="booking_id" value="<?= (int)$b['id'] ?>">
+                <div class="modal-header">
+                    <h6 class="modal-title"><i class="bi bi-cash-coin me-2"></i><?= t('Minta Refund') ?> — #<?= e($b['booking_code'] ?? $b['id']) ?></h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<?= t('Tutup') ?>"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="small text-muted mb-2"><?= t('Refund dihitung otomatis: 100% (≥H-8), 50% (H-4–H-7), 0% (<H-3) sesuai kebijakan produk.') ?></p>
+                    <label class="form-label small fw-semibold"><?= t('Alasan Refund') ?></label>
+                    <textarea name="reason" class="form-control form-control-sm" rows="3" required placeholder="<?= t('Contoh: Perubahan jadwal perjalanan') ?>"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal"><?= t('Batal') ?></button>
+                    <button type="submit" class="btn btn-sm btn-warning" data-testid="refund-submit"><?= t('Ajukan Refund') ?></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<?php endforeach; ?>

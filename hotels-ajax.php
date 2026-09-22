@@ -8,6 +8,8 @@
 require_once 'includes/config.php';
 require_once 'includes/db.php';
 require_once 'includes/functions.php';
+require_once 'includes/hotelapi.php';
+require_once 'includes/components/live-hotel-card.php';
 
 header('Content-Type: text/html; charset=utf-8');
 
@@ -27,6 +29,28 @@ $amenitiesRaw = $_GET['amenity'] ?? [];
 $amenities = array_values(array_filter(is_array($amenitiesRaw) ? array_map('trim', $amenitiesRaw) : explode(',', (string)$amenitiesRaw), fn($v) => $v !== ''));
 $validAmenities = ['WiFi', 'Kolam', 'Parkir', 'Sarapan', 'Gym', 'Spa', 'Restoran'];
 $amenities = array_values(array_intersect($validAmenities, $amenities));
+
+// Live hotel API — saat kota dicari, pakai data live (hanya halaman 1).
+if ($city !== '' && function_exists('hotelApiEnabled') && hotelApiEnabled()) {
+    if ($page > 1) {
+        echo '<div class="text-center py-4 text-muted" data-empty="true"><p class="mt-2">' . t('Semua hotel sudah dimuat.') . '</p></div>';
+        exit;
+    }
+    $live = hotelApiSearch($city, [
+        'stars' => $stars,
+        'min_price' => $minPrice,
+        'max_price' => $maxPrice,
+        'sort' => $sort,
+        'limit' => 60,
+        'checkin' => $checkin,
+        'checkout' => $checkout,
+        'guests' => $guests,
+    ]);
+    if (!empty($live['hotels'])) {
+        foreach ($live['hotels'] as $lh) renderLiveHotelCard($lh, $city, $checkin, $checkout, $guests);
+        exit;
+    }
+}
 
 $sql = "SELECT * FROM hotels WHERE is_active = 1";
 $params = [];

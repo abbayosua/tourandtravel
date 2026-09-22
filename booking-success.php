@@ -102,6 +102,30 @@ if (!$booking) {
     }
 }
 
+// 6) Flight & hotel bookings (kode = FLB-{id} / HTB-{id}, dari param btype)
+if (!$booking && isset($_GET['btype']) && preg_match('/^(FLB|HTB)-(\d+)$/', $code, $mCode)) {
+    $btype = $mCode[1] === 'FLB' ? 'flight' : 'hotel';
+    $refId = (int)$mCode[2];
+    if ($btype === 'flight') {
+        $stmt = db()->prepare("SELECT fb.*, f.flight_number, f.airline FROM flight_bookings fb
+            JOIN flight_schedules fs ON fs.id = fb.schedule_id JOIN flights f ON f.id = fs.flight_id
+            WHERE fb.id = ? AND fb.user_id = ?");
+    } else {
+        $stmt = db()->prepare("SELECT hb.*, h.name AS airline FROM hotel_bookings hb
+            JOIN hotels h ON h.id = hb.hotel_id
+            WHERE hb.id = ? AND hb.user_id = ?");
+    }
+    $stmt->execute([$refId, $_SESSION['user_id'] ?? 0]);
+    if ($row = $stmt->fetch()) {
+        $booking = $row;
+        $booking['booking_code'] = $code;
+        $booking['item_title'] = $btype === 'flight' ? ($row['airline'] . ' ' . $row['flight_number']) : $row['airline'];
+        $booking['date_label'] = $btype === 'flight' ? $row['departure_date'] : $row['checkin'];
+        $booking['qty_label'] = $btype === 'flight' ? ($row['pax'] ?? 1) . ' ' . t('pax') : ($row['rooms'] . ' ' . t('Kamar'));
+        $itemLink = $btype === 'flight' ? 'flights.php' : 'hotels.php';
+    }
+}
+
 if (!$booking) {
     header('Location: tours.php');
     exit;
@@ -133,6 +157,20 @@ if ($paymentEnabled && $btype === 'tour') {
         $paymentStatus = $prow['status'];
         $paymentOrderId = $prow['order_id'];
     }
+}
+
+// Fase 5: bundle cross-sell — flight↔hotel dalam 24 jam → kupon 5% otomatis.
+// Banner tampil di booking PERTAMA (flight/hotel) sebagai tawaran cross-sell;
+// jika partner booking sudah ada dalam window, kupon tetap diberikan (satu per ref).
+$bundle = ['eligible' => false, 'pct' => 0, 'ref_code' => null, 'coupon' => null, 'target' => null];
+if (!empty($booking['user_id']) && in_array($btype, ['flight', 'hotel'], true)) {
+    require_once 'includes/bundle.php';
+    $bundle['eligible'] = true;
+    $bundle['pct'] = BUNDLE_DISCOUNT_PCT;
+    $bundle['ref_code'] = $code;
+    $bundle['ref_booking_id'] = (int)$booking['id'];
+    $bundle['coupon'] = generateBundleCoupon((int)$booking['user_id'], (int)$booking['id']);
+    $bundle['target'] = $btype === 'flight' ? 'hotels.php' : 'flights.php';
 }
 
 $pageTitle = t('Booking Berhasil');
@@ -196,6 +234,22 @@ require_once 'includes/header-klook.php';
                     </div>
                     <?php endif; ?>
 
+                    <!-- Fase 5: Bundle cross-sell banner -->
+                    <?php if ($bundle['eligible'] && $bundle['coupon']): ?>
+                    <div class="bg-warning bg-opacity-10 border border-warning rounded-4 p-3 mb-4 text-center" data-testid="bundle-banner">
+                        <div class="fw-bold mb-1"><i class="bi bi-stars text-warning me-1"></i><?= t('Lengkapi bundlemu, hemat 5%!') ?></div>
+                        <p class="small text-muted mb-2"><?= t('Kamu baru memesan') ?> <?= $btype === 'flight' ? t('penerbangan') : t('hotel') ?> (<?= e($bundle['ref_code']) ?>). <?= t('Pesan') ?> <?= $btype === 'flight' ? t('hotel') : t('penerbangan') ?> <?= t('sekarang dan pakai kupon di bawah untuk hemat 5%.') ?></p>
+                        <div class="bg-white rounded-3 d-inline-block px-3 py-2 mb-2">
+                            <small class="text-muted d-block"><?= t('Kupon Bundlemu') ?></small>
+                            <strong class="fs-5 text-warning" data-testid="bundle-coupon-code"><?= e($bundle['coupon']) ?></strong>
+                        </div>
+                        <div>
+                            <a href="<?= $bundle['target'] ?>" class="btn btn-warning px-4"><?= t('Pesan Sekarang') ?> <i class="bi bi-arrow-right ms-1"></i></a>
+                        </div>
+                        <small class="text-muted d-block mt-2"><i class="bi bi-clock me-1"></i><?= t('Berlaku') ?> <?= getBundleWindowHours() ?> <?= t('jam sejak booking pertama') ?></small>
+                    </div>
+                    <?php endif; ?>
+
                     <div class="text-start bg-light rounded-4 p-4 mb-4">
                         <h6 class="fw-semibold mb-3"><?= t('Detail Booking') ?></h6>
                         <table class="table table-borderless mb-0 small align-middle">
@@ -224,6 +278,26 @@ require_once 'includes/header-klook.php';
 
                     <div class="d-flex gap-2 justify-content-center flex-wrap">
                         <?php if ($paymentEnabled && $btype === 'tour' && $paymentStatus !== 'paid'): ?>
+                            <?php
+                            // Backlog #8: metode pembayaran tersimpan (1-click pay)
+                            $savedMethods = [];
+                            if (!empty($booking['user_id'])) {
+                                require_once 'includes/saved-payments.php';
+                                $savedMethods = getSavedPaymentMethods((int)$booking['user_id']);
+                            }
+                            ?>
+                            <?php if (!empty($savedMethods)): ?>
+                            <div class="w-100" data-testid="saved-methods">
+                                <label class="form-label small fw-semibold"><?= t('Bayar dengan kartu tersimpan') ?></label>
+                                <div class="d-flex gap-2 flex-wrap justify-content-center mb-2">
+                                    <?php foreach ($savedMethods as $sm): ?>
+                                    <button type="button" class="btn btn-outline-success btn-sm saved-pay-btn" data-method-id="<?= (int)$sm['id'] ?>" data-booking-id="<?= (int)$booking['id'] ?>">
+                                        <i class="bi bi-credit-card-2-front me-1"></i><?= e($sm['brand'] ?: t('Kartu')) ?> <?= e($sm['masked_number'] ?? '') ?><?= $sm['is_default'] ? ' ★' : '' ?>
+                                    </button>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                            <?php endif; ?>
                             <button type="button" id="payNowBtn" class="btn btn-success px-4" data-booking-id="<?= (int)$booking['id'] ?>">
                                 <i class="bi bi-credit-card me-1"></i><?= t('Bayar Sekarang') ?>
                             </button>
@@ -299,5 +373,36 @@ require_once 'includes/header-klook.php';
     });
 
     if (statusArea && statusArea.dataset.orderId) pollStatus(statusArea.dataset.orderId);
+
+    // Backlog #8: 1-click pay dengan metode tersimpan
+    document.querySelectorAll('.saved-pay-btn').forEach(function (payBtn) {
+        payBtn.addEventListener('click', function () {
+            payBtn.disabled = true;
+            payBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span><?= t('Memproses...') ?>';
+            var fd = new FormData();
+            fd.append('action', 'charge');
+            fd.append('booking_type', 'tour');
+            fd.append('booking_id', payBtn.dataset.bookingId);
+            fd.append('method_id', payBtn.dataset.methodId);
+            fetch('<?= BASE_URL ?>/ajax/saved-payments.php', { method: 'POST', body: fd })
+                .then(function (r) { return r.json(); })
+                .then(function (d) {
+                    if (d.success && d.paid) {
+                        if (statusArea) statusArea.innerHTML = '<span class="text-success fw-bold"><?= t('Pembayaran diterima. Terima kasih!') ?></span>';
+                        var badge = document.querySelector('.badge.bg-warning');
+                        if (badge) { badge.className = 'badge bg-success'; badge.textContent = '<?= t('Lunas') ?>'; }
+                        var snap = document.getElementById('payNowBtn'); if (snap) snap.remove();
+                    } else {
+                        payBtn.disabled = false;
+                        payBtn.innerHTML = '<?= t('Bayar Sekarang') ?>';
+                        if (statusArea) statusArea.innerHTML = '<span class="text-danger"><?= e(t('Pembayaran 1-klik gagal: ')) ?>' + (d.error || '') + '</span>';
+                    }
+                })
+                .catch(function () {
+                    payBtn.disabled = false;
+                    payBtn.innerHTML = '<?= t('Bayar Sekarang') ?>';
+                });
+        });
+    });
 })();
 </script>

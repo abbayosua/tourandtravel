@@ -7,6 +7,16 @@ cekLogin();
 
 $adminId = $_SESSION['user_id'] ?? 0;
 
+// Fase 3: approve/reject refund (tour bookings)
+if (isset($_GET['refund_action'], $_GET['id']) && ($_GET['type'] ?? 'tour') === 'tour') {
+    require_once '../includes/refund.php';
+    $refundBookingId = (int)$_GET['id'];
+    $approve = $_GET['refund_action'] === 'approve';
+    [$rok, $rmsg] = decideRefund($refundBookingId, $approve, (int)$adminId);
+    header('Location: bookings.php?type=tour&refund_msg=' . ($rok ? 'ok' : 'fail') . '&rmsg=' . urlencode($rmsg));
+    exit;
+}
+
 // Update status (with table/type mapping)
 $tableMap = [
     'tour' => 'bookings',
@@ -125,7 +135,8 @@ $all = [];
 
 // Tours
 if (!$typeFilter || $typeFilter === 'tour') {
-    $sql = "SELECT b.*, t.title as item_title, td.departure_date, 'tour' AS btype, CONCAT(b.participants, ' org') AS qty_label
+    $sql = "SELECT b.*, t.title as item_title, td.departure_date, 'tour' AS btype, CONCAT(b.participants, ' org') AS qty_label,
+            (SELECT amount FROM booking_addons ba WHERE ba.booking_type='tour' AND ba.booking_id = b.id AND ba.type='insurance') AS insurance_premi
             FROM bookings b JOIN tours t ON b.tour_id = t.id JOIN tour_dates td ON b.tour_date_id = td.id";
     $params = [];
     if ($statusFilter) { $sql .= " WHERE b.status = ?"; $params[] = $statusFilter; }
@@ -228,6 +239,12 @@ $pageTitle = t('Kelola Booking');
 require_once 'includes/admin-header.php';
 ?>
 
+<?php if (isset($_GET['refund_msg'])): ?>
+    <div class="alert alert-<?= $_GET['refund_msg'] === 'ok' ? 'success' : 'danger' ?> py-2 small" data-testid="refund-admin-msg">
+        <?= e($_GET['rmsg'] ?? '') ?>
+    </div>
+<?php endif; ?>
+
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h4 class="fw-bold mb-0"><?= t('Kelola Booking') ?></h4>
     <div class="d-flex gap-2 flex-wrap">
@@ -281,7 +298,7 @@ require_once 'includes/admin-header.php';
                         <td><span class="badge bg-<?= $typeBadge[$btype] ?>"><?= $typeName[$btype] ?></span><?= !empty($b['booking_source']) && $b['booking_source'] === 'reseller' ? ' <span class="badge bg-success" title="Reseller booking"><i class="bi bi-shop"></i> Reseller</span>' : '' ?></td>
                         <td><small><?= !empty($b['date_label']) ? tglIndonesia($b['date_label']) : '-' ?></small></td>
                         <td><?= $b['qty_label'] ?></td>
-                        <td><?= formatRupiah($b['total_price']) ?></td>
+                        <td><?= formatRupiah($b['total_price']) ?><?= $btype === 'tour' && !empty($b['insurance_premi']) ? ' <span class="badge bg-success-subtle text-success" title="' . t('Asuransi perjalanan') . '"><i class="bi bi-shield-check"></i> +' . formatRupiah((float)$b['insurance_premi']) . '</span>' : '' ?></td>
                         <td data-testid="cogs-cell">
                             <small class="text-muted"><?= formatRupiah($b['cogs'] ?? 0) ?></small>
                             <form method="POST" action="bookings.php?update_status=<?= $b['id'] ?>&status=<?= e($b['status']) ?>&type=<?= $btype ?>" class="d-flex gap-1 mt-1" style="max-width:130px;">
@@ -305,6 +322,13 @@ require_once 'includes/admin-header.php';
                             <span class="badge bg-<?= in_array($b['status'], ['confirmed', 'paid'], true) ? 'success' : ($b['status'] === 'pending' ? 'warning text-dark' : ($b['status'] === 'refunded' ? 'info' : 'danger')) ?>">
                                 <?= ucfirst($b['status']) ?>
                             </span>
+                            <?php if ($btype === 'tour' && ($b['refund_status'] ?? 'none') === 'requested'): ?>
+                                <span class="badge bg-warning text-dark" data-testid="refund-requested-<?= $b['id'] ?>"><i class="bi bi-cash-coin"></i> Refund</span>
+                            <?php elseif ($btype === 'tour' && ($b['refund_status'] ?? 'none') === 'approved'): ?>
+                                <span class="badge bg-info"><?= t('Refund') ?> <?= formatRupiah((float)($b['refund_amount'] ?? 0)) ?></span>
+                            <?php elseif ($btype === 'tour' && ($b['refund_status'] ?? 'none') === 'rejected'): ?>
+                                <span class="badge bg-secondary">Refund <?= t('ditolak') ?></span>
+                            <?php endif; ?>
                             <?php if (!empty($b['admin_note'])): ?><small class="d-block text-muted" style="max-width:140px;" title="<?= e($b['admin_note']) ?>"><i class="bi bi-sticky"></i> <?= e(mb_strimwidth($b['admin_note'], 0, 24, '…')) ?></small><?php endif; ?>
                         </td>
                         <td class="table-action">
@@ -316,6 +340,11 @@ require_once 'includes/admin-header.php';
                                     <li><a class="dropdown-item text-primary" href="bookings.php?update_status=<?= $b['id'] ?>&status=paid&type=<?= $btype ?>" data-testid="mark-paid"><?= t('Paid') ?></a></li>
                                     <li><a class="dropdown-item text-warning" href="bookings.php?update_status=<?= $b['id'] ?>&status=refunded&type=<?= $btype ?>" data-testid="mark-refund"><?= t('Refunded') ?></a></li>
                                     <li><a class="dropdown-item text-danger" href="bookings.php?update_status=<?= $b['id'] ?>&status=cancelled&type=<?= $btype ?>"><?= t('Cancelled') ?></a></li>
+                                    <?php if ($btype === 'tour' && ($b['refund_status'] ?? 'none') === 'requested'): ?>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-success fw-bold" href="bookings.php?refund_action=approve&id=<?= $b['id'] ?>&type=tour" data-testid="refund-approve-<?= $b['id'] ?>" onclick="return confirm('<?= t('Setujui refund booking ini? Dana akan dikredit ke KlookCash user.') ?>')"><i class="bi bi-check-circle"></i> <?= t('Setujui Refund') ?></a></li>
+                                    <li><a class="dropdown-item text-danger" href="bookings.php?refund_action=reject&id=<?= $b['id'] ?>&type=tour" data-testid="refund-reject-<?= $b['id'] ?>" onclick="return confirm('<?= t('Tolak pengajuan refund ini?') ?>')"><i class="bi bi-x-circle"></i> <?= t('Tolak Refund') ?></a></li>
+                                    <?php endif; ?>
                                 </ul>
                             </div>
                             <button class="btn btn-sm btn-outline-secondary mt-1" data-bs-toggle="modal" data-bs-target="#noteModal<?= $b['id'] ?>" title="<?= t('Catatan internal') ?>"><i class="bi bi-sticky"></i></button>

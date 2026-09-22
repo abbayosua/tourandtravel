@@ -496,7 +496,9 @@ function e($string) {
  * Ambil data tours aktif dengan filter lanjutan + sort + pagination
  */
 function getTours($category = null, $search = null, $priceRange = null, $duration = null, $rating = null, $sort = null, $page = 1, $perPage = 12, $minPrice = null, $maxPrice = null, $departure = null) {
-    $sql = "SELECT * FROM tours WHERE is_active = 1";
+    // Join flash sale aktif untuk sort berdasarkan harga efektif
+    $fsJoin = " LEFT JOIN flash_sales fs ON fs.item_type = 'tour' AND fs.item_id = tours.id AND fs.is_active = 1 AND fs.starts_at <= NOW() AND fs.ends_at > NOW() AND (fs.stock_limit IS NULL OR fs.sold_count < fs.stock_limit)";
+    $sql = "SELECT tours.* FROM tours" . $fsJoin . " WHERE tours.is_active = 1";
     $countSql = "SELECT COUNT(*) FROM tours WHERE is_active = 1";
     $params = [];
     $countParams = [];
@@ -518,14 +520,13 @@ function getTours($category = null, $search = null, $priceRange = null, $duratio
     }
 
     if ($priceRange) {
-        // Convert IDR thresholds to stored currency (SGD/USD) using exchange rates
-        $rates = getExchangeRates();
-        $idrToTarget = fn($idrAmount) => $rates ? round($idrAmount / ($rates['IDR'] ?? 20566) * ($rates['SGD'] ?? 1.48), 2) : $idrAmount;
+        // Kolom price disimpan dalam mata uang per-baris (price_currency: IDR/SGD/USD),
+        // jadi threshold harus dibandingkan dalam currency masing-masing baris.
         $rangeSql = match($priceRange) {
-            '1' => " AND price < " . $idrToTarget(5000000),
-            '2' => " AND price BETWEEN " . $idrToTarget(5000000) . " AND " . $idrToTarget(10000000),
-            '3' => " AND price BETWEEN " . $idrToTarget(10000000) . " AND " . $idrToTarget(20000000),
-            '4' => " AND price > " . $idrToTarget(20000000),
+            '1' => " AND ((price_currency = 'IDR' AND price < 5000000) OR (price_currency = 'SGD' AND price < 244) OR (price_currency = 'USD' AND price < 182) OR (price_currency IS NULL OR price_currency = ''))",
+            '2' => " AND (((price_currency = 'IDR' AND price BETWEEN 5000000 AND 10000000) OR (price_currency = 'SGD' AND price BETWEEN 244 AND 488) OR (price_currency = 'USD' AND price BETWEEN 182 AND 365)))",
+            '3' => " AND (((price_currency = 'IDR' AND price BETWEEN 10000000 AND 20000000) OR (price_currency = 'SGD' AND price BETWEEN 488 AND 976) OR (price_currency = 'USD' AND price BETWEEN 365 AND 730)))",
+            '4' => " AND ((price_currency = 'IDR' AND price > 20000000) OR (price_currency = 'SGD' AND price > 976) OR (price_currency = 'USD' AND price > 730))",
             default => ''
         };
         $sql .= $rangeSql;
@@ -587,10 +588,11 @@ function getTours($category = null, $search = null, $priceRange = null, $duratio
         }
     }
 
-    // Sort
+    // Sort — gunakan harga efektif (flash sale bila aktif) agar urutan = harga yang dilihat user
+    $effPrice = "CASE WHEN fs.id IS NOT NULL THEN ROUND(tours.price * (100 - fs.discount_percent) / 100, 2) ELSE tours.price END";
     $sql .= match($sort) {
-        'termurah' => " ORDER BY price ASC",
-        'termahal' => " ORDER BY price DESC",
+        'termurah' => " ORDER BY $effPrice ASC",
+        'termahal' => " ORDER BY $effPrice DESC",
         'rating' => " ORDER BY rating DESC, total_reviews DESC",
         'popular' => " ORDER BY total_reviews DESC, rating DESC",
         default => " ORDER BY created_at DESC"

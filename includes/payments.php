@@ -167,6 +167,22 @@ function handleMidtransNotification(array $notif): bool {
 
     $newStatus = midtransMapStatus((string)($notif['transaction_status'] ?? 'pending'));
 
+    // Fase 2: transisi paid → expired/failed → ROLLBACK slot (di luar guard final-state)
+    if (in_array($payment['status'], ['paid'], true)
+        && in_array($newStatus, ['expired', 'failed'], true)
+        && $payment['booking_type'] === 'tour') {
+        require_once __DIR__ . '/availability.php';
+        releaseTourSlotsOnCancel((int)$payment['booking_id']);
+        $upd = db()->prepare("UPDATE payments SET status=?, raw_payload=? WHERE id=?");
+        $upd->execute([$newStatus, json_encode($notif, JSON_UNESCAPED_UNICODE), $payment['id']]);
+        $table = ['tour' => 'bookings'][$payment['booking_type']] ?? null;
+        if ($table) {
+            db()->prepare("UPDATE `$table` SET payment_status = ? WHERE id = ?")
+                ->execute([$newStatus, $payment['booking_id']]);
+        }
+        return true;
+    }
+
     // IDEMPOTEN: bila sudah final (paid/expired/failed), tidak ubah apa pun
     if (in_array($payment['status'], ['paid', 'expired', 'failed'], true)) {
         return true;
@@ -188,11 +204,16 @@ function handleMidtransNotification(array $notif): bool {
         $b->execute([$payment['booking_id']]);
         if ($bk = $b->fetch()) {
             if ($newStatus === 'paid') {
+                // Fase 4: sertakan info premi asuransi di invoice jika ada
+                require_once __DIR__ . '/insurance.php';
+                $insPremi = getInsuranceAddon('tour', (int)$payment['booking_id']);
                 sendEmailTemplate($bk['email'], 'invoice', [
                     'order_id' => $orderId,
                     'amount' => formatRupiah($payment['gross_amount']),
                     'booking_code' => $bk['booking_code'],
                     'name' => $bk['name'],
+                    'insurance_premi' => $insPremi,
+                    'insurance_amount' => $insPremi > 0 ? formatRupiah($insPremi) : '',
                     'subject' => 'Pembayaran Diterima - ' . $bk['booking_code'],
                 ]);
             } else {
@@ -228,6 +249,17 @@ function handleMidtransNotification(array $notif): bool {
     if ($table) {
         db()->prepare("UPDATE `$table` SET payment_status = ? WHERE id = ?")
             ->execute([$newStatus, $payment['booking_id']]);
+    }
+
+    // Fase 2: deduksi slot ATOMIK saat tour booking dibayar (idempotent via availability_ledger)
+    if ($newStatus === 'paid' && $payment['booking_type'] === 'tour') {
+        require_once __DIR__ . '/availability.php';
+        deductTourSlotsOnPaid((int)$payment['booking_id']);
+    }
+    // Fase 2: kembalikan slot bila payment gagal permanen setelah sempat paid
+    if (in_array($newStatus, ['failed', 'expired'], true) && $payment['booking_type'] === 'tour') {
+        require_once __DIR__ . '/availability.php';
+        releaseTourSlotsOnCancel((int)$payment['booking_id']);
     }
 
     // Loyalty points: earn otomatis saat paid (idempotent)

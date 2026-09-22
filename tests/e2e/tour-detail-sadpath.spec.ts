@@ -13,9 +13,10 @@ test.describe('Tour Detail - sad path (404 handling)', () => {
     expect(body).not.toMatch(PHP_ERROR);
     expect(body).toMatch(/Tour tidak ditemukan|Tour Tidak Ditemukan|not found/i);
 
-    // Tombol kembali ke katalog
-    await expect(page.locator('a:has-text("Kembali")')).toBeVisible();
-    const href = await page.locator('a:has-text("Kembali")').getAttribute('href');
+    // Tombol kembali ke katalog (label tergantung bahasa: ID “Kembali…” / EN “Back…”)
+    const backLink = page.locator('a:has-text("Kembali"), a:has-text("Back to")').first();
+    await expect(backLink).toBeVisible();
+    const href = await backLink.getAttribute('href');
     expect(href).toContain('tours.php');
   });
 

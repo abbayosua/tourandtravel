@@ -71,6 +71,43 @@ test.describe('Reseller Booking', () => {
     expect(await resellerBadge.textContent()).toContain('Reseller');
   });
 
+  test('TC-707b deduksi = harga_reseller × pax TEPAT + booking.total_price sama', async ({ page }) => {
+    await loginReseller(page);
+    const balBefore = parseFloat(execSync(
+      `mysql -u root tourandtravel -N -e "SELECT reseller_balance FROM users WHERE email = '${EMAIL}'"`,
+      { encoding: 'utf-8' }
+    ).trim());
+
+    await page.goto(`${BASE}/reseller-booking.php?tour_id=${tourId}`, { waitUntil: 'load' });
+    if (tourDateId) await page.selectOption('select[name="tour_date_id"]', String(tourDateId));
+    await page.fill('input[name="passengers"]', '2');
+    await page.fill('input[name="name"]', 'E2E Reseller Book');
+    await page.fill('input[name="email"]', EMAIL);
+    await page.fill('input[name="phone"]', '081234567890');
+    await page.click('button[type="submit"]');
+    await page.waitForLoadState('networkidle');
+
+    const body2 = await page.textContent('body');
+    expect(body2).not.toMatch(PHP_ERROR);
+    const hasSuccess = body2.includes('Booking berhasil') || body2.includes('kode booking');
+    expect(hasSuccess).toBeTruthy();
+
+    // AKUNTANSI TEPAT: balance dipotong persis 500000 × 2 = 1.000.000
+    const balAfter = parseFloat(execSync(
+      `mysql -u root tourandtravel -N -e "SELECT reseller_balance FROM users WHERE email = '${EMAIL}'"`,
+      { encoding: 'utf-8' }
+    ).trim());
+    expect(balBefore - balAfter).toBe(1000000);
+
+    // booking row: total_price = 1.000.000 TEPAT, booking_source=reseller
+    const row = execSync(
+      `mysql -u root tourandtravel -N -e "SELECT total_price, booking_source FROM bookings WHERE user_id = (SELECT id FROM users WHERE email = '${EMAIL}') AND booking_source='reseller' ORDER BY id DESC LIMIT 1"`,
+      { encoding: 'utf-8' }
+    ).trim().split('	');
+    expect(parseFloat(row[0])).toBe(1000000);
+    expect(row[1]).toBe('reseller');
+  });
+
   test('reseller can book via reseller-booking page', async ({ page }) => {
     await loginReseller(page);
 

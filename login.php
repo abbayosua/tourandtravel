@@ -2,6 +2,7 @@
 require_once 'includes/config.php';
 require_once 'includes/db.php';
 require_once 'includes/functions.php';
+require_once 'includes/auth.php';
 
 $error = '';
 
@@ -14,9 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $stmt->fetch();
 
     if ($user && password_verify($password, $user['password_hash'])) {
-        session_regenerate_id(true);
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['user_name'] = $user['name'];
+        loginUserById($user['id']);
         $redirect = $_GET['redirect'] ?? 'index.php';
         if (!preg_match('#^/[^/]#', $redirect) || strpos($redirect, '//') !== false) {
             $redirect = 'index.php';
@@ -60,6 +59,7 @@ require_once 'includes/header-klook.php';
                             </div>
                             <button type="submit" class="btn btn-primary w-100 fw-semibold py-2"><?= t('Masuk') ?></button>
                         </form>
+                        <?php require_once 'includes/components/google-signin.php'; ?>
                         <p class="text-center mt-3 small">
                             <?= t('Belum punya akun?') ?> <a href="register.php" class="text-decoration-none fw-semibold"><?= t('Daftar') ?></a>
                         </p>

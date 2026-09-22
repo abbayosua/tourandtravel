@@ -27,3 +27,9 @@ if (!isset($_SESSION['lang']) && isset($_COOKIE['lang'])) {
     $_SESSION['lang'] = $_COOKIE['lang'];
 }
 ?>
+// Google OAuth (Fase 1 social login) — kosongkan untuk menyembunyikan tombol Google
+define('GOOGLE_CLIENT_ID', '');
+
+// PayPal (Backlog #7) — kosongkan untuk disable
+define('PAYPAL_CLIENT_ID', '');
+define('PAYPAL_SECRET', '');

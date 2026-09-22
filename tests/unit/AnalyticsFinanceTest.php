@@ -42,7 +42,9 @@ function testAnalyticsSalesUnionNormalizesAllVerticals(): void {
         $need = ['id','booking_code','name','email','total_price','cogs','status','created_at','btype','item_title','qty_label'];
         assertEquals([], array_values(array_diff($need, array_keys($mine[0]))), 'kolom ternormalisasi lengkap');
         assertEquals('tour', $mine[0]['btype'], 'btype = tour');
-        assertTrue((float)$mine[0]['cogs'] > 0, 'cogs terbawa');
+        // cogs: cek pada booking -A (cogs=400000); mine[0] bisa -B/-C karena created_at sama menit
+        $rowA = array_values(array_filter($mine, fn($r) => str_ends_with((string)$r['booking_code'], '-A')))[0] ?? null;
+        assertTrue($rowA !== null && (float)$rowA['cogs'] === 400000.0, 'cogs terbawa');
 
         // filter status hanya confirmed (booking -A saja; -B kemarin masuk range -1d juga, jadi assert >= 1 dan semua confirmed)
         $conf = analyticsSalesUnion(date('Y-m-d', strtotime('-1 day')), date('Y-m-d'), null, 'confirmed');

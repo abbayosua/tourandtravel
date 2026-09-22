@@ -133,3 +133,39 @@ function duffelFormatPrice($amount, $currency) {
     $idr = (float)$amount * $rate;
     return formatRupiah($idr) . " <small class='text-muted' style='font-size:11px'>($currency " . number_format((float)$amount, 2) . ")</small>";
 }
+
+/**
+ * Backlog #6: ambil ancillary services (seat/baggage) untuk sebuah offer.
+ * Return: ['services' => [...], 'error' => ...] — services kosong bila tidak tersedia.
+ * Normalisasi tiap service: id, type (seat|baggage), name, total_amount, currency, metadata.
+ */
+function duffelGetOfferServices(string $offerId): array {
+    $res = duffelRequest('GET', "/air/offers/$offerId/services");
+    if (isset($res['error'])) return ['services' => [], 'error' => $res['error']];
+    $raw = $res['data'] ?? [];
+    $services = [];
+    foreach ($raw as $s) {
+        $services[] = [
+            'id' => $s['id'] ?? '',
+            'type' => $s['service_type'] ?? $s['type'] ?? 'other',
+            'name' => $s['name'] ?? ($s['metadata']['label'] ?? 'Service'),
+            'total_amount' => (float)($s['total_amount'] ?? 0),
+            'total_currency' => $s['total_currency'] ?? 'IDR',
+            'metadata' => $s['metadata'] ?? [],
+        ];
+    }
+    return ['services' => $services, 'error' => null];
+}
+
+/**
+ * Tambah services ke order Duffel (seat/baggage yang sudah dipilih user).
+ * $serviceIds: array id service. Return order terbaru atau error.
+ */
+function duffelAddServicesToOrder(string $orderId, array $serviceIds): array {
+    if (empty($serviceIds)) return ['order' => null, 'error' => null];
+    $res = duffelRequest('POST', "/air/orders/$orderId/services", [
+        'data' => ['services' => array_values($serviceIds)]
+    ]);
+    if (isset($res['error'])) return ['order' => null, 'error' => $res['error']];
+    return ['order' => $res['data'], 'error' => null];
+}

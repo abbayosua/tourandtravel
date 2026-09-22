@@ -2,6 +2,7 @@
 require_once 'includes/config.php';
 require_once 'includes/db.php';
 require_once 'includes/functions.php';
+require_once 'includes/auth.php';
 
 $error = '';
 
@@ -58,8 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             session_regenerate_id(true);
-            $_SESSION['user_id'] = $userId;
-            $_SESSION['user_name'] = $name;
+            loginUserById($userId);
             header('Location: index.php');
             exit;
         }
@@ -112,6 +112,7 @@ require_once 'includes/header-klook.php';
                             </div>
                             <button type="submit" class="btn btn-primary w-100 fw-semibold py-2"><?= t('Daftar') ?></button>
                         </form>
+                        <?php require_once 'includes/components/google-signin.php'; ?>
                         <p class="text-center mt-3 small">
                             <?= t('Sudah punya akun?') ?> <a href="login.php" class="text-decoration-none fw-semibold"><?= t('Masuk') ?></a>
                         </p>

@@ -73,3 +73,25 @@ test.describe('Reseller Register', () => {
     }
   });
 });
+
+test.describe('Reseller Register - tambahan akuntansi', () => {
+  test('TC-701b reseller baru balance = 0.00 TEPAT', async ({ page }) => {
+    const email2 = `bal_${Date.now()}@example.com`;
+    await page.goto(`${BASE}/register.php`, { waitUntil: 'load' });
+    await page.fill('input[name="name"]', 'Balance Zero');
+    await page.fill('input[name="email"]', email2);
+    await page.fill('input[name="phone"]', '08129990000');
+    await page.fill('input[name="password"]', 'password123');
+    await page.fill('input[name="confirm_password"]', 'password123');
+    await page.check('input[name="as_reseller"]');
+    await page.click('button[type="submit"]');
+    await page.waitForLoadState('networkidle');
+    expect(page.url()).toContain('index.php');
+
+    const result = execSync(
+      `mysql -u root tourandtravel -N -e "SELECT role, reseller_balance FROM users WHERE email = '${email2}'"`,
+      { encoding: 'utf-8' }
+    ).trim();
+    expect(result).toBe('reseller\t0.00');
+  });
+});

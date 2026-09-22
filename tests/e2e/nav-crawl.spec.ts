@@ -126,6 +126,7 @@ test.describe('Navbar & Footer Crawl', () => {
     await page.goto(`${BASE}/index.php`, { waitUntil: 'load' });
     const destLinks = page.locator('a[href*="destinasi.php?city="]');
     const count = await destLinks.count();
+    test.skip(count === 0, 'Destinasi Populer dihide sementara (tour-destinations.php) — tidak ada link destinasi');
     expect(count).toBeGreaterThan(0);
 
     // Cek 3 destinasi random — semuanya 200

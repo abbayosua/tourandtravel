@@ -2,6 +2,8 @@
 require_once 'includes/config.php';
 require_once 'includes/db.php';
 require_once 'includes/functions.php';
+require_once 'includes/hotelapi.php';
+require_once 'includes/components/live-hotel-card.php';
 
 $pageTitle = 'Hotel';
 $city = $_GET['city'] ?? '';
@@ -55,6 +57,33 @@ $sql .= " LIMIT $perPage OFFSET " . (($currentPage - 1) * $perPage);
 $hotels = db()->prepare($sql);
 $hotels->execute($params);
 $hotels = $hotels->fetchAll();
+
+// Live hotel API (Booking.com/OYO/NusaTrip) — primary saat kota dicari.
+$usingLive = false;
+$liveHotels = [];
+$liveSource = null;
+$liveError = null;
+$liveEnabled = function_exists('hotelApiEnabled') && hotelApiEnabled();
+if ($city !== '' && $liveEnabled) {
+    $live = hotelApiSearch($city, [
+        'stars' => $stars,
+        'min_price' => $minPrice,
+        'max_price' => $maxPrice,
+        'sort' => $sort,
+        'limit' => 60,
+        'checkin' => $checkin,
+        'checkout' => $checkout,
+        'guests' => $guests,
+    ]);
+    if (!empty($live['hotels'])) {
+        $liveHotels = $live['hotels'];
+        $usingLive = true;
+        $liveSource = $live['source'] ?? 'live';
+    } else {
+        $liveError = $live['error'] ?? null;
+    }
+}
+$displayHotels = $usingLive ? $liveHotels : $hotels;
 
 $hotelWishlistIds = isLoggedIn() ? (getUserWishlistItems($_SESSION['user_id'])['hotel'] ?? []) : [];
 require_once 'includes/components/breadcrumb.php';
@@ -222,15 +251,18 @@ require_once 'includes/header-klook.php';
 
                 <!-- Actual Content (hidden initially, shown after load) -->
                 <div id="hotelContent" style="display: none;">
-                <?php if (count($hotels) > 0): ?>
+                <?php if (count($displayHotels) > 0): ?>
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <small class="text-muted"><?= count($hotels) ?> <?= t('hotel ditemukan') ?></small>
+                    <small class="text-muted"><?= count($displayHotels) ?> <?= t('hotel ditemukan') ?><?php if ($usingLive): ?> · <span class="badge bg-success-subtle text-success-emphasis"><?= t('Harga live') ?> (<?= e($liveSource) ?>)</span><?php endif; ?></small>
                     <div class="d-flex gap-1">
                         <a href="?<?= e(http_build_query(array_merge($_GET, ['sort' => 'price']))) ?>" class="btn btn-sm <?= $sort === 'price' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Harga Termurah') ?></a>
                         <a href="?<?= e(http_build_query(array_merge($_GET, ['sort' => 'price_desc']))) ?>" class="btn btn-sm <?= $sort === 'price_desc' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Harga Termahal') ?></a>
                         <a href="?<?= e(http_build_query(array_merge($_GET, ['sort' => 'stars']))) ?>" class="btn btn-sm <?= $sort === 'stars' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Bintang Tertinggi') ?></a>
                     </div>
                 </div>
+                <?php if ($usingLive): ?>
+                    <?php foreach ($liveHotels as $lh) renderLiveHotelCard($lh, $city, $checkin, $checkout, $guests); ?>
+                <?php else: ?>
                 <?php foreach ($hotels as $h):
                     $amenities = array_filter(array_map('trim', explode(',', $h['amenities'] ?? '')));
                     $linkParams = 'slug=' . e($h['slug']) . '&checkin=' . urlencode($checkin ?: date('Y-m-d')) . '&checkout=' . urlencode($checkout ?: date('Y-m-d', strtotime('+2 days'))) . '&guests=' . $guests;
@@ -286,6 +318,7 @@ require_once 'includes/header-klook.php';
                     </div>
                 </div>
                 <?php endforeach; ?>
+                <?php endif; ?>
                 <?php else: ?>
                 <div class="text-center py-5">
                     <i class="bi bi-building fs-1 text-muted"></i>
@@ -294,7 +327,7 @@ require_once 'includes/header-klook.php';
                 </div>
                 <?php endif; ?>
                 </div>
-                <?php if ($lastPage > $currentPage): ?>
+                <?php if (!$usingLive && $lastPage > $currentPage): ?>
                 <div class="load-more-trigger text-center py-4" data-page="<?= $currentPage ?>" data-last-page="<?= $lastPage ?>" data-testid="hotel-load-more">
                     <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">Loading...</span>
@@ -315,9 +348,13 @@ require_once 'includes/header-klook.php';
                 <?php
                 require_once 'includes/components/map-leaflet.php';
                 $mapPoints = [];
-                foreach ($hotels as $h) {
-                    if ($h['lat'] === null || $h['lng'] === null) continue;
-                    $mapPoints[] = ['lat' => (float)$h['lat'], 'lng' => (float)$h['lng'], 'label' => tContent($h, 'name'), 'price' => formatRupiah($h['price_per_night']), 'link' => 'hotel-detail.php?slug=' . urlencode($h['slug'])];
+                foreach ($displayHotels as $h) {
+                    if (empty($h['lat']) || empty($h['lng'])) continue;
+                    if ($usingLive) {
+                        $mapPoints[] = ['lat' => (float)$h['lat'], 'lng' => (float)$h['lng'], 'label' => (string)($h['name'] ?? ''), 'price' => (string)($h['price_formatted'] ?? ''), 'link' => 'hotel-detail.php?' . http_build_query(['live' => 1, 'src' => $h['source'] ?? '', 'city' => $city, 'id' => $h['external_id'] ?? ''])];
+                    } else {
+                        $mapPoints[] = ['lat' => (float)$h['lat'], 'lng' => (float)$h['lng'], 'label' => tContent($h, 'name'), 'price' => formatRupiah($h['price_per_night']), 'link' => 'hotel-detail.php?slug=' . urlencode($h['slug'])];
+                    }
                 }
                 renderMap('hotelsMap', $mapPoints, -2.5, 118.0, 5);
                 ?>
