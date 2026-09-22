@@ -117,3 +117,20 @@ function testHotelApiOyoSlugLowercasesCity() {
     $slug = trim(preg_replace('/[^a-z0-9]+/', '-', strtolower(trim('Jakarta'))), '-');
     assertSame('jakarta', $slug);
 }
+
+function testNusaPhoneNormalizesToCcSpace() {
+    assertSame('62 8517488415', nusaPhone('08517488415', '62'));
+    assertSame('62 8517488415', nusaPhone('628517488415', '62'));
+    assertSame('62 8517488415', nusaPhone('+62 8517488415', '62'));
+    assertSame('62 8517488415', nusaPhone('62 8517488415', '62'));
+    assertSame('65 81234567', nusaPhone('81234567', '65'));
+    assertSame('65 81234567', nusaPhone('+65 81234567', '62'));
+    assertSame('86 13800138000', nusaPhone('13800138000', '86'));
+    assertSame('86 13800138000', nusaPhone('+86 13800138000', '62'));
+    assertSame('1 2025550123', nusaPhone('+1 2025550123', '62'));
+    assertSame('', nusaPhone('', '62'));
+    $c = json_decode(nusaContact('MR', 'A', 'B', 'a@b.com', '08517488415', false, '62'), true);
+    assertSame('62 8517488415', $c['phoneNo']);
+    $c = json_decode(nusaContact('MR', 'A', 'B', 'a@b.com', '81234567', false, '65'), true);
+    assertSame('65 81234567', $c['phoneNo']);
+}

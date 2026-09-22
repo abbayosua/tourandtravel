@@ -74,9 +74,10 @@ if ($step === 'submit' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($b['cartSession'])) { $err = 'Sesi booking kedaluwarsa. Ulangi dari halaman hotel.'; $step = 'form'; }
     else {
         $payMethod = (string)($_POST['pay_method'] ?? 'cc');
+        $phoneCc = (string)($_POST['phone_cc'] ?? '62');
         $contact = nusaContact((string)($_POST['title'] ?? 'MR'), trim((string)($_POST['first_name'] ?? '')),
             trim((string)($_POST['last_name'] ?? '')), trim((string)($_POST['email'] ?? '')),
-            trim((string)($_POST['phone'] ?? '')), false);
+            trim((string)($_POST['phone'] ?? '')), false, $phoneCc);
         $items = nusaItems((string)($_POST['title'] ?? 'MR'), trim((string)($_POST['first_name'] ?? '')),
             trim((string)($_POST['last_name'] ?? '')), $b['bookingTime']);
         if ($payMethod === 'cc') {
@@ -177,7 +178,18 @@ require_once 'includes/header-shared.php';
             <div class="col-4"><input name="first_name" class="form-control" placeholder="Nama depan" required></div>
             <div class="col-5"><input name="last_name" class="form-control" placeholder="Nama belakang" required></div>
             <div class="col-6"><input name="email" type="email" class="form-control" placeholder="Email" required></div>
-            <div class="col-6"><input name="phone" class="form-control" placeholder="62 812..." required></div>
+            <div class="col-6">
+                <label class="form-label small text-muted mb-1">Nomor HP (pilih kode negara, tulis nomor lokal saja)</label>
+                <div class="input-group">
+                    <select name="phone_cc" class="form-select" style="max-width:150px" data-testid="nusa-phone-cc">
+                        <?php foreach (nusaCountryCodes() as $cc => $label): ?>
+                            <option value="<?= e((string)$cc) ?>" <?= (string)$cc === '62' ? 'selected' : '' ?>><?= e($label) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    <input name="phone" class="form-control" placeholder="8517488415" inputmode="tel" required data-testid="nusa-phone">
+                </div>
+                <small class="text-muted" style="font-size:11px;">Contoh: pilih +62 lalu tulis 08517488415 — otomatis dikirim "62 8517488415"</small>
+            </div>
         </div>
         <h6 class="fw-semibold">Pembayaran (langsung ke NusaTrip)</h6>
         <div class="mb-2">

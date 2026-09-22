@@ -227,10 +227,69 @@ function nusaDeviceInfo(string $lang = 'en'): string {
         'app_version' => '1.1.4081', 'app_lang' => $lang], JSON_UNESCAPED_SLASHES);
 }
 
+/** Daftar kode negara untuk dropdown telepon (cc => label). */
+function nusaCountryCodes(): array {
+    return ['62' => 'Indonesia (+62)', '65' => 'Singapore (+65)', '60' => 'Malaysia (+60)', '66' => 'Thailand (+66)', '63' => 'Philippines (+63)', '84' => 'Vietnam (+84)', '86' => 'China (+86)', '852' => 'Hong Kong (+852)', '886' => 'Taiwan (+886)', '81' => 'Japan (+81)', '82' => 'South Korea (+82)', '91' => 'India (+91)', '61' => 'Australia (+61)', '64' => 'New Zealand (+64)', '1' => 'USA/Canada (+1)', '44' => 'UK (+44)', '49' => 'Germany (+49)', '33' => 'France (+33)', '31' => 'Netherlands (+31)', '971' => 'UAE (+971)', '966' => 'Saudi (+966)', '974' => 'Qatar (+974)'];
+}
+
+/** Deteksi kode negara dari digit internasional (tanpa +/00), longest-prefix dulu. */
+function nusaDetectCc(string $digits): ?array {
+    static $known = null;
+    if ($known === null) {
+        $known = array_keys(nusaCountryCodes());
+        foreach (['7', '20', '27', '30', '34', '36', '39', '40', '41', '43', '45', '46', '47', '48', '51', '52', '53', '54', '55', '56', '57', '58', '90', '92', '93', '94', '95', '98', '212', '213', '216', '218', '220', '221', '222', '223', '224', '225', '226', '227', '228', '229', '230', '231', '232', '233', '234', '235', '236', '237', '238', '239', '240', '241', '242', '243', '244', '245', '246', '247', '248', '249', '250', '251', '252', '253', '254', '255', '256', '257', '258', '260', '261', '262', '263', '264', '265', '266', '267', '268', '269', '290', '291', '297', '298', '299', '350', '351', '354', '355', '356', '357', '358', '359', '370', '371', '372', '373', '374', '375', '376', '377', '380', '381', '382', '383', '385', '386', '387', '389', '420', '421', '423', '853', '855', '856', '880', '960', '961', '962', '963', '964', '965', '967', '968', '970', '972', '973', '975', '976', '977', '992', '993', '994', '995', '996', '998'] as $c) $known[] = (string)$c;
+        usort($known, fn($a, $b) => strlen((string)$b) <=> strlen((string)$a) ?: strcmp((string)$a, (string)$b));
+    }
+    foreach ($known as $c) {
+        $c = (string)$c;
+        if (str_starts_with($digits, $c) && strlen($digits) - strlen($c) >= 7) return [$c, substr($digits, strlen($c))];
+    }
+    return null;
+}
+
+/** Normalisasi nomor HP ke format NusaTrip "CC<spasi>nomor" (cth "62 8517488415", "65 81234567", "86 13800138000").
+ * Nomor diawali +/00 = internasional → kode negara dibaca dari nomornya (dropdown diabaikan).
+ * Nomor lokal (tanpa +/00) → pakai kode dari dropdown. Idempoten bila sudah "CC nomor". */
+function nusaPhone(string $raw, string $cc = '62'): string {
+    $raw = trim($raw);
+    $cc = preg_replace('/\D/', '', $cc ?: '62') ?: '62';
+    if ($raw === '') return '';
+    if (preg_match('/^(\d{1,4})\s+(.+)$/', $raw, $m)) {
+        $c = ltrim((string)preg_replace('/\D/', '', $m[1]), '0');
+        $n = ltrim((string)preg_replace('/\D/', '', $m[2]), '0');
+        if ($c === '') $c = $cc;
+        if ($c !== '' && $n !== '') return $c . ' ' . $n;
+    }
+    $isIntl = (bool)preg_match('/^\s*(\+|00)/', $raw);
+    $digits = (string)preg_replace('/\D/', '', $raw);
+    if ($digits === '') return '';
+    if ($isIntl) {
+        if (str_starts_with($digits, '00')) $digits = substr($digits, 2);
+        $hit = nusaDetectCc($digits);
+        if ($hit !== null) return $hit[0] . ' ' . ltrim($hit[1], '0');
+        return strlen($digits) > 9 ? substr($digits, 0, 2) . ' ' . substr($digits, 2) : $cc . ' ' . $digits;
+    }
+    $digits = ltrim($digits, '0');
+    if ($digits === '') return $cc;
+    if (str_starts_with($digits, $cc)) {
+        $rest = substr($digits, strlen($cc));
+        $ok = strlen($rest) >= 7;
+        if (strlen($cc) === 1) $ok = $ok && strlen($digits) >= 11;
+        if ($ok) {
+            $rest = ltrim($rest, '0');
+            if ($rest !== '') $digits = $rest;
+        }
+    } else {
+        $digits = ltrim($digits, '0');
+    }
+    if ($digits === '') return $cc;
+    return $cc . ' ' . $digits;
+}
+
 /** Contact guest: tanpa customerId. checkoutPass hanya bila createAccount=true. */
-function nusaContact(string $title, string $first, string $last, string $email, string $phone, bool $withPass = false): string {
+function nusaContact(string $title, string $first, string $last, string $email, string $phone, bool $withPass = false, string $phoneCc = '62'): string {
     $c = ['title' => $title, 'firstName' => $first, 'lastName' => $last,
-        'email' => $email, 'verifyEmail' => $email, 'phoneNo' => $phone,
+        'email' => $email, 'verifyEmail' => $email, 'phoneNo' => nusaPhone($phone, $phoneCc),
         'nationality' => 'ID', 'contactId' => '0-0'];
     if ($withPass) { $c['checkoutPass'] = '123qwe!@#QWE'; $c['checkoutVpass'] = '123qwe!@#QWE'; }
     return json_encode($c, JSON_UNESCAPED_SLASHES);

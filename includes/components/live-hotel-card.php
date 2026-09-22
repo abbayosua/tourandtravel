@@ -53,9 +53,6 @@ function renderLiveHotelCard(array $h, string $city = '', string $checkin = '', 
                     </div>
                     <div class="mt-auto pt-2 d-flex gap-2">
                         <a href="hotel-detail.php?<?= e($detailParams) ?>" class="btn btn-primary rounded-pill px-4 py-1" style="font-size: 13px;"><?= t('Lihat') ?></a>
-                        <?php if (!empty($h['url'])): ?>
-                            <a href="<?= e($h['url']) ?>" target="_blank" rel="noopener nofollow" class="btn btn-outline-secondary rounded-pill px-3 py-1" style="font-size: 13px;"><?= t('Sumber') ?></a>
-                        <?php endif; ?>
                     </div>
                 </div>
             </div>
