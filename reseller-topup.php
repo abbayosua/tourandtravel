@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $history = getResellerTopupHistory($userId, 20);
 
 $pageTitle = t('Topup Saldo Reseller');
-require_once 'includes/header-klook.php';
+require_once 'includes/header-shared.php';
 ?>
 
 <section class="py-4">
@@ -139,4 +139,4 @@ require_once 'includes/header-klook.php';
     </div>
 </section>
 
-<?php require_once 'includes/footer-klook.php'; ?>
+<?php require_once 'includes/footer-shared.php'; ?>

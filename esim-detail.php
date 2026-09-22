@@ -11,9 +11,9 @@ $product = $stmt->fetch();
 if (!$product) {
     header('HTTP/1.0 404 Not Found');
     $pageTitle = t('Produk Tidak Ditemukan');
-    require_once 'includes/header-klook.php';
+    require_once 'includes/header-shared.php';
     echo '<div class="container py-5 text-center"><h3>' . t('Produk tidak ditemukan') . '</h3><a href="esim.php" class="btn btn-primary mt-3">' . t('Kembali ke Katalog') . '</a></div>';
-    require_once 'includes/footer-klook.php';
+    require_once 'includes/footer-shared.php';
     exit;
 }
 
@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
 }
 
 require_once 'includes/components/breadcrumb.php';
-require_once 'includes/header-klook.php';
+require_once 'includes/header-shared.php';
 ?>
 <div class="container py-4">
     <?php renderBreadcrumb([
@@ -136,4 +136,4 @@ require_once 'includes/header-klook.php';
         </div>
     </div>
 </div>
-<?php require_once 'includes/footer-klook.php'; ?>
+<?php require_once 'includes/footer-shared.php'; ?>

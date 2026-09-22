@@ -174,7 +174,7 @@ if (!empty($booking['user_id']) && in_array($btype, ['flight', 'hotel'], true)) 
 }
 
 $pageTitle = t('Booking Berhasil');
-require_once 'includes/header-klook.php';
+require_once 'includes/header-shared.php';
 ?>
 <div class="container py-5">
     <div class="row justify-content-center">
@@ -324,7 +324,7 @@ require_once 'includes/header-klook.php';
     100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
 }
 </style>
-<?php require_once 'includes/footer-klook.php'; ?>
+<?php require_once 'includes/footer-shared.php'; ?>
 <script>
 (function () {
     var btn = document.getElementById('payNowBtn');

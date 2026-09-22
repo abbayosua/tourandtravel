@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $pageTitle = t('Booking Reseller') . ' — ' . e($tour['title']);
-require_once 'includes/header-klook.php';
+require_once 'includes/header-shared.php';
 ?>
 
 <section class="py-4">
@@ -197,4 +197,4 @@ require_once 'includes/header-klook.php';
     </div>
 </section>
 
-<?php require_once 'includes/footer-klook.php'; ?>
+<?php require_once 'includes/footer-shared.php'; ?>

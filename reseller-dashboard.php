@@ -33,7 +33,7 @@ $stmt->execute([$userId]);
 $totalSpent = (float)$stmt->fetchColumn();
 
 $pageTitle = t('Dashboard Reseller');
-require_once 'includes/header-klook.php';
+require_once 'includes/header-shared.php';
 ?>
 
 <section class="py-4">
@@ -148,4 +148,4 @@ require_once 'includes/header-klook.php';
     </div>
 </section>
 
-<?php require_once 'includes/footer-klook.php'; ?>
+<?php require_once 'includes/footer-shared.php'; ?>

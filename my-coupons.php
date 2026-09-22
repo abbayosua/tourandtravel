@@ -12,7 +12,7 @@ $userId = (int)$_SESSION['user_id'];
 $active = db()->query("SELECT * FROM promo_codes WHERE is_active = 1 AND valid_until >= CURDATE() ORDER BY valid_until ASC")->fetchAll();
 $expired = db()->query("SELECT * FROM promo_codes WHERE is_active = 1 AND valid_until < CURDATE() ORDER BY valid_until DESC")->fetchAll();
 
-require_once 'includes/header-klook.php';
+require_once 'includes/header-shared.php';
 ?>
 <section class="py-4">
     <div class="container">
@@ -57,4 +57,4 @@ require_once 'includes/header-klook.php';
         <?php endif; ?>
     </div>
 </section>
-<?php require_once 'includes/footer-klook.php'; ?>
+<?php require_once 'includes/footer-shared.php'; ?>

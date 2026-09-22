@@ -11,9 +11,9 @@ $collection = $stmt->fetch();
 if (!$collection) {
     header('HTTP/1.0 404 Not Found');
     $pageTitle = t('Collection Tidak Ditemukan');
-    require_once 'includes/header-klook.php';
+    require_once 'includes/header-shared.php';
     echo '<div class="container py-5 text-center"><h3>' . t('Collection tidak ditemukan') . '</h3><a href="index.php" class="btn btn-primary mt-3">' . t('Kembali ke Beranda') . '</a></div>';
-    require_once 'includes/footer-klook.php';
+    require_once 'includes/footer-shared.php';
     exit;
 }
 
@@ -47,7 +47,7 @@ if (isLoggedIn()) {
 
 require_once 'includes/components/tour-card.php';
 require_once 'includes/components/breadcrumb.php';
-require_once 'includes/header-klook.php';
+require_once 'includes/header-shared.php';
 ?>
 <section class="py-4">
     <div class="container">
@@ -84,4 +84,4 @@ require_once 'includes/header-klook.php';
         <?php endif; ?>
     </div>
 </section>
-<?php require_once 'includes/footer-klook.php'; ?>
+<?php require_once 'includes/footer-shared.php'; ?>

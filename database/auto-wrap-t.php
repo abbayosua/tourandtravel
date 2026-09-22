@@ -7,8 +7,8 @@ $files = [
     __DIR__ . '/../index.php',
     __DIR__ . '/../tour-detail.php',
     __DIR__ . '/../tours.php',
-    __DIR__ . '/../includes/header.php',
-    __DIR__ . '/../includes/footer.php',
+    __DIR__ . '/../includes/header-shared.php',
+    __DIR__ . '/../includes/footer-shared.php',
 ];
 
 $stmt = db()->prepare("SELECT `key` FROM translations WHERE lang = 'en'");

@@ -50,7 +50,7 @@ if (!empty($_GET['live'])) {
             }
         }
         require_once 'includes/components/breadcrumb.php';
-        require_once 'includes/header-klook.php';
+        require_once 'includes/header-shared.php';
         ?>
         <section class="py-4 bg-light">
             <div class="container">
@@ -174,7 +174,7 @@ if (!empty($_GET['live'])) {
             </div>
         </section>
         <?php
-        require_once 'includes/footer-klook.php';
+        require_once 'includes/footer-shared.php';
         exit;
     }
 
@@ -286,7 +286,7 @@ $jsonLd = seoHotel($hotel);
 // SEO
 $metaDesc = mb_substr(trim(strip_tags((string)tContent($hotel, 'description'))), 0, 160);
 $jsonLd = seoHotel($hotel);
-require_once 'includes/header-klook.php';
+require_once 'includes/header-shared.php';
 ?>
 <section class="py-4 bg-light">
     <div class="container">
@@ -871,4 +871,4 @@ require_once 'includes/header-klook.php';
     </div>
 </section>
 <?php $siteFocus = 'hotel'; require_once 'includes/homepage/trust.php'; ?>
-<?php require_once 'includes/footer-klook.php'; ?>
+<?php require_once 'includes/footer-shared.php'; ?>

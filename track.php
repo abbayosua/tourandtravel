@@ -18,7 +18,7 @@ $booking = $stmt->fetch();
 
 $pageTitle = $booking ? t('Tracking') . ': ' . $booking['booking_code'] : t('Tracking Booking');
 require_once 'includes/components/breadcrumb.php';
-require_once 'includes/header-klook.php';
+require_once 'includes/header-shared.php';
 ?>
 
 <section class="py-5 bg-light" style="min-height: 70vh;">
@@ -128,4 +128,4 @@ require_once 'includes/header-klook.php';
     </div>
 </section>
 
-<?php require_once 'includes/footer-klook.php'; ?>
+<?php require_once 'includes/footer-shared.php'; ?>

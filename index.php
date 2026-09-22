@@ -63,7 +63,7 @@ foreach ($collections as $coll) {
     }
 }
 
-require_once 'includes/header-klook.php';
+require_once 'includes/header-shared.php';
 ?>
 <?php if ($siteFocus === 'tour'): ?>
 <?php require __DIR__ . '/includes/homepage/tour-hero.php'; ?>
@@ -73,7 +73,7 @@ require_once 'includes/header-klook.php';
 <?php require __DIR__ . '/includes/homepage/tour-destinations.php'; ?>
 <?php require __DIR__ . '/includes/homepage/tour-featured.php'; ?>
 <?php require __DIR__ . '/includes/homepage/tour-collections.php'; ?>
-<?php require_once 'includes/footer-klook.php'; ?>
+<?php require_once 'includes/footer-shared.php'; ?>
 <?php elseif ($siteFocus === 'hotel'): ?>
 <?php require __DIR__ . '/includes/homepage/hotel-hero.php'; ?>
 <?php require __DIR__ . '/includes/homepage/hotel-deals.php'; ?>
@@ -81,12 +81,12 @@ require_once 'includes/header-klook.php';
 <?php require __DIR__ . '/includes/homepage/trust.php'; ?>
 <?php require __DIR__ . '/includes/homepage/testimonials.php'; ?>
 <?php require __DIR__ . '/includes/homepage/cross-sell.php'; ?>
-<?php require_once 'includes/footer-klook.php'; ?>
+<?php require_once 'includes/footer-shared.php'; ?>
 <?php else: ?>
 <?php require __DIR__ . '/includes/homepage/flight-hero.php'; ?>
 <?php require __DIR__ . '/includes/homepage/flight-promo.php'; ?>
 <?php require __DIR__ . '/includes/homepage/trust.php'; ?>
 <?php require __DIR__ . '/includes/homepage/testimonials.php'; ?>
 <?php require __DIR__ . '/includes/homepage/cross-sell.php'; ?>
-<?php require_once 'includes/footer-klook.php'; ?>
+<?php require_once 'includes/footer-shared.php'; ?>
 <?php endif; ?>

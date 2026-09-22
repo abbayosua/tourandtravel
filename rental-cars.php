@@ -19,7 +19,7 @@ $cars->execute($params);
 $cars = $cars->fetchAll();
 
 require_once 'includes/components/breadcrumb.php';
-require_once 'includes/header-klook.php';
+require_once 'includes/header-shared.php';
 ?>
 <section class="py-4">
     <div class="container">
@@ -87,4 +87,4 @@ require_once 'includes/header-klook.php';
         </div>
     </div>
 </section>
-<?php require_once 'includes/footer-klook.php'; ?>
+<?php require_once 'includes/footer-shared.php'; ?>

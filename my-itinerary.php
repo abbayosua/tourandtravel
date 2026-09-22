@@ -15,7 +15,7 @@ $stmt->execute([$userId]);
 $itineraries = $stmt->fetchAll();
 
 $pageTitle = t('Itinerary Saya');
-require_once 'includes/header-klook.php';
+require_once 'includes/header-shared.php';
 ?>
 <section class="py-4">
     <div class="container">
@@ -68,4 +68,4 @@ document.querySelectorAll('.itin-del-btn').forEach(function (btn) {
     });
 });
 </script>
-<?php require_once 'includes/footer-klook.php'; ?>
+<?php require_once 'includes/footer-shared.php'; ?>

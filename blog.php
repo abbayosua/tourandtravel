@@ -27,7 +27,7 @@ $rows = $rows->fetchAll();
 
 $categories = db()->query("SELECT DISTINCT category FROM posts WHERE status='published' AND category IS NOT NULL AND category != ''")->fetchAll(PDO::FETCH_COLUMN);
 
-require_once 'includes/header-klook.php';
+require_once 'includes/header-shared.php';
 ?>
 <section class="py-4">
     <div class="container">
@@ -77,4 +77,4 @@ require_once 'includes/header-klook.php';
         <?php endif; ?>
     </div>
 </section>
-<?php require_once 'includes/footer-klook.php'; ?>
+<?php require_once 'includes/footer-shared.php'; ?>

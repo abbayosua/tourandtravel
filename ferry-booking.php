@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 require_once 'includes/components/breadcrumb.php';
-require_once 'includes/header-klook.php';
+require_once 'includes/header-shared.php';
 ?>
 
 <section class="py-4 bg-light" style="min-height:80vh;">
@@ -302,7 +302,7 @@ require_once 'includes/header-klook.php';
     </div>
 </section>
 
-<?php require_once 'includes/footer-klook.php'; ?>
+<?php require_once 'includes/footer-shared.php'; ?>
 <script>
 document.getElementById('passengers').addEventListener('change', function() {
     var count = parseInt(this.value);

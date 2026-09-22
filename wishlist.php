@@ -59,7 +59,7 @@ $totalItems = count($tours) + count($hotels) + count($attractions) + count($esim
 $pageTitle = t('Wishlist Saya');
 require_once 'includes/components/tour-card.php';
 require_once 'includes/components/item-card.php';
-require_once 'includes/header-klook.php';
+require_once 'includes/header-shared.php';
 ?>
 <section class="py-4">
     <div class="container">
@@ -119,4 +119,4 @@ require_once 'includes/header-klook.php';
         <?php endif; ?>
     </div>
 </section>
-<?php require_once 'includes/footer-klook.php'; ?>
+<?php require_once 'includes/footer-shared.php'; ?>

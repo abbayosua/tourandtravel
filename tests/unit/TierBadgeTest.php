@@ -67,7 +67,7 @@ function testHeaderRendersBadgeMarkup() {
     $_SESSION['user_id'] = TB_UID;
     $_SESSION['user_name'] = 'Tester';
     ob_start();
-    require __DIR__ . '/../../includes/header-klook.php';
+    require __DIR__ . '/../../includes/header-shared.php';
     $html = ob_get_clean();
     assertMatches('/headerTierBadge/', $html, 'badge tier ada di header');
     assertMatches('/headerPoints/', $html, 'saldo poin ada di header');
@@ -76,7 +76,7 @@ function testHeaderRendersBadgeMarkup() {
     // Guest → tanpa badge
     unset($_SESSION['user_id']);
     ob_start();
-    require __DIR__ . '/../../includes/header-klook.php';
+    require __DIR__ . '/../../includes/header-shared.php';
     $html = ob_get_clean();
     assertTrue(strpos($html, 'headerTierBadge') === false, 'guest → tidak ada badge');
 }

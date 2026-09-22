@@ -11,9 +11,9 @@ $tour = getTourBySlug($slug);
 if (!$tour) {
     header('HTTP/1.0 404 Not Found');
     $pageTitle = t('Tour Tidak Ditemukan');
-    require_once 'includes/header.php';
+    require_once 'includes/header-shared.php';
     echo '<div class="container py-5 text-center"><h3>' . t('Tour tidak ditemukan') . '</h3><a href="tours.php" class="btn btn-primary mt-3">' . t('Kembali ke Catalog') . '</a></div>';
-    require_once 'includes/footer.php';
+    require_once 'includes/footer-shared.php';
     exit;
 }
 
@@ -187,7 +187,7 @@ $jsonLd = seoTour($tour);
 $metaDesc = mb_substr(trim(strip_tags((string)tContent($tour, 'description'))), 0, 160);
 $jsonLd = seoTour($tour);
 require_once 'includes/components/breadcrumb.php';
-require_once 'includes/header-klook.php';
+require_once 'includes/header-shared.php';
 ?>
 <div class="container py-4">
     <?php renderBreadcrumb([
@@ -842,7 +842,7 @@ require_once 'includes/header-klook.php';
 </div>
 
 <?php $siteFocus = 'tour'; require_once 'includes/homepage/trust.php'; ?>
-<?php require_once 'includes/footer-klook.php'; ?>
+<?php require_once 'includes/footer-shared.php'; ?>
 
 <script>
 (function () {

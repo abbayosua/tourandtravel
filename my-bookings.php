@@ -128,7 +128,7 @@ $typeName = ['tour' => t('Tour'), 'attraction' => t('Atraksi'), 'transfer' => t(
 $typeLink = ['tour' => 'tour-detail.php', 'attraction' => 'attraction-detail.php', 'transfer' => 'transfer-detail.php', 'train' => 'train-detail.php', 'esim' => 'esim-detail.php'];
 
 $pageTitle = t('Riwayat Booking');
-require_once 'includes/header-klook.php';
+require_once 'includes/header-shared.php';
 ?>
 <section class="py-4">
     <div class="container">
@@ -232,7 +232,7 @@ require_once 'includes/header-klook.php';
         <?php endif; ?>
     </div>
 </section>
-<?php require_once 'includes/footer-klook.php'; ?>
+<?php require_once 'includes/footer-shared.php'; ?>
 
 <?php $rfModalsRendered = $rfModalsRendered ?? []; ?>
 <?php foreach ($all as $b): if ($b['btype'] !== 'tour' || ($b['refund_status'] ?? 'none') !== 'none' || $b['status'] !== 'confirmed') continue; if (isset($rfModalsRendered[$b['id']])) continue; $rfModalsRendered[$b['id']] = true; ?>

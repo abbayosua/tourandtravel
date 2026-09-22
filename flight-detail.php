@@ -41,9 +41,9 @@ if ($flOfferId) {
 if (!$mode) {
     if ($offerError) {
         $pageTitle=t('Penerbangan Tidak Tersedia');
-        require_once 'includes/header.php';
+        require_once 'includes/header-shared.php';
         echo '<div class="container py-5 text-center"><h5>'.t('Penerbangan tidak tersedia').'</h5><p class="text-muted small">'.e($offerError).'</p><a href="flights.php" class="btn btn-primary mt-3">'.t('Kembali Cari').'</a></div>';
-        require_once 'includes/footer.php'; exit;
+        require_once 'includes/footer-shared.php'; exit;
     }
     header('Location: flights.php'); exit;
 }
@@ -142,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['book_duffel'])) {
     }
 }
 
-require_once 'includes/header.php';
+require_once 'includes/header-shared.php';
 ?>
 <section class="py-4 bg-light" style="min-height: 80vh;">
     <div class="container">
@@ -346,4 +346,4 @@ require_once 'includes/header.php';
     </div>
 </section>
 <?php $siteFocus = 'flight'; require_once 'includes/homepage/trust.php'; ?>
-<?php require_once 'includes/footer.php'; ?>
+<?php require_once 'includes/footer-shared.php'; ?>

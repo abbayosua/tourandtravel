@@ -231,7 +231,7 @@ if ($sort === 'price' || $sort === 'rating') {
     usort($duffelOffers, function ($a, $b) use ($sortDurationOf) { return $sortDurationOf($a) <=> $sortDurationOf($b); });
 }
 require_once 'includes/components/breadcrumb.php';
-require_once 'includes/header-klook.php';
+require_once 'includes/header-shared.php';
 ?>
 <?php if (!$doSearch): ?>
 <section class="hero-uifactory">
@@ -559,7 +559,7 @@ if ($isFL) {
     </div>
 </section>
 <?php endif; ?>
-<?php require_once 'includes/footer-klook.php'; ?>
+<?php require_once 'includes/footer-shared.php'; ?>
 <script>
 // Show skeleton initially, then reveal content
 document.addEventListener('DOMContentLoaded', function() {

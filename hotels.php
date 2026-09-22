@@ -87,7 +87,7 @@ $displayHotels = $usingLive ? $liveHotels : $hotels;
 
 $hotelWishlistIds = isLoggedIn() ? (getUserWishlistItems($_SESSION['user_id'])['hotel'] ?? []) : [];
 require_once 'includes/components/breadcrumb.php';
-require_once 'includes/header-klook.php';
+require_once 'includes/header-shared.php';
 ?>
 <section class="py-4 bg-light">
     <div class="container">
@@ -362,7 +362,7 @@ require_once 'includes/header-klook.php';
         </div>
     </div>
 </section>
-<?php require_once 'includes/footer-klook.php'; ?>
+<?php require_once 'includes/footer-shared.php'; ?>
 <script>
 // Show skeleton initially, then reveal content
 document.addEventListener('DOMContentLoaded', function() {

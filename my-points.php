@@ -44,7 +44,7 @@ if ($currentTier['next'] !== null && $bookingCount < $currentTier['next']) {
 $bookingsToNext = $currentTier['next'] !== null ? max(0, $currentTier['next'] - $bookingCount) : 0;
 
 $pageTitle = t('Poin & Loyalitas');
-require_once 'includes/header-klook.php';
+require_once 'includes/header-shared.php';
 ?>
 <section class="py-4">
     <div class="container">
@@ -124,4 +124,4 @@ require_once 'includes/header-klook.php';
         <?php endif; ?>
     </div>
 </section>
-<?php require_once 'includes/footer-klook.php'; ?>
+<?php require_once 'includes/footer-shared.php'; ?>

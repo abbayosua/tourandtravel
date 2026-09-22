@@ -6,5 +6,3 @@
         <a href="tours.php" class="btn btn-light btn-lg rounded-pill px-5 fw-semibold"><?= t('Mulai Sekarang') ?> <i class="bi bi-arrow-right ms-1"></i></a>
     </div>
 </section>
-
-<?php require_once 'includes/footer.php'; ?>

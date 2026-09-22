@@ -129,7 +129,7 @@ if ($step === 'result') {
 }
 
 $pageTitle = 'Booking Hotel NusaTrip';
-require_once 'includes/header-klook.php';
+require_once 'includes/header-shared.php';
 ?>
 <section class="py-4 bg-light"><div class="container" style="max-width:720px">
 <h4 class="fw-bold mb-3"><i class="bi bi-building me-2"></i><?= t('Booking Hotel') ?> <span class="badge bg-dark" style="font-size:11px">NusaTrip</span></h4>
@@ -200,4 +200,4 @@ require_once 'includes/header-klook.php';
     </div></div>
 <?php endif; ?>
 </div></section>
-<?php require_once 'includes/footer-klook.php';
+<?php require_once 'includes/footer-shared.php';

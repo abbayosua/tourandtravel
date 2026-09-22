@@ -100,7 +100,7 @@ if (empty($ferries)) {
 }
 
 require_once 'includes/components/breadcrumb.php';
-require_once 'includes/header-klook.php';
+require_once 'includes/header-shared.php';
 ?>
 <?php if (!$search): ?>
 <section class="hero-uifactory">
@@ -238,7 +238,7 @@ require_once 'includes/header-klook.php';
     </div>
 </section>
 <?php endif; ?>
-<?php require_once 'includes/footer-klook.php'; ?>
+<?php require_once 'includes/footer-shared.php'; ?>
 <script>
 document.querySelectorAll('.ferry-search').forEach(function(input) {
     var dropdownId = input.getAttribute('data-target');
