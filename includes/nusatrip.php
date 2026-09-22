@@ -15,6 +15,7 @@ define('NUSA_TOKEN', '3f05d494df7741369f363436c9620e0f50a5c82c22c6004a745500a427
 define('NUSA_VERSION', '1.5');
 define('NUSA_UA', 'NusaTrip Android App/1.1.4081');
 define('NUSA_KEY_STR', '38edee80bd05bd2c0baa5447a004da7e0c1509787fc16415e7a20d4f626a7464');
+define('NUSA_PROXY', getenv('NUSA_PROXY') ?: '');
 define('NUSA_ESCAPE_KEYS', ['contact', 'items', 'payment', 'roomItems', 'frequentFlyer', 'ssrOutbound', 'ssrInbound', 'deviceInfo']);
 
 /** Bangun param JSON untuk CRC (B.g): sort alpha, escape " → \" utk key khusus. */
@@ -46,15 +47,22 @@ function nusaHeaders(string $sig): array {
     return ['Signature: ' . $sig, 'Accept: application/json', 'User-Agent: ' . NUSA_UA];
 }
 
+function nusaFormEncode(array $form): string {
+    $parts = [];
+    foreach ($form as $k => $v) $parts[] = rawurlencode((string)$k) . '=' . rawurlencode((string)$v);
+    return implode('&', $parts);
+}
+
 function nusaCurl(string $url, array $headers, ?array $form = null): array {
     $ch = curl_init($url);
     $opts = [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 30, CURLOPT_CONNECTTIMEOUT => 10,
         CURLOPT_ENCODING => '', CURLOPT_FOLLOWLOCATION => true, CURLOPT_HTTPHEADER => $headers,
         CURLOPT_USERAGENT => NUSA_UA];
+    if (NUSA_PROXY !== '') $opts[CURLOPT_PROXY] = NUSA_PROXY;
     if ($form !== null) {
         $opts[CURLOPT_POST] = true;
-        $opts[CURLOPT_POSTFIELDS] = http_build_query($form);
-        $headers[] = 'Content-Type: application/x-www-form-urlencoded';
+        $opts[CURLOPT_POSTFIELDS] = nusaFormEncode($form);
+        $headers[] = 'Content-Type: application/x-www-form-urlencoded; charset=ISO-8859-1';
         $opts[CURLOPT_HTTPHEADER] = $headers;
     }
     curl_setopt_array($ch, $opts);
@@ -177,8 +185,56 @@ function nusaSubmit(array $fields): array {
     return nusaPost('transaction_submit', $fields);
 }
 
-function nusaResult(string $taskId, string $checkoutId, string $retry = '0'): array {
-    return nusaGet('transaction_result', ['taskId' => $taskId, 'checkoutId' => $checkoutId, 'retry' => $retry, 'lang' => 'en']);
+function nusaResult(string $taskId, string $checkoutId, string $retry = '0', ?string $lastState = null): array {
+    $p = ['taskId' => $taskId, 'checkoutId' => $checkoutId, 'retry' => $retry, 'lang' => 'en'];
+    if ($lastState !== null && $retry !== '0') $p['lastState'] = $lastState;
+    return nusaGet('transaction_result', $p);
+}
+
+/** Nomor VA hanya ada di transaction_summary?ref= (result tidak pernah berisi VA). */
+function nusaSummary(string $ref): array {
+    return nusaGet('transaction_summary', ['ref' => $ref, 'lang' => 'en']);
+}
+
+/** Polling result ala aplikasi (r.java, p.java:q): max 9x jeda 5dt, retry+1 + lastState. */
+function nusaPollResult(string $taskId, string $checkoutId, int $maxTries = 9, int $sleepSec = 5): array {
+    $last = null;
+    for ($i = 0; $i < $maxTries; $i++) {
+        if ($i > 0) sleep($sleepSec);
+        $retry = (string)$i;
+        $r = nusaResult($taskId, $checkoutId, $retry, $i === 0 ? null : (string)($last['lastState'] ?? '1'));
+        $d = $r['data'] ?? null;
+        if (!is_array($d)) return $r;
+        $last = $d;
+        if ((int)($d['finalStatus'] ?? 0) !== 0) return $r;
+    }
+    return nusaResult($taskId, $checkoutId, '0');
+}
+
+/** deviceFingerPrint: 32-byte hex UPPER (64 char). */
+function nusaFingerprint(): string {
+    return strtoupper(bin2hex(random_bytes(32)));
+}
+
+function nusaDeviceInfo(string $lang = 'en'): string {
+    return json_encode(['device_manufacturer' => 'Google', 'device_model' => 'sdk_gphone64_arm64',
+        'app_version' => '1.1.4081', 'app_lang' => $lang], JSON_UNESCAPED_SLASHES);
+}
+
+/** Contact guest: tanpa customerId. checkoutPass hanya bila createAccount=true. */
+function nusaContact(string $title, string $first, string $last, string $email, string $phone, bool $withPass = false): string {
+    $c = ['title' => $title, 'firstName' => $first, 'lastName' => $last,
+        'email' => $email, 'verifyEmail' => $email, 'phoneNo' => $phone,
+        'nationality' => 'ID', 'contactId' => '0-0'];
+    if ($withPass) { $c['checkoutPass'] = '123qwe!@#QWE'; $c['checkoutVpass'] = '123qwe!@#QWE'; }
+    return json_encode($c, JSON_UNESCAPED_SLASHES);
+}
+
+function nusaItems(string $title, string $first, string $last, string $bookingTime): string {
+    $guest = ['title' => $title, 'firstName' => $first, 'lastName' => $last, 'contactId' => '', 'nationality' => 'ID'];
+    return json_encode([['preferences' => new stdClass(), 'note' => '',
+        'insurance' => ['applyInsurance' => 'false', 'applyInsurancePreference' => ''],
+        'occupancies' => [['guest' => $guest]], 'bookingTime' => $bookingTime]], JSON_UNESCAPED_SLASHES);
 }
 
 /** Normalisasi hotel_search item → format kartu live kita. */

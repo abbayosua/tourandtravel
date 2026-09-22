@@ -69,20 +69,11 @@ if ($step === 'submit' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($b['cartSession'])) { $err = 'Sesi booking kedaluwarsa. Ulangi dari halaman hotel.'; $step = 'form'; }
     else {
         $payMethod = (string)($_POST['pay_method'] ?? 'cc');
-        $contact = json_encode([
-            'title' => (string)($_POST['title'] ?? 'MR'),
-            'firstName' => trim((string)($_POST['first_name'] ?? '')),
-            'lastName' => trim((string)($_POST['last_name'] ?? '')),
-            'email' => trim((string)($_POST['email'] ?? '')),
-            'verifyEmail' => trim((string)($_POST['email'] ?? '')),
-            'phoneNo' => trim((string)($_POST['phone'] ?? '')),
-            'nationality' => 'ID', 'contactId' => '0-0',
-        ], JSON_UNESCAPED_SLASHES);
-        $guest = ['title' => (string)($_POST['title'] ?? 'MR'), 'firstName' => trim((string)($_POST['first_name'] ?? '')),
-            'lastName' => trim((string)($_POST['last_name'] ?? '')), 'contactId' => '', 'nationality' => 'ID'];
-        $items = json_encode([['preferences' => new stdClass(), 'note' => '',
-            'insurance' => ['applyInsurance' => 'false', 'applyInsurancePreference' => ''],
-            'occupancies' => [['guest' => $guest]], 'bookingTime' => $b['bookingTime']]], JSON_UNESCAPED_SLASHES);
+        $contact = nusaContact((string)($_POST['title'] ?? 'MR'), trim((string)($_POST['first_name'] ?? '')),
+            trim((string)($_POST['last_name'] ?? '')), trim((string)($_POST['email'] ?? '')),
+            trim((string)($_POST['phone'] ?? '')), false);
+        $items = nusaItems((string)($_POST['title'] ?? 'MR'), trim((string)($_POST['first_name'] ?? '')),
+            trim((string)($_POST['last_name'] ?? '')), $b['bookingTime']);
         if ($payMethod === 'cc') {
             $payment = json_encode(['displayCurrencyCode' => 'IDR', 'paymentInstrument' => 6,
                 'billInfo' => ['fullName' => trim((string)($_POST['first_name'] ?? '')) . ' ' . trim((string)($_POST['last_name'] ?? ''))],
@@ -95,10 +86,12 @@ if ($step === 'submit' && $_SERVER['REQUEST_METHOD'] === 'POST') {
             $payment = json_encode(array_filter(['displayCurrencyCode' => 'IDR', 'paymentInstrument' => (int)$iid,
                 'bankId' => $bankId ?: null]), JSON_UNESCAPED_SLASHES);
         }
-        $dev = json_encode(['device_manufacturer' => 'Google', 'device_model' => 'sdk_gphone64_arm64',
-            'app_version' => '1.1.4081', 'app_lang' => 'id'], JSON_UNESCAPED_SLASHES);
-        $r = nusaSubmit(['cartSession' => $b['cartSession'], 'checkoutId' => $b['checkoutId'],
-            'contact' => $contact, 'items' => $items, 'payment' => $payment, 'deviceInfo' => $dev]);
+        $fp = nusaFingerprint();
+        $dev = nusaDeviceInfo('en');
+        $submitFields = ['cartSession' => $b['cartSession'], 'checkoutId' => $b['checkoutId'],
+            'contact' => $contact, 'items' => $items, 'payment' => $payment,
+            'deviceFingerPrint' => $fp, 'deviceInfo' => $dev];
+        $r = nusaSubmit($submitFields);
         $resp = $r['data'] ?? [];
         if (!empty($resp['taskId']) && empty($resp['submitError'])) {
             $_SESSION['nusa_book']['taskId'] = $resp['taskId'];
@@ -114,10 +107,19 @@ if ($step === 'submit' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 if ($step === 'result') {
     $b = nusaBookSess();
     $res = null;
+    $summary = null;
     if (!empty($b['taskId']) && !empty($b['checkoutId'])) {
-        if (empty($_GET['polled'])) sleep(5);
-        $res = nusaResult((string)$b['taskId'], (string)$b['checkoutId']);
-        $res = $res['data'] ?? ['raw_error' => $res['raw'] ?? ''];
+        if (empty($_GET['polled'])) {
+            $pr = nusaPollResult((string)$b['taskId'], (string)$b['checkoutId']);
+            $res = $pr['data'] ?? ['raw_error' => $pr['raw'] ?? ''];
+        } else {
+            $r0 = nusaResult((string)$b['taskId'], (string)$b['checkoutId'], '0');
+            $res = $r0['data'] ?? ['raw_error' => $r0['raw'] ?? ''];
+        }
+        if (!empty($res['ref'])) {
+            $sm = nusaSummary((string)$res['ref']);
+            $summary = $sm['data'] ?? null;
+        }
     } else $err = 'Tidak ada taskId. Ulangi booking.';
 }
 
@@ -129,8 +131,18 @@ require_once 'includes/header-klook.php';
 <?php if ($err): ?><div class="alert alert-danger"><?= e($err) ?></div><?php endif; ?>
 <?php if ($step === 'result' && !empty($res)): ?>
     <?php $payStatus = (int)($res['paymentResult']['paymentStatus'] ?? -1); $msgs = $res['messages'] ?? []; ?>
+    <?php $va = $summary['paymentTransfer'] ?? null; ?>
     <div class="card border-0 shadow-sm"><div class="card-body p-4 text-center">
-        <?php if ($payStatus === 1): ?>
+        <?php if (!empty($va['accountNo'])): ?>
+            <i class="bi bi-bank text-primary" style="font-size:48px"></i>
+            <h5 class="fw-bold mt-2">Menunggu Pembayaran</h5>
+            <p class="mb-1">Booking Code: <b><?= e((string)($res['bookingCode'] ?? $summary['bookingCode'] ?? '-')) ?></b></p>
+            <div class="alert alert-info text-start mt-3 mb-0">
+                <div><b><?= e((string)($va['bank'] ?? 'VA')) ?></b> Virtual Account</div>
+                <h4 class="fw-bold my-1"><?= e((string)$va['accountNo']) ?></h4>
+                <small class="text-muted">a.n. NusaTrip · Rp<?= number_format((float)($summary['amountDue'] ?? 0), 0, ',', '.') ?><?= !empty($res['timeLimit']) ? ' · batas ' . e(date('d M Y H:i', (int)($res['timeLimit'] / 1000))) : '' ?></small>
+            </div>
+        <?php elseif ($payStatus === 1): ?>
             <i class="bi bi-check-circle-fill text-success" style="font-size:48px"></i>
             <h5 class="fw-bold mt-2">Pembayaran Berhasil</h5>
             <p class="mb-1">Booking Code: <b><?= e((string)($res['bookingCode'] ?? '-')) ?></b></p>
