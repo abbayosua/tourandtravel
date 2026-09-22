@@ -34,34 +34,30 @@ test.describe('Navbar & Footer Crawl', () => {
   test('produk links (flat nav): semua href benar + 200', async ({ page }) => {
     await page.goto(`${BASE}/index.php`, { waitUntil: 'load' });
 
-    // Klook-style navbar: link produk flat (tanpa dropdown "Layanan")
-    // Cari di dalam #navbarNav (navbar items) — hindari footer heading
+    // Voyage-style navbar (preset tour): tab Tour/Hotel/Pesawat; link lain via menu mobile + footer
     const nav = page.locator('#navbarNav').first();
     const subLinks = [
       { text: 'Tour', url: 'tours.php' },
       { text: 'Hotel', url: 'hotels.php' },
       { text: 'Pesawat', url: 'flights.php' },
+    ];
+    for (const sub of subLinks) {
+      const loc = nav.locator(`a[href*="${sub.url}"]`).first();
+      const href = await loc.getAttribute('href');
+      expect(href, `${sub.text} link`).toContain(sub.url);
+      const url = href!.startsWith('http') ? href! : `${BASE}/${href}`;
+      const resp = await page.request.get(url);
+      expect(resp.status(), `${sub.text} -> ${url}`).toBe(200);
+    }
+    const menuLinks = [
       { text: 'Ferry', url: 'ferries.php' },
       { text: 'Rental', url: 'rental-cars.php' },
     ];
-    for (const sub of subLinks) {
-      const loc = nav.locator(`a:has-text("${sub.text}")`).first();
-      const count = await loc.count();
-      if (count) {
-        const href = await loc.getAttribute('href');
-        expect(href, `${sub.text} link`).toContain(sub.url);
-        // href bisa full URL (BASE_URL + path) atau relatif
-        const url = href.startsWith('http') ? href : `${BASE}/${href}`;
-        const resp = await page.request.get(url);
-        expect(resp.status(), `${sub.text} -> ${url}`).toBe(200);
-      } else {
-        // Fallback: cek href eksplisit di halaman
-        const anyLink = page.locator(`a[href*="${sub.url}"]`).first();
-        const anyCount = await anyLink.count();
-        expect(anyCount, `link ${sub.url} ada di halaman`).toBeGreaterThan(0);
-        const resp = await page.request.get(`${BASE}/${sub.url}`);
-        expect(resp.status(), sub.url).toBe(200);
-      }
+    for (const sub of menuLinks) {
+      const anyLink = page.locator(`a[href*="${sub.url}"]`).first();
+      expect(await anyLink.count(), `link ${sub.url} ada di halaman`).toBeGreaterThan(0);
+      const resp = await page.request.get(`${BASE}/${sub.url}`);
+      expect(resp.status(), sub.url).toBe(200);
     }
   });
 

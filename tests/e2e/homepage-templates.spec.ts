@@ -28,14 +28,14 @@ test.describe('Homepage Templates — fokus website (tour/hotel/flight)', () => 
     await setFocus('tour');
   });
 
-  // ===== Preset TOUR (Klook, regresi nol) =====
-  test('preset tour: render Klook-style (hero carousel, flash deals, featured)', async ({ page }) => {
+  // ===== Preset TOUR (Voyage-style, revamp hero gelap) =====
+  test('preset tour: render Voyage-style (hero gelap, search pill, trending)', async ({ page }) => {
     await setFocus('tour');
     await page.goto(`${BASE}/index.php`, { waitUntil: 'load' });
     const body = await page.textContent('body') || '';
     expect(body).not.toMatch(PHP_ERROR);
-    await expect(page.locator('.hero-klook')).toBeVisible();
-    await expect(page.locator('#heroCarousel')).toBeVisible();
+    await expect(page.locator('.voyage-hero')).toBeVisible();
+    await expect(page.locator('.voyage-search')).toBeVisible();
     expect(body).toMatch(/Tour Categories|Kategori Wisata|Categories/);
     // "Destinasi Populer" dihide sementara (tour-destinations.php) — tidak wajib ada
     expect(body).toMatch(/Rekomendasi Paket Tour|Recommended Tour/i);
@@ -176,7 +176,7 @@ test.describe('Homepage Templates — fokus website (tour/hotel/flight)', () => 
       expect(body).not.toMatch(PHP_ERROR);
       if (focus === 'hotel') expect(body).toMatch(/Deal Hotel Terbaik|Best Hotel Deals/i);
       if (focus === 'flight') expect(body).toMatch(/Rute Populer|Popular Routes/i);
-      if (focus === 'tour') await expect(page.locator('#heroCarousel')).toBeVisible();
+      if (focus === 'tour') await expect(page.locator('.voyage-hero')).toBeVisible();
     }
 
     const toursAfter = execSync(

@@ -8,6 +8,7 @@ $pageTitle = t('Beranda');
 // Fokus website (admin settings): tour | hotel | flight
 $siteFocus = getSetting('site_focus', 'tour');
 if (!in_array($siteFocus, ['tour', 'hotel', 'flight'], true)) $siteFocus = 'tour';
+$voyageDark = ($siteFocus === 'tour');
 
 $toursResult = getTours();
 $tours = $toursResult['tours'];

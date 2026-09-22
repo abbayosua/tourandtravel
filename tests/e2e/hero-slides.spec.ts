@@ -203,9 +203,9 @@ function ensureFixture() {
 
     await setFocus('tour');
     await page.goto(`${BASE}/index.php`, { waitUntil: 'load' });
-    // Render tour: hero carousel memakai slide tour — slide hotel tidak di antara alt-nya
-    const tourAlts = await page.$$eval('#heroCarousel .carousel-item img', els => els.map(e => e.getAttribute('alt')));
-    expect(tourAlts).not.toContain('E2E Only Hotel Slide');
+    // Render tour: preset tour Voyage — slide hotel tidak bocor ke landing tour
+    await expect(page.locator('.voyage-hero')).toBeVisible();
+    expect(await page.textContent('body')).not.toContain('E2E Only Hotel Slide');
 
     // Cleanup slide ini
     dbRun(`DELETE FROM hero_slides WHERE title='E2E Only Hotel Slide';`);
