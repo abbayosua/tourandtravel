@@ -15,8 +15,9 @@ function pdfBrochureCss(): string
     return <<<CSS
     @page { size: A4 portrait; margin: 9mm 8mm 12mm 8mm; }
     body { font-family: 'DejaVu Sans', sans-serif; font-size: 9pt; color: #1a1a2e; margin: 0; }
-    .page { border: 2.5px solid #d4b86a; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
-    .pagebreak { page-break-before: always; }
+    .page { border: 2.5px solid #d4b86a; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; page-break-inside: auto; }
+    .secbar, .secbar-green, .secbar-red { page-break-after: avoid; }
+    table.itin tr, table.price tr { page-break-inside: avoid; }
     table.head { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
     table.head td { vertical-align: top; padding: 0; }
     .brand { font-size: 13pt; font-weight: bold; color: #0f2b6b; letter-spacing: 2px; }
@@ -188,7 +189,7 @@ function pdfTourBrochureHtml(array $tour, array $days, string $coverImgTag, arra
     $h .= '</div>';
 
     // ===== Halaman 2: itinerary =====
-    $h .= '<div class="page pagebreak">';
+    $h .= '<div class="page">';
     $h .= '<div class="secbar">PROGRAM PERJALANAN / ITINERARY</div>';
     if (empty($days)) {
         $h .= '<div class="tagline">Detail itinerary menyusul. Hubungi kami untuk info lengkap.</div>';
@@ -214,7 +215,7 @@ function pdfTourBrochureHtml(array $tour, array $days, string $coverImgTag, arra
     // ===== Halaman 3: jadwal + harga tier =====
     if ($deps) {
         $tier = isset($deps[0]['price_adult']) || isset($deps[0]['departure_date']);
-        $h .= '<div class="page pagebreak">';
+        $h .= '<div class="page">';
         $h .= '<div class="secbar">JADWAL KEBERANGKATAN / HARGA PAKET</div>';
         if ($tier) {
             $h .= '<table class="price"><tr><th>KEBERANGKATAN</th><th>KET</th><th>DEWASA</th><th>ANAK</th><th>SINGLE</th><th>STATUS</th></tr>';
@@ -252,7 +253,7 @@ function pdfTourBrochureHtml(array $tour, array $days, string $coverImgTag, arra
     }
 
     // ===== Halaman 4: include / exclude / catatan + CTA =====
-    $h .= '<div class="page pagebreak">';
+    $h .= '<div class="page">';
     if ($inc) {
         $h .= '<div class="secbar-green">PAKET SUDAH TERMASUK / INCLUDE</div><ul class="tick">';
         foreach ($inc as $x) $h .= '<li>&#10003; ' . e($x) . '</li>';
