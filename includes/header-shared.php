@@ -1,13 +1,14 @@
 <?php
 /**
- * includes/header-shared.php — SATU header untuk semua halaman publik (reusable).
- * Variabel opsional sebelum include: $pageTitle, $voyageDark (bool).
- * - voyageDark=true  → navbar Voyage floating glass pill.
- * - voyageDark=false → navbar Klook klasik.
- * Menu (tab + mobile) diambil dari getNavMenus() — dinamis via admin/nav-menus.php.
+ * includes/header-shared.php — SATU header Voyage untuk SEMUA halaman publik (reusable).
+ * Variabel opsional sebelum include: $pageTitle, $voyagePageOnly (bool, default true).
+ * - $voyagePageOnly=true  (halaman biasa): navbar Voyage floating, body normal + spacer.
+ * - $voyagePageOnly=false (landing tour): body voyage-page, hero full-bleed.
+ * Menu tab + mobile dinamis via getNavMenus() → admin/nav-menus.php.
  */
 if (!function_exists('getNavMenus')) require_once __DIR__ . '/nav-menus.php';
-$voyageDark = !empty($voyageDark);
+$voyagePageOnly = ($voyagePageOnly ?? true) ? true : false;
+$voyageDark = !$voyagePageOnly;
 $voyageMenus = getNavMenus();
 $voyagePage = basename($_SERVER['PHP_SELF'] ?? '');
 ?>
@@ -29,7 +30,7 @@ $voyagePage = basename($_SERVER['PHP_SELF'] ?? '');
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=<?= filemtime(__DIR__ . '/../assets/css/style.css') ?>">
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/hero-uifactory.css?v=<?= filemtime(__DIR__ . '/../assets/css/hero-uifactory.css') ?>">
-    <?php if ($voyageDark): ?><link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/voyage.css?v=<?= filemtime(__DIR__ . '/../assets/css/voyage.css') ?>"><?php endif; ?>
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/voyage.css?v=<?= filemtime(__DIR__ . '/../assets/css/voyage.css') ?>">
     <?= i18nJs() ?>
     <script defer src="<?= BASE_URL ?>/assets/js/klook.js?v=<?= filemtime(__DIR__ . '/../assets/js/klook.js') ?>"></script>
 </head>
@@ -44,3 +45,4 @@ $voyagePage = basename($_SERVER['PHP_SELF'] ?? '');
 </script>
 
 <?php require __DIR__ . '/navbar.php'; ?>
+<?php if ($voyagePageOnly): ?><div class="voyage-spreader"></div><?php endif; ?>

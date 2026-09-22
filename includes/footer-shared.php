@@ -3,14 +3,12 @@
  * includes/footer-shared.php — SATU footer untuk semua halaman publik (reusable).
  * Pengganti footer.php + footer-klook.php (keduanya kini shim ke file ini).
  * Kolom Layanan memakai getNavMenus() — dinamis mengikuti admin/nav-menus.php.
- * Variabel opsional: $voyageDark (bool) → class voyage-footer.
  */
 if (!function_exists('getNavMenus')) require_once __DIR__ . '/nav-menus.php';
-$voyageDark = !empty($voyageDark);
 $footMenus = getNavMenus();
 ?>
 <!-- Footer Klook-style -->
-<footer id="kontak" class="bg-dark text-light pt-5 pb-3 mt-5<?= $voyageDark ? ' voyage-footer' : '' ?>">
+<footer id="kontak" class="bg-dark text-light pt-5 pb-3 mt-5 voyage-footer">
     <div class="container">
         <div class="row justify-content-center mb-5">
             <div class="col-lg-7 text-center">
