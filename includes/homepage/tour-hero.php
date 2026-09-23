@@ -9,6 +9,7 @@ $voyageTitle = !empty($heroSlides[0]['title']) ? $heroSlides[0]['title'] : $hero
 $voyageSub = !empty($heroSlides[0]['subtitle']) ? $heroSlides[0]['subtitle'] : $heroSub;
 $voyageCats = array_slice($categories ?? [], 0, 6);
 $voyageRecent = array_slice($featuredTours ?? [], 0, 3);
+$voyageCards = array_slice($featuredTours ?? [], 0, 6);
 // Trending: flatten getCityDestinations → 6 kartu
 $voyageTrend = [];
 try {
@@ -89,36 +90,68 @@ $voyageToday = date('Y-m-d');
         </div>
         <?php endif; ?>
 
-        <div class="voyage-grid">
-            <?php if (!empty($voyageRecent)): ?>
-            <div>
-                <div class="voyage-sec-head"><span><?= t('Populer saat ini') ?></span><a href="tours.php?sort=popular"><?= t('Lihat semua') ?> →</a></div>
-                <div class="voyage-recent">
-                    <?php foreach ($voyageRecent as $rt): ?>
-                    <a class="voyage-rec" href="tour-detail.php?slug=<?= urlencode($rt['slug'] ?? $rt['id']) ?>">
-                        <img src="<?= e(getTourImage($rt, 'small')) ?>" alt="" loading="lazy">
-                        <div><div class="voyage-rec-t"><?= e(mb_strimwidth($rt['title'] ?? '', 0, 34, '…')) ?></div>
-                        <div class="voyage-rec-s">★ <?= e(number_format((float)($rt['rating'] ?? 5), 1)) ?> • <?= (int)($rt['duration_days'] ?? 0) > 0 ? (int)$rt['duration_days'] . 'D' : t('Tour') ?></div></div>
-                    </a>
-                    <?php endforeach; ?>
-                </div>
+        <div class="voyage-list">
+            <?php if (!empty($voyageCards)): ?>
+            <div class="voyage-list-head">
+                <div class="voyage-list-title"><h2><?= t('Top experiences') ?></h2><span class="voyage-count"><?= count($voyageCards) ?> <?= t('tour') ?></span></div>
+                <div class="voyage-sort"><span><?= t('Urut:') ?></span><a href="tours.php" class="on"><?= t('Rekomendasi') ?></a><a href="tours.php?sort=termurah"><?= t('Harga') ?></a><a href="tours.php?sort=rating"><?= t('Rating') ?></a></div>
             </div>
-            <?php endif; ?>
-            <?php if (!empty($voyageTrend)): ?>
-            <div>
-                <div class="voyage-sec-head"><span><?= t('Destinasi trending') ?></span><a href="tours.php"><?= t('Lihat semua') ?> →</a></div>
-                <div class="voyage-trend">
-                    <?php foreach ($voyageTrend as $td):
-                        $tc = $td['city'] ?? '';
-                        try { $cnt = countToursByCity($tc); } catch (Throwable $e) { $cnt = 0; }
-                    ?>
-                    <a class="voyage-card" href="tours.php?search=<?= urlencode($tc) ?>">
-                        <img src="<?= e(getDestinasiImage($tc)) ?>" alt="<?= e($tc) ?>" loading="lazy">
-                        <div class="voyage-card-b"><div class="voyage-card-t"><?= e($tc) ?></div><div class="voyage-card-s"><?= (int)$cnt ?> <?= t('paket') ?></div></div>
+            <div class="voyage-tgrid">
+                <?php foreach ($voyageCards as $vc):
+                    $vSlug = $vc['slug'] ?? $vc['id'];
+                    $vTitle = $vc['title'] ?? '';
+                    $vLoc = trim(($vc['location_city'] ?? '') ?: ($vc['category'] ?? ''));
+                    $vRating = number_format((float)($vc['rating'] ?? 5), 1);
+                    $vRev = (int)($vc['total_reviews'] ?? 0);
+                    $vDays = (int)($vc['duration_days'] ?? 0);
+                    $vDur = $vDays > 0 ? $vDays . 'D' . (!empty($vc['duration_nights']) ? (int)$vc['duration_nights'] . 'N' : '') : t('Tour');
+                    try { $vDisc = function_exists('getDiskonPersen') ? (int)getDiskonPersen($vc) : 0; } catch (Throwable $e) { $vDisc = 0; }
+                    $vHi = [];
+                    if (!empty($vc['highlights'])) {
+                        foreach (preg_split("/[\r\n]+/", (string)$vc['highlights']) as $hx) {
+                            $hx = trim($hx);
+                            $hx = trim($hx, "-\xe2\x80\xa2\xe2\x80\xa3*0123456789. ");
+                            if ($hx !== '') $vHi[] = $hx;
+                            if (count($vHi) >= 2) break;
+                        }
+                    }
+                ?>
+                <div class="voyage-tcard">
+                    <a class="voyage-tcard-media" href="tour-detail.php?slug=<?= urlencode($vSlug) ?>" aria-label="<?= e($vTitle) ?>">
+                        <img src="<?= e(getTourImage($vc, 'medium')) ?>" alt="<?= e($vTitle) ?>" loading="lazy" onerror="this.src='<?= e(getTourImageFallback($vc, 'medium')) ?>'">
+                        <span class="voyage-tcard-shade"></span>
+                        <span class="voyage-tcard-badges">
+                            <?php if ($vDisc > 0): ?><span class="voyage-badge voyage-badge-disc">-<?= $vDisc ?>%</span><?php endif; ?>
+                            <?php if (!empty($vc['best_seller'])): ?><span class="voyage-badge voyage-badge-best"><?= t('Bestseller') ?></span><?php endif; ?>
+                            <?php if (!empty($vc['instant_confirmation'])): ?><span class="voyage-badge voyage-badge-instant">&#9889; <?= t('Instan') ?></span><?php endif; ?>
+                        </span>
+                        <?php if (function_exists('isLoggedIn')): ?>
+                        <button type="button" class="voyage-wish wishlist-btn <?= (!empty($wishlistIds) && in_array($vc['id'] ?? 0, $wishlistIds)) ? 'on' : '' ?>" data-tour-id="<?= (int)($vc['id'] ?? 0) ?>" onclick="if(typeof toggleWishlist==='function')toggleWishlist(this, <?= (int)($vc['id'] ?? 0) ?>)" aria-label="wishlist"><i class="bi bi-heart<?= (!empty($wishlistIds) && in_array($vc['id'] ?? 0, $wishlistIds)) ? '-fill' : '' ?>"></i></button>
+                        <?php endif; ?>
+                        <span class="voyage-tcard-pills">
+                            <span class="voyage-pill">&#9733; <?= e($vRating) ?> <em><?php if ($vRev > 0): ?>&bull; <?= number_format($vRev) ?><?php endif; ?></em></span>
+                            <span class="voyage-pill"><?= e($vDur) ?></span>
+                        </span>
                     </a>
-                    <?php endforeach; ?>
+                    <div class="voyage-tcard-b">
+                        <a class="voyage-tcard-t" href="tour-detail.php?slug=<?= urlencode($vSlug) ?>"><?= e(mb_strimwidth($vTitle, 0, 64, '...')) ?></a>
+                        <?php if ($vLoc !== ''): ?><div class="voyage-tcard-loc"><i class="bi bi-geo-alt"></i> <?= e(mb_strimwidth($vLoc, 0, 40, '...')) ?></div><?php endif; ?>
+                        <?php if (!empty($vHi)): ?>
+                        <div class="voyage-tcard-hi"><?php foreach ($vHi as $hx): ?><span><i class="bi bi-check"></i><?= e(mb_strimwidth($hx, 0, 52, '...')) ?></span><?php endforeach; ?></div>
+                        <?php endif; ?>
+                        <div class="voyage-tcard-foot">
+                            <div class="voyage-tcard-price">
+                                <span class="voyage-tcard-now"><?= formatCurrencySpan($vc['price'], $vc['price_currency'] ?? 'IDR') ?></span>
+                                <?php if (!empty($vc['original_price']) && $vc['original_price'] > $vc['price']): ?><span class="voyage-tcard-was"><?= formatCurrencySpan($vc['original_price'], $vc['price_currency'] ?? 'IDR') ?></span><?php endif; ?>
+                                <span class="voyage-tcard-per">/<?= t('orang') ?> &bull; <?= !empty($vc['free_cancellation']) ? t('Batal gratis') : t('Konfirmasi instan') ?></span>
+                            </div>
+                            <a class="voyage-tcard-add" href="tour-detail.php?slug=<?= urlencode($vSlug) ?>"><?= t('Detail') ?> <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
                 </div>
+                <?php endforeach; ?>
             </div>
+            <div class="voyage-trustrow"><span><i class="dot g"></i><?= t('Konfirmasi instan') ?></span><span><i class="dot o"></i><?= t('Harga terbaik') ?></span><span class="hide-m"><i class="dot w"></i><?= t('Batal gratis') ?></span></div>
             <?php endif; ?>
         </div>
     </div>
@@ -181,12 +214,55 @@ $voyageToday = date('Y-m-d');
 .voyage-card-b{padding:10px 12px}
 .voyage-card-t{font-size:13px;font-weight:600}
 .voyage-card-s{font-size:11px;color:#6d7d99}
+.voyage-list{margin-top:32px}
+.voyage-list-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.voyage-list-title{display:flex;align-items:center;gap:10px}
+.voyage-list-title h2{font-size:18px;font-weight:600;letter-spacing:-.01em;margin:0;color:#0b1e3f}
+.voyage-count{padding:4px 10px;border-radius:999px;background:rgba(13,110,253,.1);border:1px solid rgba(13,110,253,.16);font-size:11px;color:#0d6efd;font-weight:600;white-space:nowrap}
+.voyage-sort{display:flex;align-items:center;gap:6px;font-size:12px;color:#6d7d99;flex-wrap:wrap}
+.voyage-sort a{padding:6px 12px;border-radius:999px;font-size:12px;font-weight:500;text-decoration:none;background:rgba(255,255,255,.7);border:1px solid rgba(13,110,253,.16);color:#33465f}
+.voyage-sort a.on{background:#0d6efd;color:#fff;border-color:#0d6efd}
+.voyage-tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.voyage-tcard{position:relative;border-radius:26px;background:rgba(255,255,255,.8);border:1px solid rgba(13,110,253,.14);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);overflow:hidden;transition:transform .4s,box-shadow .4s,border-color .4s;box-shadow:0 8px 32px rgba(13,110,253,.08)}
+.voyage-tcard:hover{transform:translateY(-4px);border-color:rgba(13,110,253,.3);box-shadow:0 20px 60px rgba(13,110,253,.18)}
+.voyage-tcard-media{position:relative;display:block;aspect-ratio:16/10;overflow:hidden;background:#dbe7ff}
+.voyage-tcard-media img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .8s ease}
+.voyage-tcard:hover .voyage-tcard-media img{transform:scale(1.06)}
+.voyage-tcard-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,15,35,.02) 40%,rgba(5,15,35,.55) 100%)}
+.voyage-tcard-badges{position:absolute;top:10px;left:10px;right:52px;display:flex;flex-wrap:wrap;gap:6px}
+.voyage-badge{padding:5px 10px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.02em;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid;display:inline-flex;align-items:center}
+.voyage-badge-disc{background:rgba(13,110,253,.94);color:#fff;border-color:rgba(13,110,253,.5)}
+.voyage-badge-best{background:#fff;color:#0b1e3f;border-color:#fff}
+.voyage-badge-instant{background:rgba(255,255,255,.94);color:#0b1e3f;border-color:rgba(255,255,255,.85)}
+.voyage-wish{position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.88);border:1px solid rgba(13,110,253,.2);color:#0b1e3f;display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(12px);font-size:14px;padding:0}
+.voyage-wish.on{background:#0d6efd;color:#fff;border-color:#0d6efd}
+.voyage-tcard-pills{position:absolute;left:10px;right:10px;bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.voyage-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;background:rgba(5,15,35,.52);border:1px solid rgba(255,255,255,.28);color:#fff;font-size:11px;font-weight:600;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.voyage-pill em{font-style:normal;color:rgba(255,255,255,.65);font-weight:400}
+.voyage-tcard-b{padding:14px}
+.voyage-tcard-t{display:block;font-size:14px;font-weight:600;line-height:1.35;color:#0b1e3f;text-decoration:none;min-height:38px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.voyage-tcard-t:hover{color:#0d6efd}
+.voyage-tcard-loc{margin-top:6px;font-size:12px;color:#6d7d99;display:flex;align-items:center;gap:5px}
+.voyage-tcard-hi{margin-top:8px;display:flex;flex-direction:column;gap:5px}
+.voyage-tcard-hi span{display:flex;align-items:center;gap:7px;font-size:11px;color:#5b6b86;line-height:1.4}
+.voyage-tcard-hi i{width:16px;height:16px;border-radius:50%;background:rgba(13,110,253,.1);border:1px solid rgba(13,110,253,.18);display:inline-flex;align-items:center;justify-content:center;font-size:9px;color:#0d6efd;flex:none;font-style:normal}
+.voyage-tcard-foot{margin-top:12px;padding-top:12px;border-top:1px solid rgba(13,110,253,.1);display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+.voyage-tcard-price{display:flex;flex-direction:column;gap:1px;min-width:0}
+.voyage-tcard-now{font-size:15px;font-weight:700;color:#0b1e3f;letter-spacing:-.01em}
+.voyage-tcard-was{font-size:11px;color:#93a1b8;text-decoration:line-through}
+.voyage-tcard-per{font-size:10px;color:#7a8aa5}
+.voyage-tcard-add{flex:none;height:36px;padding:0 16px;border-radius:999px;background:#0d6efd;color:#fff;font-size:13px;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:6px;box-shadow:0 6px 16px rgba(13,110,253,.3)}
+.voyage-tcard-add:hover{background:#0b5ed7;color:#fff}
+.voyage-trustrow{margin-top:16px;display:flex;align-items:center;justify-content:center;gap:22px;font-size:11px;color:#7a8aa5;flex-wrap:wrap}
+.voyage-trustrow .dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:6px}
+.voyage-trustrow .dot.g{background:#22c55e}.voyage-trustrow .dot.o{background:#0d6efd}.voyage-trustrow .dot.w{background:#cbd5e1}
+@media(max-width:1024px){.voyage-tgrid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:768px){
 .voyage-hero{padding:40px 0 32px}
 .voyage-search{flex-direction:column;border-radius:24px}
 .voyage-div{width:auto;height:1px;margin:0 10px}
 .voyage-go{width:100%;border-radius:16px;height:46px}
-.voyage-grid{grid-template-columns:1fr;gap:24px}
+.voyage-grid{grid-template-columns:1fr;gap:24px}.voyage-tgrid{grid-template-columns:1fr}.voyage-list-head{align-items:flex-start;flex-direction:column}.voyage-trustrow .hide-m{display:none}
 .voyage-pop{left:0;right:0;min-width:0}
 }
 [data-theme="dark"] .voyage-hero{background:#08080a;color:#fff}
@@ -223,6 +299,28 @@ $voyageToday = date('Y-m-d');
 [data-theme="dark"] .voyage-rec-s{color:rgba(255,255,255,.5)}
 [data-theme="dark"] .voyage-card{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1);color:#fff}
 [data-theme="dark"] .voyage-card-s{color:rgba(255,255,255,.5)}
+[data-theme="dark"] .voyage-list-title h2{color:#fff}
+[data-theme="dark"] .voyage-count{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12);color:#fff}
+[data-theme="dark"] .voyage-sort{color:rgba(255,255,255,.5)}
+[data-theme="dark"] .voyage-sort a{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.7)}
+[data-theme="dark"] .voyage-sort a.on{background:#fff;color:#000;border-color:#fff}
+[data-theme="dark"] .voyage-tcard{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);box-shadow:none;color:#fff}
+[data-theme="dark"] .voyage-tcard:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.16);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+[data-theme="dark"] .voyage-tcard-media{background:#141417}
+[data-theme="dark"] .voyage-tcard-t{color:#fff}
+[data-theme="dark"] .voyage-tcard-loc{color:rgba(255,255,255,.55)}
+[data-theme="dark"] .voyage-tcard-hi span{color:rgba(255,255,255,.6)}
+[data-theme="dark"] .voyage-tcard-hi i{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12);color:#fff}
+[data-theme="dark"] .voyage-tcard-foot{border-color:rgba(255,255,255,.08)}
+[data-theme="dark"] .voyage-tcard-now{color:#fff}
+[data-theme="dark"] .voyage-tcard-was{color:rgba(255,255,255,.4)}
+[data-theme="dark"] .voyage-tcard-per{color:rgba(255,255,255,.45)}
+[data-theme="dark"] .voyage-tcard-add{background:#fff;color:#000;box-shadow:none}
+[data-theme="dark"] .voyage-badge-best{background:#fff;color:#000;border-color:#fff}
+[data-theme="dark"] .voyage-badge-instant{background:rgba(255,255,255,.92);color:#000}
+[data-theme="dark"] .voyage-wish{background:rgba(0,0,0,.4);border-color:rgba(255,255,255,.2);color:#fff}
+[data-theme="dark"] .voyage-wish.on{background:#fff;color:#000;border-color:#fff}
+[data-theme="dark"] .voyage-trustrow{color:rgba(255,255,255,.4)}
 </style>
 
 <script>
