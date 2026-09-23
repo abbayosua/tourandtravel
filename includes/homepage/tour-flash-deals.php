@@ -10,25 +10,20 @@
             <?php foreach (array_slice($promoTours, 0, 3) as $promo): ?>
             <div class="col-md-4">
                 <a href="tour-detail.php?slug=<?= e($promo['slug']) ?>" class="text-decoration-none">
-                    <div class="card border-0 shadow-sm overflow-hidden promo-card h-100">
-                        <div class="row g-0 h-100">
-                            <div class="col-4">
-                                <img src="<?= getTourImage($promo, 'small') ?>" onerror="this.src='https://placehold.co/320x240?text=Promo'" class="h-100 w-100" style="object-fit: cover;" alt="">
-                            </div>
-                            <div class="col-8">
-                                <div class="card-body py-2 px-3">
-                                    <div class="d-flex align-items-center gap-1 mb-1">
-                                        <span class="badge bg-danger small"><?= t('HOT') ?></span>
-                                        <small class="text-muted"><?= t('Promo') ?></small>
-                                    </div>
-                                    <h6 class="fw-semibold small mb-1 text-dark"><?= e(t($promo['title'], null, $promo['content_language'] ?? 'id')) ?></h6>
-                                    <?php if ($promo['price'] > 0): ?>
-                                        <span class="fw-bold text-primary small"><?= formatCurrencySpan($promo['price'], $promo['price_currency'] ?? 'IDR') ?></span>
-                                    <?php else: ?>
-                                        <span class="badge bg-info"><?= t('Hubungi Kami') ?></span>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
+                    <div class="card overflow-hidden promo-card voyage-flash-card h-100">
+                        <div class="voyage-flash-media">
+                            <img src="<?= getTourImage($promo, 'medium') ?>" onerror="this.src='https://placehold.co/640x360?text=Promo'" alt="<?= e($promo['title']) ?>" loading="lazy">
+                            <span class="voyage-flash-shade"></span>
+                            <span class="badge bg-danger voyage-flash-hot"><?= t('HOT') ?></span>
+                        </div>
+                        <div class="card-body py-2 px-3">
+                            <small class="text-muted"><?= t('Promo') ?></small>
+                            <h6 class="fw-semibold small mb-1 text-dark"><?= e(t($promo['title'], null, $promo['content_language'] ?? 'id')) ?></h6>
+                            <?php if ($promo['price'] > 0): ?>
+                                <span class="fw-bold text-primary small"><?= formatCurrencySpan($promo['price'], $promo['price_currency'] ?? 'IDR') ?></span>
+                            <?php else: ?>
+                                <span class="badge bg-info"><?= t('Hubungi Kami') ?></span>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </a>
@@ -38,4 +33,3 @@
     </div>
 </section>
 <?php endif; ?>
-
