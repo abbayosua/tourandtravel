@@ -71,8 +71,7 @@ require_once 'includes/header-shared.php';
 <?php require __DIR__ . '/includes/homepage/tour-categories.php'; ?>
 <?php require __DIR__ . '/includes/homepage/tour-flash-deals.php'; ?>
 <?php require __DIR__ . '/includes/homepage/tour-destinations.php'; ?>
-<?php require __DIR__ . '/includes/homepage/tour-featured.php'; ?>
-<?php require __DIR__ . '/includes/homepage/tour-collections.php'; ?>
+<?php foreach ($collections as $coll): $collTours = $collectionTours[$coll['id']] ?? []; require __DIR__ . '/includes/homepage/tour-collections.php'; endforeach; ?>
 <?php require_once 'includes/footer-shared.php'; ?>
 <?php elseif ($siteFocus === 'hotel'): ?>
 <?php require __DIR__ . '/includes/homepage/hotel-hero.php'; ?>

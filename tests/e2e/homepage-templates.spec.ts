@@ -38,7 +38,7 @@ test.describe('Homepage Templates — fokus website (tour/hotel/flight)', () => 
     await expect(page.locator('.voyage-search')).toBeVisible();
     expect(body).toMatch(/Tour Categories|Kategori Wisata|Categories/);
     // "Destinasi Populer" dihide sementara (tour-destinations.php) — tidak wajib ada
-    expect(body).toMatch(/Rekomendasi Paket Tour|Recommended Tour/i);
+    expect(body).toMatch(/Top experiences|Best Seller/i);
     // Tidak ada elemen preset lain
     expect(body).not.toContain('Cari Hotel');
     expect(body).not.toContain('Cari Penerbangan');

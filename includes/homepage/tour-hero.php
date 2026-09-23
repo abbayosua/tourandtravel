@@ -30,7 +30,6 @@ $voyageToday = date('Y-m-d');
     </div>
 
     <div class="voyage-inner">
-        <p class="voyage-eyebrow"><span class="voyage-eyebrow-dot"></span><?= t('Baru • Koleksi tour pilihan 2025') ?></p>
         <h1 class="voyage-title"><?= t('Temukan') ?><br><span class="serif voyage-title-accent">Perfect</span> <?= t('Trip') ?></h1>
         <p class="voyage-sub"><?= t('Paket tour pilihan, villa & pengalaman — booking instan, harga terbaik.') ?></p>
 
