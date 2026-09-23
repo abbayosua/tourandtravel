@@ -4,7 +4,7 @@ require_once 'includes/db.php';
 require_once 'includes/functions.php';
 
 $pageTitle = t('Blog');
-$metaDesc = t('Artikel, tips, dan panduan traveling dari TourAndTravel.');
+$metaDesc = brandText(t('Artikel, tips, dan panduan traveling dari TourAndTravel.'));
 
 $page = max(1, (int)($_GET['page'] ?? 1));
 $perPage = 9;

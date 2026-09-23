@@ -29,7 +29,8 @@ $footMenus = getNavMenus();
     <div class="container">
         <div class="row g-4">
             <div class="col-md-3">
-                <h5 class="fw-bold mb-3"><i class="bi bi-airplane-engines-fill"></i> <?= SITE_NAME ?></h5>
+                <?php $footLogo = function_exists('siteLogoUrl') ? siteLogoUrl() : ''; ?>
+                <h5 class="fw-bold mb-3"><?php if ($footLogo): ?><img src="<?= e($footLogo) ?>" alt="<?= e(siteName()) ?>" style="height:30px;width:auto" data-testid="brand-logo"><?php else: ?><i class="bi bi-airplane-engines-fill"></i><?php endif; ?> <?= siteName() ?></h5>
                 <p class="text-secondary small"><?= t('Partner perjalanan terpercaya Anda. Kami menyediakan paket wisata domestik & internasional dengan harga terbaik.') ?></p>
                 <div class="d-flex gap-3 mt-3">
                     <a href="#" class="text-light fs-5"><i class="bi bi-instagram"></i></a>
@@ -93,7 +94,7 @@ $footMenus = getNavMenus();
         </div>
 
         <hr class="border-secondary my-3">
-        <p class="text-center text-secondary mb-0 small">&copy; <?= date('Y') ?> <?= SITE_NAME ?>. <?= t('All rights reserved.') ?></p>
+        <p class="text-center text-secondary mb-0 small">&copy; <?= date('Y') ?> <?= siteName() ?>. <?= t('All rights reserved.') ?></p>
     </div>
 </footer>
 

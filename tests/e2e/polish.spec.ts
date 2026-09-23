@@ -12,8 +12,8 @@ function dbOne(sql: string): string {
 
 test.describe('Polish — dark mode, PWA, manifest, editor EN', () => {
 
-  test('manifest.json reachable & valid JSON', async ({ page }) => {
-    const r = await page.request.get(`${BASE}/manifest.json`);
+  test('manifest.php reachable & valid JSON (ikut brand custom)', async ({ page }) => {
+    const r = await page.request.get(`${BASE}/manifest.php`);
     expect(r.status()).toBe(200);
     const j = await r.json();
     expect(j.name).toBe('TourAndTravel');

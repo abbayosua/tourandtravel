@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 sendEmailTemplate($email, 'reset-password', [
                     'name' => $user['name'],
                     'reset_link' => $link,
-                    'subject' => t('Reset Password') . ' - ' . SITE_NAME,
+                    'subject' => t('Reset Password') . ' - ' . siteName(),
                 ], null);
             }
             // Pesan sama baik email ada/tidak (jangan bocorkan keberadaan akun)

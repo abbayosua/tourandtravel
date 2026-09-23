@@ -13,6 +13,7 @@ $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_settings'])) {
     $enabled = isset($_POST['hotel_live_enabled']) ? '1' : '0';
     $module = isset($_POST['nusatrip_module_enabled']) ? '1' : '0';
+    $oyoModule = isset($_POST['oyo_module_enabled']) ? '1' : '0';
     $source = (string)($_POST['hotel_live_source'] ?? 'nusatrip');
     $rkey = trim((string)($_POST['nusatrip_rkey'] ?? ''));
 
@@ -23,6 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_settings'])) {
     } else {
         setSetting('hotel_live_enabled', $enabled);
         setSetting('nusatrip_module_enabled', $module);
+        setSetting('oyo_module_enabled', $oyoModule);
         setSetting('hotel_live_source', $source);
         setSetting('nusatrip_rkey', $rkey);
         hotelCacheClear();
@@ -32,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_settings'])) {
 
 $liveEnabled = getSetting('hotel_live_enabled', '1') === '1';
 $nusaModule = getSetting('nusatrip_module_enabled', '1') === '1';
+$oyoModuleOn = getSetting('oyo_module_enabled', '1') === '1';
 $liveSource = (string)getSetting('hotel_live_source', 'nusatrip');
 $rkey = (string)getSetting('nusatrip_rkey', '');
 
@@ -64,6 +67,10 @@ require_once 'includes/admin-header.php';
                 <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" name="nusatrip_module_enabled" id="nusaModuleEnabled" value="1" <?= $nusaModule ? 'checked' : '' ?>>
                     <label class="form-check-label" for="nusaModuleEnabled"><?= t('Aktifkan modul NusaTrip (search + booking + VA)') ?></label>
+                </div>
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" name="oyo_module_enabled" id="oyoModuleEnabled" value="1" <?= $oyoModuleOn ? 'checked' : '' ?>>
+                    <label class="form-check-label" for="oyoModuleEnabled"><?= t('Aktifkan modul OYO (fallback listing per kota)') ?></label>
                 </div>
                 <div class="mb-3">
                     <label class="form-label"><?= t('Sumber utama') ?></label>
@@ -129,6 +136,7 @@ require_once 'includes/admin-header.php';
             <?php endif; ?>
             <p class="small text-muted mt-2 mb-1"><?= t('Sumber') ?>: <b><?= e($liveSource) ?></b></p>
             <p class="small text-muted mb-0">Modul NusaTrip: <?= $nusaModule ? '<span class="text-success">aktif</span>' : '<span class="text-danger">nonaktif</span>' ?></p>
+            <p class="small text-muted mb-0">Modul OYO: <?= $oyoModuleOn ? '<span class="text-success">aktif</span>' : '<span class="text-danger">nonaktif</span>' ?></p>
             <p class="small text-muted mb-0"><?= t('rkey NusaTrip') ?>: <?= $rkey !== '' ? '<span class="text-success">' . t('terisi') . '</span>' : '<span class="text-danger">' . t('kosong') . '</span>' ?></p>
         </div></div>
     </div>

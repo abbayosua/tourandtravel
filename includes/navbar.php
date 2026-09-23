@@ -28,7 +28,8 @@ $navMenuItems = array_values(array_filter($voyageMenus, fn($m) => !empty($m['sho
 ?>
 <div class="voyage-nav-wrap">
 <nav id="navbarNav" class="voyage-nav" aria-label="Main">
-    <a class="voyage-brand" href="<?= BASE_URL ?>/"><span class="voyage-brand-dot"></span><?= e(SITE_NAME) ?></a>
+    <?php $navLogo = function_exists('siteLogoUrl') ? siteLogoUrl() : ''; ?>
+    <a class="voyage-brand" href="<?= BASE_URL ?>/" data-testid="brand-nav"><?php if ($navLogo): ?><img src="<?= e($navLogo) ?>" alt="<?= e(siteName()) ?>" style="height:28px;width:auto" data-testid="brand-logo"><?php else: ?><span class="voyage-brand-dot"></span><?php endif; ?><?= e(siteName()) ?></a>
     <div class="voyage-tabs">
         <?php foreach ($navTabs as $nm): ?>
         <a href="<?= BASE_URL ?>/<?= e($nm['url']) ?>" class="<?= navMenuIsActive($nm, $voyagePage) ? 'on' : '' ?>"><?= t($nm['label']) ?></a>

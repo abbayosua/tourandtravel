@@ -13,7 +13,7 @@ function seoCanonical(): string {
 }
 
 function seoHead(?string $metaDesc = null, ?string $ogImage = null, ?array $jsonLd = null): void {
-    $desc = $metaDesc ?: t('TourAndTravel — paket tour, hotel, tiket pesawat, dan aktivitas wisata terbaik dengan harga transparan.');
+    $desc = $metaDesc ?: brandText(t('TourAndTravel — paket tour, hotel, tiket pesawat, dan aktivitas wisata terbaik dengan harga transparan.'));
     $canon = seoCanonical();
     $ogImg = $ogImage ?: BASE_URL . '/assets/img/og-default.jpg';
     echo '<meta name="description" content="' . e(mb_substr($desc, 0, 160)) . '">' . "\n";
@@ -26,7 +26,7 @@ function seoHead(?string $metaDesc = null, ?string $ogImage = null, ?array $json
         echo '<link rel="alternate" hreflang="' . e($langMeta['locale']) . '" href="' . e($altUrl) . '">' . "\n";
     }
     echo '<meta property="og:type" content="website">' . "\n";
-    echo '<meta property="og:title" content="' . e($pageTitle ?? SITE_NAME) . '">' . "\n";
+    echo '<meta property="og:title" content="' . e($pageTitle ?? siteName()) . '">' . "\n";
     echo '<meta property="og:description" content="' . e(mb_substr($desc, 0, 160)) . '">' . "\n";
     echo '<meta property="og:image" content="' . e($ogImg) . '">' . "\n";
     echo '<meta property="og:url" content="' . e($canon) . '">' . "\n";
@@ -39,7 +39,7 @@ function seoOrganization(): array {
     return [
         '@context' => 'https://schema.org',
         '@type' => 'TravelAgency',
-        'name' => SITE_NAME,
+        'name' => siteName(),
         'url' => BASE_URL,
     ];
 }

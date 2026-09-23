@@ -64,6 +64,7 @@ try {
             break;
 
         case 'oyo':
+            if (!oyoModuleEnabled()) { $out = ['error' => 'Modul OYO nonaktif']; $status = 403; break; }
             $out = hotelApiOyo($_GET['q'] ?? 'jakarta');
             if (isset($out['error']) && empty($out['hotels'])) $status = 502;
             break;

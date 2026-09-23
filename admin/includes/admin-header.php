@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= e($pageTitle ?? t('Admin')) ?> - <?= SITE_NAME ?></title>
+    <title><?= e($pageTitle ?? t('Admin')) ?> - <?= siteName() ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../assets/css/style.css">
@@ -163,6 +163,7 @@
                 $navItem('reviews.php', 'bi-chat-square-heart', t('Ulasan'), ['reviews.php']);
                 $navItem('faq.php', 'bi-question-circle', t('Kelola FAQ'), ['faq.php', 'faq-edit.php', 'faq-category.php', 'faq-category-edit.php']);
                 $navItem('appearance.php', 'bi-layout-text-window-reverse', t('Tampilan Homepage'), ['appearance.php']);
+                $navItem('brand-settings.php', 'bi-award', t('Brand & Logo'), ['brand-settings.php'], 'nav-brand-settings');
                 $navItem('nav-menus.php', 'bi-menu-button-wide', t('Menu Navigasi'), ['nav-menus.php']);
 
                 // ===== SETTINGS =====

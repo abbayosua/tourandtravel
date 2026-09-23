@@ -18,7 +18,7 @@ function testPdfTourHtmlStructure() {
         ['day_number' => 1, 'title' => 'Day 1 — Guilin', 'description' => 'Hari pertama.', 'meals' => 'Breakfast', 'accommodation' => 'Hotel'],
     ];
     $h = pdfTourHtml('Tour Kuta', 'Category: Alam', '', $days);
-    assertContains('TourAndTravel', $h, 'ada topbar brand');
+    assertContains(siteName(), $h, 'ada topbar brand');
     assertContains('Tour Kuta', $h, 'ada judul tour');
     assertContains('Day 1 — Guilin', $h, 'ada judul hari');
     assertTrue(strpos($h, 'Day 1 — Day 1') === false, 'tidak dobel prefix Day');

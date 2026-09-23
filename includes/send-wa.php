@@ -69,7 +69,7 @@ function sendWA($phone, $message) {
  * Kirim notifikasi booking ke admin
  */
 function sendBookingNotification($tour, $bookingCode, $name, $phone, $participants, $totalPrice, $departureDate) {
-    $message = "🆕 *PESANAN BARU - TourAndTravel*\n\n"
+    $message = "🆕 *PESANAN BARU - " . siteName() . "*\n\n"
         . "📋 *Kode Booking:* $bookingCode\n"
         . "🏖️ *Tour:* {$tour['title']}\n"
         . "📅 *Keberangkatan:* $departureDate\n"
@@ -77,7 +77,7 @@ function sendBookingNotification($tour, $bookingCode, $name, $phone, $participan
         . "📞 *WhatsApp:* $phone\n"
         . "👥 *Peserta:* $participants orang\n"
         . "💰 *Total:* Rp " . number_format($totalPrice, 0, ',', '.') . "\n\n"
-        . "🔗 " . (defined('BASE_URL') ? BASE_URL : 'http://tourandtravel.web.id') . "/track.php?code=$bookingCode";
+        . "🔗 " . (defined('BASE_URL') ? BASE_URL : 'https://tourandtravel.web.id') . "/track.php?code=$bookingCode";
 
     return sendWA(WA_ADMIN, $message);
 }

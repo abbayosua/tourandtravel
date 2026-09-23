@@ -11,7 +11,7 @@ if (!$phone) {
     exit;
 }
 
-$sent = sendWA($phone, "✅ *Test Notifikasi*\n\nHalo! Ini adalah pesan test dari *TourAndTravel*.\nNotifikasi WhatsApp berfungsi dengan baik.\n\n" . date('d/m/Y H:i'));
+$sent = sendWA($phone, "✅ *Test Notifikasi*\n\nHalo! Ini adalah pesan test dari *" . siteName() . "*.\nNotifikasi WhatsApp berfungsi dengan baik.\n\n" . date('d/m/Y H:i'));
 
 if ($sent) {
     header('Location: wa-settings.php?message=' . urlencode("Test WA berhasil dikirim ke $phone"));

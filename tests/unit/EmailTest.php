@@ -60,13 +60,13 @@ function testRenderEmailTemplateBilingual() {
     $en = renderEmailTemplate('booking-created', ['booking_code' => 'TAT-1', 'total' => 'Rp 100', 'pay_link' => 'http://x/pay'], 'en');
     assertContains('Booking code', $en['html']);
     assertContains('Pay Now', $en['html']);
-    assertContains(SITE_NAME, $en['html'], 'brand shell tampil');
+    assertContains(siteName(), $en['html'], 'brand shell tampil');
 }
 
 function testRenderEmailTemplateFallsBackToGeneric() {
     $t = renderEmailTemplate('event-tak-ada', ['message' => 'halo dunia'], 'id');
     assertContains('halo dunia', $t['html']);
-    assertContains(SITE_NAME, $t['html']);
+    assertContains(siteName(), $t['html']);
 }
 
 function testSendEmailTemplateLogsEvent() {
@@ -105,7 +105,7 @@ function testRenderEmailTemplateTrilingualZh() {
 function testRenderEmailTemplateZhSubjectAndShell() {
     $t = renderEmailTemplate('booking-created', ['booking_code' => 'TAT-ZH', 'total' => 'Rp 1', 'subject' => '您的预订已收到'], 'zh');
     assertSame('您的预订已收到', $t['subject'], 'subject custom dipakai apa pun bahasanya');
-    assertContains(SITE_NAME, $t['html'], 'brand shell tetap tampil untuk zh');
+    assertContains(siteName(), $t['html'], 'brand shell tetap tampil untuk zh');
     assertContains('<div style="background:#0d6efd', $t['html'], 'shell html utuh');
 
     $t2 = renderEmailTemplate('welcome', [], 'zh');

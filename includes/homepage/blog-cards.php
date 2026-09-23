@@ -11,7 +11,7 @@
                         <div class="col-8">
                             <div class="card-body p-3">
                                 <span class="badge bg-primary mb-2"><?= t('Blog') ?></span>
-                                <h6 class="fw-semibold small"><?= t('Cek blog TourAndTravel') ?></h6>
+                                <h6 class="fw-semibold small"><?= brandText(t('Cek blog TourAndTravel')) ?></h6>
                                 <p class="small text-muted mb-2"><?= t('Ikuti tren travel, itinerary ideas, dan tips traveling terbaru.') ?></p>
                                 <a href="tours.php" class="small fw-semibold text-primary text-decoration-none"><?= t('Baca selengkapnya') ?> <i class="bi bi-arrow-right"></i></a>
                             </div>

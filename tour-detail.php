@@ -479,7 +479,7 @@ require_once 'includes/header-shared.php';
                                 <?php endif; ?>
                                 <?php if (!empty($r['reply_text'])): ?>
                                 <div class="bg-light rounded-3 p-2 mt-2">
-                                    <small class="fw-semibold"><i class="bi bi-shield-check text-primary me-1"></i><?= SITE_NAME ?></small>
+                                    <small class="fw-semibold"><i class="bi bi-shield-check text-primary me-1"></i><?= siteName() ?></small>
                                     <p class="small mb-0"><?= nl2br(e($r['reply_text'])) ?></p>
                                 </div>
                                 <?php endif; ?>

@@ -19,7 +19,7 @@ function emailDriver(): string {
 }
 
 function emailFrom(): string {
-    return (string)getSetting('email_from', 'noreply@tourandtravel.web.id');
+    return (string)getSetting('email_from', 'noreply@' . preg_replace('#^https?://#', '', defined('BASE_URL') ? BASE_URL : 'tourandtravel.web.id'));
 }
 
 /** Kirim via API; kembalikan [ok, error] */
@@ -108,10 +108,11 @@ function renderEmailTemplate(string $event, array $data = [], ?string $lang = nu
         if (!empty($data['booking_code'])) $subject .= ' - ' . $data['booking_code'];
     }
 
+    $brand = siteName();
     $shell = '<div style="font-family:Arial,Helvetica,sans-serif;max-width:600px;margin:0 auto;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;">
-      <div style="background:#0d6efd;color:#fff;padding:16px 24px;font-weight:bold;font-size:18px;">' . SITE_NAME . '</div>
+      <div style="background:#0d6efd;color:#fff;padding:16px 24px;font-weight:bold;font-size:18px;">' . $brand . '</div>
       <div style="padding:24px;color:#111827;font-size:14px;line-height:1.6;">' . $body . '</div>
-      <div style="padding:16px 24px;background:#f3f4f6;color:#6b7280;font-size:12px;">&copy; ' . date('Y') . ' ' . SITE_NAME . '</div>
+      <div style="padding:16px 24px;background:#f3f4f6;color:#6b7280;font-size:12px;">&copy; ' . date('Y') . ' ' . $brand . '</div>
     </div>';
 
     return ['subject' => $subject, 'html' => $shell];
@@ -125,7 +126,7 @@ function sendEmailTemplate(string $to, string $event, array $data = [], ?string 
     } catch (Throwable $e) {
         // Fallback: kirim email generic polos agar log tetap tercatat
         try {
-            return sendEmail($to, ucfirst(str_replace('-', ' ', $event)) . (isset($data['booking_code']) ? ' - ' . $data['booking_code'] : ''), '<p>' . t('Notifikasi dari ' . SITE_NAME) . '</p>', $event);
+            return sendEmail($to, ucfirst(str_replace('-', ' ', $event)) . (isset($data['booking_code']) ? ' - ' . $data['booking_code'] : ''), '<p>' . e(brandText('Notifikasi dari TourAndTravel')) . '</p>', $event);
         } catch (Throwable $e2) {
             return ['ok' => false, 'log_id' => 0, 'error' => $e->getMessage()];
         }

@@ -11,11 +11,11 @@ $trustFocus = isset($siteFocus) ? $siteFocus : 'tour';
         <div class="text-center mb-4">
             <h5 class="fw-bold">
                 <?php if ($trustFocus === 'hotel'): ?>
-                    <?= t('Kenapa Booking Hotel di') ?> <?= SITE_NAME ?>?
+                    <?= t('Kenapa Booking Hotel di') ?> <?= siteName() ?>?
                 <?php elseif ($trustFocus === 'flight'): ?>
-                    <?= t('Kenapa Pesan Tiket di') ?> <?= SITE_NAME ?>?
+                    <?= t('Kenapa Pesan Tiket di') ?> <?= siteName() ?>?
                 <?php else: ?>
-                    <?= t('Kenapa Pilih') ?> <?= SITE_NAME ?>?
+                    <?= t('Kenapa Pilih') ?> <?= siteName() ?>?
                 <?php endif; ?>
             </h5>
         </div>

@@ -205,7 +205,14 @@ function hotelApiParseBookingUrl(string $url): array {
 // OYO
 // ============================================================
 
+/** Modul OYO aktif? Toggle dari admin (setting oyo_module_enabled, default aktif). */
+function oyoModuleEnabled(): bool {
+    if (!function_exists('getSetting')) return true;
+    return (string)getSetting('oyo_module_enabled', '1') === '1';
+}
+
 function hotelApiOyo(string $city): array {
+    if (!oyoModuleEnabled()) return ['error' => 'Modul OYO nonaktif', 'source' => 'oyorooms', 'hotels' => []];
     $city = trim($city);
     if ($city === '') return ['error' => 'Kota kosong', 'hotels' => []];
     return hotelApiCached('oyo', hotelCacheKey('oyo', ['list', $city]), function () use ($city) {
@@ -321,13 +328,18 @@ function hotelApiNusatrip(string $token): array {
 // ============================================================
 
 /**
- * Pilih sumber live. 'auto' → NusaTrip native API (tanpa rkey), fallback OYO bila gagal.
+ * Pilih sumber live. 'auto' → NusaTrip native (tanpa rkey), fallback OYO bila gagal.
+ * Modul yang nonaktif otomatis dilewati: bila keduanya mati → '' (tanpa live).
  */
 function hotelApiResolveSource(?string $source = null): string {
     $source = $source ?: (string)getSetting('hotel_live_source', 'auto');
-    if ($source === 'auto') $source = function_exists('nusaModuleEnabled') && !nusaModuleEnabled() ? 'oyo' : 'nusatrip';
-    if ($source === 'nusatrip' && function_exists('nusaModuleEnabled') && !nusaModuleEnabled()) $source = 'oyo';
-    return in_array($source, ['oyo', 'nusatrip'], true) ? $source : 'oyo';
+    $nusaOn = !function_exists('nusaModuleEnabled') || nusaModuleEnabled();
+    $oyoOn = !function_exists('oyoModuleEnabled') || oyoModuleEnabled();
+    if ($source === 'auto') $source = $nusaOn ? 'nusatrip' : ($oyoOn ? 'oyo' : '');
+    if ($source === 'nusatrip' && !$nusaOn) $source = $oyoOn ? 'oyo' : '';
+    if ($source === 'oyo' && !$oyoOn) $source = $nusaOn ? 'nusatrip' : '';
+    if (!in_array($source, ['oyo', 'nusatrip'], true)) $source = $oyoOn ? 'oyo' : ($nusaOn ? 'nusatrip' : '');
+    return $source;
 }
 
 /**
@@ -342,6 +354,7 @@ function hotelApiSearch(string $city, array $opts = []): array {
     if ($city === '') return ['error' => 'Kota kosong', 'hotels' => [], 'count' => 0];
 
     $source = hotelApiResolveSource($opts['source'] ?? null);
+    if ($source === '') return ['source' => '', 'count' => 0, 'hotels' => [], 'error' => 'Semua modul live nonaktif'];
     if ($source === 'nusatrip') {
         // Native API: butuh tanggal valid utk hotel_search (default +7/+8).
         $ci = (string)($opts['checkin'] ?? '');
@@ -352,8 +365,9 @@ function hotelApiSearch(string $city, array $opts = []): array {
         $res = hotelApiCached('nusatrip', hotelCacheKey('nusatrip', ['native', strtolower($city), $ci, $co, $guests]),
             fn() => nusaSearchCity($city, $ci, $co, $guests),
             fn($d) => count($d['hotels'] ?? []));
-        // Fallback ke OYO bila NusaTrip kosong/gagal
+        // Fallback ke OYO bila NusaTrip kosong/gagal (hanya bila modul OYO aktif)
         if (isset($res['error']) || empty($res['hotels'])) {
+            if (!oyoModuleEnabled()) return ['source' => $source, 'count' => 0, 'hotels' => [], 'error' => $res['error'] ?? 'NusaTrip kosong; fallback OYO nonaktif'];
             $res = hotelApiOyo($city);
             $source = 'oyorooms';
         }

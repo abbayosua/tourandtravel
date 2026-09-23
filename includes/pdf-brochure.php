@@ -150,7 +150,7 @@ function pdfMealIcons(?string $meals, string $lang): string {
 /** Kontak perusahaan dari settings (dengan default placeholder). */
 function pdfCompanyContact(): array {
     return [
-        'name' => getSetting('company_name', 'TourAndTravel'),
+        'name' => function_exists('siteName') ? siteName() : getSetting('company_name', 'TourAndTravel'),
         'address' => getSetting('company_address', ''),
         'phone' => getSetting('company_phone', ''),
         'wa' => getSetting('company_wa', ''),
@@ -314,9 +314,9 @@ function pdfTourBrochureHtml(array $tour, array $days, string $coverImgTag, arra
 
     // ===== Halaman 1: cover =====
     $h .= '<div class="page">';
-    $h .= '<table class="head"><tr><td class="corner" width="20">&#10022;</td><td><div class="brand">TOURANDTRAVEL</div>'
-        . '<div class="brand-sub">TOUR &amp; TRAVEL</div></td>'
-        . '<td class="head-right">YOUR WORLD OF JOY<br>' . e($web) . '</td><td class="corner" width="20" style="text-align:right">&#10022;</td></tr></table>';
+    $h .= '<table class="head"><tr><td class="corner" width="20">&#10022;</td><td><div class="brand">' . e(mb_strtoupper(siteName())) . '</div>'
+        . '<div class="brand-sub">' . e(mb_strtoupper((string)getSetting('site_tagline', 'TOUR & TRAVEL'))) . '</div></td>'
+        . '<td class="head-right">' . e((string)getSetting('site_tagline', 'YOUR WORLD OF JOY')) . '<br>' . e($web) . '</td><td class="corner" width="20" style="text-align:right">&#10022;</td></tr></table>';
     $h .= '<div class="hero"><table><tr><td class="dur">' . $dur . '</td>'
         . '<td><div class="hero-title">' . e($tourTitle) . '</div>'
         . ($route !== '' ? '<div class="hero-sub">' . e($route) . '</div>' : '') . '</td></tr></table></div>';

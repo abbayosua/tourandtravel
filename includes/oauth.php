@@ -39,7 +39,7 @@ function oauthGoogleUpsert(array $info): int {
         $userId = (int)db()->lastInsertId();
 
         require_once __DIR__ . '/email.php';
-        sendEmailTemplate($email, 'welcome', ['name' => $name, 'subject' => 'Selamat Datang di ' . SITE_NAME], null);
+        sendEmailTemplate($email, 'welcome', ['name' => $name, 'subject' => 'Selamat Datang di ' . siteName()], null);
     }
 
     return (int)$userId;

@@ -32,57 +32,112 @@ function testHotelCacheKeyBounded() {
 function testHotelApiResolveSourceDefaultsToNusatripNative() {
     $prevSource = getSetting('hotel_live_source', 'nusatrip');
     $prevRkey = (string)getSetting('nusatrip_rkey', '');
+    $prevNusa = getSetting('nusatrip_module_enabled', '1');
+    $prevOyo = getSetting('oyo_module_enabled', '1');
     setSetting('hotel_live_source', 'auto');
     setSetting('nusatrip_rkey', '');
+    setSetting('nusatrip_module_enabled', '1');
+    setSetting('oyo_module_enabled', '1');
     try {
         assertSame('nusatrip', hotelApiResolveSource(null));
     } finally {
         setSetting('hotel_live_source', $prevSource);
         setSetting('nusatrip_rkey', $prevRkey);
+        setSetting('nusatrip_module_enabled', $prevNusa);
+        setSetting('oyo_module_enabled', $prevOyo);
     }
 }
 
 function testHotelApiResolveSourceAutoPrefersNusatripWhenRkeySet() {
     $prevSource = getSetting('hotel_live_source', 'nusatrip');
     $prevRkey = (string)getSetting('nusatrip_rkey', '');
+    $prevNusa = getSetting('nusatrip_module_enabled', '1');
+    $prevOyo = getSetting('oyo_module_enabled', '1');
     setSetting('hotel_live_source', 'auto');
     setSetting('nusatrip_rkey', str_repeat('a', 128));
+    setSetting('nusatrip_module_enabled', '1');
+    setSetting('oyo_module_enabled', '1');
     try {
         assertSame('nusatrip', hotelApiResolveSource(null));
     } finally {
         setSetting('hotel_live_source', $prevSource);
         setSetting('nusatrip_rkey', $prevRkey);
+        setSetting('nusatrip_module_enabled', $prevNusa);
+        setSetting('oyo_module_enabled', $prevOyo);
     }
 }
 
 function testHotelApiResolveSourceHonorsExplicit() {
-    $prev = getSetting('nusatrip_module_enabled', '1');
+    $prevNusa = getSetting('nusatrip_module_enabled', '1');
+    $prevOyo = getSetting('oyo_module_enabled', '1');
     setSetting('nusatrip_module_enabled', '1');
+    setSetting('oyo_module_enabled', '1');
     try {
         assertSame('nusatrip', hotelApiResolveSource('nusatrip'));
         assertSame('oyo', hotelApiResolveSource('oyo'));
         assertSame('oyo', hotelApiResolveSource('bogus'), 'sumber tak dikenal → oyo');
     } finally {
-        setSetting('nusatrip_module_enabled', $prev);
+        setSetting('nusatrip_module_enabled', $prevNusa);
+        setSetting('oyo_module_enabled', $prevOyo);
+    }
+}
+
+function testOyoModuleToggleDisablesOyo() {
+    $prevNusa = getSetting('nusatrip_module_enabled', '1');
+    $prevOyo = getSetting('oyo_module_enabled', '1');
+    setSetting('nusatrip_module_enabled', '1');
+    setSetting('oyo_module_enabled', '1');
+    try {
+        assertTrue(oyoModuleEnabled());
+        assertSame('oyo', hotelApiResolveSource('oyo'));
+    } finally {
+        setSetting('nusatrip_module_enabled', $prevNusa);
+        setSetting('oyo_module_enabled', $prevOyo);
+    }
+    setSetting('nusatrip_module_enabled', '1');
+    setSetting('oyo_module_enabled', '0');
+    try {
+        assertTrue(!oyoModuleEnabled());
+        assertSame('nusatrip', hotelApiResolveSource('oyo'), 'oyo off → paksa nusatrip');
+        $r = hotelApiOyo('Batam');
+        assertContains('Modul OYO nonaktif', $r['error'] ?? '');
+    } finally {
+        setSetting('nusatrip_module_enabled', $prevNusa);
+        setSetting('oyo_module_enabled', $prevOyo);
+    }
+    setSetting('nusatrip_module_enabled', '0');
+    setSetting('oyo_module_enabled', '0');
+    try {
+        assertSame('', hotelApiResolveSource(null), 'keduanya off → tanpa live');
+        assertSame('', hotelApiResolveSource('oyo'), 'keduanya off → tanpa live');
+        assertSame('', hotelApiResolveSource('nusatrip'), 'keduanya off → tanpa live');
+    } finally {
+        setSetting('nusatrip_module_enabled', $prevNusa);
+        setSetting('oyo_module_enabled', $prevOyo);
     }
 }
 
 function testNusaModuleToggleFallsBackToOyo() {
-    $prev = getSetting('nusatrip_module_enabled', '1');
+    $prevNusa = getSetting('nusatrip_module_enabled', '1');
+    $prevOyo = getSetting('oyo_module_enabled', '1');
     setSetting('nusatrip_module_enabled', '1');
+    setSetting('oyo_module_enabled', '1');
     try {
         assertTrue(nusaModuleEnabled());
         assertSame('nusatrip', hotelApiResolveSource('nusatrip'));
     } finally {
-        setSetting('nusatrip_module_enabled', $prev);
+        setSetting('nusatrip_module_enabled', $prevNusa);
+        setSetting('oyo_module_enabled', $prevOyo);
     }
     setSetting('nusatrip_module_enabled', '0');
+    setSetting('oyo_module_enabled', '1');
     try {
         assertTrue(!nusaModuleEnabled());
         assertSame('oyo', hotelApiResolveSource('nusatrip'), 'modul off → paksa oyo');
         assertSame('oyo', hotelApiResolveSource(null), 'auto + modul off → oyo');
     } finally {
-        setSetting('nusatrip_module_enabled', $prev);
+        setSetting('nusatrip_module_enabled', $prevNusa);
+        setSetting('oyo_module_enabled', $prevOyo);
     }
 }
 

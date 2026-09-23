@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             require_once 'includes/email.php';
             sendEmailTemplate($email, 'welcome', [
                 'name' => $name,
-                'subject' => 'Selamat Datang di ' . SITE_NAME,
+                'subject' => 'Selamat Datang di ' . siteName(),
             ], null);
 
             // Generate referral code: REF-{user_id}-{random4}

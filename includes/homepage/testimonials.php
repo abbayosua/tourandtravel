@@ -19,7 +19,7 @@
                         <div class="text-warning small mb-2">
                             <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
                         </div>
-                        <p class="mb-0 small text-muted"><?= t('"Liburan ke Bali bareng TourAndTravel puas banget! Hotelnya enak, guide-nya ramah, itinerary-nya lengkap. Recommended!"') ?></p>
+                        <p class="mb-0 small text-muted"><?= brandText(t('"Liburan ke Bali bareng TourAndTravel puas banget! Hotelnya enak, guide-nya ramah, itinerary-nya lengkap. Recommended!"')) ?></p>
                     </div>
                 </div>
             </div>

@@ -570,6 +570,42 @@ function e($string) {
 }
 
 /**
+ * Nama brand dinamis — bisa diubah dari Admin Panel (Brand & Logo).
+ * Fallback ke konstanta SITE_NAME bila setting kosong / DB error.
+ */
+function siteName(): string {
+    if (function_exists('getSetting')) {
+        $name = trim((string)getSetting('site_name', ''));
+        if ($name !== '') return mb_substr($name, 0, 60);
+    }
+    return defined('SITE_NAME') ? SITE_NAME : 'TourAndTravel';
+}
+
+/** Path relatif logo custom (uploads/brand/...) atau '' bila belum dipasang. */
+function siteLogoPath(): string {
+    if (!function_exists('getSetting')) return '';
+    $p = trim((string)getSetting('site_logo', ''));
+    if ($p === '' || str_contains($p, '..')) return '';
+    return ltrim($p, '/');
+}
+
+/** URL penuh logo custom atau '' bila belum dipasang. */
+function siteLogoUrl(): string {
+    $p = siteLogoPath();
+    if ($p === '') return '';
+    if (preg_match('#^https?://#i', $p)) return $p;
+    return (defined('BASE_URL') ? BASE_URL : '') . '/' . $p;
+}
+
+/** Ganti varian brand statis dalam teks (termasuk hasil t()) dengan nama custom. */
+function brandText(string $s): string {
+    $b = siteName();
+    if ($b === 'TourAndTravel') return $s;
+    $s = str_replace('TOURANDTRAVEL', mb_strtoupper($b), $s);
+    return str_replace(['TourAndTravel', 'Tourandtravel'], $b, $s);
+}
+
+/**
  * Ambil data tours aktif dengan filter lanjutan + sort + pagination
  */
 function getTours($category = null, $search = null, $priceRange = null, $duration = null, $rating = null, $sort = null, $page = 1, $perPage = 12, $minPrice = null, $maxPrice = null, $departure = null) {
