@@ -39,6 +39,8 @@ $targets = [
     'tour_dates' => [
         'note_en' => 'VARCHAR(100) NULL',
         'note_zh' => 'VARCHAR(100) NULL',
+        'price_twin' => 'DECIMAL(12,2) NULL',
+        'price_triple' => 'DECIMAL(12,2) NULL',
     ],
 ];
 

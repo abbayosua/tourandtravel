@@ -98,6 +98,47 @@ function pdfLocalImg(string $path, string $attrs = '', int $maxW = 0): string
     return '<img src="data:' . $mime . ';base64,' . base64_encode($data) . '" ' . $attrs . ' />';
 }
 
+/**
+ * Unduh gambar remote ke cache lokal (TTL 7 hari) lalu kembalikan <img> data-URI.
+ * Untuk strip rute/galeri PDF yang fotonya URL remote (Klook/loremflickr).
+ * Gagal unduh → return '' (section disembunyikan otomatis).
+ */
+function pdfRemoteImg(string $url, string $attrs = '', int $maxW = 320): string
+{
+    $url = trim($url);
+    if ($url === '' || !preg_match('#^https?://#i', $url)) return '';
+    $dir = sys_get_temp_dir() . '/tat_pdf_img';
+    if (!is_dir($dir)) @mkdir($dir, 0775, true);
+    $file = $dir . '/' . md5($url) . '.jpg';
+    if (!is_file($file) || filesize($file) < 500 || (time() - filemtime($file) > 7 * 86400)) {
+        $ctx = stream_context_create(['http' => ['timeout' => 8, 'user_agent' => 'TourAndTravel-PDF/1.0']]);
+        $data = @file_get_contents($url, false, $ctx);
+        if (!$data || strlen($data) < 500) return '';
+        $img = @imagecreatefromstring($data);
+        if (!$img) return '';
+        $w = imagesx($img);
+        if ($maxW > 0 && $w > $maxW) {
+            $h = imagesy($img);
+            $nw = $maxW;
+            $nh = (int)round($h * $nw / $w);
+            $small = imagecreatetruecolor($nw, $nh);
+            imagecopyresampled($small, $img, 0, 0, 0, 0, $nw, $nh, $w, $h);
+            imagedestroy($img);
+            $img = $small;
+        }
+        ob_start();
+        imagejpeg($img, null, 72);
+        $jpg = ob_get_clean();
+        imagedestroy($img);
+        if (!$jpg) return '';
+        @file_put_contents($file, $jpg);
+    } else {
+        $jpg = @file_get_contents($file);
+        if (!$jpg) return '';
+    }
+    return '<img src="data:image/jpeg;base64,' . base64_encode($jpg) . '" ' . $attrs . ' />';
+}
+
 /** Judul hari tanpa dobel prefix: DB sudah menyimpan "Day 1 — ...". */
 function pdfDayTitle(int $dayNum, string $title): string
 {

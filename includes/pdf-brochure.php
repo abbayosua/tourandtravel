@@ -69,12 +69,109 @@ function pdfBrochureCss(string $lang = 'id'): string
     .cta .t1 { color: #d4b86a; font-weight: bold; font-size: 11pt; }
     .cta .t2 { color: #fff; font-size: 8pt; margin-top: 2px; }
     .foot { text-align: center; color: #999; font-size: 7pt; margin-top: 8px; }
+    table.route { width: 100%; border-collapse: collapse; margin: 6px 0; }
+    table.route td { width: 20%; vertical-align: top; padding: 2px; text-align: center; }
+    .route-img { display: block; border-radius: 6px; margin-bottom: 2px; }
+    .route-cap { font-size: 7pt; color: #0f2b6b; font-weight: bold; }
+    .route-num { display: inline-block; background: #b02a37; color: #fff; font-weight: bold; font-size: 7pt; border-radius: 50%; width: 14px; height: 14px; line-height: 14px; text-align: center; margin-right: 2px; }
+    .meal-ic { display: inline-block; border-radius: 4px; padding: 1px 5px; font-size: 7.5pt; font-weight: bold; margin-right: 2px; }
+    .meal-b { background: #e8f4fd; color: #0f2b6b; border: 1px solid #0f2b6b; }
+    .meal-l { background: #fff3e0; color: #b26a00; border: 1px solid #b26a00; }
+    .meal-d { background: #fce4ec; color: #b02a37; border: 1px solid #b02a37; }
+    .stars { color: #d4a017; font-size: 8pt; letter-spacing: 1px; }
+    .visa-band { background: #b02a37; color: #fff; font-weight: bold; font-size: 9pt; text-align: center; border-radius: 6px; padding: 5px 0; margin: 6px 0; letter-spacing: 1px; }
+    .flightno { background: #0f2b6b; color: #fff; font-weight: bold; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; white-space: nowrap; }
+    table.contact { width: 100%; border-collapse: collapse; margin-top: 8px; }
+    table.contact td { font-size: 7pt; color: #555; padding: 1px 4px; vertical-align: top; }
     CSS;
 }
 
-/** Durasi brosur: kolom duration_* dulu, lalu parse judul ("8D ..."), lalu jumlah hari. */
-function pdfBrochureDuration(array $tour, array $days): string
+/** Normalisasi URL galeri: perbaiki 'BASE/uploads/https://...' jadi URL asli. */
+function pdfGalleryUrl(string $u): string
 {
+    $u = trim($u);
+    if (preg_match('#uploads/(https?://.+)$#i', $u, $m)) return $m[1];
+    return $u;
+}
+
+/** Pecah route_cities jadi daftar kota: "A - B - C" → [A,B,C]. Maks 10. */
+function pdfRouteStops(?string $route): array {
+    $out = [];
+    foreach (preg_split('/[\-–—\/\|]+/u', (string)$route) as $p) {
+        $p = trim($p);
+        if ($p !== '' && count($out) < 10) $out[] = mb_substr($p, 0, 24);
+    }
+    return $out;
+}
+
+/** Pisah teks akomodasi jadi [nama, bintang 0-5]. Deteksi "bintang 4", "4 star", "★×4", "*4". */
+function pdfHotelStars(?string $acc): array {
+    $acc = trim((string)$acc);
+    $stars = 0;
+    if (preg_match('/bintang\s*(\d)/i', $acc, $m)) $stars = (int)$m[1];
+    elseif (preg_match('/(\d)\s*star/i', $acc, $m)) $stars = (int)$m[1];
+    elseif (preg_match('/★{2,5}/u', $acc, $m)) $stars = mb_strlen($m[0]);
+    elseif (preg_match('/\*(\d)/', $acc, $m)) $stars = (int)$m[1];
+    $stars = max(0, min(5, $stars));
+    $name = trim(preg_replace('/\s*[\(\[]?(bintang\s*\d|\d\s*star|★+|\*\d)[\)\]]?\s*/iu', ' ', $acc));
+    return [$name !== '' ? $name : $acc, $stars];
+}
+
+/** Render ★★★★☆ dari jumlah bintang (0 → '-'). */
+function pdfStarsHtml(int $stars): string {
+    if ($stars <= 0) return '';
+    return '<span class="stars">' . str_repeat('★', $stars) . str_repeat('☆', 5 - $stars) . '</span>';
+}
+
+/** Parse teks meals jadi ikon B/L/D (atau 早/午/晚 utk zh). Kosong → ''. */
+function pdfMealIcons(?string $meals, string $lang): string {
+    $t = mb_strtolower(trim((string)$meals));
+    if ($t === '' || $t === '-') return '';
+    $hasB = (bool)preg_match('/breakfast|sarapan|pagi|早/', $t);
+    $hasL = (bool)preg_match('/lunch|siang|makan siang|午/', $t);
+    $hasD = (bool)preg_match('/dinner|malam|makan malam|晚/', $t);
+    if (!$hasB && !$hasL && !$hasD) return e($meals);
+    $lbl = $lang === 'zh' ? ['B' => '早', 'L' => '午', 'D' => '晚'] : ['B' => 'B', 'L' => 'L', 'D' => 'D'];
+    $o = '';
+    if ($hasB) $o .= '<span class="meal-ic meal-b">' . $lbl['B'] . '</span>';
+    if ($hasL) $o .= '<span class="meal-ic meal-l">' . $lbl['L'] . '</span>';
+    if ($hasD) $o .= '<span class="meal-ic meal-d">' . $lbl['D'] . '</span>';
+    return $o;
+}
+
+/** Kontak perusahaan dari settings (dengan default placeholder). */
+function pdfCompanyContact(): array {
+    return [
+        'name' => getSetting('company_name', 'TourAndTravel'),
+        'address' => getSetting('company_address', ''),
+        'phone' => getSetting('company_phone', ''),
+        'wa' => getSetting('company_wa', ''),
+        'ig' => getSetting('company_ig', ''),
+        'fb' => getSetting('company_fb', ''),
+    ];
+}
+
+/** Deteksi catatan visa dari excludes/notes (baris mengandung 'visa'). */
+function pdfVisaNote(array $tour, string $lang): string {
+    foreach (['excludes', 'important_notes'] as $f) {
+        foreach (pdfBrochureLines(tContentLang($tour, $f, $lang) ?: null, 12) as $ln) {
+            if (preg_match('/visa/i', $ln)) return $ln;
+        }
+    }
+    return '';
+}
+
+/** Parse baris flight: "GA 890 ... 23:15 - ... 06:10" → [nomor, sisa]. Nomor = 2 huruf + spasi + digit. */
+function pdfFlightParsed(string $line): array {
+    $line = trim($line);
+    if (preg_match('/^([A-Z]{1,3}\s?\d{2,4}[A-Z]?)/', $line, $m)) {
+        return [trim($m[1]), trim(mb_substr($line, strlen($m[0])))];
+    }
+    return ['', $line];
+}
+
+/** Durasi brosur: kolom duration_* dulu, lalu parse judul ("8D ..."), lalu jumlah hari. */
+function pdfBrochureDuration(array $tour, array $days): string {
     $d = (int)($tour['duration_days'] ?? 0);
     $n = (int)($tour['duration_nights'] ?? 0);
     if ($d <= 0 && preg_match('/(\d{1,2})\s*D/i', $tour['title'] ?? '', $m)) $d = (int)$m[1];
@@ -158,6 +255,8 @@ function pdfBrochureLabels(string $lang): array
         'th_adult' => ['id' => 'DEWASA', 'en' => 'ADULT', 'zh' => '成人'],
         'th_child' => ['id' => 'ANAK', 'en' => 'CHILD', 'zh' => '儿童'],
         'th_single' => ['id' => 'SINGLE', 'en' => 'SINGLE', 'zh' => '单房差'],
+        'th_twin' => ['id' => '1 KAMAR 2 ORG', 'en' => 'TWIN (2 PAX/ROOM)', 'zh' => '双人房/人'],
+        'th_triple' => ['id' => '1 KAMAR 3 ORG', 'en' => 'TRIPLE (3 PAX/ROOM)', 'zh' => '三人房/人'],
         'th_status' => ['id' => 'STATUS', 'en' => 'STATUS', 'zh' => '状态'],
         'th_pricepax' => ['id' => 'HARGA / PAX', 'en' => 'PRICE / PAX', 'zh' => '价格 / 人'],
         'seats_left' => ['id' => 'Sisa %d seat', 'en' => '%d seats left', 'zh' => '还剩 %d 个座位'],
@@ -169,6 +268,8 @@ function pdfBrochureLabels(string $lang): array
         'notes' => ['id' => 'CATATAN PENTING / IMPORTANT NOTES', 'en' => 'IMPORTANT NOTES', 'zh' => '重要须知'],
         'cta' => ['id' => 'DAFTAR SEKARANG — SEAT TERBATAS!', 'en' => 'REGISTER NOW — LIMITED SEATS!', 'zh' => '立即报名 — 座位有限！'],
         'cta_sub' => ['id' => 'Syarat & Ketentuan Berlaku', 'en' => 'Terms & Conditions Apply', 'zh' => '须遵守条款和条件'],
+        'route' => ['id' => 'RUTE PERJALANAN', 'en' => 'TRAVEL ROUTE', 'zh' => '行程路线'],
+        'direct_flight' => ['id' => 'PENERBANGAN LANGSUNG', 'en' => 'DIRECT FLIGHT', 'zh' => '直飞航班'],
         'foot' => ['id' => 'Generated by TourAndTravel — Your World of Joy', 'en' => 'Generated by TourAndTravel — Your World of Joy', 'zh' => '由 TourAndTravel 生成 — Your World of Joy'],
     ];
     $o = [];
@@ -213,6 +314,25 @@ function pdfTourBrochureHtml(array $tour, array $days, string $coverImgTag, arra
         . ($route !== '' ? '<div class="hero-sub">' . e($route) . '</div>' : '') . '</td></tr></table></div>';
     if ($intro !== '') $h .= '<div class="tagline">' . e(mb_substr($intro, 0, 320)) . '</div>';
     if ($coverImgTag !== '') $h .= '<div>' . $coverImgTag . '</div>';
+    $stops = pdfRouteStops($tc('route_cities') ?: null);
+    if (count($stops) >= 2) {
+        $imgs = [];
+        try { foreach (getTourGalleryUrls($tour) as $u) $imgs[] = $u; } catch (Throwable $e) {}
+        $h .= '<div class="secbar">' . e($L['route']) . '</div><table class="route"><tr>';
+        $n = min(count($stops), 5);
+        for ($i = 0; $i < $n; $i++) {
+            $u = pdfGalleryUrl($imgs[$i] ?? ($imgs ? $imgs[$i % count($imgs)] : ''));
+            $tag = '';
+            if ($u !== '') {
+                if (preg_match('#^https?://#i', $u)) $tag = pdfRemoteImg($u, 'class="route-img" width="110"', 220);
+                else $tag = pdfLocalImg(preg_replace('#^' . preg_quote(BASE_URL, '#') . '#', '', $u), 'class="route-img" width="110"', 220);
+            }
+            $h .= '<td>' . ($tag !== '' ? $tag : '<div class="route-img" style="height:60px;background:#eef2f7;"></div>')
+                . '<div class="route-cap"><span class="route-num">' . ($i + 1) . '</span>' . e(mb_strtoupper($stops[$i])) . '</div></td>';
+        }
+        $h .= '</tr></table>';
+    }
+    if (($visaTxt = pdfVisaNote($tour, $lang)) !== '') $h .= '<div class="visa-band">' . e(mb_strtoupper($visaTxt)) . '</div>';
     if ($hi) {
         $h .= '<div class="secbar">' . e($L['highlights']) . '</div><table class="chips"><tr>';
         $c = 0;
@@ -232,7 +352,10 @@ function pdfTourBrochureHtml(array $tour, array $days, string $coverImgTag, arra
         . '</tr></table>';
     if ($flights) {
         $h .= '<div class="secbar">' . e($L['flight']) . '</div>';
-        foreach ($flights as $f) $h .= '<div class="flight">&#9992; ' . e($f) . '</div>';
+        foreach ($flights as $f) {
+            [$fno, $frest] = pdfFlightParsed($f);
+            $h .= '<div class="flight">&#9992; ' . ($fno !== '' ? '<span class="flightno">' . e($fno) . '</span> ' : '') . e($frest) . '</div>';
+        }
     }
     if (($meet = $tc('meeting_point')) !== '') $h .= '<div class="meet">' . e($L['meetpoint']) . e($meet) . '</div>';
     $h .= '</div>';
@@ -245,18 +368,21 @@ function pdfTourBrochureHtml(array $tour, array $days, string $coverImgTag, arra
     } else {
         $h .= '<table class="itin"><tr><th width="60">' . e($L['th_day']) . '</th><th>' . e($L['th_program']) . '</th>'
             . '<th width="100">' . e($L['th_hotel']) . '</th><th width="60">' . e($L['th_meals']) . '</th></tr>';
-        foreach ($days as $d) {
+        foreach ($days as $dIdx => $d) {
             $dn = (int)$d['day_number'];
             $dTitle = trim((string)tContentLang($d, 'title', $lang));
             $dDesc = trim((string)tContentLang($d, 'description', $lang));
             $dTitle = preg_match('/^day\s*\d+\s*[\x{2014}\x{2013}\-]/iu', $dTitle)
                 ? trim(preg_replace('/^day\s*\d+\s*[\x{2014}\x{2013}\-]\s*/iu', '', $dTitle))
                 : $dTitle;
-            $h .= '<tr><td><span class="daybadge">D' . $dn . '</span></td><td>';
+            [$accName, $accStars] = pdfHotelStars(tContentLang($d, 'accommodation', $lang));
+            $mealIc = pdfMealIcons(tContentLang($d, 'meals', $lang), $lang);
+            $badgeBg = ['#b02a37', '#e67e22', '#1a7a33', '#0f2b6b', '#7b2a8a', '#0e7c7b', '#a3540a', '#3949ab'][$dIdx % 8];
+            $h .= '<tr><td><span class="daybadge" style="background:' . $badgeBg . ';color:#fff;">D' . $dn . '</span></td><td>';
             if ($dTitle !== '') $h .= '<div class="daytitle">' . e($dTitle) . '</div>';
             if ($dDesc !== '') $h .= '<div class="prog">' . e(mb_substr(strip_tags($dDesc), 0, 600)) . '</div>';
-            $h .= '</td><td>' . e(tContentLang($d, 'accommodation', $lang) ?: '-') . '</td>'
-                . '<td>' . e(tContentLang($d, 'meals', $lang) ?: '-') . '</td></tr>';
+            $h .= '</td><td>' . ($accName !== '' && $accName !== '-' ? e($accName) . ($accStars > 0 ? '<br>' . pdfStarsHtml($accStars) : '') : '-') . '</td>'
+                . '<td>' . ($mealIc !== '' ? $mealIc : '-') . '</td></tr>';
         }
         $h .= '</table>';
     }
@@ -265,16 +391,27 @@ function pdfTourBrochureHtml(array $tour, array $days, string $coverImgTag, arra
     // ===== Halaman 3: jadwal + harga tier =====
     if ($deps) {
         $tier = isset($deps[0]['price_adult']) || isset($deps[0]['departure_date']);
+        $hasTwin = false;
+        $hasTriple = false;
+        foreach ($deps as $dp) {
+            if (!empty($dp['price_twin'])) $hasTwin = true;
+            if (!empty($dp['price_triple'])) $hasTriple = true;
+        }
         $h .= '<div class="page">';
         $h .= '<div class="secbar">' . e($L['schedule']) . '</div>';
         if ($tier) {
-            $h .= '<table class="price"><tr><th>' . e($L['th_departure']) . '</th><th>' . e($L['th_note']) . '</th><th>' . e($L['th_adult']) . '</th><th>' . e($L['th_child']) . '</th><th>' . e($L['th_single']) . '</th><th>' . e($L['th_status']) . '</th></tr>';
+            $h .= '<table class="price"><tr><th>' . e($L['th_departure']) . '</th><th>' . e($L['th_note']) . '</th><th>' . e($L['th_adult']) . '</th><th>' . e($L['th_child']) . '</th><th>' . e($L['th_single']) . '</th>';
+            if ($hasTwin) $h .= '<th>' . e($L['th_twin']) . '</th>';
+            if ($hasTriple) $h .= '<th>' . e($L['th_triple']) . '</th>';
+            $h .= '<th>' . e($L['th_status']) . '</th></tr>';
             foreach ($deps as $dp) {
                 $tgl = date('d M Y', strtotime($dp['departure_date'] ?? $dp['date']));
                 if (!empty($dp['return_date'])) $tgl .= "\n" . date('d M Y', strtotime($dp['return_date']));
                 $pa = !empty($dp['price_adult']) ? formatCurrency($dp['price_adult'], $cur, $cur) : '-';
                 $pc = !empty($dp['price_child']) ? formatCurrency($dp['price_child'], $cur, $cur) : '-';
                 $ps = !empty($dp['price_single']) ? formatCurrency($dp['price_single'], $cur, $cur) : '-';
+                $ptw = !empty($dp['price_twin']) ? formatCurrency($dp['price_twin'], $cur, $cur) : '-';
+                $ptr = !empty($dp['price_triple']) ? formatCurrency($dp['price_triple'], $cur, $cur) : '-';
                 $slots = (int)($dp['available_slots'] ?? $dp['slots'] ?? 0);
                 $booked = (int)($dp['booked'] ?? $dp['slots_booked'] ?? 0);
                 if ($slots > 0) {
@@ -282,7 +419,8 @@ function pdfTourBrochureHtml(array $tour, array $days, string $coverImgTag, arra
                     $st = $sisa > 0 ? '<span class="avail">' . e(sprintf($L['seats_left'], $sisa)) . '</span>' : '<span class="full">' . e($L['full']) . '</span>';
                 } else $st = '<span class="avail">' . e($L['available']) . '</span>';
                 $h .= '<tr><td class="l">' . nl2br(e($tgl)) . '</td><td>' . e(tContentLang($dp, 'note', $lang) ?: '-') . '</td>'
-                    . '<td>' . e($pa) . '</td><td>' . e($pc) . '</td><td>' . e($ps) . '</td><td>' . $st . '</td></tr>';
+                    . '<td>' . e($pa) . '</td><td>' . e($pc) . '</td><td>' . e($ps) . '</td>'
+                    . ($hasTwin ? '<td>' . e($ptw) . '</td>' : '') . ($hasTriple ? '<td>' . e($ptr) . '</td>' : '') . '<td>' . $st . '</td></tr>';
             }
         } else {
             $h .= '<table class="price"><tr><th>' . e($L['th_departure']) . '</th><th>' . e($L['th_pricepax']) . '</th><th>' . e($L['th_status']) . '</th></tr>';
@@ -321,6 +459,13 @@ function pdfTourBrochureHtml(array $tour, array $days, string $coverImgTag, arra
     }
     $h .= '<div class="cta"><div class="t1">' . e($L['cta']) . '</div>'
         . '<div class="t2">' . e($web) . ' &bull; ' . e($L['cta_sub']) . '</div></div>';
+    $cc = pdfCompanyContact();
+    $bits = [];
+    if ($cc['address'] !== '') $bits[] = $cc['address'];
+    if ($cc['wa'] !== '' || $cc['phone'] !== '') $bits[] = 'WhatsApp: ' . ($cc['wa'] !== '' ? $cc['wa'] : $cc['phone']);
+    if ($cc['ig'] !== '') $bits[] = 'Instagram: ' . $cc['ig'];
+    if ($cc['fb'] !== '') $bits[] = 'Facebook: ' . $cc['fb'];
+    if ($bits) $h .= '<table class="contact"><tr><td><strong>' . e($cc['name']) . '</strong><br>' . e(implode(' | ', $bits)) . '</td></tr></table>';
     $h .= '<div class="foot">' . e($L['foot']) . '</div>';
     $h .= '</div>';
 

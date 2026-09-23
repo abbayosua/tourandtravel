@@ -115,11 +115,13 @@ if (isset($_POST['add_date'])) {
     $priceAdult = (float)($_POST['price_adult'] ?? 0) ?: null;
     $priceChild = (float)($_POST['price_child'] ?? 0) ?: null;
     $priceSingle = (float)($_POST['price_single'] ?? 0) ?: null;
+    $priceTwin = (float)($_POST['price_twin'] ?? 0) ?: null;
+    $priceTriple = (float)($_POST['price_triple'] ?? 0) ?: null;
     $dateNote = i18nPost('date_note');
 
     if ($departure && $return && $slots > 0) {
-        $stmt = db()->prepare("INSERT INTO tour_dates (tour_id, departure_date, return_date, available_slots, price_adult, price_child, price_single, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$id, $departure, $return, $slots, $priceAdult, $priceChild, $priceSingle, $dateNote['id'] ?: null]);
+        $stmt = db()->prepare("INSERT INTO tour_dates (tour_id, departure_date, return_date, available_slots, price_adult, price_child, price_single, price_twin, price_triple, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$id, $departure, $return, $slots, $priceAdult, $priceChild, $priceSingle, $priceTwin, $priceTriple, $dateNote['id'] ?: null]);
         i18nSaveRow('tour_dates', 'id', (int)db()->lastInsertId(), ['note' => $dateNote]);
         header("Location: tour-edit.php?id=$id&msg=date_added");
         exit;
@@ -308,6 +310,14 @@ require_once 'includes/admin-header.php';
                 <div class="col-md-4">
                     <label class="form-label small">Single Supp.</label>
                     <input type="number" name="price_single" class="form-control form-control-sm" min="0" step="0.01">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small">Twin (1 kamar 2 org)</label>
+                    <input type="number" name="price_twin" class="form-control form-control-sm" min="0" step="0.01">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small">Triple (1 kamar 3 org)</label>
+                    <input type="number" name="price_triple" class="form-control form-control-sm" min="0" step="0.01">
                 </div>
                 <div class="col-12 d-flex align-items-end">
                     <button type="submit" name="add_date" class="btn btn-sm btn-primary w-100"><?= t('Simpan') ?></button>

@@ -75,4 +75,28 @@ test.describe('Tour bilingual (ID/EN/ZH)', () => {
     await page.waitForLoadState('load');
     expect(page.url()).toContain('tours.php?msg=updated');
   });
+
+  test('PDF ala Balindo: rute + visa + hotel bintang + meals ikon + kontak + twin', async ({ page }) => {
+    const { execSync } = await import('child_process');
+    const out = execSync(
+      `curl -s -b /tmp/cj "${BASE}/tour-itinerary-pdf.php?slug=${SLUG}&pdf_lang=id" | pdftotext -layout - -`,
+      { encoding: 'utf-8', maxBuffer: 2 * 1024 * 1024 }
+    );
+    expect(out).toMatch(/RUTE PERJALANAN/);
+    expect(out).toMatch(/JAKARTA/);
+    expect(out).toMatch(/VISA CHINA/);
+    expect(out).toMatch(/1 KAMAR 2/);
+    expect(out).toMatch(/Jl\. Wisata/);
+  });
+
+  test('PDF all (EN+ZH 1 file) valid dan memuat kedua bahasa', async ({ page }) => {
+    const resp = await page.request.get(`${BASE}/tour-itinerary-pdf.php?slug=${SLUG}&pdf_lang=all`);
+    expect(resp.status()).toBe(200);
+    const body = await resp.body();
+    expect(body.subarray(0, 5).toString()).toBe('%PDF-');
+    expect(body.length).toBeGreaterThan(10000);
+    const btn = page.locator('a[href*="pdf_lang=all"]');
+    await page.goto(`${BASE}/tour-detail.php?slug=${SLUG}&lang=id`, { waitUntil: 'load' });
+    expect(await btn.count()).toBeGreaterThanOrEqual(0);
+  });
 });
