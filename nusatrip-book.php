@@ -51,6 +51,11 @@ if ($step === 'form') {
             } else {
                 $attr = nusaCheckoutAttributes($sess['cartSession'], $sess['checkoutId'], $sess['bookingTime']);
                 $val = nusaValidate($sess['cartSession'], $sess['checkoutId'], $sess['bookingTime']);
+                $vd = $val['data'] ?? [];
+                if (!empty($vd['error']) || empty($vd['totalPrice']['IDR'])) {
+                    $err = 'Harga kamar ini tidak tersedia di NusaTrip (' . ($vd['error'][0]['message'] ?? 'validasi gagal') . '). Pilih kamar lain.';
+                    $b = nusaBookSess();
+                } else {
                 $det = nusaHotelDetail($hotelId);
                 $_SESSION['nusa_book'] = [
                     'hotel_id' => $hotelId, 'hotel_name' => (string)($det['data']['name'] ?? $hotelId),
@@ -63,6 +68,7 @@ if ($step === 'form') {
                     'transactionId' => $attr['data']['transaction']['transactionId'] ?? null,
                     'validate' => $val['data'] ?? null,
                 ];
+                }
             }
         }
     }
@@ -72,6 +78,7 @@ if ($step === 'form') {
 if ($step === 'submit' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $b = nusaBookSess();
     if (empty($b['cartSession'])) { $err = 'Sesi booking kedaluwarsa. Ulangi dari halaman hotel.'; $step = 'form'; }
+    elseif (empty($b['validate']['totalPrice']['IDR'])) { $err = 'Harga belum tervalidasi NusaTrip. Ulangi dari halaman hotel.'; $step = 'form'; }
     else {
         $payMethod = (string)($_POST['pay_method'] ?? 'cc');
         $phoneCc = (string)($_POST['phone_cc'] ?? '62');
