@@ -3,9 +3,10 @@ body.voyage-page{background:#f5f9ff;color:#0d1b33}
 body.voyage-page .voyage-nav-wrap{position:fixed;top:0;left:0;right:0;z-index:1050;padding:14px 16px 0}
 .voyage-nav{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(13,110,253,.16);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:0 8px 32px rgba(13,110,253,.12),inset 0 1px 0 rgba(255,255,255,.9)}
 .voyage-spreader{height:96px}
-.voyage-pagehero{position:relative;overflow:hidden;background:linear-gradient(180deg,#e7f0ff 0%,#f5f9ff 55%,#ffffff 100%);color:#0d1b33;padding:150px 0 44px;margin-top:-96px}
+.voyage-pagehero{position:relative;overflow:hidden;background:linear-gradient(180deg,#e7f0ff 0%,#f5f9ff 55%,#ffffff 100%);color:#0d1b33;padding:150px 0 44px}
+.voyage-bookingwrap{position:relative;padding:8px 0 28px;background:linear-gradient(180deg,#ffffff 0%,#f5f9ff 100%)}
 .voyage-pagehero .voyage-bg-img{opacity:.38}
-.voyage-pagehero .voyage-inner{padding-top:8px}
+.voyage-pagehero .voyage-inner{padding-top:8px;max-width:1200px;margin:0 auto;padding-left:20px;padding-right:20px}
 .voyage-crumbs{display:flex;align-items:center;gap:8px;font-size:12px;margin:0 0 12px;color:#6d7d99}
 .voyage-crumbs a{color:#0d6efd;text-decoration:none}
 .voyage-crumb-sep{opacity:.5}

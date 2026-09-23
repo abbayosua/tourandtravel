@@ -11,6 +11,8 @@ $voyagePageOnly = ($voyagePageOnly ?? true) ? true : false;
 $voyageDark = !$voyagePageOnly;
 $voyageMenus = getNavMenus();
 $voyagePage = basename($_SERVER['PHP_SELF'] ?? '');
+$voyageHeroPages = ['index.php','tours.php','hotels.php','flights.php','ferries.php'];
+$voyageNoSpacer = !empty($voyageNoSpacer) || in_array($voyagePage, $voyageHeroPages, true);
 ?>
 <!DOCTYPE html>
 <html lang="<?= getCurrentLang() ?>">
@@ -45,4 +47,4 @@ $voyagePage = basename($_SERVER['PHP_SELF'] ?? '');
 </script>
 
 <?php require __DIR__ . '/navbar.php'; ?>
-<?php if ($voyagePageOnly): ?><div class="voyage-spreader"></div><?php endif; ?>
+<?php if (empty($voyageNoSpacer)): ?><div class="voyage-spreader"></div><?php endif; ?>
