@@ -14,10 +14,37 @@ if (!class_exists('Dompdf\Dompdf') && is_file(__DIR__ . '/../vendor/autoload.php
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
-function pdfNew(): Dompdf
+function pdfFontFamily(?string $lang = null): string
+{
+    return ($lang ?? getCurrentLang()) === 'zh' ? 'NotoSansSC' : 'DejaVu Sans';
+}
+
+function pdfRegisterCjkFont(): void
+{
+    static $done = false;
+    if ($done) return;
+    $done = true;
+    $ttf = __DIR__ . '/../assets/fonts/NotoSansSC-Regular.ttf';
+    if (!is_file($ttf) || !class_exists('Dompdf\Dompdf')) return;
+    try {
+        $opt = new Options();
+        $fontDir = $opt->getFontDir();
+        $dest = rtrim($fontDir, '/\\') . '/NotoSansSC-Regular.ttf';
+        if (!is_file($dest)) @copy($ttf, $dest);
+        $tmp = new Dompdf($opt);
+        $tmp->getFontMetrics()->registerFont(['family' => 'NotoSansSC', 'weight' => 'normal', 'style' => 'normal'], 'file://' . $dest);
+        $tmp->getFontMetrics()->registerFont(['family' => 'NotoSansSC', 'weight' => 'bold', 'style' => 'normal'], 'file://' . $dest);
+    } catch (Throwable $e) {
+    }
+}
+
+function pdfNew(?string $lang = null): Dompdf
 {
     $opt = new Options();
-    $opt->set('defaultFont', 'DejaVu Sans');
+    $lang = $lang ?? getCurrentLang();
+    $font = $lang === 'zh' ? 'NotoSansSC' : 'DejaVu Sans';
+    if ($lang === 'zh') pdfRegisterCjkFont();
+    $opt->set('defaultFont', $font);
     $opt->set('isRemoteEnabled', false);
     $opt->set('isHtml5ParserEnabled', true);
     $opt->set('chroot', dirname(__DIR__));

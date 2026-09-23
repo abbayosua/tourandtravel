@@ -15,19 +15,21 @@ if (!$tour) {
 
 $error = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title = trim($_POST['title'] ?? '');
-    $category = trim($_POST['category'] ?? '');
-    $description = trim($_POST['description'] ?? '');
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['add_itinerary']) && !isset($_POST['add_date']) && !isset($_POST['add_gallery'])) {
+    $ti = [];
+    foreach (['title', 'description', 'category', 'route_cities', 'highlights', 'includes', 'excludes', 'flight_info', 'meeting_point', 'important_notes'] as $f) $ti[$f] = i18nPost($f);
+    $title = $ti['title']['id'];
+    $category = $ti['category']['id'];
+    $description = $ti['description']['id'];
     $durationDays = (int)($_POST['duration_days'] ?? 0) ?: null;
     $durationNights = (int)($_POST['duration_nights'] ?? 0) ?: null;
-    $routeCities = trim($_POST['route_cities'] ?? '');
-    $highlights = trim($_POST['highlights'] ?? '');
-    $includes = trim($_POST['includes'] ?? '');
-    $excludes = trim($_POST['excludes'] ?? '');
-    $flightInfo = trim($_POST['flight_info'] ?? '');
-    $meetingPoint = trim($_POST['meeting_point'] ?? '');
-    $importantNotes = trim($_POST['important_notes'] ?? '');
+    $routeCities = $ti['route_cities']['id'];
+    $highlights = $ti['highlights']['id'];
+    $includes = $ti['includes']['id'];
+    $excludes = $ti['excludes']['id'];
+    $flightInfo = $ti['flight_info']['id'];
+    $meetingPoint = $ti['meeting_point']['id'];
+    $importantNotes = $ti['important_notes']['id'];
     $price = (float)($_POST['price'] ?? 0);
     $priceCurrency = in_array($_POST['price_currency'] ?? '', ['IDR', 'SGD', 'USD']) ? $_POST['price_currency'] : 'IDR';
     $maxParticipants = (int)($_POST['max_participants'] ?? 1);
@@ -64,12 +66,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = db()->prepare("UPDATE tours SET title=?, slug=?, category=?, description=?, highlights=?, includes=?, excludes=?, flight_info=?, meeting_point=?, important_notes=?, route_cities=?, duration_days=?, duration_nights=?, price=?, price_currency=?, content_language=?, max_participants=?, cover_image=?, is_active=? WHERE id=?");
         $stmt->execute([$title, $slug, $category, $description, $highlights, $includes, $excludes, $flightInfo, $meetingPoint, $importantNotes, $routeCities, $durationDays, $durationNights, $price, $priceCurrency, $contentLanguage, $maxParticipants, $coverImage, $isActive, $id]);
 
-        // Simpan konten tour untuk kedua bahasa (tanpa API — fallback konten asli)
-        $targetLang = $contentLanguage === 'id' ? 'en' : 'id';
-        saveTranslation($title, $targetLang, $title);
-        if (strlen($description) > 10) {
-            saveTranslation($description, $targetLang, $description);
-        }
+        i18nSaveRow('tours', 'id', $id, [
+            'title' => $ti['title'], 'description' => $ti['description'], 'category' => $ti['category'],
+            'route_cities' => $ti['route_cities'], 'highlights' => $ti['highlights'], 'includes' => $ti['includes'],
+            'excludes' => $ti['excludes'], 'flight_info' => $ti['flight_info'], 'meeting_point' => $ti['meeting_point'],
+            'important_notes' => $ti['important_notes'],
+        ]);
 
         header('Location: tours.php?msg=updated');
         exit;
@@ -82,14 +84,16 @@ $itineraries = getItineraries($id);
 // Handle tambah itinerary
 if (isset($_POST['add_itinerary'])) {
     $day = (int)$_POST['day'];
-    $itTitle = trim($_POST['it_title'] ?? '');
-    $itDesc = trim($_POST['it_desc'] ?? '');
-    $meals = trim($_POST['meals'] ?? '');
-    $accommodation = trim($_POST['accommodation'] ?? '');
+    $itTitle = i18nPost('it_title');
+    $itDesc = i18nPost('it_desc');
+    $meals = i18nPost('meals');
+    $accommodation = i18nPost('accommodation');
 
-    if ($day > 0 && $itTitle) {
+    if ($day > 0 && $itTitle['id'] !== '') {
         $stmt = db()->prepare("INSERT INTO itineraries (tour_id, day_number, title, description, meals, accommodation) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$id, $day, $itTitle, $itDesc, $meals, $accommodation]);
+        $stmt->execute([$id, $day, $itTitle['id'], $itDesc['id'] ?: null, $meals['id'] ?: null, $accommodation['id'] ?: null]);
+        $newIt = (int)db()->lastInsertId();
+        i18nSaveRow('itineraries', 'id', $newIt, ['title' => $itTitle, 'description' => $itDesc, 'meals' => $meals, 'accommodation' => $accommodation]);
         header("Location: tour-edit.php?id=$id&msg=itinerary_added");
         exit;
     }
@@ -111,11 +115,12 @@ if (isset($_POST['add_date'])) {
     $priceAdult = (float)($_POST['price_adult'] ?? 0) ?: null;
     $priceChild = (float)($_POST['price_child'] ?? 0) ?: null;
     $priceSingle = (float)($_POST['price_single'] ?? 0) ?: null;
-    $dateNote = trim($_POST['date_note'] ?? '');
+    $dateNote = i18nPost('date_note');
 
     if ($departure && $return && $slots > 0) {
         $stmt = db()->prepare("INSERT INTO tour_dates (tour_id, departure_date, return_date, available_slots, price_adult, price_child, price_single, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$id, $departure, $return, $slots, $priceAdult, $priceChild, $priceSingle, $dateNote ?: null]);
+        $stmt->execute([$id, $departure, $return, $slots, $priceAdult, $priceChild, $priceSingle, $dateNote['id'] ?: null]);
+        i18nSaveRow('tour_dates', 'id', (int)db()->lastInsertId(), ['note' => $dateNote]);
         header("Location: tour-edit.php?id=$id&msg=date_added");
         exit;
     }
@@ -192,14 +197,8 @@ require_once 'includes/admin-header.php';
         <div class="col-md-8">
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-body">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold"><?= t('Judul Tour') ?></label>
-                        <input type="text" name="title" class="form-control" value="<?= e($tour['title']) ?>" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold"><?= t('Deskripsi') ?></label>
-                        <textarea name="description" class="form-control" rows="5"><?= e($tour['description']) ?></textarea>
-                    </div>
+                    <?= i18nInputs(t('Judul Tour'), 'title', $tour) ?>
+                    <?= i18nInputs(t('Deskripsi'), 'description', $tour, 'textarea', 5) ?>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-semibold">Durasi (hari)</label>
@@ -210,34 +209,13 @@ require_once 'includes/admin-header.php';
                             <input type="number" name="duration_nights" class="form-control" min="0" value="<?= e($tour['duration_nights'] ?? '') ?>" placeholder="7">
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Rute Kota (untuk brosur PDF)</label>
-                        <input type="text" name="route_cities" class="form-control" value="<?= e($tour['route_cities'] ?? '') ?>" placeholder="SHANGHAI - HANGZHOU - SUZHOU">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Highlights (satu per baris — tampil di brosur PDF)</label>
-                        <textarea name="highlights" class="form-control" rows="4" placeholder="The Bund — skyline ikonik Shanghai"><?= e($tour['highlights'] ?? '') ?></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Jadwal Penerbangan (satu per baris)</label>
-                        <textarea name="flight_info" class="form-control" rows="2" placeholder="CGK - PVG (bagasi 25KG)"><?= e($tour['flight_info'] ?? '') ?></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Titik Kumpul</label>
-                        <input type="text" name="meeting_point" class="form-control" value="<?= e($tour['meeting_point'] ?? '') ?>" placeholder="Bandara Soekarno-Hatta Terminal 3">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Paket Termasuk / Include (satu per baris)</label>
-                        <textarea name="includes" class="form-control" rows="4"><?= e($tour['includes'] ?? '') ?></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Paket Belum Termasuk / Exclude (satu per baris)</label>
-                        <textarea name="excludes" class="form-control" rows="4"><?= e($tour['excludes'] ?? '') ?></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Catatan Penting (satu per baris)</label>
-                        <textarea name="important_notes" class="form-control" rows="3"><?= e($tour['important_notes'] ?? '') ?></textarea>
-                    </div>
+                    <?= i18nInputs('Rute Kota (untuk brosur PDF)', 'route_cities', $tour) ?>
+                    <?= i18nInputs('Highlights (satu per baris — tampil di brosur PDF)', 'highlights', $tour, 'textarea', 4) ?>
+                    <?= i18nInputs('Jadwal Penerbangan (satu per baris)', 'flight_info', $tour, 'textarea', 2) ?>
+                    <?= i18nInputs('Titik Kumpul', 'meeting_point', $tour) ?>
+                    <?= i18nInputs('Paket Termasuk / Include (satu per baris)', 'includes', $tour, 'textarea', 4) ?>
+                    <?= i18nInputs('Paket Belum Termasuk / Exclude (satu per baris)', 'excludes', $tour, 'textarea', 4) ?>
+                    <?= i18nInputs('Catatan Penting (satu per baris)', 'important_notes', $tour, 'textarea', 3) ?>
                     <div class="mb-3">
                         <label class="form-label fw-semibold"><?= t('Gambar Cover') ?></label>
                         <?php if ($tour['cover_image']): ?>
@@ -254,10 +232,7 @@ require_once 'includes/admin-header.php';
         <div class="col-md-4">
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-body">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold"><?= t('Kategori') ?></label>
-                        <input type="text" name="category" class="form-control" value="<?= e($tour['category']) ?>" required>
-                    </div>
+                    <?= i18nInputs(t('Kategori'), 'category', $tour) ?>
                     <div class="mb-3">
                         <label class="form-label fw-semibold"><?= t('Harga') ?></label>
                         <div class="input-group">
@@ -319,6 +294,8 @@ require_once 'includes/admin-header.php';
                 <div class="col-md-4">
                     <label class="form-label small">Catatan (mis: Low Season)</label>
                     <input type="text" name="date_note" class="form-control form-control-sm" placeholder="Low Season">
+                    <input type="text" name="date_note_en" class="form-control form-control-sm mt-1" placeholder="Note (EN)">
+                    <input type="text" name="date_note_zh" class="form-control form-control-sm mt-1" placeholder="备注 (中文)">
                 </div>
                 <div class="col-md-4">
                     <label class="form-label small">Harga Dewasa</label>
@@ -389,20 +366,28 @@ require_once 'includes/admin-header.php';
                     <input type="number" name="day" class="form-control form-control-sm" min="1" required>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label small"><?= t('Judul') ?></label>
+                    <label class="form-label small"><?= t('Judul') ?> (ID) *</label>
                     <input type="text" name="it_title" class="form-control form-control-sm" required>
+                    <input type="text" name="it_title_en" class="form-control form-control-sm mt-1" placeholder="Title (EN)">
+                    <input type="text" name="it_title_zh" class="form-control form-control-sm mt-1" placeholder="标题 (中文)">
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label small"><?= t('Deskripsi') ?></label>
+                    <label class="form-label small"><?= t('Deskripsi') ?> (ID)</label>
                     <textarea name="it_desc" class="form-control form-control-sm" rows="1"></textarea>
+                    <textarea name="it_desc_en" class="form-control form-control-sm mt-1" rows="1" placeholder="Description (EN)"></textarea>
+                    <textarea name="it_desc_zh" class="form-control form-control-sm mt-1" rows="1" placeholder="描述 (中文)"></textarea>
                 </div>
                 <div class="col-md-2">
-                    <label class="form-label small"><?= t('Makan') ?></label>
+                    <label class="form-label small"><?= t('Makan') ?> (ID)</label>
                     <input type="text" name="meals" class="form-control form-control-sm" placeholder="Sarapan, makan siang">
+                    <input type="text" name="meals_en" class="form-control form-control-sm mt-1" placeholder="Meals (EN)">
+                    <input type="text" name="meals_zh" class="form-control form-control-sm mt-1" placeholder="餐饮 (中文)">
                 </div>
                 <div class="col-md-1">
-                    <label class="form-label small"><?= t('Akomodasi') ?></label>
+                    <label class="form-label small"><?= t('Akomodasi') ?> (ID)</label>
                     <input type="text" name="accommodation" class="form-control form-control-sm" placeholder="Hotel">
+                    <input type="text" name="accommodation_en" class="form-control form-control-sm mt-1" placeholder="Hotel (EN)">
+                    <input type="text" name="accommodation_zh" class="form-control form-control-sm mt-1" placeholder="酒店 (中文)">
                 </div>
                 <div class="col-md-1 d-flex align-items-end">
                     <button type="submit" name="add_itinerary" class="btn btn-sm btn-primary">+</button>

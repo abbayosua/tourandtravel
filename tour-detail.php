@@ -17,7 +17,7 @@ if (!$tour) {
     exit;
 }
 
-$pageTitle = $tour['title'];
+$pageTitle = tContent($tour, 'title');
 $tourDates = getTourDates($tour['id']);
 $itineraries = getItineraries($tour['id']);
 $datePrices = [];
@@ -193,7 +193,7 @@ require_once 'includes/header-shared.php';
     <?php renderBreadcrumb([
         ['label' => t('Beranda'), 'url' => 'index.php'],
         ['label' => t('Paket Tour'), 'url' => 'tours.php'],
-        ['label' => $tour['title'], 'url' => null],
+        ['label' => tContent($tour, 'title'), 'url' => null],
     ]); ?>
 
     <div class="row">
@@ -204,8 +204,8 @@ require_once 'includes/header-shared.php';
             <div class="row g-2 mb-4">
                 <?php if (count($galleryImages) > 0): ?>
                 <div class="col-12">
-                    <a href="<?= getTourImage($tour, 'large') ?>" class="glightbox" data-gallery="tour-gallery" data-title="<?= e($tour['title']) ?>">
-                        <img src="<?= getTourImage($tour, 'large') ?>" onerror="this.src='<?= getTourImageFallback($tour, 'large') ?>'" class="w-100 rounded-4 lazy-image" style="max-height: 450px; object-fit: cover; cursor: pointer;" alt="<?= e($tour['title']) ?>" loading="lazy">
+                    <a href="<?= getTourImage($tour, 'large') ?>" class="glightbox" data-gallery="tour-gallery" data-title="<?= e(tContent($tour, 'title')) ?>">
+                        <img src="<?= getTourImage($tour, 'large') ?>" onerror="this.src='<?= getTourImageFallback($tour, 'large') ?>'" class="w-100 rounded-4 lazy-image" style="max-height: 450px; object-fit: cover; cursor: pointer;" alt="<?= e(tContent($tour, 'title')) ?>" loading="lazy">
                     </a>
                 </div>
                 <?php if (count($galleryImages) > 1): ?>
@@ -215,8 +215,8 @@ require_once 'includes/header-shared.php';
                             $thumbUrl = str_contains($galleryUrl, 'loremflickr.com') ? str_replace('800/600', '320/240', $galleryUrl) : $galleryUrl;
                         ?>
                         <div class="col-3">
-                            <a href="<?= e($galleryUrl) ?>" class="glightbox" data-gallery="tour-gallery" data-title="<?= e($tour['title']) ?> - <?= $i + 1 ?>">
-                                <img src="<?= e($thumbUrl) ?>" class="w-100 rounded-3 gallery-thumb lazy-image" style="height: 100px; object-fit: cover; cursor: pointer;" alt="<?= e($tour['title']) ?>" loading="lazy" onerror="this.remove()">
+                            <a href="<?= e($galleryUrl) ?>" class="glightbox" data-gallery="tour-gallery" data-title="<?= e(tContent($tour, 'title')) ?> - <?= $i + 1 ?>">
+                                <img src="<?= e($thumbUrl) ?>" class="w-100 rounded-3 gallery-thumb lazy-image" style="height: 100px; object-fit: cover; cursor: pointer;" alt="<?= e(tContent($tour, 'title')) ?>" loading="lazy" onerror="this.remove()">
                             </a>
                         </div>
                         <?php endforeach; ?>
@@ -262,13 +262,13 @@ require_once 'includes/header-shared.php';
             </div>
 
             <!-- Info Tour -->
-            <h2 class="fw-bold"><?= e(t($tour['title'], null, $tour['content_language'] ?? 'id')) ?></h2>
+            <h2 class="fw-bold"><?= e(tContent($tour, 'title')) ?></h2>
             <div class="d-flex flex-wrap gap-3 mb-3">
-                <span class="badge bg-primary"><?= e($tour['category']) ?></span>
+                <span class="badge bg-primary"><?= e(tContent($tour, 'category')) ?></span>
                 <span class="text-muted"><i class="bi bi-people-fill me-1"></i> <?= t('Max') ?> <?= $tour['max_participants'] ?> <?= t('peserta') ?></span>
                 <span class="text-muted"><?= renderStars($tour['rating']) ?> <?= $tour['rating'] ?> (<?= $tour['total_reviews'] ?> <?= t('ulasan') ?>)</span>
             </div>
-            <p class="lead"><?= nl2br(e(str_replace('\\n', "\n", t($tour['description'], null, $tour['content_language'] ?? 'id')))) ?></p>
+            <p class="lead"><?= nl2br(e(str_replace('\\n', "\n", tContent($tour, 'description')))) ?></p>
 
             <!-- Fasilitas -->
             <h5 class="fw-bold mt-4 mb-3"><i class="bi bi-check2-square me-2"></i><?= t('Fasilitas Termasuk') ?></h5>
@@ -283,27 +283,29 @@ require_once 'includes/header-shared.php';
                 <?php endforeach; ?>
             </div>
 
-            <?php if (!empty($tour['flight_info'])): ?>
+            <?php $flightInfo = tContent($tour, 'flight_info'); $meetPoint = tContent($tour, 'meeting_point'); ?>
+            <?php if ($flightInfo !== ''): ?>
             <!-- Jadwal Penerbangan -->
             <h5 class="fw-bold mt-4 mb-3"><i class="bi bi-airplane me-2"></i><?= t('Jadwal Penerbangan') ?></h5>
-            <div class="alert alert-primary py-2 small mb-4"><?= nl2br(e($tour['flight_info'])) ?><?= !empty($tour['meeting_point']) ? '<br><strong>' . t('Titik kumpul') . ':</strong> ' . e($tour['meeting_point']) : '' ?></div>
+            <div class="alert alert-primary py-2 small mb-4"><?= nl2br(e($flightInfo)) ?><?= $meetPoint !== '' ? '<br><strong>' . t('Titik kumpul') . ':</strong> ' . e($meetPoint) : '' ?></div>
             <?php endif; ?>
 
-            <?php if (!empty($tour['includes']) || !empty($tour['excludes'])): ?>
+            <?php $incTxt = tContent($tour, 'includes'); $excTxt = tContent($tour, 'excludes'); ?>
+            <?php if ($incTxt !== '' || $excTxt !== ''): ?>
             <!-- Termasuk / Tidak Termasuk -->
             <div class="row g-3 mb-4">
-                <?php if (!empty($tour['includes'])): ?>
+                <?php if ($incTxt !== ''): ?>
                 <div class="col-md-6">
                     <h5 class="fw-bold mb-2 text-success"><i class="bi bi-check-circle me-2"></i><?= t('Paket Termasuk') ?></h5>
-                    <ul class="small mb-0"><?php foreach (preg_split('/\r?\n/', $tour['includes']) as $ln): $ln = trim($ln); if ($ln === '') continue; ?>
+                    <ul class="small mb-0"><?php foreach (preg_split('/\r?\n/', $incTxt) as $ln): $ln = trim($ln); if ($ln === '') continue; ?>
                         <li><?= e(ltrim($ln, '-•* ')) ?></li><?php endforeach; ?>
                     </ul>
                 </div>
                 <?php endif; ?>
-                <?php if (!empty($tour['excludes'])): ?>
+                <?php if ($excTxt !== ''): ?>
                 <div class="col-md-6">
                     <h5 class="fw-bold mb-2 text-danger"><i class="bi bi-x-circle me-2"></i><?= t('Tidak Termasuk') ?></h5>
-                    <ul class="small mb-0"><?php foreach (preg_split('/\r?\n/', $tour['excludes']) as $ln): $ln = trim($ln); if ($ln === '') continue; ?>
+                    <ul class="small mb-0"><?php foreach (preg_split('/\r?\n/', $excTxt) as $ln): $ln = trim($ln); if ($ln === '') continue; ?>
                         <li><?= e(ltrim($ln, '-•* ')) ?></li><?php endforeach; ?>
                     </ul>
                 </div>
@@ -311,10 +313,11 @@ require_once 'includes/header-shared.php';
             </div>
             <?php endif; ?>
 
-            <?php if (!empty($tour['important_notes'])): ?>
+            <?php $notesTxt = tContent($tour, 'important_notes'); ?>
+            <?php if ($notesTxt !== ''): ?>
             <!-- Catatan Penting -->
             <h5 class="fw-bold mt-4 mb-2"><i class="bi bi-exclamation-triangle me-2"></i><?= t('Catatan Penting') ?></h5>
-            <ul class="small text-muted mb-4"><?php foreach (preg_split('/\r?\n/', $tour['important_notes']) as $ln): $ln = trim($ln); if ($ln === '') continue; ?>
+            <ul class="small text-muted mb-4"><?php foreach (preg_split('/\r?\n/', $notesTxt) as $ln): $ln = trim($ln); if ($ln === '') continue; ?>
                 <li><?= e(ltrim($ln, '-•* ')) ?></li><?php endforeach; ?>
             </ul>
             <?php endif; ?>
@@ -338,7 +341,13 @@ require_once 'includes/header-shared.php';
             <?php if (count($itineraries) > 0): ?>
             <div class="d-flex align-items-center justify-content-between mt-5 mb-3">
                 <h4 class="fw-bold mb-0"><i class="bi bi-journal-text me-2"></i><?= t('Itinerary') ?></h4>
-                <a href="tour-itinerary-pdf.php?slug=<?= e($tour['slug']) ?>" class="btn btn-sm btn-outline-primary" target="_blank"><i class="bi bi-download me-1"></i><?= t('PDF') ?></a>
+                <div class="d-flex gap-2">
+                <a href="tour-itinerary-pdf.php?slug=<?= e($tour['slug']) ?>&pdf_lang=<?= getCurrentLang() ?>" class="btn btn-sm btn-outline-primary" target="_blank" data-testid="pdf-download"><i class="bi bi-download me-1"></i><?= t('PDF') ?> (<?= strtoupper(getCurrentLang()) ?>)</a>
+                <?php $otherLangs = array_filter(array_keys(getSupportedLanguages()), fn($l) => $l !== getCurrentLang()); ?>
+                <?php foreach ($otherLangs as $ol): ?>
+                <a href="tour-itinerary-pdf.php?slug=<?= e($tour['slug']) ?>&pdf_lang=<?= $ol ?>" class="btn btn-sm btn-outline-secondary" target="_blank">PDF (<?= strtoupper($ol) ?>)</a>
+                <?php endforeach; ?>
+                </div>
             </div>
             <div class="accordion mb-4" id="itineraryAccordion">
                 <?php foreach ($itineraries as $idx => $it): ?>
@@ -351,11 +360,12 @@ require_once 'includes/header-shared.php';
                     <div id="itineraryDay<?= $idx ?>" class="accordion-collapse collapse <?= $idx === 0 ? 'show' : '' ?>" data-bs-parent="#itineraryAccordion">
                         <div class="accordion-body">
                             <p><?= nl2br(e(tContent($it, 'description'))) ?></p>
-                            <?php if ($it['meals']): ?>
-                                <span class="badge bg-success me-1"><i class="bi bi-cup-hot"></i> <?= e($it['meals']) ?></span>
+                            <?php $itMeals = tContent($it, 'meals'); $itAcc = tContent($it, 'accommodation'); ?>
+                            <?php if ($itMeals !== ''): ?>
+                                <span class="badge bg-success me-1"><i class="bi bi-cup-hot"></i> <?= e($itMeals) ?></span>
                             <?php endif; ?>
-                            <?php if ($it['accommodation']): ?>
-                                <span class="badge bg-info"><i class="bi bi-building"></i> <?= e($it['accommodation']) ?></span>
+                            <?php if ($itAcc !== ''): ?>
+                                <span class="badge bg-info"><i class="bi bi-building"></i> <?= e($itAcc) ?></span>
                             <?php endif; ?>
                         </div>
                     </div>

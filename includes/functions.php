@@ -359,9 +359,17 @@ function tglIndonesia($date) {
  * (tours, hotels, dsb) — tambah bahasa = tambah kolom {field}_{kode}.
  */
 function tContent($row, $field) {
+    return tContentLang($row, $field, getCurrentLang());
+}
+
+/**
+ * Resolver konten DB per-bahasa dengan lang eksplisit (untuk PDF/cetak:
+ * bahasa output tidak harus sama dengan bahasa sesi). Fallback ke kolom
+ * asli bila kolom {field}_{lang} kosong/tidak ada.
+ */
+function tContentLang($row, $field, $lang) {
     if (!is_array($row) && !is_object($row)) return $row;
-    $lang = getCurrentLang();
-    if ($lang === 'id') {
+    if ($lang === 'id' || !isValidLang($lang)) {
         return is_array($row) ? ($row[$field] ?? '') : ($row->$field ?? '');
     }
     $key = $field . '_' . $lang;
@@ -370,6 +378,75 @@ function tContent($row, $field) {
         return $translated;
     }
     return is_array($row) ? ($row[$field] ?? '') : ($row->$field ?? '');
+}
+
+function i18nLangs() {
+    return array_values(array_filter(array_keys(getSupportedLanguages()), fn($l) => $l !== 'id'));
+}
+
+function i18nInputName($field, $lang) {
+    return $lang === 'id' ? $field : $field . '_' . $lang;
+}
+
+function i18nPost($field) {
+    $out = ['id' => trim($_POST[$field] ?? '')];
+    foreach (i18nLangs() as $l) $out[$l] = trim($_POST[$field . '_' . $l] ?? '');
+    return $out;
+}
+
+function i18nExistingColumns($table, $field) {
+    static $cache = [];
+    $key = $table . '.' . $field;
+    if (!isset($cache[$key])) {
+        $cache[$key] = ['base' => false, 'langs' => []];
+        try {
+            $cols = db()->query("SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = " . db()->quote($table))->fetchAll(PDO::FETCH_COLUMN);
+            $cache[$key]['base'] = in_array($field, $cols, true);
+            foreach (i18nLangs() as $l) {
+                if (in_array($field . '_' . $l, $cols, true)) $cache[$key]['langs'][] = $l;
+            }
+        } catch (Throwable $e) {
+        }
+    }
+    return $cache[$key];
+}
+
+function i18nSaveRow($table, $idCol, $id, $values) {
+    $sets = [];
+    $params = [];
+    foreach ($values as $field => $langs) {
+        $ex = i18nExistingColumns($table, $field);
+        if (!empty($ex['base']) && array_key_exists('id', $langs)) {
+            $sets[] = "`$field` = ?";
+            $params[] = $langs['id'] !== '' ? $langs['id'] : null;
+        }
+        foreach ($ex['langs'] as $l) {
+            if (!array_key_exists($l, $langs)) continue;
+            $sets[] = "`{$field}_{$l}` = ?";
+            $params[] = $langs[$l] !== '' ? $langs[$l] : null;
+        }
+    }
+    if (!$sets) return;
+    $params[] = $id;
+    db()->prepare("UPDATE `$table` SET " . implode(', ', $sets) . " WHERE `$idCol` = ?")->execute($params);
+}
+
+function i18nInputs($label, $field, $row, $type = 'text', $rows = 3) {
+    $langs = ['id' => 'ID'];
+    foreach (i18nLangs() as $l) $langs[$l] = strtoupper($l);
+    $out = '';
+    foreach ($langs as $l => $tag) {
+        $name = i18nInputName($field, $l);
+        $val = $l === 'id' ? ($row[$field] ?? '') : ($row[$field . '_' . $l] ?? '');
+        $ph = $l === 'id' ? '' : ' placeholder="' . e(t('Kosongkan untuk memakai versi ID')) . '"';
+        $flabel = $label . ' (' . $tag . ')';
+        if ($type === 'textarea') {
+            $out .= '<div class="mb-3"><label class="form-label fw-semibold">' . e($flabel) . '</label><textarea name="' . e($name) . '" class="form-control" rows="' . (int)$rows . '"' . $ph . '>' . e($val) . '</textarea></div>';
+        } else {
+            $out .= '<div class="mb-3"><label class="form-label fw-semibold">' . e($flabel) . '</label><input type="text" name="' . e($name) . '" class="form-control" value="' . e($val) . '"' . $ph . '></div>';
+        }
+    }
+    return $out;
 }
 
 /**

@@ -9,9 +9,11 @@ $error = '';
 $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title = trim($_POST['title'] ?? '');
-    $category = trim($_POST['category'] ?? '');
-    $description = trim($_POST['description'] ?? '');
+    $tiAdd = [];
+    foreach (['title', 'category', 'description'] as $f) $tiAdd[$f] = i18nPost($f);
+    $title = $tiAdd['title']['id'];
+    $category = $tiAdd['category']['id'];
+    $description = $tiAdd['description']['id'];
     $price = (float)($_POST['price'] ?? 0);
     $priceCurrency = in_array($_POST['price_currency'] ?? '', ['IDR', 'SGD', 'USD']) ? $_POST['price_currency'] : 'IDR';
     $maxParticipants = (int)($_POST['max_participants'] ?? 1);
@@ -47,13 +49,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = db()->prepare("INSERT INTO tours (title, slug, category, description, price, price_currency, content_language, max_participants, cover_image, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->execute([$title, $slug, $category, $description, $price, $priceCurrency, $contentLanguage, $maxParticipants, $coverImage ?: null, $isActive]);
 
-        // Simpan konten tour untuk kedua bahasa (tanpa API — fallback konten asli)
         $tourId = db()->lastInsertId();
-        $targetLang = $contentLanguage === 'id' ? 'en' : 'id';
-        saveTranslation($title, $targetLang, $title);
-        if (strlen($description) > 10) {
-            saveTranslation($description, $targetLang, $description);
-        }
+        i18nSaveRow('tours', 'id', (int)$tourId, ['title' => $tiAdd['title'], 'category' => $tiAdd['category'], 'description' => $tiAdd['description']]);
 
         header('Location: tours.php?msg=added');
         exit;
@@ -75,14 +72,8 @@ require_once 'includes/admin-header.php';
         <div class="col-md-8">
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-body">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold"><?= t('Judul Tour') ?></label>
-                        <input type="text" name="title" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold"><?= t('Deskripsi') ?></label>
-                        <textarea name="description" class="form-control" rows="5"></textarea>
-                    </div>
+                    <?= i18nInputs(t('Judul Tour'), 'title', []) ?>
+                    <?= i18nInputs(t('Deskripsi'), 'description', [], 'textarea', 5) ?>
                     <div class="mb-3">
                         <label class="form-label fw-semibold"><?= t('Gambar Cover') ?></label>
                         <input type="file" name="cover_image" class="form-control" accept="image/jpeg,image/png,image/webp">
@@ -94,10 +85,7 @@ require_once 'includes/admin-header.php';
         <div class="col-md-4">
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-body">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold"><?= t('Kategori') ?></label>
-                        <input type="text" name="category" class="form-control" placeholder="Domestik / Internasional" required>
-                    </div>
+                    <?= i18nInputs(t('Kategori'), 'category', []) ?>
                     <div class="mb-3">
                         <label class="form-label fw-semibold"><?= t('Harga') ?></label>
                         <div class="input-group">
