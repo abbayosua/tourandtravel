@@ -88,3 +88,67 @@ footer.voyage-footer{margin-top:0!important}
 [data-theme="dark"] .voyage-crumbs{color:rgba(255,255,255,.5)}
 [data-theme="dark"] .voyage-crumbs a{color:#fff}
 [data-theme="dark"] .voyage-crumbs .on{color:rgba(255,255,255,.85)}
+
+/* ===== Voyage bookingwrap: alias scope hero-uifactory (auto-generated) ===== */
+.voyage-bookingwrap {
+.voyage-bookingwrap .hero-bg-shape {
+.voyage-bookingwrap .hero-bg-shape--1 {
+.voyage-bookingwrap .hero-bg-shape--2 {
+.voyage-bookingwrap .hero-headline {
+.voyage-bookingwrap .hero-headline span { color: #0064D2; }
+.voyage-bookingwrap .hero-sub {
+.voyage-bookingwrap .booking-card {
+.voyage-bookingwrap .booking-tabs {
+.voyage-bookingwrap .booking-tabs::-webkit-scrollbar { display: none; }
+.voyage-bookingwrap .booking-tab {
+.voyage-bookingwrap .booking-tab:hover { color: #1A1A2E; }
+.voyage-bookingwrap .booking-tab.active { color: #0064D2; border-bottom-color: #0064D2; }
+.voyage-bookingwrap .booking-tab svg { flex-shrink: 0; }
+.voyage-bookingwrap .booking-form { padding: 24px 28px 28px; }
+.voyage-bookingwrap .form-row-options {
+.voyage-bookingwrap .trip-type-group {
+.voyage-bookingwrap .trip-type-btn {
+.voyage-bookingwrap .trip-type-btn.active {
+.voyage-bookingwrap .trip-type-btn:hover:not(.active) { color: #1A1A2E; }
+.voyage-bookingwrap .custom-select {
+.voyage-bookingwrap .custom-select:hover { border-color: #0064D2; }
+.voyage-bookingwrap .custom-select select {
+.voyage-bookingwrap .custom-select svg { width: 14px; height: 14px; color: #8B90A0; flex-shrink: 0; }
+.voyage-bookingwrap .form-search-row {
+.voyage-bookingwrap .form-search-row:focus-within {
+.voyage-bookingwrap .search-field {
+.voyage-bookingwrap .search-field:last-of-type { border-right: none; }
+.voyage-bookingwrap .search-field:hover { background: rgba(255,255,255,.6); }
+.voyage-bookingwrap .search-field-label {
+.voyage-bookingwrap .search-field-label svg { width: 13px; height: 13px; color: #0064D2; }
+.voyage-bookingwrap .search-field input,
+.voyage-bookingwrap .search-field .field-value {
+.voyage-bookingwrap .search-field input::placeholder { color: #5A6178; font-weight: 500; }
+.voyage-bookingwrap .swap-btn {
+.voyage-bookingwrap .swap-btn-inner {
+.voyage-bookingwrap .swap-btn:hover .swap-btn-inner {
+.voyage-bookingwrap .swap-btn-inner svg { width: 16px; height: 16px; color: #5A6178; }
+.voyage-bookingwrap .swap-btn:hover .swap-btn-inner svg { color: #0064D2; }
+.voyage-bookingwrap .search-btn {
+.voyage-bookingwrap .search-btn:hover { background: #0055B3; }
+.voyage-bookingwrap .search-btn:active { transform: scale(.97); }
+.voyage-bookingwrap .search-btn svg { width: 18px; height: 18px; }
+.voyage-bookingwrap .search-dropdown {
+.voyage-bookingwrap .search-dropdown .search-item {
+.voyage-bookingwrap .search-dropdown .search-item:hover { background: #F0F7FF; }
+.voyage-bookingwrap .search-dropdown .search-item .search-icon {
+.voyage-bookingwrap .breadcrumb {
+.voyage-bookingwrap .breadcrumb-item a { color: #5A6178; }
+.voyage-bookingwrap .breadcrumb-item.active { color: #1A1A2E; }
+  .voyage-bookingwrap { min-height: auto; padding: 80px 16px 40px; }
+  .voyage-bookingwrap .hero-headline { font-size: 28px; }
+  .voyage-bookingwrap .booking-card { border-radius: 16px; }
+  .voyage-bookingwrap .booking-tabs { padding: 14px 14px 0; }
+  .voyage-bookingwrap .booking-tab { padding: 8px 12px 10px; font-size: 13px; }
+  .voyage-bookingwrap .booking-form { padding: 16px 14px 20px; }
+  .voyage-bookingwrap .form-search-row { flex-direction: column; border-radius: 12px; }
+  .voyage-bookingwrap .search-field { border-right: none; border-bottom: 1px solid #E4E7EE; padding: 10px 14px; }
+  .voyage-bookingwrap .search-field:last-of-type { border-bottom: none; }
+  .voyage-bookingwrap .swap-btn { position: absolute; right: 14px; top: 52px; }
+  .voyage-bookingwrap .form-search-row { position: relative; }
+  .voyage-bookingwrap .search-btn { width: 100%; padding: 14px; border-radius: 0 0 14px 14px; min-width: unset; }
