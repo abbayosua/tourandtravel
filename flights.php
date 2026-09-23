@@ -236,7 +236,7 @@ require_once 'includes/header-shared.php';
 if (!$doSearch) renderPageHero(t('Pesawat'), t('Pesan tiket pesawat, ferry, dan kereta api dalam satu tempat.'), [['label' => t('Pesawat'), 'url' => 'flights.php']]);
 ?>
 <?php if (!$doSearch): ?>
-<section class="voyage-bookingwrap">
+<section class="hero-uifactory voyage-bookingwrap">
   <div class="container">
   <div class="booking-card">
     <div class="booking-card-inner">
