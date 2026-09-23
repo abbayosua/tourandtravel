@@ -4,6 +4,7 @@ require_once 'includes/db.php';
 require_once 'includes/functions.php';
 
 require_once __DIR__ . '/includes/payments.php';
+require_once __DIR__ . '/includes/tripay.php';
 
 $code = $_GET['code'] ?? '';
 
@@ -146,16 +147,19 @@ if (!empty($booking['user_id'])) {
     }
 }
 
-// Payment aktif bila enabled & booking masih pending
-$paymentEnabled = midtransEnabled() && ($booking['status'] ?? '') === 'pending';
+// Payment: manual (default) = admin approve; instant = gateway aktif
+$paymentEnabled = tripayInstantEnabled() && ($booking['status'] ?? '') === 'pending';
 $paymentStatus = 'unpaid';
 $paymentOrderId = null;
 if ($paymentEnabled && $btype === 'tour') {
-    $pst = db()->prepare("SELECT order_id, status FROM payments WHERE booking_type='tour' AND booking_id=? ORDER BY id DESC LIMIT 1");
+    $pst = db()->prepare("SELECT order_id, gateway, pay_code, checkout_url, status FROM payments WHERE booking_type='tour' AND booking_id=? ORDER BY id DESC LIMIT 1");
     $pst->execute([$booking['id']]);
     if ($prow = $pst->fetch()) {
         $paymentStatus = $prow['status'];
         $paymentOrderId = $prow['order_id'];
+        $paymentGateway = $prow['gateway'] ?? 'midtrans';
+        $paymentPayCode = $prow['pay_code'] ?? null;
+        $paymentCheckoutUrl = $prow['checkout_url'] ?? null;
     }
 }
 
@@ -273,7 +277,7 @@ require_once 'includes/header-shared.php';
                     <p class="small text-muted mb-3">
                         <i class="bi bi-info-circle me-1"></i>
                         <?= t('Simpan kode booking dan link di atas untuk cek status pemesanan.') ?>
-                        <br><?= t('Kami akan menghubungi Anda via WhatsApp untuk konfirmasi.') ?>
+                        <br><?= tripayInstantEnabled() ? t('Lanjutkan pembayaran di bawah untuk konfirmasi instan.') : t('Kami akan menghubungi Anda via WhatsApp untuk konfirmasi.') ?>
                     </p>
 
                     <div class="d-flex gap-2 justify-content-center flex-wrap">
@@ -298,7 +302,17 @@ require_once 'includes/header-shared.php';
                                 </div>
                             </div>
                             <?php endif; ?>
-                            <button type="button" id="payNowBtn" class="btn btn-success px-4" data-booking-id="<?= (int)$booking['id'] ?>">
+                            <?php if (($paymentGateway ?? tripayGateway()) === 'tripay'): ?>
+                            <div class="w-100" data-testid="tripay-methods">
+                                <label class="form-label small fw-semibold" for="tripayMethod"><?= t('Pilih channel pembayaran') ?></label>
+                                <select id="tripayMethod" class="form-select form-select-sm mx-auto" style="max-width:320px">
+                                    <?php foreach (['BRIVA'=>'BRI VA','BCAVA'=>'BCA VA','BNIVA'=>'BNI VA','MANDIRIVA'=>'Mandiri VA','PERMATAVA'=>'Permata VA','QRIS'=>'QRIS','ALFAMART'=>'Alfamart','INDOMARET'=>'Indomaret'] as $tcode => $tname): ?>
+                                    <option value="<?= $tcode ?>"><?= e($tname) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <?php endif; ?>
+                            <button type="button" id="payNowBtn" class="btn btn-success px-4" data-booking-id="<?= (int)$booking['id'] ?>" data-gateway="<?= e($paymentGateway ?? tripayGateway()) ?>">
                                 <i class="bi bi-credit-card me-1"></i><?= t('Bayar Sekarang') ?>
                             </button>
                             <form method="POST" action="ajax/create-payment.php" id="createPaymentForm" style="display:none;"></form>
@@ -308,6 +322,15 @@ require_once 'includes/header-shared.php';
                     </div>
 
                     <?php if ($paymentEnabled && $btype === 'tour'): ?>
+                    <?php if (!empty($paymentPayCode) && ($paymentGateway ?? '') === 'tripay'): ?>
+                    <div class="alert alert-info text-start mt-3" data-testid="tripay-paycode">
+                        <div class="small text-muted"><?= t('Kode bayar Tripay') ?></div>
+                        <div class="fs-4 fw-bold"><?= e($paymentPayCode) ?></div>
+                        <?php if (!empty($paymentCheckoutUrl)): ?>
+                        <a href="<?= e($paymentCheckoutUrl) ?>" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary mt-2"><?= t('Buka halaman checkout') ?></a>
+                        <?php endif; ?>
+                    </div>
+                    <?php endif; ?>
                     <div id="paymentStatusArea" class="small mt-3" data-order-id="<?= e($paymentOrderId ?? '') ?>">
                         <span class="text-muted"><?= $paymentOrderId ? t('Menunggu pembayaran...') : '' ?></span>
                     </div>
@@ -354,11 +377,13 @@ require_once 'includes/header-shared.php';
         fetch('<?= BASE_URL ?>/ajax/create-payment.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: 'booking_type=tour&booking_id=' + btn.dataset.bookingId
+            body: 'booking_type=tour&booking_id=' + btn.dataset.bookingId + (btn.dataset.gateway === 'tripay' ? '&method=' + encodeURIComponent((document.getElementById('tripayMethod') || {}).value || 'BRIVA') : '')
         })
         .then(function (r) { return r.json(); })
         .then(function (d) {
-            if (d.ok && d.redirect_url) {
+            if (d.ok && d.gateway === 'tripay') {
+                window.location.reload();
+            } else if (d.ok && d.redirect_url) {
                 window.location.href = d.redirect_url;
             } else {
                 btn.disabled = false;

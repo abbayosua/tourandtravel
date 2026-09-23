@@ -1,13 +1,15 @@
 <?php
 /**
- * AJAX: mulai pembayaran Midtrans untuk satu booking.
- * POST: booking_type, booking_id
- * Response: {ok, redirect_url?, order_id?, error?}
+ * AJAX: mulai pembayaran untuk satu booking (gateway: midtrans|tripay).
+ * POST: booking_type, booking_id, [method utk tripay: BRIVA|BCAVA|QRIS|...]
+ * Response midtrans: {ok, redirect_url?, order_id?, error?}
+ * Response tripay: {ok, gateway:'tripay', pay_code?, pay_url?, checkout_url?, reference?, error?}
  */
 require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/functions.php';
 require_once __DIR__ . '/../includes/payments.php';
+require_once __DIR__ . '/../includes/tripay.php';
 
 header('Content-Type: application/json');
 
@@ -16,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-if (!midtransEnabled()) {
+if (!tripayInstantEnabled()) {
     echo json_encode(['ok' => false, 'error' => 'payment_disabled']);
     exit;
 }
@@ -57,5 +59,12 @@ $customer = [
     'phone' => $booking['phone'] ?? null,
 ];
 
-$result = createMidtransSnapTransaction($bookingType, $bookingId, $gross, $customer);
+if (tripayGateway() === 'tripay' && $bookingType === 'tour') {
+    $tripayMethod = preg_replace('/[^A-Z0-9_]/', '', strtoupper((string)($_POST['method'] ?? 'BRIVA')));
+    $result = createTripayTransaction($bookingId, $gross, $customer, $tripayMethod ?: 'BRIVA');
+    $result['gateway'] = 'tripay';
+} else {
+    $result = createMidtransSnapTransaction($bookingType, $bookingId, $gross, $customer);
+    $result['gateway'] = 'midtrans';
+}
 echo json_encode($result, JSON_UNESCAPED_SLASHES);

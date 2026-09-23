@@ -3,18 +3,28 @@ require_once '../includes/config.php';
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
 require_once '../includes/auth.php';
+require_once '../includes/tripay.php';
 cekLogin();
 
 $pageTitle = t('Pembayaran');
 
 $error = '';
 
-// Simpan setting Midtrans
+// Simpan setting mode + gateway + Midtrans + Tripay
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_settings'])) {
+    $mode = ($_POST['payment_mode'] ?? 'manual') === 'instant' ? 'instant' : 'manual';
+    $gateway = ($_POST['payment_gateway'] ?? 'midtrans') === 'tripay' ? 'tripay' : 'midtrans';
+    setSetting('payment_mode', $mode);
+    setSetting('payment_gateway', $gateway);
     $env = ($_POST['midtrans_env'] ?? 'sandbox') === 'production' ? 'production' : 'sandbox';
     setSetting('midtrans_env', $env);
     setSetting('midtrans_server_key', trim($_POST['midtrans_server_key'] ?? ''));
     setSetting('midtrans_client_key', trim($_POST['midtrans_client_key'] ?? ''));
+    $tripayEnv = ($_POST['tripay_env'] ?? 'sandbox') === 'production' ? 'production' : 'sandbox';
+    setSetting('tripay_env', $tripayEnv);
+    setSetting('tripay_api_key', trim($_POST['tripay_api_key'] ?? ''));
+    setSetting('tripay_private_key', trim($_POST['tripay_private_key'] ?? ''));
+    setSetting('tripay_merchant_code', trim($_POST['tripay_merchant_code'] ?? ''));
     setSetting('payment_enabled', isset($_POST['payment_enabled']) ? '1' : '0');
     header('Location: payments.php?msg=updated');
     exit;
@@ -74,6 +84,32 @@ require_once __DIR__ . '/includes/admin-header.php';
 <!-- Settings -->
 <div class="card border-0 shadow-sm mb-4">
     <div class="card-body p-4">
+        <h6 class="fw-semibold mb-3"><?= t('Mode Pembayaran Paket Tour') ?></h6>
+        <form method="POST" id="paymentModeForm">
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <label class="form-label small fw-semibold"><?= t('Mode') ?></label>
+                <select name="payment_mode" class="form-select" data-testid="payment-mode">
+                    <option value="manual" <?= getSetting('payment_mode','manual') === 'manual' ? 'selected' : '' ?>><?= t('Manual — approve admin') ?></option>
+                    <option value="instant" <?= getSetting('payment_mode') === 'instant' ? 'selected' : '' ?>><?= t('Instant — payment gateway') ?></option>
+                </select>
+                <small class="text-muted"><?= t('Manual: booking pending, admin konfirmasi. Instant: pelanggan bayar via gateway.') ?></small>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label small fw-semibold"><?= t('Gateway (mode instant)') ?></label>
+                <select name="payment_gateway" class="form-select" data-testid="payment-gateway">
+                    <option value="midtrans" <?= getSetting('payment_gateway','midtrans') === 'midtrans' ? 'selected' : '' ?>>Midtrans Snap</option>
+                    <option value="tripay" <?= getSetting('payment_gateway') === 'tripay' ? 'selected' : '' ?>>Tripay</option>
+                </select>
+            </div>
+            <div class="col-md-4 d-flex align-items-end gap-2">
+                <button type="submit" name="save_settings" class="btn btn-primary">Simpan Mode</button>
+                <div class="alert py-2 px-3 mb-0 small flex-fill <?= tripayInstantEnabled() ? 'alert-success' : 'alert-secondary' ?>">
+                    <?= tripayInstantEnabled() ? t('Instant AKTIF via ').e(tripayGateway()) : t('Berjalan MANUAL — semua gateway nonaktif') ?>
+                </div>
+            </div>
+        </div>
+        </form>
         <h6 class="fw-semibold mb-3"><?= t('Pengaturan Midtrans') ?></h6>
         <form method="POST" class="row g-3">
             <div class="col-md-3">
@@ -98,13 +134,34 @@ require_once __DIR__ . '/includes/admin-header.php';
                 </div>
             </div>
             <div class="col-12">
+                <h6 class="fw-semibold mb-3 mt-2"><?= t('Pengaturan Tripay') ?></h6>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-semibold"><?= t('Environment') ?></label>
+                <select name="tripay_env" class="form-select" autocomplete="off">
+                    <option value="sandbox" <?= getSetting('tripay_env','sandbox') === 'sandbox' ? 'selected' : '' ?>><?= t('Sandbox') ?></option>
+                    <option value="production" <?= getSetting('tripay_env') === 'production' ? 'selected' : '' ?>><?= t('Production') ?></option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-semibold">API Key</label>
+                <input type="text" name="tripay_api_key" class="form-control" data-testid="tripay-api-key" autocomplete="off" readonly onfocus="this.removeAttribute('readonly')" value="<?= e(getSetting('tripay_api_key')) ?>">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-semibold">Private Key</label>
+                <input type="password" name="tripay_private_key" class="form-control" data-testid="tripay-private-key" autocomplete="new-password" value="<?= e(getSetting('tripay_private_key')) ?>">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-semibold">Merchant Code</label>
+                <input type="text" name="tripay_merchant_code" class="form-control" data-testid="tripay-merchant-code" value="<?= e(getSetting('tripay_merchant_code')) ?>">
+            </div>
+            <div class="col-12 mt-3">
                 <button type="submit" name="save_settings" class="btn btn-primary"><?= t('Simpan') ?></button>
-                <small class="text-muted ms-2">Webhook URL: <code><?= e(BASE_URL . '/webhook-midtrans.php') ?></code></small>
+                <small class="text-muted ms-2">Webhook Midtrans: <code><?= e(BASE_URL . '/webhook-midtrans.php') ?></code> · Webhook Tripay: <code><?= e(BASE_URL . '/webhook-tripay.php') ?></code></small>
             </div>
         </form>
     </div>
 </div>
-
 <!-- Daftar pembayaran -->
 <div class="card border-0 shadow-sm">
     <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
@@ -124,6 +181,7 @@ require_once __DIR__ . '/includes/admin-header.php';
                         <th><?= t('Order ID') ?></th>
                         <th><?= t('Tipe') ?></th>
                         <th><?= t('Jumlah') ?></th>
+                        <th><?= t('Gateway') ?></th>
                         <th><?= t('Metode') ?></th>
                         <th><?= t('Status') ?></th>
                         <th><?= t('Tanggal') ?></th>
@@ -132,14 +190,15 @@ require_once __DIR__ . '/includes/admin-header.php';
                 </thead>
                 <tbody>
                 <?php if (!count($rows)): ?>
-                    <tr><td colspan="7" class="text-center text-muted py-4"><?= t('Belum ada pembayaran.') ?></td></tr>
+                    <tr><td colspan="8" class="text-center text-muted py-4"><?= t('Belum ada pembayaran.') ?></td></tr>
                 <?php endif; ?>
                 <?php foreach ($rows as $r): ?>
                     <tr>
                         <td><code class="small"><?= e($r['order_id']) ?></code></td>
                         <td><span class="badge bg-secondary"><?= e($r['booking_type']) ?> #<?= (int)$r['booking_id'] ?></span></td>
                         <td class="fw-semibold"><?= formatRupiah($r['gross_amount']) ?></td>
-                        <td><small><?= e($r['payment_type'] ?? '-') ?></small></td>
+                        <td><span class="badge bg-info text-dark"><?= e($r['gateway'] ?? 'midtrans') ?></span></td>
+                        <td><small><?= e($r['payment_type'] ?? $r['pay_code'] ?? '-') ?></small></td>
                         <td><span class="badge bg-<?= $badgeMap[$r['status']] ?? 'secondary' ?>"><?= ucfirst(t($r['status'])) ?></span></td>
                         <td><small class="text-muted"><?= formatDate($r['created_at']) ?></small></td>
                         <td class="text-end">
