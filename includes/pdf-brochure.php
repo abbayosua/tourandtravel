@@ -49,15 +49,15 @@ function pdfBrochureCss(string $lang = 'id'): string
     .flight { background: #0f2b6b; color: #ffffff; border-radius: 6px; padding: 5px 9px; font-size: 8.5pt; margin: 3px 0; }
     .meet { background: #faf6ea; border: 1px solid #d4b86a; border-radius: 6px; padding: 5px 9px; font-size: 8pt; color: #5a4a1a; margin-top: 4px; }
     table.itin { width: 100%; border-collapse: collapse; }
-    table.itin th { background: #0f2b6b; color: #fff; font-size: 8pt; padding: 6px 6px; }
-    table.itin td { border: 1px solid #ddd; vertical-align: top; padding: 5px 6px; font-size: 8pt; }
+    table.itin th { background: #0f2b6b; color: #fff; font-size: 7.5pt; padding: 5px 5px; }
+    table.itin td { border: 1px solid #ddd; vertical-align: top; padding: 4px 5px; font-size: 7.5pt; }
     .daybadge { background: #d4b86a; color: #0f2b6b; font-weight: bold; border-radius: 4px;
       padding: 2px 6px; font-size: 8pt; white-space: nowrap; }
     .daytitle { font-weight: bold; color: #0f2b6b; }
     .prog { color: #33334d; margin-top: 2px; }
     table.price { width: 100%; border-collapse: collapse; }
-    table.price th { background: #0f2b6b; color: #fff; font-size: 7.5pt; padding: 6px 4px; }
-    table.price td { border: 1px solid #ddd; padding: 5px 4px; font-size: 8pt; text-align: center; }
+    table.price th { background: #0f2b6b; color: #fff; font-size: 7pt; padding: 5px 3px; }
+    table.price td { border: 1px solid #ddd; padding: 4px 3px; font-size: 7.5pt; text-align: center; }
     table.price td.l { text-align: left; }
     .avail { color: #1a7a33; font-weight: bold; }
     .full { color: #b02a37; font-weight: bold; }
@@ -83,6 +83,14 @@ function pdfBrochureCss(string $lang = 'id'): string
     .flightno { background: #0f2b6b; color: #fff; font-weight: bold; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; white-space: nowrap; }
     table.contact { width: 100%; border-collapse: collapse; margin-top: 8px; }
     table.contact td { font-size: 7pt; color: #555; padding: 1px 4px; vertical-align: top; }
+    .corner { font-size: 14pt; color: #d4b86a; line-height: 1; }
+    .promo-date { color: #b02a37; font-weight: bold; }
+    .was { text-decoration: line-through; color: #999; font-size: 7pt; }
+    .tick-ic { display: inline-block; width: 15px; height: 15px; line-height: 15px; text-align: center; border-radius: 50%; color: #fff; font-size: 9pt; font-weight: bold; margin-right: 4px; }
+    .tick-ok { background: #1a7a33; }
+    .tick-no { background: #b02a37; }
+    .route-arrow { color: #b02a37; font-size: 12pt; font-weight: bold; }
+    .flight-route { background: #eef2f7; border: 1px solid #0f2b6b; border-radius: 6px; padding: 5px 9px; font-size: 8pt; color: #0f2b6b; font-weight: bold; text-align: center; margin: 4px 0; }
     CSS;
 }
 
@@ -306,9 +314,9 @@ function pdfTourBrochureHtml(array $tour, array $days, string $coverImgTag, arra
 
     // ===== Halaman 1: cover =====
     $h .= '<div class="page">';
-    $h .= '<table class="head"><tr><td><div class="brand">TOURANDTRAVEL</div>'
+    $h .= '<table class="head"><tr><td class="corner" width="20">&#10022;</td><td><div class="brand">TOURANDTRAVEL</div>'
         . '<div class="brand-sub">TOUR &amp; TRAVEL</div></td>'
-        . '<td class="head-right">YOUR WORLD OF JOY<br>' . e($web) . '</td></tr></table>';
+        . '<td class="head-right">YOUR WORLD OF JOY<br>' . e($web) . '</td><td class="corner" width="20" style="text-align:right">&#10022;</td></tr></table>';
     $h .= '<div class="hero"><table><tr><td class="dur">' . $dur . '</td>'
         . '<td><div class="hero-title">' . e($tourTitle) . '</div>'
         . ($route !== '' ? '<div class="hero-sub">' . e($route) . '</div>' : '') . '</td></tr></table></div>';
@@ -329,6 +337,7 @@ function pdfTourBrochureHtml(array $tour, array $days, string $coverImgTag, arra
             }
             $h .= '<td>' . ($tag !== '' ? $tag : '<div class="route-img" style="height:60px;background:#eef2f7;"></div>')
                 . '<div class="route-cap"><span class="route-num">' . ($i + 1) . '</span>' . e(mb_strtoupper($stops[$i])) . '</div></td>';
+            if ($i < $n - 1) $h .= '<td style="width:12px;vertical-align:middle;"><span class="route-arrow">&rsaquo;</span></td>';
         }
         $h .= '</tr></table>';
     }
@@ -352,6 +361,11 @@ function pdfTourBrochureHtml(array $tour, array $days, string $coverImgTag, arra
         . '</tr></table>';
     if ($flights) {
         $h .= '<div class="secbar">' . e($L['flight']) . '</div>';
+        $origin = mb_strtoupper($stops[0] ?? '');
+        $dest = mb_strtoupper($stops[count($stops) - 1] ?? '');
+        if ($origin !== '' && $dest !== '' && $origin !== $dest) {
+            $h .= '<div class="flight-route">&#9992; ' . e($L['direct_flight']) . ': ' . e($origin) . ' - ' . e($dest) . '</div>';
+        }
         foreach ($flights as $f) {
             [$fno, $frest] = pdfFlightParsed($f);
             $h .= '<div class="flight">&#9992; ' . ($fno !== '' ? '<span class="flightno">' . e($fno) . '</span> ' : '') . e($frest) . '</div>';
@@ -393,9 +407,11 @@ function pdfTourBrochureHtml(array $tour, array $days, string $coverImgTag, arra
         $tier = isset($deps[0]['price_adult']) || isset($deps[0]['departure_date']);
         $hasTwin = false;
         $hasTriple = false;
+        $minTwin = null;
+        $minTriple = null;
         foreach ($deps as $dp) {
-            if (!empty($dp['price_twin'])) $hasTwin = true;
-            if (!empty($dp['price_triple'])) $hasTriple = true;
+            if (!empty($dp['price_twin'])) { $hasTwin = true; $minTwin = $minTwin === null ? (float)$dp['price_twin'] : min($minTwin, (float)$dp['price_twin']); }
+            if (!empty($dp['price_triple'])) { $hasTriple = true; $minTriple = $minTriple === null ? (float)$dp['price_triple'] : min($minTriple, (float)$dp['price_triple']); }
         }
         $h .= '<div class="page">';
         $h .= '<div class="secbar">' . e($L['schedule']) . '</div>';
@@ -405,8 +421,13 @@ function pdfTourBrochureHtml(array $tour, array $days, string $coverImgTag, arra
             if ($hasTriple) $h .= '<th>' . e($L['th_triple']) . '</th>';
             $h .= '<th>' . e($L['th_status']) . '</th></tr>';
             foreach ($deps as $dp) {
-                $tgl = date('d M Y', strtotime($dp['departure_date'] ?? $dp['date']));
+                $tglRaw = $dp['departure_date'] ?? $dp['date'];
+                $noteTxt = tContentLang($dp, 'note', $lang) ?: '-';
+                $isPromo = (bool)preg_match('/promo|hemat|diskon|sale|special|spesial|hot deal|hemat/i', $noteTxt);
+                $tgl = date('d M Y', strtotime($tglRaw));
                 if (!empty($dp['return_date'])) $tgl .= "\n" . date('d M Y', strtotime($dp['return_date']));
+                $tglHtml = nl2br(e($tgl));
+                if ($isPromo) $tglHtml = '<span class="promo-date">' . $tglHtml . '</span>';
                 $pa = !empty($dp['price_adult']) ? formatCurrency($dp['price_adult'], $cur, $cur) : '-';
                 $pc = !empty($dp['price_child']) ? formatCurrency($dp['price_child'], $cur, $cur) : '-';
                 $ps = !empty($dp['price_single']) ? formatCurrency($dp['price_single'], $cur, $cur) : '-';
@@ -418,7 +439,7 @@ function pdfTourBrochureHtml(array $tour, array $days, string $coverImgTag, arra
                     $sisa = $slots - $booked;
                     $st = $sisa > 0 ? '<span class="avail">' . e(sprintf($L['seats_left'], $sisa)) . '</span>' : '<span class="full">' . e($L['full']) . '</span>';
                 } else $st = '<span class="avail">' . e($L['available']) . '</span>';
-                $h .= '<tr><td class="l">' . nl2br(e($tgl)) . '</td><td>' . e(tContentLang($dp, 'note', $lang) ?: '-') . '</td>'
+                $h .= '<tr><td class="l">' . $tglHtml . '</td><td>' . e($noteTxt) . '</td>'
                     . '<td>' . e($pa) . '</td><td>' . e($pc) . '</td><td>' . e($ps) . '</td>'
                     . ($hasTwin ? '<td>' . e($ptw) . '</td>' : '') . ($hasTriple ? '<td>' . e($ptr) . '</td>' : '') . '<td>' . $st . '</td></tr>';
             }
@@ -444,12 +465,12 @@ function pdfTourBrochureHtml(array $tour, array $days, string $coverImgTag, arra
     $h .= '<div class="page">';
     if ($inc) {
         $h .= '<div class="secbar-green">' . e($L['include']) . '</div><ul class="tick">';
-        foreach ($inc as $x) $h .= '<li>&#10003; ' . e($x) . '</li>';
+        foreach ($inc as $x) $h .= '<li><span class="tick-ic tick-ok">&#10003;</span>' . e($x) . '</li>';
         $h .= '</ul>';
     }
     if ($exc) {
         $h .= '<div class="secbar-red">' . e($L['exclude']) . '</div><ul class="tick">';
-        foreach ($exc as $x) $h .= '<li>&#10005; ' . e($x) . '</li>';
+        foreach ($exc as $x) $h .= '<li><span class="tick-ic tick-no">&#10005;</span>' . e($x) . '</li>';
         $h .= '</ul>';
     }
     if ($notes) {
