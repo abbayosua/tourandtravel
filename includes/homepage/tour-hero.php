@@ -30,9 +30,9 @@ $voyageToday = date('Y-m-d');
     </div>
 
     <div class="voyage-inner">
-        <p class="voyage-eyebrow"><?= t('Jelajahi Dunia Bersama Kami') ?></p>
-        <h1 class="voyage-title serif"><?= e($voyageTitle) ?></h1>
-        <p class="voyage-sub"><?= e($voyageSub) ?></p>
+        <p class="voyage-eyebrow"><span class="voyage-eyebrow-dot"></span><?= t('Baru • Koleksi tour pilihan 2025') ?></p>
+        <h1 class="voyage-title"><?= t('Temukan') ?><br><span class="serif voyage-title-accent">Perfect</span> <?= t('Trip') ?></h1>
+        <p class="voyage-sub"><?= t('Paket tour pilihan, villa & pengalaman — booking instan, harga terbaik.') ?></p>
 
         <form class="voyage-search" method="GET" action="tours.php" id="voyageSearchForm">
             <div class="voyage-field">
@@ -80,6 +80,7 @@ $voyageToday = date('Y-m-d');
                 </div>
             </div>
         </form>
+        <div class="voyage-proof"><span class="voyage-proof-rate"><i>★</i> 4.9 &bull; 2M+ <?= t('tour') ?></span><span class="voyage-proof-sub"><?= t('Dipercaya traveler') ?></span></div>
 
         <?php if (!empty($voyageCats)): ?>
         <div class="voyage-chips">
@@ -166,9 +167,9 @@ $voyageToday = date('Y-m-d');
 .voyage-bg-grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(231,240,255,.35) 0%,rgba(245,249,255,.72) 55%,#ffffff 100%),linear-gradient(90deg,rgba(13,110,253,.10),transparent 55%,rgba(102,16,242,.07))}
 .voyage-bg-glow{position:absolute;inset:0;opacity:.5;background:radial-gradient(900px circle at 15% 15%,rgba(13,110,253,.14),transparent 60%),radial-gradient(700px circle at 85% 25%,rgba(255,122,26,.10),transparent 60%)}
 .voyage-inner{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:0 20px}
-.voyage-eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#0d6efd;font-weight:600;margin:0 0 10px}
-.voyage-title{font-size:clamp(38px,6vw,68px);line-height:1.02;letter-spacing:-.02em;margin:0 0 10px;font-weight:400;color:#0b1e3f}
-.voyage-sub{color:#4d5f7a;font-size:15px;margin:0 0 26px;max-width:560px}
+.voyage-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#0d6efd;font-weight:600;margin:0 0 14px;padding:6px 14px;border-radius:999px;background:rgba(255,255,255,.7);border:1px solid rgba(13,110,253,.18);backdrop-filter:blur(12px)}
+.voyage-title{font-size:clamp(42px,6.5vw,84px);line-height:.92;letter-spacing:-.04em;margin:0 0 10px;font-weight:600;color:#0b1e3f}
+.voyage-sub{color:#4d5f7a;font-size:16px;line-height:1.5;margin:5px 0 26px;max-width:480px;font-weight:300}.voyage-title-accent{font-style:italic;font-weight:400;letter-spacing:-.03em}.voyage-eyebrow-dot{width:6px;height:6px;border-radius:50%;background:#ff7a1a;animation:voyagePulse 1.6s infinite}@keyframes voyagePulse{0%,100%{opacity:1}50%{opacity:.35}}.voyage-proof{margin-top:14px;display:flex;align-items:center;gap:10px;font-size:12px}.voyage-proof-rate{font-weight:600;color:#0b1e3f;display:flex;align-items:center;gap:5px}.voyage-proof-rate i{color:#ff7a1a;font-style:normal}.voyage-proof-sub{color:#6d7d99}
 .voyage-search{position:relative;display:flex;align-items:stretch;gap:4px;max-width:860px;background:rgba(255,255,255,.72);border:1px solid rgba(13,110,253,.18);border-radius:999px;padding:8px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 12px 40px rgba(13,110,253,.14),inset 0 1px 0 rgba(255,255,255,.9)}
 .voyage-field{flex:1;display:flex;flex-direction:column;justify-content:center;padding:6px 20px;min-width:0;border-radius:999px}
 .voyage-field label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#6d7d99;font-weight:600}
@@ -272,6 +273,10 @@ $voyageToday = date('Y-m-d');
 [data-theme="dark"] .voyage-eyebrow{color:rgba(255,255,255,.5)}
 [data-theme="dark"] .voyage-title{color:#fff}
 [data-theme="dark"] .voyage-sub{color:rgba(255,255,255,.65)}
+[data-theme="dark"] .voyage-title-accent{color:#fff}
+[data-theme="dark"] .voyage-eyebrow{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.12);color:rgba(255,255,255,.7)}
+[data-theme="dark"] .voyage-proof-rate{color:#fff}
+[data-theme="dark"] .voyage-proof-sub{color:rgba(255,255,255,.5)}
 [data-theme="dark"] .voyage-search{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.14);box-shadow:0 8px 40px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.14)}
 [data-theme="dark"] .voyage-field label{color:rgba(255,255,255,.45)}
 [data-theme="dark"] .voyage-field input[type=text]{color:#fff}
