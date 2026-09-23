@@ -47,7 +47,7 @@ body.voyage-page .voyage-hero{padding-top:120px}
 .voyage-press{max-width:1200px;margin:28px auto 0;padding:18px 20px 0;display:flex;align-items:center;gap:18px;flex-wrap:wrap;border-top:1px solid rgba(13,110,253,.12)}
 .voyage-press span{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#7a8aa5;font-weight:600}
 .voyage-press b{font-family:'Instrument Serif',serif;font-weight:400;font-size:18px;color:#33465f}
-footer.voyage-footer{margin-top:0!important;position:relative;z-index:1;background:#212529}body.voyage-page main,body.voyage-page #mainContent{position:relative;z-index:1}
+footer.voyage-footer{margin-top:0!important;position:relative;z-index:1;background:rgba(33,37,41,.82);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid rgba(255,255,255,.14);box-shadow:0 -12px 40px rgba(13,110,253,.12),inset 0 1px 0 rgba(255,255,255,.12)}body.voyage-page main,body.voyage-page #mainContent{position:relative;z-index:1}.voyage-glass-sec{position:relative;z-index:1;background:rgba(255,255,255,.55);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid rgba(13,110,253,.14);border-bottom:1px solid rgba(13,110,253,.10)}.voyage-glass-sec .card{border:1px solid rgba(13,110,253,.14)!important;background:rgba(255,255,255,.72)!important;backdrop-filter:blur(16px);box-shadow:0 8px 32px rgba(13,110,253,.10)!important}.voyage-glass-sec .card .text-dark{color:#0b1e3f!important}.voyage-glass-sec .card .text-muted{color:#5b6b86!important}
 @media(max-width:768px){.voyage-tabs{display:none}.voyage-trust-grid{grid-template-columns:repeat(2,1fr)}body.voyage-page .voyage-hero{padding-top:104px}.voyage-spreader{height:88px}.voyage-pagehero{padding:132px 0 32px;margin-top:-88px}}
 [data-theme="dark"] body.voyage-page{background:#08080a;color:#ececef}
 [data-theme="dark"] .voyage-nav{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12);box-shadow:0 8px 40px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.14)}
@@ -82,7 +82,7 @@ footer.voyage-footer{margin-top:0!important;position:relative;z-index:1;backgrou
 [data-theme="dark"] .voyage-press{border-color:rgba(255,255,255,.08)}
 [data-theme="dark"] .voyage-press span{color:rgba(255,255,255,.35)}
 [data-theme="dark"] .voyage-press b{color:rgba(255,255,255,.75)}
-[data-theme="dark"] footer.voyage-footer{background:#08080a!important;border-top:1px solid rgba(255,255,255,.08)}
+[data-theme="dark"] footer.voyage-footer{background:rgba(8,8,10,.78)!important;border-top:1px solid rgba(255,255,255,.12);box-shadow:0 -12px 40px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.12)}[data-theme="dark"] .voyage-glass-sec{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08)}[data-theme="dark"] .voyage-glass-sec .card{background:rgba(255,255,255,.06)!important;border-color:rgba(255,255,255,.1)!important;box-shadow:none!important}[data-theme="dark"] .voyage-glass-sec .card .text-dark{color:#fff!important}[data-theme="dark"] .voyage-glass-sec .card .text-muted{color:rgba(255,255,255,.55)!important}[data-theme="dark"] .voyage-glass-sec h5{color:#fff}
 [data-theme="dark"] .voyage-pagehero{background:#08080a;color:#fff}
 [data-theme="dark"] .voyage-pagehero .voyage-bg-img{opacity:.5}
 [data-theme="dark"] .voyage-pagehero .voyage-bg-grad{background:linear-gradient(180deg,rgba(10,10,11,.5),rgba(10,10,11,.6) 60%,#08080a),linear-gradient(90deg,rgba(10,10,11,.8),transparent 60%,rgba(10,10,11,.6))}

@@ -1,6 +1,6 @@
 <!-- Flash Deals -->
 <?php if (count($promoTours) > 0): ?>
-<section class="py-4 bg-light">
+<section class="py-4 voyage-glass-sec">
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="fw-bold mb-0"><i class="bi bi-lightning-charge-fill text-warning me-1"></i> <?= t('Flash Deals') ?></h5>

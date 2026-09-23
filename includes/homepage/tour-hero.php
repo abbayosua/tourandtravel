@@ -161,11 +161,11 @@ $voyageToday = date('Y-m-d');
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
 .voyage-hero{position:relative;z-index:1;color:#0d1b33;padding:0 0 48px;overflow:clip}
 .voyage-hero .serif{font-family:'Instrument Serif',serif}
-.voyage-bg{position:sticky;top:0;height:100vh;height:100svh;z-index:0;pointer-events:none;margin-bottom:-100vh;margin-bottom:-100svh}
+.voyage-bg{position:fixed;inset:0;z-index:0;pointer-events:none}body:has(.voyage-hero){background:#f5f9ff}body:has(.voyage-hero) .voyage-glass-sec{background:rgba(255,255,255,.42)}
 .voyage-bg-img{position:absolute;inset:0;opacity:.38;background-size:cover;background-position:center 35%}
-.voyage-bg-grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(231,240,255,.35) 0%,rgba(245,249,255,.72) 55%,rgba(245,249,255,.92) 82%,#f5f9ff 100%),linear-gradient(90deg,rgba(13,110,253,.10),transparent 55%,rgba(102,16,242,.07))}
+.voyage-bg-grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(231,240,255,.42) 0%,rgba(245,249,255,.55) 30%,rgba(245,249,255,.35) 60%,rgba(245,249,255,.55) 100%),linear-gradient(90deg,rgba(13,110,253,.10),transparent 55%,rgba(102,16,242,.07))}
 .voyage-bg-glow{position:absolute;inset:0;opacity:.5;background:radial-gradient(900px circle at 15% 15%,rgba(13,110,253,.14),transparent 60%),radial-gradient(700px circle at 85% 25%,rgba(255,122,26,.10),transparent 60%)}
-.voyage-inner{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:120px 20px 0}
+.voyage-inner{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:120px 20px 0}body.voyage-page .voyage-hero{padding-top:0!important}
 .voyage-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#0d6efd;font-weight:600;margin:0 0 14px;padding:6px 14px;border-radius:999px;background:rgba(255,255,255,.7);border:1px solid rgba(13,110,253,.18);backdrop-filter:blur(12px)}
 .voyage-title{font-size:clamp(42px,6.5vw,84px);line-height:.92;letter-spacing:-.04em;margin:0 0 10px;font-weight:600;color:#0b1e3f}
 .voyage-sub{color:#4d5f7a;font-size:16px;line-height:1.5;margin:5px 0 26px;max-width:480px;font-weight:300}.voyage-title-accent{font-style:italic;font-weight:400;letter-spacing:-.03em}.voyage-eyebrow-dot{width:6px;height:6px;border-radius:50%;background:#ff7a1a;animation:voyagePulse 1.6s infinite}@keyframes voyagePulse{0%,100%{opacity:1}50%{opacity:.35}}.voyage-proof{margin-top:14px;display:flex;align-items:center;gap:10px;font-size:12px}.voyage-proof-rate{font-weight:600;color:#0b1e3f;display:flex;align-items:center;gap:5px}.voyage-proof-rate i{color:#ff7a1a;font-style:normal}.voyage-proof-sub{color:#6d7d99}

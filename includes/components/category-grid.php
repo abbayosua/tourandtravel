@@ -8,7 +8,7 @@
  */
 function renderCategoryGrid($categories, $catIcons = [], $catCounts = []) {
     ?>
-    <section class="py-4">
+    <section class="py-4 voyage-glass-sec">
         <div class="container">
             <h5 class="fw-bold mb-3"><?= t('Kategori Wisata') ?></h5>
             <div class="kategori-scroll d-flex gap-2 overflow-auto pb-2">

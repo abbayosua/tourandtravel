@@ -1,5 +1,5 @@
 <!-- Stats Bar -->
-<section class="bg-white border-bottom">
+<section class="voyage-glass-sec border-bottom">
     <div class="container py-3">
         <div class="row text-center g-2">
             <div class="col-3"><div class="fw-bold text-primary fs-5">150+</div><small class="text-muted"><?= t('Paket Tour') ?></small></div>
