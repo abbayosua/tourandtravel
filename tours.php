@@ -44,16 +44,12 @@ require_once 'includes/components/breadcrumb.php';
 require_once 'includes/components/page-hero.php';
 
 require_once 'includes/header-shared.php';
-renderPageHero(t('Paket Tour'), $total . ' ' . t('tour ditemukan'), [['label' => t('Paket Tour'), 'url' => null]]);
+renderPageHero(t('Paket Tour'), $total . ' ' . t('tour ditemukan'), [['label' => t('Paket Tour'), 'url' => 'tours.php']]);
 ?>
 <section class="py-4">
     <div class="container">
 
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <div>
-                <h4 class="fw-bold mb-0"><?= t('Paket Tour') ?></h4>
-                <small class="text-muted"><?= $total ?> <?= t('tour ditemukan') ?></small>
-            </div>
+        <div class="d-flex justify-content-end align-items-center mb-3">
             <a href="tours.php" class="btn btn-sm btn-outline-secondary rounded-pill <?= !$category && !$search && !$priceRange && !$duration && !$rating && !$sort ? 'd-none' : '' ?>">
                 <i class="bi bi-x-circle me-1"></i><?= t('Reset') ?>
             </a>

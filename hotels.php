@@ -89,7 +89,7 @@ $hotelWishlistIds = isLoggedIn() ? (getUserWishlistItems($_SESSION['user_id'])['
 require_once 'includes/components/breadcrumb.php';
 require_once 'includes/components/page-hero.php';
 require_once 'includes/header-shared.php';
-renderPageHero(t('Hotel'), t('Dari budget sampai bintang 5 — bandingkan dan pesan sekarang.'), [['label' => t('Hotel'), 'url' => null]]);
+renderPageHero(t('Hotels'), t('Dari budget sampai bintang 5 — bandingkan dan pesan sekarang.'), [['label' => t('Hotels'), 'url' => 'hotels.php']]);
 ?>
 <section class="py-4 bg-light">
     <div class="container">

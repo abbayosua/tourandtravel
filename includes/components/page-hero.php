@@ -27,6 +27,8 @@ function pageHeroImage(string $page): string {
 function renderPageHero(string $title, string $sub = '', array $crumbs = []) {
     $page = basename($_SERVER['PHP_SELF'] ?? '');
     $img = pageHeroImage($page);
+    $crumbs = array_values(array_filter($crumbs, fn($c) => trim($c['label'] ?? '') !== ''));
+    if (count($crumbs) === 1 && empty($crumbs[0]['url'])) $crumbs = [];
     ?>
     <section class="voyage-pagehero">
         <div class="voyage-bg">
@@ -37,7 +39,7 @@ function renderPageHero(string $title, string $sub = '', array $crumbs = []) {
         <div class="voyage-inner">
             <?php if (!empty($crumbs)): ?>
             <nav class="voyage-crumbs" aria-label="breadcrumb">
-                <a href="<?= BASE_URL ?>/"><i class="bi bi-house"></i></a>
+                <a href="<?= BASE_URL ?>/">Home</a>
                 <?php foreach ($crumbs as $c): ?>
                 <span class="voyage-crumb-sep">/</span>
                 <?php if (!empty($c['url'])): ?><a href="<?= e($c['url']) ?>"><?= e($c['label']) ?></a><?php else: ?><span class="on"><?= e($c['label']) ?></span><?php endif; ?>

@@ -233,7 +233,7 @@ if ($sort === 'price' || $sort === 'rating') {
 require_once 'includes/components/breadcrumb.php';
 require_once 'includes/components/page-hero.php';
 require_once 'includes/header-shared.php';
-if (!$doSearch) renderPageHero(t('Pesawat'), t('Pesan tiket pesawat, ferry, dan kereta api dalam satu tempat.'), [['label' => t('Pesawat'), 'url' => null]]);
+if (!$doSearch) renderPageHero(t('Pesawat'), t('Pesan tiket pesawat, ferry, dan kereta api dalam satu tempat.'), [['label' => t('Pesawat'), 'url' => 'flights.php']]);
 ?>
 <?php if (!$doSearch): ?>
 <section class="hero-uifactory" style="display:none" aria-hidden="true">
