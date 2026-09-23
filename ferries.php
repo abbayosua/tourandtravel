@@ -100,10 +100,12 @@ if (empty($ferries)) {
 }
 
 require_once 'includes/components/breadcrumb.php';
+require_once 'includes/components/page-hero.php';
 require_once 'includes/header-shared.php';
+if (!$search) renderPageHero(t('Ferry'), t('Pesan tiket ferry, pesawat, dan kereta api dalam satu tempat.'), [['label' => t('Ferry'), 'url' => null]]);
 ?>
 <?php if (!$search): ?>
-<section class="hero-uifactory">
+<section class="hero-uifactory" style="display:none" aria-hidden="true">
   <div class="hero-bg-shape hero-bg-shape--1"></div>
   <div class="hero-bg-shape hero-bg-shape--2"></div>
   <div class="hero-content">

@@ -87,11 +87,12 @@ $displayHotels = $usingLive ? $liveHotels : $hotels;
 
 $hotelWishlistIds = isLoggedIn() ? (getUserWishlistItems($_SESSION['user_id'])['hotel'] ?? []) : [];
 require_once 'includes/components/breadcrumb.php';
+require_once 'includes/components/page-hero.php';
 require_once 'includes/header-shared.php';
+renderPageHero(t('Hotel'), t('Dari budget sampai bintang 5 — bandingkan dan pesan sekarang.'), [['label' => t('Hotel'), 'url' => null]]);
 ?>
 <section class="py-4 bg-light">
     <div class="container">
-        <?php renderBreadcrumb([['label' => t('Hotel'), 'url' => null]]); ?>
 
         <!-- Agoda-style search bar -->
         <div class="card border-0 shadow-sm mb-4">

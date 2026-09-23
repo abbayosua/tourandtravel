@@ -41,12 +41,13 @@ if (isLoggedIn()) {
 require_once 'includes/components/tour-card.php';
 require_once 'includes/components/pagination.php';
 require_once 'includes/components/breadcrumb.php';
+require_once 'includes/components/page-hero.php';
 
 require_once 'includes/header-shared.php';
+renderPageHero(t('Paket Tour'), $total . ' ' . t('tour ditemukan'), [['label' => t('Paket Tour'), 'url' => null]]);
 ?>
 <section class="py-4">
     <div class="container">
-        <?php renderBreadcrumb([['label' => t('Paket Tour'), 'url' => null]]); ?>
 
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>

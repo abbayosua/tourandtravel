@@ -231,10 +231,12 @@ if ($sort === 'price' || $sort === 'rating') {
     usort($duffelOffers, function ($a, $b) use ($sortDurationOf) { return $sortDurationOf($a) <=> $sortDurationOf($b); });
 }
 require_once 'includes/components/breadcrumb.php';
+require_once 'includes/components/page-hero.php';
 require_once 'includes/header-shared.php';
+if (!$doSearch) renderPageHero(t('Pesawat'), t('Pesan tiket pesawat, ferry, dan kereta api dalam satu tempat.'), [['label' => t('Pesawat'), 'url' => null]]);
 ?>
 <?php if (!$doSearch): ?>
-<section class="hero-uifactory">
+<section class="hero-uifactory" style="display:none" aria-hidden="true">
   <div class="hero-bg-shape hero-bg-shape--1"></div>
   <div class="hero-bg-shape hero-bg-shape--2"></div>
   <div class="hero-content">
