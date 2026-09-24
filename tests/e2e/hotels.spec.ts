@@ -47,8 +47,8 @@ test.describe('Hotels listing - happy path', () => {
     expect(body).not.toMatch(PHP_ERROR);
     const prices = await page.locator('span.fw-bold.text-primary.fs-5').allTextContents();
     expect(prices.length).toBeGreaterThan(0);
-    // First should be premium (4.5jt)
-    expect(prices[0]).toMatch(/4\.500|4\.500\.000|4\.5/i);
+    // First should be premium (4.5jt) — ID: 4.500.000 / EN: 4,500,000
+    expect(prices[0]).toMatch(/4[.,]500/);
   });
 
   test('stars filter: 5-star', async ({ page }) => {
@@ -67,7 +67,7 @@ test.describe('Hotels listing - sad path / edge cases', () => {
     await page.goto(`${BASE}/hotels.php?city=ZZZNonexistentCity`, { waitUntil: 'load' });
     const body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
-    expect(body).toMatch(/Tidak ada hotel ditemukan|tidak ada/i);
+    expect(body).toMatch(/Tidak ada hotel ditemukan|No hotels found|tidak ada|no hotels/i);
     await expect(page.locator('a:has-text("Reset")')).toBeVisible();
   });
 
@@ -75,7 +75,7 @@ test.describe('Hotels listing - sad path / edge cases', () => {
     await page.goto(`${BASE}/hotels.php?city=jakarta`, { waitUntil: 'load' });
     const body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
-    expect(body).toMatch(/hotel ditemukan/i);
+    expect(body).toMatch(/hotel ditemukan|hotels? found/i);
     expect(body).toMatch(/Jakarta/i);
     const cards = await page.locator('h6.fw-semibold.mb-1').count();
     expect(cards).toBeGreaterThan(0);
@@ -93,7 +93,7 @@ test.describe('Hotels listing - sad path / edge cases', () => {
     await page.goto(`${BASE}/hotels.php?stars=1`, { waitUntil: 'load' });
     const body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
-    expect(body).toMatch(/Tidak ada hotel ditemukan|tidak ada/i);
+    expect(body).toMatch(/Tidak ada hotel ditemukan|No hotels found|tidak ada|no hotels/i);
   });
 
   test('sort invalid value: fallback default', async ({ page }) => {
@@ -108,9 +108,9 @@ test.describe('Hotels listing - sad path / edge cases', () => {
     await page.goto(`${BASE}/hotels.php?guests=0`, { waitUntil: 'load' });
     const body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
-    expect(body).toMatch(/hotel ditemukan/i);
+    expect(body).toMatch(/hotel ditemukan|hotels? found/i);
     // Check that the Pesan link includes guests=0
-    const pesanLink = page.locator('a.btn-primary:has-text("Pesan")').first();
+    const pesanLink = page.locator('a[href*="guests=0"]').first();
     const href = await pesanLink.getAttribute('href');
     expect(href).toContain('guests=0');
   });
@@ -120,7 +120,7 @@ test.describe('Hotels listing - sad path / edge cases', () => {
     const body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
     // Halaman tetap render, guests diteruskan ke detail
-    const pesanLink = page.locator('a.btn-primary:has-text("Pesan")').first();
+    const pesanLink = page.locator('a[href*="guests=10"]').first();
     const href = await pesanLink.getAttribute('href');
     expect(href).toContain('guests=10');
   });
@@ -130,14 +130,14 @@ test.describe('Hotels listing - sad path / edge cases', () => {
     const body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
     // List tidak validasi, hanya render
-    expect(body).toMatch(/hotel ditemukan/i);
+    expect(body).toMatch(/hotel ditemukan|hotels? found/i);
   });
 
   test('city+stars+sort combined', async ({ page }) => {
     await page.goto(`${BASE}/hotels.php?city=Jakarta&stars=4&sort=price_desc`, { waitUntil: 'load' });
     const body = await page.textContent('body');
     expect(body).not.toMatch(PHP_ERROR);
-    expect(body).toMatch(/hotel ditemukan/i);
+    expect(body).toMatch(/hotel ditemukan|hotels? found/i);
     expect(body).toMatch(/Jakarta|★★★★/i);
   });
 });

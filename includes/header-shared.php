@@ -33,6 +33,7 @@ $voyageNoSpacer = !empty($voyageNoSpacer) || in_array($voyagePage, $voyageHeroPa
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=<?= filemtime(__DIR__ . '/../assets/css/style.css') ?>">
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/hero-uifactory.css?v=<?= filemtime(__DIR__ . '/../assets/css/hero-uifactory.css') ?>">
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/voyage.css?v=<?= filemtime(__DIR__ . '/../assets/css/voyage.css') ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/voyage-hero.css?v=<?= filemtime(__DIR__ . '/../assets/css/voyage-hero.css') ?>">
     <?= i18nJs() ?>
     <script defer src="<?= BASE_URL ?>/assets/js/klook.js?v=<?= filemtime(__DIR__ . '/../assets/js/klook.js') ?>"></script>
 </head>

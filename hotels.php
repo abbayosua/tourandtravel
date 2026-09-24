@@ -10,7 +10,8 @@ $city = $_GET['city'] ?? '';
 $checkin = $_GET['checkin'] ?? '';
 $checkout = $_GET['checkout'] ?? '';
 $guests = (int)($_GET['guests'] ?? 2);
-$stars = $_GET['stars'] ?? '';
+$starsRaw = $_GET['stars'] ?? '';
+$stars = in_array($starsRaw, ['1', '2', '3', '4', '5'], true) ? $starsRaw : '';
 $sort = $_GET['sort'] ?? 'price';
 $minPrice = trim($_GET['min_price'] ?? '');
 $maxPrice = trim($_GET['max_price'] ?? '');
@@ -86,52 +87,15 @@ if ($city !== '' && $liveEnabled) {
 $displayHotels = $usingLive ? $liveHotels : $hotels;
 
 $hotelWishlistIds = isLoggedIn() ? (getUserWishlistItems($_SESSION['user_id'])['hotel'] ?? []) : [];
+$hotelSearched = ($city !== '') || ($stars !== '') || ($minPrice !== '') || ($maxPrice !== '') || count($amenities) || $freeCancel || $instantConf || $bestSeller || ((int)($_GET['page'] ?? 1) > 1) || (($sort ?? 'price') !== 'price');
 require_once 'includes/components/breadcrumb.php';
-require_once 'includes/components/page-hero.php';
+require_once 'includes/components/hero-loader.php';
+$heroSlides = getHeroSlides('hotel');
 require_once 'includes/header-shared.php';
-renderPageHero(t('Hotels'), t('Dari budget sampai bintang 5 — bandingkan dan pesan sekarang.'), [['label' => t('Hotels'), 'url' => 'hotels.php']]);
+require __DIR__ . '/includes/homepage/hotel-hero.php';
 ?>
 <section class="py-4 bg-light">
     <div class="container">
-
-        <!-- Agoda-style search bar -->
-        <div class="card border-0 shadow-sm mb-4">
-            <div class="card-body p-3 p-md-4">
-                <form method="GET" class="row g-2 g-md-3 align-items-end">
-                    <div class="col-md">
-                        <div class="traveloka-search-field">
-                            <div class="form-label"><?= t('Kota') ?></div>
-                            <input type="text" name="city" class="form-control" placeholder="<?= t('Cari kota...') ?>" value="<?= e($city) ?>">
-                        </div>
-                    </div>
-                    <div class="col-md">
-                        <div class="traveloka-search-field">
-                            <div class="form-label"><?= t('Check-in') ?></div>
-                            <input type="date" name="checkin" class="form-control" value="<?= e($checkin ?: date('Y-m-d')) ?>">
-                        </div>
-                    </div>
-                    <div class="col-md">
-                        <div class="traveloka-search-field">
-                            <div class="form-label"><?= t('Check-out') ?></div>
-                            <input type="date" name="checkout" class="form-control" value="<?= e($checkout ?: date('Y-m-d', strtotime('+2 days'))) ?>">
-                        </div>
-                    </div>
-                    <div class="col-md">
-                        <div class="traveloka-search-field">
-                            <div class="form-label"><?= t('Tamu') ?></div>
-                            <select name="guests" class="form-select">
-                                <?php for ($g=1; $g<=10; $g++): ?>
-                                <option value="<?= $g ?>" <?= $guests === $g ? 'selected' : '' ?>><?= $g ?> <?= t('Tamu') ?></option>
-                                <?php endfor; ?>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-auto d-grid">
-                        <button class="btn btn-primary traveloka-search-btn px-4" type="submit"><i class="bi bi-search me-1"></i><?= t('Cari') ?></button>
-                    </div>
-                </form>
-            </div>
-        </div>
 
         <div class="row">
             <!-- Sidebar Filter -->
@@ -341,6 +305,7 @@ renderPageHero(t('Hotels'), t('Dari budget sampai bintang 5 — bandingkan dan p
 </section>
 
 <!-- Peta harga -->
+<?php if ($hotelSearched): ?>
 <section class="pb-4 bg-light">
     <div class="container">
         <div class="card border-0 shadow-sm">
@@ -363,6 +328,7 @@ renderPageHero(t('Hotels'), t('Dari budget sampai bintang 5 — bandingkan dan p
         </div>
     </div>
 </section>
+<?php endif; ?>
 <?php require_once 'includes/footer-shared.php'; ?>
 <script>
 // Show skeleton initially, then reveal content
