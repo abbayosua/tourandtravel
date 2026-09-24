@@ -203,6 +203,10 @@ $manual = [
     'Harga mulai dari — per penumpang, one way' => 'Fares from — per passenger, one way',
     'jadwal' => 'schedules', 'harga mulai' => 'fare from',
     'Belum ada jadwal penerbangan tersedia.' => 'No flight schedules available yet.',
+    'Flight' => 'Flight', 'flights' => 'flights',
+    'Tiket pesawat pilihan — booking instan, harga terbaik.' => 'Handpicked flights — instant booking, best fares.',
+    'Dipercaya traveler' => 'Trusted by travelers',
+    'Dari (CGK)...' => 'From (CGK)...', 'Ke (DPS)...' => 'To (DPS)...',
 
     // === trust & cross-sell ===
     'Kenapa Booking Hotel di' => 'Why Book Hotels with',
