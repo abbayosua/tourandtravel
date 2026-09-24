@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $class = trim($_POST['class'] ?? '');
     $isActive = (int)($_POST['is_active'] ?? 1);
 
-    if (!$name || !$routeFrom || !$routeTo) $error = 'Nama, asal, dan tujuan wajib diisi';
+    if (!$name || !$routeFrom || !$routeTo) $error = t('Nama, asal, dan tujuan wajib diisi');
 
     if (!$error) {
         $slug = buatSlug($name);
@@ -52,7 +52,7 @@ require_once 'includes/admin-header.php';
 ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h4 class="fw-bold mb-0"><?= $isAdd ? t('Tambah') : t('Edit') ?> <?= t('Kereta') ?></h4>
-    <a href="trains.php" class="btn btn-outline-secondary btn-sm">&larr; Kembali</a>
+    <a href="trains.php" class="btn btn-outline-secondary btn-sm">&larr; <?= t('Kembali') ?></a>
 </div>
 <?php if ($error): ?><div class="alert alert-danger py-2"><?=$error?></div><?php endif; ?>
 <form method="POST">
@@ -61,7 +61,7 @@ require_once 'includes/admin-header.php';
 <div class="card border-0 shadow-sm mb-3"><div class="card-body">
     <div class="mb-3"><label class="form-label"><?= t('Nama Kereta') ?></label><input name="name" class="form-control" value="<?=e($item['name']??'')?>" required></div>
 <div class="mb-3"><label class="form-label"><?= t('Nama Kereta') ?> (EN)</label><input name="name_en" class="form-control" value="<?= e($item["name_en"] ?? "") ?>"></div>
-    <div class="mb-3"><label class="form-label"><?= t('Durasi (contoh: 5j 30m)') ?></label><input name="duration" class="form-control" value="<?=e($item['duration']??'')?>" placeholder="5j 30m"></div>
+    <div class="mb-3"><label class="form-label"><?= t('Durasi (contoh: 5j 30m)') ?></label><input name="duration" class="form-control" value="<?=e($item['duration']??'')?>" placeholder="<?= t('5j 30m') ?>"></div>
 </div></div>
 </div>
 <div class="col-md-4">
@@ -71,7 +71,7 @@ require_once 'includes/admin-header.php';
     <div class="mb-3"><label class="form-label"><?= t('Keberangkatan') ?></label><input name="departure_time" type="time" class="form-control" value="<?=e($item['departure_time']??'')?>" required></div>
     <div class="mb-3"><label class="form-label"><?= t('Tiba') ?></label><input name="arrival_time" type="time" class="form-control" value="<?=e($item['arrival_time']??'')?>" required></div>
     <div class="mb-3"><label class="form-label"><?= t('Harga (Rp)') ?></label><input name="price" type="number" class="form-control" value="<?=$item['price']??0?>" required></div>
-    <div class="mb-3"><label class="form-label"><?= t('Kelas') ?></label><input name="class" class="form-control" value="<?=e($item['class']??'')?>" placeholder="Eksekutif, Bisnis, ..."></div>
+    <div class="mb-3"><label class="form-label"><?= t('Kelas') ?></label><input name="class" class="form-control" value="<?=e($item['class']??'')?>" placeholder="<?= t('Eksekutif, Bisnis, ...') ?>"></div>
     <div class="mb-3">
         <label class="form-label"><?= t('Status') ?></label>
         <select name="is_active" class="form-select"><option value="1" <?=($item['is_active']??1)?'selected':''?>><?= t('Aktif') ?></option><option value="0" <?=empty($item['is_active'])?'selected':''?>><?= t('Nonaktif') ?></option></select>

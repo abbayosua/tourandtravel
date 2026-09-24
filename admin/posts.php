@@ -45,7 +45,7 @@ require_once __DIR__ . '/includes/admin-header.php';
                 <tr>
                     <td class="small fw-semibold"><?= e($r['title']) ?></td>
                     <td><span class="badge bg-light text-dark border"><?= e($r['category'] ?? '-') ?></span></td>
-                    <td><span class="badge <?= $r['status'] === 'published' ? 'bg-success' : 'bg-secondary' ?>"><?= ucfirst(t($r['status'])) ?></span></td>
+                    <td><span class="badge <?= $r['status'] === 'published' ? 'bg-success' : 'bg-secondary' ?>"><?= e(bookingStatusLabel($r['status'])) ?></span></td>
                     <td><small class="text-muted"><?= $r['published_at'] ? date('d/m/y', strtotime($r['published_at'])) : '-' ?></small></td>
                     <td class="text-end">
                         <a href="post-edit.php?id=<?= (int)$r['id'] ?>" class="btn btn-sm btn-outline-primary"><?= t('Edit') ?></a>

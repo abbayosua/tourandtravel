@@ -6,7 +6,7 @@ require_once '../includes/auth.php';
 cekLogin();
 
 $msg = '';
-if (isset($_GET['msg'])) $msg = match($_GET['msg']) { 'added' => 'Berhasil ditambahkan', 'updated' => 'Berhasil diperbarui', 'deleted' => 'Berhasil dihapus', default => '' };
+if (isset($_GET['msg'])) $msg = match($_GET['msg']) { 'added' => t('Berhasil ditambahkan'), 'updated' => t('Berhasil diperbarui'), 'deleted' => t('Berhasil dihapus'), default => '' };
 if (isset($_GET['delete'])) { $id=(int)$_GET['delete']; db()->prepare("DELETE FROM faq_categories WHERE id=?")->execute([$id]); header('Location: faq-category.php?msg=deleted'); exit; }
 
 $items = db()->query("SELECT c.*, (SELECT COUNT(*) FROM faq_items fi WHERE fi.category_id = c.id) AS item_count FROM faq_categories c ORDER BY c.sort_order ASC, c.name ASC")->fetchAll();

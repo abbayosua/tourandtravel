@@ -14,7 +14,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
         $s=db()->prepare("UPDATE ferries SET company=?,route_from=?,route_to=?,departure_time=?,arrival_time=?,price=?,vessel_name=? WHERE id=?");
         $s->execute([$company,$from,$to,$dep,$arr,$price,$vessel,$id]);
         header('Location: ferries.php?msg=updated');exit;
-    } else $error='Isi semua field';
+    } else $error=t('Isi semua field');
 }
 $pageTitle=t('Edit Ferry'); require_once 'includes/admin-header.php';
 ?>

@@ -48,13 +48,13 @@ require_once 'includes/admin-header.php';
                 <div class="col-md-4" id="langWrap" style="display:none">
                     <label class="form-label fw-semibold"><?= t('Bahasa') ?></label>
                     <select name="lang" id="lang" class="form-select">
-                        <option value="id">Indonesia</option>
-                        <option value="en">English</option>
+                        <option value='id'><?= t('Indonesia') ?></option>
+                        <option value='en'><?= t('English') ?></option>
                         <option value="zh">中文</option>
                     </select>
                 </div>
                 <div class="col-md-4" id="userIdWrap" style="display:none">
-                    <label class="form-label fw-semibold">User ID</label>
+                    <label class="form-label fw-semibold'><?= t('User ID') ?></label>
                     <input type="number" min="1" name="user_id" id="user_id" class="form-control" placeholder="123">
                 </div>
             </div>
@@ -63,7 +63,7 @@ require_once 'includes/admin-header.php';
                 <?php foreach ($langs as $i => $lg): ?>
                 <li class="nav-item">
                     <button class="nav-link <?= $i === 0 ? 'active' : '' ?>" data-bs-toggle="tab" data-bs-target="#tab-<?= $lg ?>" type="button">
-                        <?= $lg === 'id' ? 'Indonesia' : ($lg === 'en' ? 'English' : '中文') ?>
+                        <?= $$lg === 'id' ? t('Indonesia') : ($lg === 'en' ? t('English') : '中文') ?>
                         <?php if ($lg !== 'id'): ?><span class="text-muted small">(<?= t('opsional') ?>)</span><?php endif; ?>
                     </button>
                 </li>
@@ -104,7 +104,7 @@ require_once 'includes/admin-header.php';
             <table class="table table-sm table-hover mb-0 align-middle">
                 <thead class="table-light">
                     <tr>
-                        <th>Waktu</th>
+                        <th><?= t('Waktu') ?></th>
                         <th><?= t('Judul') ?></th>
                         <th><?= t('Target') ?></th>
                         <th><?= t('Terkirim') ?></th>
@@ -138,6 +138,7 @@ require_once 'includes/admin-header.php';
     var userIdWrap = document.getElementById('userIdWrap');
     var statusEl = document.getElementById('pushStatus');
     var sendBtn = document.getElementById('sendBtn');
+    var I18N_PUSH = {sent: <?= t('terkirim,') ?>, failed: <?= t('gagal') ?>, fail: <?= t('Gagal') ?>};
 
     function syncTarget() {
         langWrap.style.display = target.value === 'lang' ? '' : 'none';
@@ -167,11 +168,11 @@ require_once 'includes/admin-header.php';
         .then(function (r) { return r.json().catch(function () { throw new Error('HTTP ' + r.status); }); })
         .then(function (res) {
             if (res.ok) {
-                statusEl.textContent = res.sent + ' terkirim, ' + res.failed + ' gagal';
+                statusEl.textContent = res.sent + ' ' + I18N_PUSH.sent + ' ' + res.failed + ' ' + I18N_PUSH.failed + '';
                 statusEl.className = 'small text-success fw-semibold';
                 setTimeout(function () { window.location.reload(); }, 1200);
             } else {
-                throw new Error(res.error || 'Gagal');
+                throw new Error(res.error || I18N_PUSH.fail);
             }
         })
         .catch(function (err) {

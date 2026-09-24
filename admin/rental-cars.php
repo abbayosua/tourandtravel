@@ -10,8 +10,8 @@ $pageTitle=t('Kelola Rental Mobil'); require_once 'includes/admin-header.php';
 <table class="table table-hover mb-0 admin-table"><thead class="table-light"><tr><th>#</th><th><?= t('Nama') ?></th><th><?= t('Tipe') ?></th><th><?= t('Kota') ?></th><th><?= t('Harga/Hari') ?></th><th><?= t('Transmisi') ?></th><th><?= t('Kursi') ?></th><th><?= t('Aksi') ?></th></tr></thead>
 <tbody><?php foreach($items as $i):?><tr>
 <td><?=$i['id']?></td><td><?=e($i['name'])?></td><td><?=e($i['car_type'])?></td><td><?=e($i['city'])?></td>
-<td><?=formatRupiah($i['price_per_day'])?></td><td><?=ucfirst($i['transmission'])?></td><td><?=$i['passenger_capacity']?></td>
+<td><?=formatRupiah($i['price_per_day'])?></td><td><?= e(enumLabel('transmission', $i['transmission'])) ?></td><td><?=$i['passenger_capacity']?></td>
 <td><a href="rental-car-edit.php?id=<?=$i['id']?>" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></a>
-<a href="rental-cars.php?delete=<?=$i['id']?>" class="btn btn-sm btn-danger" onclick="return confirm('Hapus?')"><i class="bi bi-trash"></i></a></td>
+<a href="rental-cars.php?delete=<?=$i['id']?>" class="btn btn-sm btn-danger" onclick="return confirm('<?= t('Hapus?') ?>')"><i class="bi bi-trash"></i></a></td>
 </tr><?php endforeach;?></tbody></table></div></div>
 <?php require_once 'includes/admin-footer.php';?>

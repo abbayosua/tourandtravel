@@ -45,7 +45,7 @@ require_once 'includes/admin-header.php';
 ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h4 class="fw-bold mb-0"><?= $isAdd ? t('Tambah') : t('Edit') ?><?= t('FAQ') ?></h4>
-    <a href="faq.php" class="btn btn-outline-secondary btn-sm">&larr; Kembali</a>
+    <a href="faq.php" class="btn btn-outline-secondary btn-sm">&larr; <?= t('Kembali') ?></a>
 </div>
 <?php if ($error): ?><div class="alert alert-danger py-2"><?=$error?></div><?php endif; ?>
 <form method="POST">
@@ -61,7 +61,7 @@ require_once 'includes/admin-header.php';
     <div class="mb-3">
         <label class="form-label"><?= t('Kategori') ?></label>
         <select name="category_id" class="form-select" required>
-            <option value="">-- Pilih --</option>
+            <option value=""><?= t('-- Pilih --') ?></option>
             <?php foreach ($categories as $c): ?>
             <option value="<?=$c['id']?>" <?=($item['category_id']??0)==$c['id']?'selected':''?>><?=e($c['name'])?></option>
             <?php endforeach; ?>

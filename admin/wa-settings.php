@@ -16,11 +16,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_settings'])) {
     $serverUrl = trim($_POST['server_url'] ?? '');
 
     if (!$adminPhone) {
-        $error = 'Nomor WA admin harus diisi';
+        $error = t('Nomor WA admin harus diisi');
     } else {
         $adminPhone = preg_replace('/[^0-9]/', '', $adminPhone);
         if (!preg_match('/^62[0-9]{8,15}$/', $adminPhone)) {
-            $error = 'Nomor WA harus diawali 62 (contoh: 6285174488415)';
+            $error = t('Nomor WA harus diawali 62 (contoh: 6285174488415)');
         } else {
             $configFile = __DIR__ . '/../includes/wa-config.json';
             $current = [];
@@ -123,7 +123,7 @@ require_once 'includes/admin-header.php';
                         <div class="bg-light rounded p-3 d-inline-block border">
                             <p class="small fw-semibold mb-2"><?= t('Scan QR ini dengan WhatsApp Anda') ?></p>
                             <img id="qrImage" src="" alt="QR Code">
-                            <p class="text-muted small mt-2 mb-0">Buka WhatsApp > Menu > Perangkat Tertaut ><?= t('Gabung Perangkat') ?></p>
+                            <p class="text-muted small mt-2 mb-0">Buka WhatsApp > Menu > <?= t('Buka WhatsApp > Menu > Perangkat Tertaut > Gabung Perangkat') ?></p>
                         </div>
                         <div class="mt-2">
                             <button class="btn btn-sm btn-outline-secondary" onclick="refreshQR()">
@@ -226,6 +226,7 @@ require_once 'includes/admin-header.php';
 </div>
 
 <script>
+var I18N_WA = {connect: <?= t('Hubungkan Nomor Baru') ?>, qrNew: <?= t('QR Baru') ?>, leaving: <?= t('Memutuskan...') ?>, disconnect: <?= t('Putuskan Koneksi') ?>, connected: <?= t('Terhubung') ?>, off: <?= t('Putus') ?>, disconnected: <?= t('Koneksi WhatsApp berhasil diputuskan.') ?>, disconnectFail: <?= t('Gagal memutuskan koneksi.') ?>};
 const WA_AJAX = 'wa-ajax.php';
 let qrPollInterval = null;
 
@@ -246,12 +247,12 @@ function loadStatus() {
                     <div class="d-flex align-items-center gap-3 mb-2">
                         <span class="badge bg-${connected ? 'success' : 'secondary'} fs-6 px-3 py-2">
                             <i class="bi bi-${connected ? 'check-circle' : 'x-circle'} me-1"></i>
-                            ${connected ? 'Terhubung' : 'Putus'}
+                            ${connected ? I18N_WA.connected : I18N_WA.off}
                         </span>
                         ${connected ? `
                         <div>
                             <strong><i class="bi bi-whatsapp text-success"></i> ${phone}</strong><br>
-                            <small class="text-muted">Akun: ${name}</small>
+                            <small class="text-muted"><?= t('Akun:') ?> ${name}</small>
                         </div>` : ''}
                     </div>
                     ${connected ? `
@@ -291,7 +292,7 @@ function connectWA() {
         .then(r => r.json())
         .then(data => {
             btn.disabled = false;
-            btn.innerHTML = '<i class="bi bi-qr-code me-1"></i> Hubungkan Nomor Baru';
+            btn.innerHTML = '<i class="bi bi-qr-code me-1"></i>' + I18N_WA.connect;
 
             if (data.success && data.qrcode) {
                 document.getElementById('qrImage').src = data.qrcode;
@@ -299,7 +300,7 @@ function connectWA() {
                 el.innerHTML = '<div class="alert alert-info py-2 mb-0"><i class="bi bi-qr-code me-1"></i><?= t('Scan QR code dengan WhatsApp Anda.') ?></div>';
                 document.getElementById('btnDisconnect').style.display = 'none';
                 document.getElementById('btnConnect').style.display = 'inline-block';
-                btn.innerHTML = '<i class="bi bi-arrow-clockwise me-1"></i> QR Baru';
+                btn.innerHTML = '<i class="bi bi-arrow-clockwise me-1"></i>' + I18N_WA.qrNew;
 
                 // Poll status
                 if (qrPollInterval) clearInterval(qrPollInterval);
@@ -348,11 +349,11 @@ function refreshQR() {
 }
 
 function disconnectWA() {
-    if (!confirm('Yakin ingin memutuskan koneksi WhatsApp?')) return;
+    if (!confirm('<?= t('Yakin ingin memutuskan koneksi WhatsApp?') ?>')) return;
 
     const btn = document.getElementById('btnDisconnect');
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Memutuskan...';
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>' + I18N_WA.leaving;
 
     const formData = new FormData();
     formData.append('action', 'disconnect');
@@ -361,17 +362,17 @@ function disconnectWA() {
         .then(r => r.json())
         .then(data => {
             btn.disabled = false;
-            btn.innerHTML = '<i class="bi bi-plug me-1"></i> Putuskan Koneksi';
+            btn.innerHTML = '<i class="bi bi-plug me-1"></i>' + I18N_WA.disconnect;
             if (data.success) {
-                showAlert('Koneksi WhatsApp berhasil diputuskan.', 'success');
+                showAlert(I18N_WA.disconnected, 'success');
                 loadStatus();
             } else {
-                showAlert('Gagal memutuskan koneksi.', 'danger');
+                showAlert(I18N_WA.disconnectFail, 'danger');
             }
         })
         .catch(e => {
             btn.disabled = false;
-            btn.innerHTML = '<i class="bi bi-plug me-1"></i> Putuskan Koneksi';
+            btn.innerHTML = '<i class="bi bi-plug me-1"></i>' + I18N_WA.disconnect;
             showAlert('<?= t('Error: ') ?>' + e.message, 'danger');
         });
 }

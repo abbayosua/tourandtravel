@@ -75,14 +75,14 @@ require_once 'includes/admin-header.php';
                 <div class="mb-3">
                     <label class="form-label"><?= t('Sumber utama') ?></label>
                     <select name="hotel_live_source" class="form-select" data-testid="hotel-live-source">
-                        <option value="nusatrip" <?= $liveSource === 'nusatrip' ? 'selected' : '' ?>>NusaTrip (utamakan)</option>
+                        <option value="nusatrip" <?= $liveSource === 'nusatrip' ? 'selected' : '' ?>><?= t('NusaTrip (utamakan)') ?></option>
                         <option value="oyo" <?= $liveSource === 'oyo' ? 'selected' : '' ?>>OYO</option>
-                        <option value="auto" <?= $liveSource === 'auto' ? 'selected' : '' ?>>Auto (NusaTrip native, fallback OYO)</option>
+                        <option value="auto" <?= $liveSource === 'auto' ? 'selected' : '' ?>><?= t('Auto (NusaTrip native, fallback OYO)') ?></option>
                     </select>
                 </div>
                 <div class="mb-3">
                     <label class="form-label"><?= t('NusaTrip rkey (lama/opsional)') ?></label>
-                    <textarea name="nusatrip_rkey" class="form-control" rows="3" placeholder="opsional, legacy scraping" data-testid="nusatrip-rkey"><?= e($rkey) ?></textarea>
+                    <textarea name="nusatrip_rkey" class="form-control" rows="3" placeholder="<?= t('opsional, legacy scraping') ?>" data-testid="nusatrip-rkey"><?= e($rkey) ?></textarea>
                     <div class="form-text">
                         <?= t('Native API aktif tanpa rkey. rkey lama hanya untuk fallback scraping bila diperlukan.') ?>
                     </div>
@@ -135,8 +135,8 @@ require_once 'includes/admin-header.php';
                 <span class="badge bg-secondary" data-testid="hotel-live-status-off"><?= t('Nonaktif') ?></span>
             <?php endif; ?>
             <p class="small text-muted mt-2 mb-1"><?= t('Sumber') ?>: <b><?= e($liveSource) ?></b></p>
-            <p class="small text-muted mb-0">Modul NusaTrip: <?= $nusaModule ? '<span class="text-success">aktif</span>' : '<span class="text-danger">nonaktif</span>' ?></p>
-            <p class="small text-muted mb-0">Modul OYO: <?= $oyoModuleOn ? '<span class="text-success">aktif</span>' : '<span class="text-danger">nonaktif</span>' ?></p>
+            <p class="small text-muted mb-0">Modul NusaTrip: <?= $nusaModule ? '<span class="text-success">' . t('aktif') . '</span>' : '<span class="text-danger">' . t('nonaktif') . '</span>' ?></p>
+            <p class="small text-muted mb-0">Modul OYO: <?= $oyoModuleOn ? '<span class="text-success">' . t('aktif') . '</span>' : '<span class="text-danger">' . t('nonaktif') . '</span>' ?></p>
             <p class="small text-muted mb-0"><?= t('rkey NusaTrip') ?>: <?= $rkey !== '' ? '<span class="text-success">' . t('terisi') . '</span>' : '<span class="text-danger">' . t('kosong') . '</span>' ?></p>
         </div></div>
     </div>

@@ -26,8 +26,8 @@ require_once 'includes/admin-header.php';
 <td><?=$i['id']?></td><td><?=e($i['name'])?></td><td><?=e($i['from_city'])?> → <?=e($i['to_city'])?></td>
 <td><?=e($i['vehicle_type'] ?? '-')?></td><td><?=$i['max_passengers']?></td>
 <td><?=formatRupiah($i['price'])?></td>
-<td><span class="badge bg-<?=$i['is_active']?'success':'secondary'?>"><?=$i['is_active']?'Aktif':'Nonaktif'?></span></td>
+<td><span class="badge bg-<?=$i['is_active']?'success':'secondary'?>"><?=$i['is_active']?t('Aktif'):t('Nonaktif')?></span></td>
 <td><a href="transfer-edit.php?id=<?=$i['id']?>" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></a>
-<a href="transfers.php?delete=<?=$i['id']?>" class="btn btn-sm btn-danger" onclick="return confirm('Hapus?')"><i class="bi bi-trash"></i></a></td>
+<a href="transfers.php?delete=<?=$i['id']?>" class="btn btn-sm btn-danger" onclick="return confirm('<?= t('Hapus?') ?>')"><i class="bi bi-trash"></i></a></td>
 </tr><?php endforeach; ?></tbody></table></div></div>
 <?php require_once 'includes/admin-footer.php'; ?>

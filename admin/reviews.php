@@ -32,7 +32,7 @@ if (count($rows) > 0) {
         $subRatings[$sr['review_id']][$sr['aspect']] = (int)$sr['rating'];
     }
 }
-$aspectLabels = ['cleanliness' => 'Kebersihan', 'location' => 'Lokasi', 'staff' => 'Staff', 'value' => 'Nilai', 'facilities' => 'Fasilitas', 'comfort' => 'Kenyamanan'];
+$aspectLabels = ['cleanliness' => t('Kebersihan'), 'location' => t('Lokasi'), 'staff' => t('Staff'), 'value' => t('Nilai'), 'facilities' => t('Fasilitas'), 'comfort' => t('Kenyamanan')];
 
 require_once __DIR__ . '/includes/admin-header.php';
 ?>
@@ -47,7 +47,7 @@ require_once __DIR__ . '/includes/admin-header.php';
     <div class="border-bottom p-3">
         <div class="d-flex justify-content-between">
             <div>
-                <span class="fw-semibold small"><?= e($r['uname'] ?? 'Guest') ?></span>
+                <span class="fw-semibold small"><?= e($r['uname'] ?? t('Guest')) ?></span>
                 <span class="text-warning small"><?= renderStars($r['rating']) ?></span>
                 <small class="text-muted">· <?= e($r['tour_title'] ?? $r['hotel_title'] ?? '-') ?></small>
             </div>

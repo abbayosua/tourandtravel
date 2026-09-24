@@ -14,13 +14,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['save_currency'])) {
         $currency = $_POST['default_currency'] ?? 'IDR';
         setDefaultCurrency($currency);
-        $message = 'Mata uang default berhasil disimpan: ' . $currency;
+        $message = sprintf(t('Mata uang default berhasil disimpan: %s'), $currency);
     }
 
     if (isset($_POST['refresh_rates'])) {
         $rates = fetchFrankfurterRates();
         if ($rates) {
-            $message = 'Kurs berhasil diperbarui: IDR=' . number_format($rates['IDR'], 0) . ', SGD=' . number_format($rates['SGD'], 4) . ', USD=' . number_format($rates['USD'], 4);
+            $message = sprintf(t('Kurs berhasil diperbarui: IDR=%s, SGD=%s, USD=%s'), number_format($rates['IDR'], 0), number_format($rates['SGD'], 4), number_format($rates['USD'], 4));
         } else {
             $error = t('Gagal mengambil kurs dari Frankfurter API');
         }
@@ -37,7 +37,7 @@ $currencies = getSupportedCurrencies();
 <h4 class="fw-bold mb-3"><i class="bi bi-currency-exchange me-2"></i><?= t('Pengaturan Mata Uang') ?></h4>
 
 <?php if ($message): ?>
-    <div class="alert alert-success alert-dismissible py-2"><?= $message ?>
+    <div class="alert alert-success alert-dismissible py-2"><?= e($message) ?>
         <button type="button" class="btn-close btn-close-sm" data-bs-dismiss="alert"></button>
     </div>
 <?php endif; ?>
@@ -93,7 +93,7 @@ $currencies = getSupportedCurrencies();
                             <tr><td><?= t('EUR → USD') ?></td><td class="text-end"><?= number_format($currentRates['USD'], 4) ?></td></tr>
                         </tbody>
                     </table>
-                    <p class="text-muted small mt-2 mb-0"><?= t('Sumber') ?>: <a href="https://frankfurter.app" target="_blank"><?= t('Frankfurter API') ?></a><?= t('—') ?><?= t('update setiap 24 jam') ?></p>
+                    <p class="text-muted small mt-2 mb-0"><?= t('Sumber') ?>: <a href="https://frankfurter.app" target="_blank">Frankfurter API</a> — <?= t('update setiap 24 jam') ?></p>
                 <?php else: ?>
                     <p class="text-muted mb-0"><?= t('Belum ada data kurs. Klik "Refresh" untuk mengambil data terbaru.') ?></p>
                 <?php endif; ?>

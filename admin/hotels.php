@@ -27,6 +27,6 @@ require_once 'includes/admin-header.php';
 <td><?=str_repeat('★',$i['star_rating'])?></td>
 <td><?=formatRupiah($i['price_per_night'])?><?= t('/malam') ?></td>
 <td><a href="hotel-edit.php?id=<?=$i['id']?>" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></a>
-<a href="hotels.php?delete=<?=$i['id']?>" class="btn btn-sm btn-danger" onclick="return confirm('Hapus?')"><i class="bi bi-trash"></i></a></td>
+<a href="hotels.php?delete=<?=$i['id']?>" class="btn btn-sm btn-danger" onclick="return confirm('<?= t('Hapus?') ?>')"><i class="bi bi-trash"></i></a></td>
 </tr><?php endforeach; ?></tbody></table></div></div>
 <?php require_once 'includes/admin-footer.php'; ?>

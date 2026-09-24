@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $freeCancel = (int)($_POST['free_cancellation'] ?? 0);
     $isActive = (int)($_POST['is_active'] ?? 1);
 
-    if (!$name || !$city) $error = 'Nama dan kota wajib diisi';
+    if (!$name || !$city) $error = t('Nama dan kota wajib diisi');
 
     if (!$error) {
         $slug = buatSlug($name);
@@ -56,12 +56,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = $isAdd ? 'Tambah Tiket Wisata' : 'Edit Tiket Wisata';
+$pageTitle = $isAdd ? t('Tambah Tiket Wisata') : t('Edit Tiket Wisata');
 require_once 'includes/admin-header.php';
 ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h4 class="fw-bold mb-0"><?= $isAdd ? t('Tambah') : t('Edit') ?> <?= t('Tiket Tempat Wisata') ?></h4>
-    <a href="attractions.php" class="btn btn-outline-secondary btn-sm">&larr; Kembali</a>
+    <a href="attractions.php" class="btn btn-outline-secondary btn-sm">&larr; <?= t('Kembali') ?></a>
 </div>
 <?php if ($error): ?><div class="alert alert-danger py-2"><?=$error?></div><?php endif; ?>
 <form method="POST" enctype="multipart/form-data">
@@ -81,9 +81,9 @@ require_once 'includes/admin-header.php';
 <div class="col-md-4">
 <div class="card border-0 shadow-sm mb-3"><div class="card-body">
     <div class="mb-3"><label class="form-label"><?= t('Kota') ?></label><input name="city" class="form-control" value="<?=e($item['city']??'')?>" required></div>
-    <div class="mb-3"><label class="form-label"><?= t('Kategori') ?></label><input name="category" class="form-control" value="<?=e($item['category']??'')?>" placeholder="Taman & Hiburan, Landmark, ..."></div>
+    <div class="mb-3"><label class="form-label"><?= t('Kategori') ?></label><input name="category" class="form-control" value="<?=e($item['category']??'')?>" placeholder="<?= t('Taman & Hiburan, Landmark, ...') ?>"></div>
     <div class="mb-3"><label class="form-label"><?= t('Harga (Rp)') ?></label><input name="price" type="number" class="form-control" value="<?=$item['price']??0?>" required></div>
-    <div class="mb-3"><label class="form-label"><?= t('Durasi') ?></label><input name="duration" class="form-control" value="<?=e($item['duration']??'')?>" placeholder="1 hari, 2-3 jam, ..."></div>
+    <div class="mb-3"><label class="form-label"><?= t('Durasi') ?></label><input name="duration" class="form-control" value="<?=e($item['duration']??'')?>" placeholder="<?= t('1 hari, 2-3 jam, ...') ?>"></div>
     <div class="mb-3">
         <label class="form-label"><?= t('Best Seller') ?></label>
         <select name="best_seller" class="form-select"><option value="0" <?=empty($item['best_seller'])?'selected':''?>><?= t('Tidak') ?></option><option value="1" <?=!empty($item['best_seller'])?'selected':''?>><?= t('Ya') ?></option></select>

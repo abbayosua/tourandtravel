@@ -60,7 +60,7 @@ require_once __DIR__ . '/includes/admin-header.php';
                 <select name="status" class="form-select form-select-sm">
                     <option value=""><?= t('Semua') ?></option>
                     <?php foreach ($validStatus as $vs): ?>
-                        <option value="<?= $vs ?>" <?= $filterStatus === $vs ? 'selected' : '' ?>><?= ucfirst(t($vs)) ?></option>
+                        <option value="<?= $vs ?>" <?= $filterStatus === $vs ? 'selected' : '' ?>><?= e(bookingStatusLabel($vs)) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>

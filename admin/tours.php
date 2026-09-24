@@ -15,7 +15,6 @@ if (isset($_GET['delete'])) {
 }
 
 // Bulk set content language
-$bulkMsg = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bulk_set_lang'])) {
     $lang = isValidLang($_POST['bulk_lang'] ?? '') ? $_POST['bulk_lang'] : 'id';
     $ids = $_POST['tour_ids'] ?? [];
@@ -37,20 +36,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bulk_set_lang'])) {
                 }
             }
         }
-        $bulkMsg = count($ids) . ' tour berhasil diatur ke bahasa ' . strtoupper($lang);
+        $bulkIds = count($ids);
     } else {
-        $bulkMsg = t('Pilih minimal 1 tour');
+        header('Location: tours.php?msg=bulk_lang_empty');
+        exit;
     }
-    header('Location: tours.php?msg=bulk_lang&detail=' . urlencode($bulkMsg));
+    header('Location: tours.php?msg=bulk_lang&n=' . $bulkIds . '&lang=' . urlencode($lang));
     exit;
 }
 
 $msg = '';
 if (isset($_GET['msg'])) {
-    if ($_GET['msg'] === 'added') $msg = 'Tour berhasil ditambahkan';
-    if ($_GET['msg'] === 'updated') $msg = 'Tour berhasil diperbarui';
-    if ($_GET['msg'] === 'deleted') $msg = 'Tour berhasil dihapus';
-    if ($_GET['msg'] === 'bulk_lang') $msg = $_GET['detail'] ?? 'Bulk update selesai';
+    if ($_GET['msg'] === 'added') $msg = t('Tour berhasil ditambahkan');
+    if ($_GET['msg'] === 'updated') $msg = t('Tour berhasil diperbarui');
+    if ($_GET['msg'] === 'deleted') $msg = t('Tour berhasil dihapus');
+    if ($_GET['msg'] === 'bulk_lang' && isset($_GET['n'], $_GET['lang'])) $msg = sprintf(t('%d tour berhasil diatur ke bahasa %s'), (int)$_GET['n'], strtoupper((string)$_GET['lang']));
+    elseif ($_GET['msg'] === 'bulk_lang_empty') $msg = t('Pilih minimal 1 tour');
 }
 
 $tours = db()->query("SELECT * FROM tours ORDER BY created_at DESC")->fetchAll();
@@ -65,7 +66,7 @@ require_once 'includes/admin-header.php';
 </div>
 
 <?php if ($msg): ?>
-    <div class="alert alert-success alert-dismissible py-2"><?= $msg ?><button class="btn-close" data-bs-dismiss="alert"></button></div>
+    <div class="alert alert-success alert-dismissible py-2"><?= e($msg) ?><button class="btn-close" data-bs-dismiss="alert"></button></div>
 <?php endif; ?>
 
 <!-- Bulk Set Content Language -->
@@ -79,7 +80,7 @@ require_once 'includes/admin-header.php';
                 <option value="<?= e($langCode) ?>"><?= $langMeta['flag'] ?> <?= e($langMeta['label']) ?></option>
                 <?php endforeach; ?>
             </select>
-            <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('Set bahasa konten untuk tour yang dipilih?')">
+            <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('<?= t('Set bahasa konten untuk tour yang dipilih?') ?>')">
                 <i class="bi bi-translate me-1"></i><?= t('Terapkan') ?></button>
             <span class="text-muted small" id="bulkCount"></span>
         </form>
@@ -119,13 +120,13 @@ require_once 'includes/admin-header.php';
                         <td><?= $t['max_participants'] ?></td>
                         <td>
                             <span class="badge bg-<?= $t['is_active'] ? 'success' : 'secondary' ?>">
-                                <?= $t['is_active'] ? 'Aktif' : 'Nonaktif' ?>
+                                <?= $t['is_active'] ? t('Aktif') : t('Nonaktif') ?>
                             </span>
                         </td>
                         <td class="table-action">
-                            <a href="../tour-detail.php?slug=<?= htmlspecialchars($t['slug']) ?>" target="_blank" class="btn btn-sm btn-info text-white" title="Lihat"><i class="bi bi-eye"></i></a>
-                            <a href="tour-edit.php?id=<?= $t['id'] ?>" class="btn btn-sm btn-warning" title="Edit"><i class="bi bi-pencil"></i></a>
-                            <a href="tours.php?delete=<?= $t['id'] ?>" class="btn btn-sm btn-danger" title="Hapus" onclick="return confirm('Yakin ingin menghapus tour ini?')"><i class="bi bi-trash"></i></a>
+                            <a href="../tour-detail.php?slug=<?= htmlspecialchars($t['slug']) ?>" target="_blank" class="btn btn-sm btn-info text-white" title="<?= t('Lihat') ?>"><i class="bi bi-eye"></i></a>
+                            <a href="tour-edit.php?id=<?= $t['id'] ?>" class="btn btn-sm btn-warning" title="<?= t('Edit') ?>"><i class="bi bi-pencil"></i></a>
+                            <a href="tours.php?delete=<?= $t['id'] ?>" class="btn btn-sm btn-danger" title="<?= t('Hapus') ?>" onclick="return confirm('<?= t('Yakin ingin menghapus tour ini?') ?>')"><i class="bi bi-trash"></i></a>
                         </td>
                     </tr>
                     <?php endforeach; ?>
@@ -148,7 +149,7 @@ document.getElementById('checkAll').addEventListener('change', function() {
 document.querySelectorAll('.tour-check').forEach(cb => {
     cb.addEventListener('change', function() {
         const checked = document.querySelectorAll('.tour-check:checked').length;
-        document.getElementById('bulkCount').textContent = checked ? checked + ' tour dipilih' : '';
+        document.getElementById('bulkCount').textContent = checked ? checked + ' ' + <?= json_encode(t('tour dipilih')) ?> : '';
         document.querySelectorAll('.tour-check').forEach(c => {
             c.closest('tr').style.backgroundColor = c.checked ? '#e8f4fd' : '';
         });

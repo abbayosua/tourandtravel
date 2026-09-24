@@ -84,7 +84,7 @@
 <!-- Navbar -->
 <nav class="navbar navbar-expand navbar-dark bg-primary sticky-top">
     <div class="container-fluid">
-        <button class="btn btn-sm btn-outline-light me-2" id="sidebarToggle" title="Toggle Sidebar">
+        <button class="btn btn-sm btn-outline-light me-2" id="sidebarToggle" title="<?= t("Toggle Sidebar") ?>">
             <i class="bi bi-list"></i>
         </button>
         <a class="navbar-brand fw-bold" href="dashboard.php">

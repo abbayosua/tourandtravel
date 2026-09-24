@@ -28,7 +28,7 @@ require_once 'includes/admin-header.php';
 <thead class="table-light"><tr><th>#</th><th><?= t('Pertanyaan') ?></th><th><?= t('Kategori') ?></th><th><?= t('Status') ?></th><th><?= t('Aksi') ?></th></tr></thead>
 <tbody><?php foreach ($items as $i): ?><tr>
 <td><?=$i['id']?></td><td><?=e($i['question'])?></td><td><span class="badge bg-info text-dark"><?=e($i['category_name'])?></span></td>
-<td><span class="badge bg-<?=$i['is_active']?'success':'secondary'?>"><?=$i['is_active']?'Aktif':'Nonaktif'?></span></td>
+<td><span class="badge bg-<?=$i['is_active']?'success':'secondary'?>"><?=$i['is_active']?t('Aktif'):t('Nonaktif')?></span></td>
 <td><a href="faq-edit.php?id=<?=$i['id']?>" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></a>
 <a href="faq.php?delete=<?=$i['id']?>" class="btn btn-sm btn-danger" onclick="return confirm('<?= t('Hapus?') ?>')"><i class="bi bi-trash"></i></a></td>
 </tr><?php endforeach; ?></tbody></table></div></div>

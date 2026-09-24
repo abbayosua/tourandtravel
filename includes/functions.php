@@ -605,6 +605,24 @@ function brandText(string $s): string {
     return str_replace(['TourAndTravel', 'Tourandtravel'], $b, $s);
 }
 
+/** Label status booking/inventaris sesuai bahasa aktif (fallback ucfirst). */
+function bookingStatusLabel($st): string {
+    $m = ['pending' => t('Pending'), 'confirmed' => t('Dikonfirmasi'), 'cancelled' => t('Dibatalkan'), 'paid' => t('Dibayar'), 'refunded' => t('Refund'), 'approved' => t('Disetujui'), 'rejected' => t('Ditolak')];
+    return $m[$st] ?? ucfirst((string)$st);
+}
+
+/** Label enum umum (kelas, transmisi, tipe) sesuai bahasa aktif. */
+function enumLabel(string $group, $val): string {
+    $v = strtolower((string)$val);
+    $map = [
+        'flight_class' => ['economy' => t('Ekonomi'), 'business' => t('Bisnis')],
+        'transmission' => ['manual' => t('Manual'), 'matic' => t('Matic'), 'automatic' => t('Otomatis')],
+        'item_type' => ['tour' => t('Tour'), 'hotel' => t('Hotel'), 'flight' => t('Pesawat'), 'transfer' => t('Transfer'), 'train' => t('Kereta'), 'esim' => 'eSIM', 'attraction' => t('Atraksi'), 'ferry' => t('Ferry'), 'rental' => t('Rental')],
+        'bed' => ['single' => t('Single'), 'double' => t('Double'), 'twin' => t('Twin'), 'queen' => t('Queen'), 'king' => t('King')],
+    ];
+    return $map[$group][$v] ?? ucfirst((string)$val);
+}
+
 /**
  * Ambil data tours aktif dengan filter lanjutan + sort + pagination
  */

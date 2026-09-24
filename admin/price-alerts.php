@@ -52,16 +52,16 @@ require_once 'includes/admin-header.php';
         <div>
             <div class="d-flex align-items-center gap-2 mb-1">
                 <span class="fw-semibold small"><?= e($r['uname'] ?? 'User #' . $r['user_id']) ?></span>
-                <span class="badge bg-<?= $r['item_type'] === 'tour' ? 'primary' : 'success' ?>"><?= e(ucfirst($r['item_type'])) ?></span>
+                <span class="badge bg-<?= $r['item_type'] === 'tour' ? 'primary' : 'success' ?>"><?= e(enumLabel('item_type', $r['item_type'])) ?></span>
                 <?php if ($r['active']): ?>
-                    <span class="badge bg-success">Aktif</span>
+                    <span class="badge bg-success"><?= t('Aktif') ?></span>
                 <?php else: ?>
-                    <span class="badge bg-secondary">Nonaktif</span>
+                    <span class="badge bg-secondary"><?= t('Nonaktif') ?></span>
                 <?php endif; ?>
             </div>
             <div class="small text-muted">
-                <?= e($r['tour_title'] ?? $r['hotel_name'] ?? '-') ?> · Target: <?= formatRupiah($r['target_price'], $r['currency']) ?>
-                <?php if ($r['notified_at']): ?> · Notif: <?= date('d M Y H:i', strtotime($r['notified_at'])) ?><?php endif; ?>
+                <?= e($r['tour_title'] ?? $r['hotel_name'] ?? '-') ?> · <?= t('Target:') ?> <?= formatRupiah($r['target_price'], $r['currency']) ?>
+                <?php if ($r['notified_at']): ?> · <?= t('Notif:') ?> <?= date('d M Y H:i', strtotime($r['notified_at'])) ?><?php endif; ?>
             </div>
             <div class="small text-muted" style="font-size:11px;"><?= e($r['email'] ?? '') ?></div>
         </div>

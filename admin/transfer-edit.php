@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $freeCancel = (int)($_POST['free_cancellation'] ?? 0);
     $isActive = (int)($_POST['is_active'] ?? 1);
 
-    if (!$name || !$fromCity || !$toCity) $error = 'Nama, asal, dan tujuan wajib diisi';
+    if (!$name || !$fromCity || !$toCity) $error = t('Nama, asal, dan tujuan wajib diisi');
 
     if (!$error) {
         $slug = buatSlug($name);
@@ -53,7 +53,7 @@ require_once 'includes/admin-header.php';
 ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h4 class="fw-bold mb-0"><?= $isAdd ? t('Tambah') : t('Edit') ?><?= t('Transfer') ?></h4>
-    <a href="transfers.php" class="btn btn-outline-secondary btn-sm">&larr; Kembali</a>
+    <a href="transfers.php" class="btn btn-outline-secondary btn-sm">&larr; <?= t('Kembali') ?></a>
 </div>
 <?php if ($error): ?><div class="alert alert-danger py-2"><?=$error?></div><?php endif; ?>
 <form method="POST">
@@ -82,7 +82,7 @@ require_once 'includes/admin-header.php';
         <option value="hotel" <?=($item['to_type']??'')==='hotel'?'selected':''?>><?= t('Hotel') ?></option>
     </select></div>
     <div class="mb-3"><label class="form-label"><?= t('Harga (Rp)') ?></label><input name="price" type="number" class="form-control" value="<?=$item['price']??0?>" required></div>
-    <div class="mb-3"><label class="form-label"><?= t('Tipe Kendaraan') ?></label><input name="vehicle_type" class="form-control" value="<?=e($item['vehicle_type']??'')?>" placeholder="Sedan, MVP, ..."></div>
+    <div class="mb-3"><label class="form-label"><?= t('Tipe Kendaraan') ?></label><input name="vehicle_type" class="form-control" value="<?=e($item['vehicle_type']??'')?>" placeholder="<?= t('Sedan, MVP, ...') ?>"></div>
     <div class="mb-3"><label class="form-label"><?= t('Max Penumpang') ?></label><input name="max_passengers" type="number" class="form-control" value="<?=$item['max_passengers']??4?>" min="1"></div>
     <div class="mb-3">
         <label class="form-label"><?= t('Konfirmasi Instan') ?></label>

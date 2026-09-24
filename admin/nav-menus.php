@@ -86,7 +86,7 @@ require_once 'includes/admin-header.php';
                     <input name="label" class="form-control form-control-sm" value="<?= e($editItem['label'] ?? '') ?>" required>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label small">URL</label>
+                    <label class="form-label small"><?= t('URL') ?></label>
                     <input name="url" class="form-control form-control-sm" value="<?= e($editItem['url'] ?? '') ?>" placeholder="tours.php" required>
                 </div>
                 <div class="col-md-2">
@@ -98,7 +98,7 @@ require_once 'includes/admin-header.php';
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <label class="form-label small">Match key</label>
+                    <label class="form-label small"><?= t('Match key') ?></label>
                     <input name="match_key" class="form-control form-control-sm" value="<?= e($editItem['match_key'] ?? '') ?>" placeholder="tour">
                 </div>
                 <div class="col-md-1">
@@ -106,8 +106,8 @@ require_once 'includes/admin-header.php';
                     <input name="sort_order" type="number" class="form-control form-control-sm" value="<?= e($editItem['sort_order'] ?? 0) ?>">
                 </div>
                 <div class="col-md-2 d-flex align-items-end gap-3">
-                    <div class="form-check"><input class="form-check-input" type="checkbox" name="show_in_tabs" id="fTabs" <?= ($editItem['show_in_tabs'] ?? 1) ? 'checked' : '' ?>><label class="form-check-label small" for="fTabs">Tab</label></div>
-                    <div class="form-check"><input class="form-check-input" type="checkbox" name="show_in_menu" id="fMenu" <?= ($editItem['show_in_menu'] ?? 1) ? 'checked' : '' ?>><label class="form-check-label small" for="fMenu">Menu</label></div>
+                    <div class="form-check"><input class="form-check-input" type="checkbox" name="show_in_tabs" id="fTabs" <?= ($editItem['show_in_tabs'] ?? 1) ? 'checked' : '' ?>><label class="form-check-label small" for="fTabs"><?= t('Tab') ?></label></div>
+                    <div class="form-check"><input class="form-check-input" type="checkbox" name="show_in_menu" id="fMenu" <?= ($editItem['show_in_menu'] ?? 1) ? 'checked' : '' ?>><label class="form-check-label small" for="fMenu"><?= t('Menu') ?></label></div>
                     <div class="form-check"><input class="form-check-input" type="checkbox" name="is_active" id="fAct" <?= ($editItem['is_active'] ?? 1) ? 'checked' : '' ?>><label class="form-check-label small" for="fAct"><?= t('Aktif') ?></label></div>
                 </div>
             </div>
@@ -129,8 +129,8 @@ require_once 'includes/admin-header.php';
 <td><code><?=e($i['url'])?></code></td>
 <td><?= $i['show_in_tabs'] ? '✅' : '—' ?></td>
 <td><?= $i['show_in_menu'] ? '✅' : '—' ?></td>
-<td><a href="nav-menus.php?toggle=<?=$i['id']?>" class="badge text-decoration-none bg-<?=$i['is_active']?'success':'secondary'?>"><?=$i['is_active']?'Aktif':'Nonaktif'?></a></td>
+<td><a href="nav-menus.php?toggle=<?=$i['id']?>" class="badge text-decoration-none bg-<?=$i['is_active']?'success':'secondary'?>"><?=$i['is_active']?t('Aktif'):t('Nonaktif')?></a></td>
 <td><a href="nav-menus.php?edit=<?=$i['id']?>" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></a>
-<a href="nav-menus.php?delete=<?=$i['id']?>" class="btn btn-sm btn-danger" onclick="return confirm('Hapus menu?')"><i class="bi bi-trash"></i></a></td>
+<a href="nav-menus.php?delete=<?=$i['id']?>" class="btn btn-sm btn-danger" onclick="return confirm('<?= t('Hapus menu?') ?>')"><i class="bi bi-trash"></i></a></td>
 </tr><?php endforeach; ?></tbody></table></div></div>
 <?php require_once 'includes/admin-footer.php'; ?>

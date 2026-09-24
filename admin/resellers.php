@@ -31,25 +31,25 @@ $stmt = db()->prepare($sql);
 $stmt->execute($params);
 $resellers = $stmt->fetchAll();
 
-$pageTitle = 'Kelola Reseller';
+$pageTitle = t('Kelola Reseller');
 require_once 'includes/admin-header.php';
 ?>
 
-<h4 class="fw-bold mb-3"><i class="bi bi-shop me-2"></i>Kelola Reseller</h4>
+<h4 class="fw-bold mb-3"><i class="bi bi-shop me-2"></i><?= t('Kelola Reseller') ?></h4>
 
 <!-- Search & Filter -->
 <form method="GET" class="row g-2 mb-3">
     <div class="col-md-5">
-        <input type="text" name="q" class="form-control form-control-sm" placeholder="Cari nama, email, telepon..." value="<?= e($search) ?>">
+        <input type="text" name="q" class="form-control form-control-sm" placeholder="<?= t('Cari nama, email, telepon...') ?>" value="<?= e($search) ?>">
     </div>
     <div class="col-md-3">
         <select name="filter" class="form-select form-select-sm">
-            <option value="">Semua</option>
-            <option value="active" <?= $filter === 'active' ? 'selected' : '' ?>>Ada Saldo</option>
-            <option value="zero" <?= $filter === 'zero' ? 'selected' : '' ?>>Saldo Kosong</option>
+            <option value=""><?= t('Semua') ?></option>
+            <option value="active" <?= $filter === 'active' ? 'selected' : '' ?>><?= t('Ada Saldo') ?></option>
+            <option value="zero" <?= $filter === 'zero' ? 'selected' : '' ?>><?= t('Saldo Kosong') ?></option>
         </select>
     </div>
-    <div class="col-md-2"><button class="btn btn-sm btn-primary w-100">Filter</button></div>
+    <div class="col-md-2"><button class="btn btn-sm btn-primary w-100"><?= t('Filter') ?></button></div>
 </form>
 
 <div class="card border-0 shadow-sm">
@@ -59,19 +59,19 @@ require_once 'includes/admin-header.php';
                 <thead class="table-light">
                     <tr>
                         <th>ID</th>
-                        <th>Nama</th>
+                        <th><?= t('Nama') ?></th>
                         <th>Email</th>
-                        <th>Telepon</th>
-                        <th class="text-end">Saldo</th>
-                        <th class="text-center">Booking</th>
-                        <th class="text-end">Total Belanja</th>
-                        <th>Terdaftar</th>
+                        <th><?= t('Telepon') ?></th>
+                        <th class="text-end"><?= t('Saldo') ?></th>
+                        <th class="text-center"><?= t('Booking') ?></th>
+                        <th class="text-end"><?= t('Total Belanja') ?></th>
+                        <th><?= t('Terdaftar') ?></th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
                 <?php if (empty($resellers)): ?>
-                    <tr><td colspan="9" class="text-center text-muted py-4">Belum ada reseller.</td></tr>
+                    <tr><td colspan="9" class="text-center text-muted py-4"><?= t('Belum ada reseller.') ?></td></tr>
                 <?php else: ?>
                     <?php foreach ($resellers as $r): ?>
                     <tr>
@@ -84,7 +84,7 @@ require_once 'includes/admin-header.php';
                         <td class="text-end small"><?= formatRupiah((float)$r['total_spent']) ?></td>
                         <td class="small text-muted"><?= date('d M Y', strtotime($r['created_at'])) ?></td>
                         <td>
-                            <a href="reseller-topups.php?user_id=<?= $r['id'] ?>" class="btn btn-sm btn-outline-primary" title="Topup History"><i class="bi bi-clock-history"></i></a>
+                            <a href="reseller-topups.php?user_id=<?= $r['id'] ?>" class="btn btn-sm btn-outline-primary" title="<?= t('Topup History') ?>"><i class="bi bi-clock-history"></i></a>
                         </td>
                     </tr>
                     <?php endforeach; ?>
@@ -96,7 +96,7 @@ require_once 'includes/admin-header.php';
 </div>
 
 <?php if (!empty($resellers)): ?>
-<p class="text-muted small mt-2">Total: <?= count($resellers) ?> reseller</p>
+<p class="text-muted small mt-2"><?= t('Total') ?>: <?= count($resellers) ?> <?= t('reseller') ?></p>
 <?php endif; ?>
 
 <?php require_once 'includes/admin-footer.php'; ?>

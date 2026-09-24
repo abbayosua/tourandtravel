@@ -12,7 +12,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
         $slug=buatSlug($name.'-'.$city); $s=db()->prepare("UPDATE rental_cars SET name=?,slug=?,car_type=?,city=?,price_per_day=?,transmission=?,passenger_capacity=? WHERE id=?");
         $s->execute([$name,$slug,$type,$city,$price,$trans,$seats,$id]);
         header('Location: rental-cars.php?msg=updated');exit;
-    } else $error='Isi semua field';
+    } else $error=t('Isi semua field');
 }
 $pageTitle='Edit Rental Mobil'; require_once 'includes/admin-header.php';
 ?>

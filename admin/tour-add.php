@@ -21,10 +21,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $contentLanguage = isValidLang($_POST['content_language'] ?? '') ? $_POST['content_language'] : 'id';
 
     // Validasi
-    if (!$title) $error = 'Judul tour harus diisi';
+    if (!$title) $error = t('Judul tour harus diisi');
     elseif (!$category) $error = t('Kategori harus diisi');
     elseif ($price <= 0) $error = t('Harga harus diisi');
-    elseif ($maxParticipants < 1) $error = 'Max peserta minimal 1';
+    elseif ($maxParticipants < 1) $error = t('Max peserta minimal 1');
 
     // Upload gambar
     $coverImage = '';

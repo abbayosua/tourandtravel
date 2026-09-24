@@ -41,7 +41,7 @@ require_once 'includes/admin-header.php';
 ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h4 class="fw-bold mb-0"><?= $isAdd ? t('Tambah') : t('Edit') ?> <?= t('Kategori') ?></h4>
-    <a href="faq-category.php" class="btn btn-outline-secondary btn-sm">&larr; Kembali</a>
+    <a href="faq-category.php" class="btn btn-outline-secondary btn-sm">&larr; <?= t('Kembali') ?></a>
 </div>
 <?php if ($error): ?><div class="alert alert-danger py-2"><?=$error?></div><?php endif; ?>
 <form method="POST">

@@ -41,17 +41,17 @@ $titleZh = trim((string)($input['title_zh'] ?? ''));
 $bodyZh = trim((string)($input['body_zh'] ?? ''));
 
 if ($titleId === '' || $bodyId === '') {
-    jsonPushError('Judul dan isi pesan (ID) wajib diisi');
+    jsonPushError(t('Judul dan isi pesan (ID) wajib diisi'));
 }
 
 $langFilter = trim((string)($input['lang'] ?? ''));
 if ($target === 'lang' && !isValidLang($langFilter)) {
-    jsonPushError('Bahasa tidak valid');
+    jsonPushError(t('Bahasa tidak valid'));
 }
 
 $userId = (int)($input['user_id'] ?? 0);
 if ($target === 'user' && $userId <= 0) {
-    jsonPushError('User ID tidak valid');
+    jsonPushError(t('User ID tidak valid'));
 }
 
 require_once '../../includes/fcm-push.php';
@@ -79,7 +79,7 @@ $stmt->execute($params);
 $tokens = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 if (!count($tokens)) {
-    jsonPushError('Tidak ada device/token ditemukan untuk target ini');
+    jsonPushError(t('Tidak ada device/token ditemukan untuk target ini'));
 }
 
 $sent = 0;

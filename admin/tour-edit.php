@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['add_itinerary']) && 
     $isActive = isset($_POST['is_active']) ? 1 : 0;
     $contentLanguage = isValidLang($_POST['content_language'] ?? '') ? $_POST['content_language'] : 'id';
 
-    if (!$title) $error = 'Judul tour harus diisi';
+    if (!$title) $error = t('Judul tour harus diisi');
     elseif (!$category) $error = t('Kategori harus diisi');
     elseif ($price <= 0) $error = t('Harga harus diisi');
 
@@ -203,21 +203,21 @@ require_once 'includes/admin-header.php';
                     <?= i18nInputs(t('Deskripsi'), 'description', $tour, 'textarea', 5) ?>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-semibold">Durasi (hari)</label>
+                            <label class="form-label fw-semibold"><?= t('Durasi (hari)') ?></label>
                             <input type="number" name="duration_days" class="form-control" min="0" value="<?= e($tour['duration_days'] ?? '') ?>" placeholder="8">
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-semibold">Durasi (malam)</label>
+                            <label class="form-label fw-semibold"><?= t('Durasi (malam)') ?></label>
                             <input type="number" name="duration_nights" class="form-control" min="0" value="<?= e($tour['duration_nights'] ?? '') ?>" placeholder="7">
                         </div>
                     </div>
-                    <?= i18nInputs('Rute Kota (untuk brosur PDF)', 'route_cities', $tour) ?>
-                    <?= i18nInputs('Highlights (satu per baris — tampil di brosur PDF)', 'highlights', $tour, 'textarea', 4) ?>
-                    <?= i18nInputs('Jadwal Penerbangan (satu per baris)', 'flight_info', $tour, 'textarea', 2) ?>
-                    <?= i18nInputs('Titik Kumpul', 'meeting_point', $tour) ?>
-                    <?= i18nInputs('Paket Termasuk / Include (satu per baris)', 'includes', $tour, 'textarea', 4) ?>
-                    <?= i18nInputs('Paket Belum Termasuk / Exclude (satu per baris)', 'excludes', $tour, 'textarea', 4) ?>
-                    <?= i18nInputs('Catatan Penting (satu per baris)', 'important_notes', $tour, 'textarea', 3) ?>
+                    <?= i18nInputs(t('Rute Kota (untuk brosur PDF)'), 'route_cities', $tour) ?>
+                    <?= i18nInputs(t('Highlights (satu per baris — tampil di brosur PDF)'), 'highlights', $tour, 'textarea', 4) ?>
+                    <?= i18nInputs(t('Jadwal Penerbangan (satu per baris)'), 'flight_info', $tour, 'textarea', 2) ?>
+                    <?= i18nInputs(t('Titik Kumpul'), 'meeting_point', $tour) ?>
+                    <?= i18nInputs(t('Paket Termasuk / Include (satu per baris)'), 'includes', $tour, 'textarea', 4) ?>
+                    <?= i18nInputs(t('Paket Belum Termasuk / Exclude (satu per baris)'), 'excludes', $tour, 'textarea', 4) ?>
+                    <?= i18nInputs(t('Catatan Penting (satu per baris)'), 'important_notes', $tour, 'textarea', 3) ?>
                     <div class="mb-3">
                         <label class="form-label fw-semibold"><?= t('Gambar Cover') ?></label>
                         <?php if ($tour['cover_image']): ?>
@@ -239,7 +239,7 @@ require_once 'includes/admin-header.php';
                         <label class="form-label fw-semibold"><?= t('Harga') ?></label>
                         <div class="input-group">
                             <select name="price_currency" class="form-select" style="max-width: 100px;">
-                                <?php foreach (['IDR' => t('Rp (IDR)'), 'SGD' => 'S$ (SGD)', 'USD' => '$ (USD)'] as $code => $label): ?>
+                                <?php foreach (['IDR' => t('Rp (IDR)'), 'SGD' => t('S$ (SGD)'), 'USD' => t('$ (USD)')] as $code => $label): ?>
                                     <option value="<?= $code ?>" <?= ($tour['price_currency'] ?? 'IDR') === $code ? 'selected' : '' ?>><?= $label ?></option>
                                 <?php endforeach; ?>
                             </select>
@@ -276,7 +276,7 @@ require_once 'includes/admin-header.php';
 <div class="card border-0 shadow-sm mb-3">
     <div class="card-header bg-white d-flex justify-content-between align-items-center">
         <h6 class="fw-bold mb-0"><?= t('Jadwal Keberangkatan') ?></h6>
-        <button class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#addDateForm">+ Tambah</button>
+        <button class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#addDateForm"><?= t('+ Tambah') ?></button>
     </div>
     <div class="card-body">
         <div class="collapse mb-3" id="addDateForm">
@@ -294,29 +294,29 @@ require_once 'includes/admin-header.php';
                     <input type="number" name="slots" class="form-control form-control-sm" min="1" value="20" required>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label small">Catatan (mis: Low Season)</label>
-                    <input type="text" name="date_note" class="form-control form-control-sm" placeholder="Low Season">
+                    <label class="form-label small"><?= t('Catatan (mis: Low Season)') ?></label>
+                    <input type="text" name="date_note" class="form-control form-control-sm" placeholder="<?= t('Low Season') ?>">
                     <input type="text" name="date_note_en" class="form-control form-control-sm mt-1" placeholder="Note (EN)">
                     <input type="text" name="date_note_zh" class="form-control form-control-sm mt-1" placeholder="备注 (中文)">
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label small">Harga Dewasa</label>
+                    <label class="form-label small"><?= t('Harga Dewasa') ?></label>
                     <input type="number" name="price_adult" class="form-control form-control-sm" min="0" step="0.01">
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label small">Harga Anak</label>
+                    <label class="form-label small"><?= t('Harga Anak') ?></label>
                     <input type="number" name="price_child" class="form-control form-control-sm" min="0" step="0.01">
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label small">Single Supp.</label>
+                    <label class="form-label small"><?= t('Single Supp.') ?></label>
                     <input type="number" name="price_single" class="form-control form-control-sm" min="0" step="0.01">
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label small">Twin (1 kamar 2 org)</label>
+                    <label class="form-label small"><?= t('Twin (1 kamar 2 org)') ?></label>
                     <input type="number" name="price_twin" class="form-control form-control-sm" min="0" step="0.01">
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label small">Triple (1 kamar 3 org)</label>
+                    <label class="form-label small"><?= t('Triple (1 kamar 3 org)') ?></label>
                     <input type="number" name="price_triple" class="form-control form-control-sm" min="0" step="0.01">
                 </div>
                 <div class="col-12 d-flex align-items-end">
@@ -332,10 +332,10 @@ require_once 'includes/admin-header.php';
                     <th><?= t('Berangkat') ?></th>
                     <th><?= t('Kembali') ?></th>
                     <th><?= t('Slot') ?></th>
-                    <th>Dewasa</th>
-                    <th>Anak</th>
-                    <th>Single</th>
-                    <th>Catatan</th>
+                    <th><?= t('Dewasa') ?></th>
+                    <th><?= t('Anak') ?></th>
+                    <th><?= t('Single') ?></th>
+                    <th><?= t('Catatan') ?></th>
                     <th><?= t('Aksi') ?></th>
                 </tr>
             </thead>
@@ -350,7 +350,7 @@ require_once 'includes/admin-header.php';
                     <td><?= !empty($td['price_single']) ? number_format((float)$td['price_single'], 0, ',', '.') : '-' ?></td>
                     <td><small><?= e($td['note'] ?? '') ?></small></td>
                     <td>
-                        <a href="tour-edit.php?id=<?= $id ?>&delete_date=<?= $td['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Hapus tanggal ini?')"><i class="bi bi-trash"></i></a>
+                        <a href="tour-edit.php?id=<?= $id ?>&delete_date=<?= $td['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('<?= t('Hapus tanggal ini?') ?>')"><i class="bi bi-trash"></i></a>
                     </td>
                 </tr>
                 <?php endforeach; ?>
@@ -366,7 +366,7 @@ require_once 'includes/admin-header.php';
 <div class="card border-0 shadow-sm mb-3">
     <div class="card-header bg-white d-flex justify-content-between align-items-center">
         <h6 class="fw-bold mb-0"><?= t('Itinerary') ?></h6>
-        <button class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#addItineraryForm">+ Tambah</button>
+        <button class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#addItineraryForm"><?= t('+ Tambah') ?></button>
     </div>
     <div class="card-body">
         <div class="collapse mb-3" id="addItineraryForm">
@@ -427,7 +427,7 @@ require_once 'includes/admin-header.php';
                         <td><small><?= e($it['meals']) ?></small></td>
                         <td><small><?= e($it['accommodation']) ?></small></td>
                         <td>
-                            <a href="tour-edit.php?id=<?= $id ?>&delete_itinerary=<?= $it['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Hapus itinerary ini?')"><i class="bi bi-trash"></i></a>
+                            <a href="tour-edit.php?id=<?= $id ?>&delete_itinerary=<?= $it['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('<?= t('Hapus itinerary ini?') ?>')"><i class="bi bi-trash"></i></a>
                         </td>
                     </tr>
                     <?php endforeach; ?>
@@ -467,7 +467,7 @@ require_once 'includes/admin-header.php';
             <div class="col-4 col-md-2">
                 <div class="position-relative">
                     <img src="../uploads/<?= e($g['image_path']) ?>" class="w-100 rounded-3 border" style="height: 110px; object-fit: cover;">
-                    <a href="tour-edit.php?id=<?= $id ?>&delete_gallery=<?= $g['id'] ?>" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 py-0 px-1" onclick="return confirm('Hapus gambar ini?')" title="Hapus" style="font-size: 11px;"><i class="bi bi-trash"></i></a>
+                    <a href="tour-edit.php?id=<?= $id ?>&delete_gallery=<?= $g['id'] ?>" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 py-0 px-1" onclick="return confirm('<?= t('Hapus gambar ini?') ?>')" title="<?= t('Hapus') ?>" style="font-size: 11px;"><i class="bi bi-trash"></i></a>
                     <small class="d-block text-truncate text-muted" style="font-size: 10px;"><?= e($g['image_path']) ?></small>
                 </div>
             </div>

@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save'])) {
     $isActive = (int)($_POST['is_active'] ?? 1);
     $sortOrder = (int)($_POST['sort_order'] ?? 0);
 
-    if (!$name) $error = 'Nama collection wajib diisi';
+    if (!$name) $error = t('Nama collection wajib diisi');
 
     if (!$error) {
         $slug = buatSlug($name);
@@ -149,9 +149,9 @@ require_once 'includes/admin-header.php';
 ?><tr>
 <td><?=$i['id']?></td><td><strong><?=e($i['name'])?></strong></td>
 <td><?=e($i['slug'])?></td>
-<td><?=$itemCount?> tour</td>
-<td><span class="badge bg-<?=$i['is_active']?'success':'secondary'?>"><?=$i['is_active']?'Aktif':'Nonaktif'?></span></td>
+<td><?=$itemCount?> <?= t('tour') ?></td>
+<td><span class="badge bg-<?=$i['is_active']?'success':'secondary'?>"><?=$i['is_active']?t('Aktif'):t('Nonaktif')?></span></td>
 <td><a href="collections.php?edit=<?=$i['id']?>" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></a>
-<a href="collections.php?delete=<?=$i['id']?>" class="btn btn-sm btn-danger" onclick="return confirm('Hapus koleksi?')"><i class="bi bi-trash"></i></a></td>
+<a href="collections.php?delete=<?=$i['id']?>" class="btn btn-sm btn-danger" onclick="return confirm('<?= t('Hapus koleksi?') ?>')"><i class="bi bi-trash"></i></a></td>
 </tr><?php endforeach; ?></tbody></table></div></div>
 <?php require_once 'includes/admin-footer.php'; ?>

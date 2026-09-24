@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $desc = trim($_POST['description'] ?? '');
     $isActive = (int)($_POST['is_active'] ?? 1);
 
-    if (!$name || !$country || !$dataQuota) $error = 'Nama, negara, dan kuota wajib diisi';
+    if (!$name || !$country || !$dataQuota) $error = t('Nama, negara, dan kuota wajib diisi');
 
     if (!$error) {
         $slug = buatSlug($name);
@@ -49,7 +49,7 @@ require_once 'includes/admin-header.php';
 ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h4 class="fw-bold mb-0"><?= $isAdd ? t('Tambah') : t('Edit') ?> eSIM</h4>
-    <a href="esim.php" class="btn btn-outline-secondary btn-sm">&larr; Kembali</a>
+    <a href="esim.php" class="btn btn-outline-secondary btn-sm">&larr; <?= t('Kembali') ?></a>
 </div>
 <?php if ($error): ?><div class="alert alert-danger py-2"><?=$error?></div><?php endif; ?>
 <form method="POST">
@@ -69,8 +69,8 @@ require_once 'includes/admin-header.php';
         <option value="wifi" <?=($item['type']??'')==='wifi'?'selected':''?>><?= t('Pocket WiFi') ?></option>
     </select></div>
     <div class="mb-3"><label class="form-label"><?= t('Negara') ?></label><input name="country" class="form-control" value="<?=e($item['country']??'')?>" required></div>
-    <div class="mb-3"><label class="form-label"><?= t('Cakupan') ?></label><input name="coverage" class="form-control" value="<?=e($item['coverage']??'')?>" placeholder="Nasional, Regional, ..."></div>
-    <div class="mb-3"><label class="form-label"><?= t('Kuota Data') ?></label><input name="data_quota" class="form-control" value="<?=e($item['data_quota']??'')?>" placeholder="5GB, 10GB, ..." required></div>
+    <div class="mb-3"><label class="form-label"><?= t('Cakupan') ?></label><input name="coverage" class="form-control" value="<?=e($item['coverage']??'')?>" placeholder="<?= t('Nasional, Regional, ...') ?>"></div>
+    <div class="mb-3"><label class="form-label"><?= t('Kuota Data') ?></label><input name="data_quota" class="form-control" value="<?=e($item['data_quota']??'')?>" placeholder="<?= t('5GB, 10GB, ...') ?>" required></div>
     <div class="mb-3"><label class="form-label"><?= t('Durasi (hari)') ?></label><input name="duration_days" type="number" class="form-control" value="<?=$item['duration_days']??7?>" min="1"></div>
     <div class="mb-3"><label class="form-label"><?= t('Harga (Rp)') ?></label><input name="price" type="number" class="form-control" value="<?=$item['price']??0?>" required></div>
     <div class="mb-3">

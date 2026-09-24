@@ -14,8 +14,8 @@ $pageTitle=t('Kelola Pesawat'); require_once 'includes/admin-header.php';
 <td><?=$i['id']?></td><td><?=e($i['airline'])?></td><td><?=e($i['flight_number'])?></td>
 <td><?=e(substr($i['from_city'],0,10))?> → <?=e(substr($i['to_city'],0,10))?></td>
 <td><?=date('H:i',strtotime($i['departure_time']))?>-<?=date('H:i',strtotime($i['arrival_time']))?></td>
-<td><?=formatRupiah($i['price'])?></td><td><span class="badge bg-secondary"><?=ucfirst($i['class'])?></span></td>
+<td><?=formatRupiah($i['price'])?></td><td><span class="badge bg-secondary"><?= e(enumLabel('flight_class', $i['class'])) ?></span></td>
 <td><a href="flight-edit.php?id=<?=$i['id']?>" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></a>
-<a href="flights.php?delete=<?=$i['id']?>" class="btn btn-sm btn-danger" onclick="return confirm('Hapus?')"><i class="bi bi-trash"></i></a></td>
+<a href="flights.php?delete=<?=$i['id']?>" class="btn btn-sm btn-danger" onclick="return confirm('<?= t('Hapus?') ?>')"><i class="bi bi-trash"></i></a></td>
 </tr><?php endforeach;?></tbody></table></div></div>
 <?php require_once 'includes/admin-footer.php';?>

@@ -98,7 +98,7 @@ require_once 'includes/admin-header.php';
                 <div class="mb-2"><label class="form-label small"><?= t('Tipe item') ?></label>
                     <select name="item_type" class="form-select form-select-sm">
                         <?php foreach (['tour', 'hotel', 'attraction', 'esim'] as $t): ?>
-                            <option value="<?= $t ?>" <?= ($editFs['item_type'] ?? 'tour') === $t ? 'selected' : '' ?>><?= t(ucfirst($t)) ?></option>
+                            <option value="<?= $t ?>" <?= ($editFs['item_type'] ?? 'tour') === $t ? 'selected' : '' ?>><?= e(enumLabel('item_type', $t)) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>

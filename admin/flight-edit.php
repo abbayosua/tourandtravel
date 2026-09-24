@@ -21,7 +21,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
         $stmt=db()->prepare("UPDATE flights SET airline=?,flight_number=?,from_city=?,to_city=?,departure_time=?,arrival_time=?,duration=?,price=?,class=? WHERE id=?");
         $stmt->execute([$airline,$fn,$from,$to,$dep,$arr,$dur,$price,$class,$id]);
         header('Location: flights.php?msg=updated');exit;
-    } else $error='Semua field wajib diisi';
+    } else $error=t('Semua field wajib diisi');
 }
 $pageTitle=t('Edit Pesawat'); require_once 'includes/admin-header.php';
 ?>

@@ -61,7 +61,7 @@ try {
         $activities[] = [
             'icon' => 'bi-credit-card',
             'color' => $p['status'] === 'paid' ? 'success' : ($p['status'] === 'pending' ? 'warning' : 'secondary'),
-            'title' => t('Pembayaran') . ' — ' . ucfirst($p['status']),
+            'title' => t('Pembayaran') . ' - ' . bookingStatusLabel($p['status']),
             'desc' => $p['booking_code'] . ' · ' . formatRupiah($p['gross_amount']),
             'at' => $p['created_at'],
         ];

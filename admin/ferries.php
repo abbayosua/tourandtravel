@@ -13,6 +13,6 @@ $pageTitle=t('Kelola Ferry'); require_once 'includes/admin-header.php';
 <td><?=date('H:i',strtotime($i['departure_time']))?></td><td><?=date('H:i',strtotime($i['arrival_time']))?></td>
 <td><?=formatRupiah($i['price'])?></td>
 <td><a href="ferry-edit.php?id=<?=$i['id']?>" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></a>
-<a href="ferries.php?delete=<?=$i['id']?>" class="btn btn-sm btn-danger" onclick="return confirm('Hapus?')"><i class="bi bi-trash"></i></a></td>
+<a href="ferries.php?delete=<?=$i['id']?>" class="btn btn-sm btn-danger" onclick="return confirm('<?= t('Hapus?') ?>')"><i class="bi bi-trash"></i></a></td>
 </tr><?php endforeach;?></tbody></table></div></div>
 <?php require_once 'includes/admin-footer.php';?>

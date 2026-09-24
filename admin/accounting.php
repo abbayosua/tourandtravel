@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $postedToken = $_POST['csrf_token'] ?? '';
     if (!hash_equals($csrfToken, is_string($postedToken) ? $postedToken : '')) {
         http_response_code(403);
-        exit('Invalid CSRF token');
+        exit(t('Invalid CSRF token'));
     }
     $action = $_POST['expense_action'] ?? '';
     if ($action === 'save') {

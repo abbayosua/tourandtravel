@@ -73,7 +73,7 @@ require_once __DIR__ . '/includes/admin-header.php';
     ?>
     <div class="col-6 col-md">
         <div class="card border-0 shadow-sm text-center py-3 h-100">
-            <div><span class="badge bg-<?= $badgeMap[$st] ?>"><?= ucfirst(t($st)) ?></span></div>
+            <div><span class="badge bg-<?= $badgeMap[$st] ?>"><?= e(bookingStatusLabel($st)) ?></span></div>
             <div class="fs-4 fw-bold mt-1"><?= $n ?></div>
             <small class="text-muted"><?= formatRupiah($total) ?></small>
         </div>
@@ -103,7 +103,7 @@ require_once __DIR__ . '/includes/admin-header.php';
                 </select>
             </div>
             <div class="col-md-4 d-flex align-items-end gap-2">
-                <button type="submit" name="save_settings" class="btn btn-primary">Simpan Mode</button>
+                <button type="submit" name="save_settings" class="btn btn-primary"><?= t('Simpan Mode') ?></button>
                 <div class="alert py-2 px-3 mb-0 small flex-fill <?= tripayInstantEnabled() ? 'alert-success' : 'alert-secondary' ?>">
                     <?= tripayInstantEnabled() ? t('Instant AKTIF via ').e(tripayGateway()) : t('Berjalan MANUAL — semua gateway nonaktif') ?>
                 </div>
@@ -148,16 +148,16 @@ require_once __DIR__ . '/includes/admin-header.php';
                 <input type="text" name="tripay_api_key" class="form-control" data-testid="tripay-api-key" autocomplete="off" readonly onfocus="this.removeAttribute('readonly')" value="<?= e(getSetting('tripay_api_key')) ?>">
             </div>
             <div class="col-md-3">
-                <label class="form-label small fw-semibold">Private Key</label>
+                <label class="form-label small fw-semibold"><?= t('Private Key') ?></label>
                 <input type="password" name="tripay_private_key" class="form-control" data-testid="tripay-private-key" autocomplete="new-password" value="<?= e(getSetting('tripay_private_key')) ?>">
             </div>
             <div class="col-md-3">
-                <label class="form-label small fw-semibold">Merchant Code</label>
+                <label class="form-label small fw-semibold"><?= t('Merchant Code') ?></label>
                 <input type="text" name="tripay_merchant_code" class="form-control" data-testid="tripay-merchant-code" value="<?= e(getSetting('tripay_merchant_code')) ?>">
             </div>
             <div class="col-12 mt-3">
                 <button type="submit" name="save_settings" class="btn btn-primary"><?= t('Simpan') ?></button>
-                <small class="text-muted ms-2">Webhook Midtrans: <code><?= e(BASE_URL . '/webhook-midtrans.php') ?></code> · Webhook Tripay: <code><?= e(BASE_URL . '/webhook-tripay.php') ?></code></small>
+                <small class="text-muted ms-2"><?= t('Webhook Midtrans:') ?> <code><?= e(BASE_URL . '/webhook-midtrans.php') ?></code> · <?= t('Webhook Tripay:') ?> <code><?= e(BASE_URL . '/webhook-tripay.php') ?></code></small>
             </div>
         </form>
     </div>
@@ -169,7 +169,7 @@ require_once __DIR__ . '/includes/admin-header.php';
         <div class="d-flex gap-1">
             <a href="payments.php" class="btn btn-sm <?= $filterStatus === '' ? 'btn-primary' : 'btn-outline-secondary' ?>"><?= t('Semua') ?></a>
             <?php foreach ($validStatus as $vs): ?>
-                <a href="payments.php?status=<?= $vs ?>" class="btn btn-sm <?= $filterStatus === $vs ? 'btn-primary' : 'btn-outline-secondary' ?>"><?= ucfirst(t($vs)) ?></a>
+                <a href="payments.php?status=<?= $vs ?>" class="btn btn-sm <?= $filterStatus === $vs ? 'btn-primary' : 'btn-outline-secondary' ?>"><?= e(bookingStatusLabel($vs)) ?></a>
             <?php endforeach; ?>
         </div>
     </div>
@@ -199,7 +199,7 @@ require_once __DIR__ . '/includes/admin-header.php';
                         <td class="fw-semibold"><?= formatRupiah($r['gross_amount']) ?></td>
                         <td><span class="badge bg-info text-dark"><?= e($r['gateway'] ?? 'midtrans') ?></span></td>
                         <td><small><?= e($r['payment_type'] ?? $r['pay_code'] ?? '-') ?></small></td>
-                        <td><span class="badge bg-<?= $badgeMap[$r['status']] ?? 'secondary' ?>"><?= ucfirst(t($r['status'])) ?></span></td>
+                        <td><span class="badge bg-<?= $badgeMap[$r['status']] ?? 'secondary' ?>"><?= e(bookingStatusLabel($r['status'])) ?></span></td>
                         <td><small class="text-muted"><?= formatDate($r['created_at']) ?></small></td>
                         <td class="text-end">
                             <?php if ($r['status'] === 'pending'): ?>

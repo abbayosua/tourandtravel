@@ -120,7 +120,7 @@ require_once __DIR__ . '/includes/admin-header.php';
         <?php foreach (['pending', 'confirmed', 'cancelled'] as $st): ?>
         <div class="text-center px-4 py-3 rounded-3 bg-light">
             <div class="fs-4 fw-bold"><?= $funnel[$st] ?? 0 ?></div>
-            <small class="text-muted"><?= ucfirst(t($st)) ?></small>
+            <small class="text-muted"><?= e(bookingStatusLabel($st)) ?></small>
         </div>
         <?php endforeach; ?>
     </div>

@@ -123,7 +123,7 @@ require_once 'includes/admin-header.php';
                 <div class="mb-2"><label class="form-label small"><?= t('Tipe Kasur') ?></label>
                     <select name="bed_type" class="form-select form-select-sm">
                         <?php foreach (['single', 'double', 'twin', 'king', 'suite'] as $bt): ?>
-                            <option value="<?= $bt ?>" <?= ($editRoom['bed_type'] ?? '') === $bt ? 'selected' : '' ?>><?= t(ucfirst($bt)) ?></option>
+                            <option value="<?= $bt ?>" <?= ($editRoom['bed_type'] ?? '') === $bt ? 'selected' : '' ?>><?= e(enumLabel('bed', $bt)) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>

@@ -74,7 +74,7 @@ if (isset($_GET['update_status'])) {
 
             // Notifikasi in-app (semua vertikal yang punya user_id)
             if ($userId > 0) {
-                addNotification($userId, 'status', 'Status booking: ' . $status, 'Booking ' . $code . ($note !== '' ? ' — ' . $note : ''), $trackLink);
+                addNotification($userId, 'status', sprintf(t('Status booking: %s'), $status), sprintf(t('Booking %s'), $code) . ($note !== '' ? ' — ' . $note : ''), $trackLink);
             }
             // Email status (semua vertikal dengan email terdaftar)
             if (!empty($userEmail)) {
@@ -83,7 +83,7 @@ if (isset($_GET['update_status'])) {
                     'status' => $status,
                     'admin_note' => $note,
                     'track_link' => $trackLink,
-                    'subject' => 'Status Booking - ' . $code,
+                    'subject' => sprintf(t('Status Booking - %s'), $code),
                 ], null);
             }
 
@@ -135,7 +135,7 @@ $all = [];
 
 // Tours
 if (!$typeFilter || $typeFilter === 'tour') {
-    $sql = "SELECT b.*, t.title as item_title, td.departure_date, 'tour' AS btype, CONCAT(b.participants, ' org') AS qty_label,
+    $sql = "SELECT b.*, t.title as item_title, td.departure_date, 'tour' AS btype, CONCAT(b.participants, ' org') AS qty_label, b.participants AS qty_num, 'org' AS qty_unit,
             (SELECT amount FROM booking_addons ba WHERE ba.booking_type='tour' AND ba.booking_id = b.id AND ba.type='insurance') AS insurance_premi
             FROM bookings b JOIN tours t ON b.tour_id = t.id JOIN tour_dates td ON b.tour_date_id = td.id";
     $params = [];
@@ -147,7 +147,7 @@ if (!$typeFilter || $typeFilter === 'tour') {
 
 // Attractions
 if (!$typeFilter || $typeFilter === 'attraction') {
-    $sql = "SELECT ab.*, a.name as item_title, 'attraction' AS btype, CONCAT(ab.quantity, ' tiket') AS qty_label, ab.visit_date AS date_label
+    $sql = "SELECT ab.*, a.name as item_title, 'attraction' AS btype, CONCAT(ab.quantity, ' tiket') AS qty_label, ab.quantity AS qty_num, 'tiket' AS qty_unit, ab.visit_date AS date_label
             FROM attraction_bookings ab JOIN attractions a ON ab.attraction_id = a.id";
     $params = [];
     if ($statusFilter) { $sql .= " WHERE ab.status = ?"; $params[] = $statusFilter; }
@@ -158,7 +158,7 @@ if (!$typeFilter || $typeFilter === 'attraction') {
 
 // Transfers
 if (!$typeFilter || $typeFilter === 'transfer') {
-    $sql = "SELECT tb.*, tr.name as item_title, 'transfer' AS btype, CONCAT(tb.passengers, ' pax') AS qty_label, tb.pickup_date AS date_label
+    $sql = "SELECT tb.*, tr.name as item_title, 'transfer' AS btype, CONCAT(tb.passengers, ' pax') AS qty_label, tb.passengers AS qty_num, 'pax' AS qty_unit, tb.pickup_date AS date_label
             FROM transfer_bookings tb JOIN transfers tr ON tb.transfer_id = tr.id";
     $params = [];
     if ($statusFilter) { $sql .= " WHERE tb.status = ?"; $params[] = $statusFilter; }
@@ -169,7 +169,7 @@ if (!$typeFilter || $typeFilter === 'transfer') {
 
 // Trains
 if (!$typeFilter || $typeFilter === 'train') {
-    $sql = "SELECT tb.*, tr.name as item_title, 'train' AS btype, CONCAT(tb.seats, ' kursi') AS qty_label, tb.travel_date AS date_label
+    $sql = "SELECT tb.*, tr.name as item_title, 'train' AS btype, CONCAT(tb.seats, ' kursi') AS qty_label, tb.seats AS qty_num, 'kursi' AS qty_unit, tb.travel_date AS date_label
             FROM train_bookings tb JOIN trains tr ON tb.train_id = tr.id";
     $params = [];
     if ($statusFilter) { $sql .= " WHERE tb.status = ?"; $params[] = $statusFilter; }
@@ -180,7 +180,7 @@ if (!$typeFilter || $typeFilter === 'train') {
 
 // eSIM
 if (!$typeFilter || $typeFilter === 'esim') {
-    $sql = "SELECT cb.*, cp.name as item_title, 'esim' AS btype, CONCAT(cb.quantity, ' pcs') AS qty_label
+    $sql = "SELECT cb.*, cp.name as item_title, 'esim' AS btype, CONCAT(cb.quantity, ' pcs') AS qty_label, cb.quantity AS qty_num, 'pcs' AS qty_unit
             FROM connectivity_bookings cb JOIN connectivity_products cp ON cb.product_id = cp.id";
     $params = [];
     if ($statusFilter) { $sql .= " WHERE cb.status = ?"; $params[] = $statusFilter; }
@@ -206,7 +206,7 @@ if (!$typeFilter || $typeFilter === 'hotel') {
 if (!$typeFilter || $typeFilter === 'flight') {
     try {
         $sql = "SELECT fb.*, CONCAT(f.airline, ' ', f.flight_number) as item_title, f.from_city, f.to_city,
-                       'flight' AS btype, CONCAT(fb.seats, ' pax') AS qty_label, fb.departure_date AS date_label
+                       'flight' AS btype, CONCAT(fb.seats, ' pax') AS qty_label, fb.seats AS qty_num, 'pax' AS qty_unit, fb.departure_date AS date_label
                 FROM flight_bookings fb JOIN flight_schedules fs ON fb.schedule_id = fs.id JOIN flights f ON fs.flight_id = f.id";
         $params = [];
         if ($statusFilter) { $sql .= " WHERE fb.status = ?"; $params[] = $statusFilter; }
@@ -220,7 +220,7 @@ if (!$typeFilter || $typeFilter === 'flight') {
 if (!$typeFilter || $typeFilter === 'ferry') {
     try {
         $sql = "SELECT fb.*, CONCAT(fb.company, ': ', fb.route_from, ' → ', fb.route_to) as item_title,
-                       'ferry' AS btype, CONCAT(fb.passengers, ' pax') AS qty_label, fb.departure_date AS date_label
+                       'ferry' AS btype, CONCAT(fb.passengers, ' pax') AS qty_label, fb.passengers AS qty_num, 'pax' AS qty_unit, fb.departure_date AS date_label
                 FROM ferry_bookings fb";
         $params = [];
         if ($statusFilter) { $sql .= " WHERE fb.status = ?"; $params[] = $statusFilter; }
@@ -236,6 +236,7 @@ $typeName = ['tour' => t('Tour'), 'attraction' => t('Atraksi'), 'transfer' => t(
 $typeBadge = ['tour' => 'primary', 'attraction' => 'info', 'transfer' => 'warning text-dark', 'train' => 'success', 'esim' => 'secondary', 'hotel' => 'danger', 'flight' => 'dark'];
 
 $pageTitle = t('Kelola Booking');
+if (!function_exists('bookingStatusLabel')) { function bookingStatusLabel($st) { $m = ['pending' => t('Pending'), 'confirmed' => t('Dikonfirmasi'), 'cancelled' => t('Dibatalkan'), 'paid' => t('Dibayar'), 'refunded' => t('Refund')]; return $m[$st] ?? ucfirst((string)$st); } }
 require_once 'includes/admin-header.php';
 ?>
 
@@ -250,7 +251,7 @@ require_once 'includes/admin-header.php';
     <div class="d-flex gap-2 flex-wrap">
         <a href="bookings.php" class="btn btn-sm <?= !$statusFilter && !$typeFilter ? 'btn-primary' : 'btn-outline-primary' ?>"><?= t('Semua') ?></a>
         <?php foreach (['pending', 'confirmed', 'cancelled'] as $st): ?>
-        <a href="bookings.php?status=<?= $st ?><?= $typeFilter ? "&type=$typeFilter" : '' ?>" class="btn btn-sm <?= $statusFilter === $st ? 'btn-primary' : 'btn-outline-primary' ?>"><?= t(ucfirst($st)) ?></a>
+        <a href="bookings.php?status=<?= $st ?><?= $typeFilter ? "&type=$typeFilter" : '' ?>" class="btn btn-sm <?= $statusFilter === $st ? 'btn-primary' : 'btn-outline-primary' ?>"><?= e(bookingStatusLabel($st)) ?></a>
         <?php endforeach; ?>
     </div>
 </div>
@@ -264,7 +265,7 @@ require_once 'includes/admin-header.php';
 </ul>
 
 <?php if ($msg): ?>
-    <div class="alert alert-success alert-dismissible py-2"><?= $msg ?><button class="btn-close" data-bs-dismiss="alert"></button></div>
+    <div class="alert alert-success alert-dismissible py-2"><?= e($msg) ?><button class="btn-close" data-bs-dismiss="alert"></button></div>
 <?php endif; ?>
 
 <div class="card border-0 shadow-sm">
@@ -295,14 +296,14 @@ require_once 'includes/admin-header.php';
                         <td><strong class="small" style="font-size: 11px;"><?= e($b['booking_code'] ?? '-') ?></strong></td>
                         <td><strong><?= e($b['name']) ?></strong></td>
                         <td><small><?= e($b['item_title']) ?></small></td>
-                        <td><span class="badge bg-<?= $typeBadge[$btype] ?>"><?= $typeName[$btype] ?></span><?= !empty($b['booking_source']) && $b['booking_source'] === 'reseller' ? ' <span class="badge bg-success" title="Reseller booking"><i class="bi bi-shop"></i> Reseller</span>' : '' ?></td>
+                        <td><span class="badge bg-<?= $typeBadge[$btype] ?>"><?= $typeName[$btype] ?></span><?= !empty($b['booking_source']) && $b['booking_source'] === 'reseller' ? ' <span class="badge bg-success" title="' . t('Reseller booking') . '"><i class="bi bi-shop"></i> ' . t('Reseller') . '</span>' : '' ?></td>
                         <td><small><?= !empty($b['date_label']) ? tglIndonesia($b['date_label']) : '-' ?></small></td>
-                        <td><?= $b['qty_label'] ?></td>
+                        <td><?= e($b['qty_num'] ?? '') ?><?= isset($b['qty_num']) ? ' ' . t($b['qty_unit'] ?? '') : e($b['qty_label']) ?></td>
                         <td><?= formatRupiah($b['total_price']) ?><?= $btype === 'tour' && !empty($b['insurance_premi']) ? ' <span class="badge bg-success-subtle text-success" title="' . t('Asuransi perjalanan') . '"><i class="bi bi-shield-check"></i> +' . formatRupiah((float)$b['insurance_premi']) . '</span>' : '' ?></td>
                         <td data-testid="cogs-cell">
                             <small class="text-muted"><?= formatRupiah($b['cogs'] ?? 0) ?></small>
                             <form method="POST" action="bookings.php?update_status=<?= $b['id'] ?>&status=<?= e($b['status']) ?>&type=<?= $btype ?>" class="d-flex gap-1 mt-1" style="max-width:130px;">
-                                <input type="number" name="cogs" class="form-control form-control-sm" value="<?= e($b['cogs'] ?? 0) ?>" min="0" step="0.01" aria-label="COGS">
+                                <input type="number" name="cogs" class="form-control form-control-sm" value="<?= e($b['cogs'] ?? 0) ?>" min="0" step="0.01" aria-label="<?= t('COGS') ?>">
                                 <button type="submit" class="btn btn-sm btn-outline-secondary" title="<?= t('Simpan COGS') ?>"><i class="bi bi-check"></i></button>
                             </form>
                         </td>
@@ -320,10 +321,10 @@ require_once 'includes/admin-header.php';
                         </td>
                         <td>
                             <span class="badge bg-<?= in_array($b['status'], ['confirmed', 'paid'], true) ? 'success' : ($b['status'] === 'pending' ? 'warning text-dark' : ($b['status'] === 'refunded' ? 'info' : 'danger')) ?>">
-                                <?= ucfirst($b['status']) ?>
+                                <?= e(bookingStatusLabel($b['status'])) ?>
                             </span>
                             <?php if ($btype === 'tour' && ($b['refund_status'] ?? 'none') === 'requested'): ?>
-                                <span class="badge bg-warning text-dark" data-testid="refund-requested-<?= $b['id'] ?>"><i class="bi bi-cash-coin"></i> Refund</span>
+                                <span class="badge bg-warning text-dark" data-testid="refund-requested-<?= $b['id'] ?>"><i class="bi bi-cash-coin"></i> <?= t('Refund') ?></span>
                             <?php elseif ($btype === 'tour' && ($b['refund_status'] ?? 'none') === 'approved'): ?>
                                 <span class="badge bg-info"><?= t('Refund') ?> <?= formatRupiah((float)($b['refund_amount'] ?? 0)) ?></span>
                             <?php elseif ($btype === 'tour' && ($b['refund_status'] ?? 'none') === 'rejected'): ?>
@@ -348,7 +349,7 @@ require_once 'includes/admin-header.php';
                                 </ul>
                             </div>
                             <button class="btn btn-sm btn-outline-secondary mt-1" data-bs-toggle="modal" data-bs-target="#noteModal<?= $b['id'] ?>" title="<?= t('Catatan internal') ?>"><i class="bi bi-sticky"></i></button>
-                            <a href="bookings.php?delete=<?= $b['id'] ?>&type=<?= $btype ?>" class="btn btn-sm btn-danger mt-1" onclick="return confirm('Hapus booking ini?')"><i class="bi bi-trash"></i></a>
+                            <a href="bookings.php?delete=<?= $b['id'] ?>&type=<?= $btype ?>" class="btn btn-sm btn-danger mt-1" onclick="return confirm('<?= t('Hapus booking ini?') ?>')"><i class="bi bi-trash"></i></a>
                             <!-- Modal catatan internal -->
                             <div class="modal fade" id="noteModal<?= $b['id'] ?>" tabindex="-1">
                               <div class="modal-dialog modal-sm">

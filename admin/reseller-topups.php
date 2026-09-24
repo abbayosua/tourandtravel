@@ -79,15 +79,15 @@ $stmt = db()->prepare($sql);
 $stmt->execute($params);
 $topups = $stmt->fetchAll();
 
-$pageTitle = 'Topup Reseller';
+$pageTitle = t('Topup Reseller');
 require_once 'includes/admin-header.php';
 ?>
 
-<h4 class="fw-bold mb-3"><i class="bi bi-wallet2 me-2"></i>Topup Reseller</h4>
+<h4 class="fw-bold mb-3"><i class="bi bi-wallet2 me-2"></i><?= t('Topup Reseller') ?></h4>
 
 <?php if (isset($_GET['msg'])): ?>
     <div class="alert alert-<?= $_GET['msg'] === 'approved' ? 'success' : 'warning' ?> py-2">
-        Topup berhasil di-<?= $_GET['msg'] ?>.
+        <?= sprintf(t('Topup berhasil di-%s.'), e($_GET['msg'])) ?>
     </div>
 <?php endif; ?>
 
@@ -96,17 +96,17 @@ require_once 'includes/admin-header.php';
     <?php if ($filterUser): ?><input type="hidden" name="user_id" value="<?= $filterUser ?>"><?php endif; ?>
     <div class="col-md-3">
         <select name="status" class="form-select form-select-sm">
-            <option value="">Semua Status</option>
-            <option value="pending" <?= $filterStatus === 'pending' ? 'selected' : '' ?>>Pending</option>
-            <option value="approved" <?= $filterStatus === 'approved' ? 'selected' : '' ?>>Approved</option>
-            <option value="rejected" <?= $filterStatus === 'rejected' ? 'selected' : '' ?>>Rejected</option>
+            <option value=""><?= t('Semua Status') ?></option>
+            <option value="pending" <?= $filterStatus === 'pending' ? 'selected' : '' ?>><?= t('Pending') ?></option>
+            <option value="approved" <?= $filterStatus === 'approved' ? 'selected' : '' ?>><?= t('Approved') ?></option>
+            <option value="rejected" <?= $filterStatus === 'rejected' ? 'selected' : '' ?>><?= t('Rejected') ?></option>
         </select>
     </div>
-    <div class="col-md-2"><button class="btn btn-sm btn-primary">Filter</button></div>
+    <div class="col-md-2"><button class="btn btn-sm btn-primary"><?= t('Filter') ?></button></div>
 </form>
 
 <?php if (empty($topups)): ?>
-<div class="card border-0 shadow-sm"><div class="card-body text-center text-muted py-5">Tidak ada data topup.</div></div>
+<div class="card border-0 shadow-sm"><div class="card-body text-center text-muted py-5"><?= t('Tidak ada data topup.') ?></div></div>
 <?php else: ?>
 <?php foreach ($topups as $t): ?>
 <div class="card border-0 shadow-sm mb-3">
@@ -119,7 +119,7 @@ require_once 'includes/admin-header.php';
                     <span class="text-capitalize"><?= str_replace('_', ' ', $t['payment_method']) ?></span> · <?= date('d M Y H:i', strtotime($t['created_at'])) ?>
                 </div>
                 <?php if ($t['proof_path']): ?>
-                    <a href="../<?= e($t['proof_path']) ?>" target="_blank" class="btn btn-sm btn-outline-secondary mt-1"><i class="bi bi-image me-1"></i>Lihat Bukti</a>
+                    <a href="../<?= e($t['proof_path']) ?>" target="_blank" class="btn btn-sm btn-outline-secondary mt-1"><i class="bi bi-image me-1"></i><?= t('Lihat Bukti') ?></a>
                 <?php endif; ?>
                 <?php if ($t['admin_note']): ?>
                     <div class="small text-muted mt-1"><i class="bi bi-sticky"></i> <?= e($t['admin_note']) ?></div>
@@ -133,21 +133,21 @@ require_once 'includes/admin-header.php';
                     default => 'bg-warning text-dark',
                 };
                 ?>
-                <span class="badge <?= $badge ?> mb-2"><?= ucfirst($t['status']) ?></span>
+                <span class="badge <?= $badge ?> mb-2"><?= e(bookingStatusLabel($t['status'])) ?></span>
 
                 <?php if ($t['status'] === 'pending'): ?>
                 <div class="d-flex gap-1 mt-1">
                     <form method="POST" class="d-inline">
                         <input type="hidden" name="topup_id" value="<?= $t['id'] ?>">
                         <input type="hidden" name="action" value="approved">
-                        <input type="text" name="admin_note" class="form-control form-control-sm mb-1" placeholder="Catatan (opsional)" style="width:150px">
-                        <button type="submit" class="btn btn-sm btn-success"><i class="bi bi-check-lg"></i> Approve</button>
+                        <input type="text" name="admin_note" class="form-control form-control-sm mb-1" placeholder="<?= t('Catatan (opsional)') ?>" style="width:150px">
+                        <button type="submit" class="btn btn-sm btn-success"><i class="bi bi-check-lg"></i><?= t('Approve') ?></button>
                     </form>
                     <form method="POST" class="d-inline">
                         <input type="hidden" name="topup_id" value="<?= $t['id'] ?>">
                         <input type="hidden" name="action" value="rejected">
-                        <input type="text" name="admin_note" class="form-control form-control-sm mb-1" placeholder="Alasan (opsional)" style="width:150px">
-                        <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-x-lg"></i> Reject</button>
+                        <input type="text" name="admin_note" class="form-control form-control-sm mb-1" placeholder="<?= t('Alasan (opsional)') ?>" style="width:150px">
+                        <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-x-lg"></i><?= t('Reject') ?></button>
                     </form>
                 </div>
                 <?php endif; ?>

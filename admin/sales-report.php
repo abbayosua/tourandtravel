@@ -97,7 +97,7 @@ require_once 'includes/admin-header.php';
                 <select name="status" class="form-select form-select-sm" data-testid="filter-status">
                     <option value=""><?= t('Semua') ?></option>
                     <?php foreach (['pending', 'confirmed', 'cancelled', 'refunded'] as $s): ?>
-                    <option value="<?= $s ?>" <?= $status === $s ? 'selected' : '' ?>><?= ucfirst(t($s)) ?></option>
+                    <option value="<?= $s ?>" <?= $status === $s ? 'selected' : '' ?>><?= e(bookingStatusLabel($s)) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
