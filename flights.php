@@ -236,6 +236,7 @@ require_once 'includes/header-shared.php';
 <?php if (!$doSearch): require __DIR__ . '/includes/homepage/flight-hero.php'; endif; ?>
 
 <?php if ($doSearch): ?>
+<div class="voyage-spreader"></div>
 <section class="py-4 bg-light" style="min-height:60vh;">
     <div class="container">
         <div class="row">
