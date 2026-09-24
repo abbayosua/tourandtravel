@@ -1,6 +1,7 @@
 <?php
 /**
- * Flight Hero - Voyage dark liquid-glass ala referensi Liquid-Glass-Hero-Tiket.
+ * Flight Hero - Voyage liquid-glass ikut sistem tema (light default ala
+ * hotels.php, dark saat [data-theme="dark"] via toggle #themeToggle).
  * Header tetap (header-shared). Hero text ikut gaya hotels/landing:
  * voyage-title serif accent + voyage-sub + voyage-search pill.
  * Form GET kompatibel flights.php: trip_type/from/to/date/return_date/
@@ -22,63 +23,88 @@ $fhBg = ($heroSlides[0]['image'] ?? '') ?: 'https://images.unsplash.com/photo-14
 
 ?>
 <style>
-.voyage-flight-hero{background:#05070D;color:#fff;overflow:clip}
-.voyage-flight-hero .voyage-bg{position:absolute;inset:0}
-.voyage-flight-hero .voyage-bg-img{opacity:.5}
-.voyage-flight-hero .voyage-bg-grad{background:linear-gradient(180deg,rgba(5,7,13,.55) 0%,rgba(5,7,13,.35) 40%,rgba(5,7,13,.88) 100%)}
-.voyage-flight-hero .voyage-bg-glow{background:none;opacity:1}
+.voyage-flight-hero{overflow:clip}
 .voyage-flight-hero .fh-aurora{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none}
-.voyage-flight-hero .fh-aurora-a{top:-30%;left:-20%;width:80%;height:80%;opacity:.35;background:radial-gradient(60% 60% at 50% 50%,#7DD3FC 0%,#38BDF8 20%,transparent 70%);animation:fhAurora 18s ease-in-out infinite}
-.voyage-flight-hero .fh-aurora-b{top:-20%;right:-10%;width:70%;height:70%;opacity:.3;background:radial-gradient(60% 60% at 50% 50%,#A78BFA 0%,#8B5CF6 25%,transparent 70%);animation:fhAurora 22s ease-in-out infinite reverse}
-.voyage-flight-hero .fh-aurora-c{top:30%;left:10%;width:60%;height:50%;opacity:.2;background:radial-gradient(60% 60% at 50% 50%,#7DD3FC 0%,#A78BFA 40%,transparent 70%)}
+.voyage-flight-hero .fh-aurora-a{top:-30%;left:-20%;width:80%;height:80%;opacity:.25;background:radial-gradient(60% 60% at 50% 50%,#7DD3FC 0%,#38BDF8 20%,transparent 70%);animation:fhAurora 18s ease-in-out infinite}
+.voyage-flight-hero .fh-aurora-b{top:-20%;right:-10%;width:70%;height:70%;opacity:.2;background:radial-gradient(60% 60% at 50% 50%,#A78BFA 0%,#8B5CF6 25%,transparent 70%);animation:fhAurora 22s ease-in-out infinite reverse}
+.voyage-flight-hero .fh-aurora-c{top:30%;left:10%;width:60%;height:50%;opacity:.14;background:radial-gradient(60% 60% at 50% 50%,#7DD3FC 0%,#A78BFA 40%,transparent 70%)}
 @keyframes fhAurora{0%,100%{transform:translate(-10%,-10%) scale(1)}50%{transform:translate(5%,5%) scale(1.1)}}
 .voyage-flight-hero .voyage-inner{padding-top:150px;padding-bottom:8px}
-.voyage-flight-hero .voyage-title{color:#fff}
-.voyage-flight-hero .voyage-title-accent{color:#fff}
-.voyage-flight-hero .voyage-sub{color:rgba(255,255,255,.65);max-width:560px}
-.voyage-flight-hero .voyage-proof-rate{color:#fff}
-.voyage-flight-hero .voyage-proof-sub{color:rgba(255,255,255,.5)}
-.voyage-flight-hero .flight-glass{position:relative;max-width:1000px;background:linear-gradient(180deg,rgba(255,255,255,.12) 0%,rgba(255,255,255,.04) 100%);backdrop-filter:blur(40px) saturate(160%);-webkit-backdrop-filter:blur(40px) saturate(160%);border:1px solid rgba(255,255,255,.16);border-radius:24px;box-shadow:inset 0 1px 0 0 rgba(255,255,255,.18),inset 0 -1px 0 0 rgba(255,255,255,.04),0 20px 60px -20px rgba(125,211,252,.3),0 0 80px rgba(167,139,250,.15);padding:0;overflow:hidden}
-.voyage-flight-hero .flight-glass::before{content:'';position:absolute;top:0;left:1px;right:1px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5) 20%,rgba(255,255,255,.8) 50%,rgba(255,255,255,.5) 80%,transparent);z-index:3;pointer-events:none}
-.voyage-flight-hero .booking-tabs{display:flex;gap:4px;padding:18px 22px 0;border-bottom:1px solid rgba(255,255,255,.1);overflow-x:auto;scrollbar-width:none}
+.voyage-flight-hero .voyage-sub{max-width:560px}
+.voyage-flight-hero .flight-glass{position:relative;max-width:1000px;background:rgba(255,255,255,.72);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(13,110,253,.18);border-radius:24px;box-shadow:0 12px 40px rgba(13,110,253,.14),inset 0 1px 0 rgba(255,255,255,.9);padding:0;overflow:hidden}
+.voyage-flight-hero .flight-glass::before{content:'';position:absolute;top:0;left:1px;right:1px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.9) 20%,#fff 50%,rgba(255,255,255,.9) 80%,transparent);z-index:3;pointer-events:none}
+.voyage-flight-hero .booking-tabs{display:flex;gap:4px;padding:18px 22px 0;border-bottom:1px solid #E4E7EE;overflow-x:auto;scrollbar-width:none}
 .voyage-flight-hero .booking-tabs::-webkit-scrollbar{display:none}
-.voyage-flight-hero .booking-tab{display:flex;align-items:center;gap:7px;padding:10px 18px 12px;font-size:14px;font-weight:600;color:rgba(255,255,255,.55);text-decoration:none;white-space:nowrap;border-bottom:2.5px solid transparent}
-.voyage-flight-hero .booking-tab:hover{color:#fff}
-.voyage-flight-hero .booking-tab.active{color:#7DD3FC;border-bottom-color:#7DD3FC}
+.voyage-flight-hero .booking-tab{display:flex;align-items:center;gap:7px;padding:10px 18px 12px;font-size:14px;font-weight:600;color:#8B90A0;text-decoration:none;white-space:nowrap;border-bottom:2.5px solid transparent}
+.voyage-flight-hero .booking-tab:hover{color:#1A1A2E}
+.voyage-flight-hero .booking-tab.active{color:#0064D2;border-bottom-color:#0064D2}
 .voyage-flight-hero .booking-form{padding:20px 22px 22px}
 .voyage-flight-hero .form-row-options{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
-.voyage-flight-hero .trip-type-group{display:flex;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:3px;gap:2px}
-.voyage-flight-hero .trip-type-btn{padding:7px 16px;border:0;background:transparent;font-size:13px;font-weight:600;color:rgba(255,255,255,.6);border-radius:100px;cursor:pointer;white-space:nowrap}
-.voyage-flight-hero .trip-type-btn.active{background:rgba(255,255,255,.14);color:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3)}
-.voyage-flight-hero .custom-select{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:100px;font-size:13px;color:rgba(255,255,255,.75);cursor:pointer}
-.voyage-flight-hero .custom-select svg{width:14px;height:14px;opacity:.6}
-.voyage-flight-hero .custom-select select{appearance:none;-webkit-appearance:none;border:0;background:transparent;font-size:13px;color:#fff;cursor:pointer;outline:0}
-.voyage-flight-hero .custom-select select option{color:#111}
-.voyage-flight-hero .form-search-row{display:flex;align-items:stretch;gap:0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;transition:border-color .2s}
-.voyage-flight-hero .form-search-row:focus-within{border-color:rgba(125,211,252,.5);box-shadow:0 0 0 3px rgba(125,211,252,.15)}
-.voyage-flight-hero .search-field{flex:1;display:flex;flex-direction:column;justify-content:center;padding:12px 18px;border-right:1px solid rgba(255,255,255,.1);min-width:0;position:relative}
+.voyage-flight-hero .trip-type-group{display:flex;background:#F5F7FA;border:1px solid #E4E7EE;border-radius:100px;padding:3px;gap:2px}
+.voyage-flight-hero .trip-type-btn{padding:7px 16px;border:0;background:transparent;font-size:13px;font-weight:600;color:#5A6178;border-radius:100px;cursor:pointer;white-space:nowrap}
+.voyage-flight-hero .trip-type-btn.active{background:#fff;color:#0064D2;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.voyage-flight-hero .custom-select{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:#F5F7FA;border:1px solid #E4E7EE;border-radius:100px;font-size:13px;color:#5A6178;cursor:pointer}
+.voyage-flight-hero .custom-select svg{width:14px;height:14px;color:#8B90A0}
+.voyage-flight-hero .custom-select select{appearance:none;-webkit-appearance:none;border:0;background:transparent;font-size:13px;color:#1A1A2E;cursor:pointer;outline:0}
+.voyage-flight-hero .form-search-row{display:flex;align-items:stretch;gap:0;background:#F5F7FA;border:1.5px solid #E4E7EE;border-radius:16px;transition:border-color .2s}
+.voyage-flight-hero .form-search-row:focus-within{border-color:#0064D2;box-shadow:0 0 0 3px rgba(0,100,210,.08)}
+.voyage-flight-hero .search-field{flex:1;display:flex;flex-direction:column;justify-content:center;padding:12px 18px;border-right:1px solid #E4E7EE;min-width:0;position:relative}
 .voyage-flight-hero .search-field:last-of-type{border-right:0}
-.voyage-flight-hero .search-field-label{font-size:11px;font-weight:600;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;display:flex;align-items:center;gap:5px}
-.voyage-flight-hero .search-field-label svg{width:13px;height:13px;color:#7DD3FC}
-.voyage-flight-hero .search-field input{border:0;background:transparent;font-size:14px;font-weight:600;color:#fff;width:100%;outline:0}
-.voyage-flight-hero .search-field input::placeholder{color:rgba(255,255,255,.4);font-weight:500}
-.voyage-flight-hero .search-field input[type=date]{color-scheme:dark}
-.voyage-flight-hero .search-dropdown{position:absolute;top:calc(100% + 6px);left:0;right:0;background:rgba(13,18,32,.97);border:1px solid rgba(255,255,255,.14);border-radius:14px;z-index:300;display:none;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.voyage-flight-hero .search-field-label{font-size:11px;font-weight:600;color:#8B90A0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;display:flex;align-items:center;gap:5px}
+.voyage-flight-hero .search-field-label svg{width:13px;height:13px;color:#0064D2}
+.voyage-flight-hero .search-field input{border:0;background:transparent;font-size:14px;font-weight:600;color:#1A1A2E;width:100%;outline:0}
+.voyage-flight-hero .search-field input::placeholder{color:#5A6178;font-weight:500}
+.voyage-flight-hero #flightCalHint{color:#0064D2}
+.voyage-flight-hero #multiCityLegs .form-text{color:#6d7d99}
+.voyage-flight-hero .search-dropdown{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid #E4E7EE;border-radius:14px;z-index:300;display:none;overflow:hidden;box-shadow:0 20px 60px rgba(13,110,253,.18)}
 .voyage-flight-hero .search-dropdown.show{display:block}
-.voyage-flight-hero .search-dropdown .search-item{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;color:#fff;font-size:13px}
-.voyage-flight-hero .search-dropdown .search-item:hover{background:rgba(125,211,252,.12)}
-.voyage-flight-hero .swap-btn{flex:none;align-self:center;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:50%;width:38px;height:38px;margin:0 4px;cursor:pointer;color:#7DD3FC;display:flex;align-items:center;justify-content:center}
+.voyage-flight-hero .search-dropdown .search-item{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;color:#1A1A2E;font-size:13px}
+.voyage-flight-hero .search-dropdown .search-item:hover{background:rgba(13,110,253,.08)}
+.voyage-flight-hero .swap-btn{flex:none;align-self:center;background:#fff;border:1px solid #E4E7EE;border-radius:50%;width:38px;height:38px;margin:0 4px;cursor:pointer;color:#0064D2;display:flex;align-items:center;justify-content:center}
 .voyage-flight-hero .swap-btn-inner svg{width:16px;height:16px}
-.voyage-flight-hero .search-btn{flex:none;align-self:stretch;margin:8px;border:0;border-radius:12px;padding:0 26px;font-size:14px;font-weight:700;color:#05070D;background:linear-gradient(135deg,#7DD3FC,#A78BFA);cursor:pointer;display:flex;align-items:center;gap:8px;justify-content:center;box-shadow:0 8px 24px rgba(125,211,252,.35)}
+.voyage-flight-hero .search-btn{flex:none;align-self:stretch;margin:8px;border:0;border-radius:12px;padding:0 26px;font-size:14px;font-weight:700;color:#fff;background:#0d6efd;cursor:pointer;display:flex;align-items:center;gap:8px;justify-content:center;box-shadow:0 8px 24px rgba(13,110,253,.35)}
 .voyage-flight-hero .search-btn svg{width:16px;height:16px}
-.voyage-flight-hero .search-btn:hover{filter:brightness(1.08)}
-.voyage-flight-hero #multiCityLegs .form-text{color:rgba(255,255,255,.45)}
-.voyage-flight-hero #multiCityLegs input{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:#fff}
-.voyage-flight-hero #multiCityLegs input::placeholder{color:rgba(255,255,255,.4)}
+.voyage-flight-hero .search-btn:hover{background:#0b5ed7}
 .voyage-flight-hero .voyage-chips{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}
-.voyage-flight-hero .voyage-chips a{padding:8px 18px;border-radius:999px;font-size:13px;font-weight:500;text-decoration:none;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.75);backdrop-filter:blur(12px)}
-.voyage-flight-hero .voyage-chips a:hover{background:rgba(255,255,255,.12);color:#fff}
-@media(max-width:768px){.voyage-flight-hero .form-search-row{flex-direction:column}.voyage-flight-hero .search-field{border-right:0;border-bottom:1px solid rgba(255,255,255,.1)}.voyage-flight-hero .search-btn{margin:8px;min-height:48px}.voyage-flight-hero .swap-btn{transform:rotate(90deg)}}
+.voyage-flight-hero .voyage-chips a{padding:8px 18px;border-radius:999px;font-size:13px;font-weight:500;text-decoration:none;background:rgba(255,255,255,.7);border:1px solid rgba(13,110,253,.18);color:#33465f;backdrop-filter:blur(12px)}
+.voyage-flight-hero .voyage-chips a:hover{background:#fff;color:#0d1b33}
+[data-theme="dark"] .voyage-flight-hero .fh-aurora-a{opacity:.35}
+[data-theme="dark"] .voyage-flight-hero .fh-aurora-b{opacity:.3}
+[data-theme="dark"] .voyage-flight-hero .fh-aurora-c{opacity:.2}
+[data-theme="dark"] .voyage-flight-hero .flight-glass{background:linear-gradient(180deg,rgba(255,255,255,.12) 0%,rgba(255,255,255,.04) 100%);border-color:rgba(255,255,255,.16);box-shadow:inset 0 1px 0 0 rgba(255,255,255,.18),inset 0 -1px 0 0 rgba(255,255,255,.04),0 20px 60px -20px rgba(125,211,252,.3),0 0 80px rgba(167,139,250,.15)}
+[data-theme="dark"] .voyage-flight-hero .flight-glass::before{background:linear-gradient(90deg,transparent,rgba(255,255,255,.5) 20%,rgba(255,255,255,.8) 50%,rgba(255,255,255,.5) 80%,transparent)}
+[data-theme="dark"] .voyage-flight-hero .booking-tabs{border-color:rgba(255,255,255,.1)}
+[data-theme="dark"] .voyage-flight-hero .booking-tab{color:rgba(255,255,255,.55)}
+[data-theme="dark"] .voyage-flight-hero .booking-tab:hover{color:#fff}
+[data-theme="dark"] .voyage-flight-hero .booking-tab.active{color:#7DD3FC;border-bottom-color:#7DD3FC}
+[data-theme="dark"] .voyage-flight-hero .trip-type-group{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1)}
+[data-theme="dark"] .voyage-flight-hero .trip-type-btn{color:rgba(255,255,255,.6)}
+[data-theme="dark"] .voyage-flight-hero .trip-type-btn.active{background:rgba(255,255,255,.14);color:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+[data-theme="dark"] .voyage-flight-hero .custom-select{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.75)}
+[data-theme="dark"] .voyage-flight-hero .custom-select svg{color:rgba(255,255,255,.6)}
+[data-theme="dark"] .voyage-flight-hero .custom-select select{color:#fff}
+[data-theme="dark"] .voyage-flight-hero .custom-select select option{color:#111}
+[data-theme="dark"] .voyage-flight-hero .form-search-row{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1)}
+[data-theme="dark"] .voyage-flight-hero .form-search-row:focus-within{border-color:rgba(125,211,252,.5);box-shadow:0 0 0 3px rgba(125,211,252,.15)}
+[data-theme="dark"] .voyage-flight-hero .search-field{border-color:rgba(255,255,255,.1)}
+[data-theme="dark"] .voyage-flight-hero .search-field-label{color:rgba(255,255,255,.5)}
+[data-theme="dark"] .voyage-flight-hero .search-field-label svg{color:#7DD3FC}
+[data-theme="dark"] .voyage-flight-hero .search-field input{color:#fff}
+[data-theme="dark"] .voyage-flight-hero .search-field input::placeholder{color:rgba(255,255,255,.4)}
+[data-theme="dark"] .voyage-flight-hero .search-field input[type=date]{color-scheme:dark}
+[data-theme="dark"] .voyage-flight-hero #flightCalHint{color:#7DD3FC}
+[data-theme="dark"] .voyage-flight-hero #multiCityLegs .form-text{color:rgba(255,255,255,.45)}
+[data-theme="dark"] .voyage-flight-hero #multiCityLegs input{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.14);color:#fff}
+[data-theme="dark"] .voyage-flight-hero #multiCityLegs input::placeholder{color:rgba(255,255,255,.4)}
+[data-theme="dark"] .voyage-flight-hero .search-dropdown{background:rgba(13,18,32,.97);border-color:rgba(255,255,255,.14);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+[data-theme="dark"] .voyage-flight-hero .search-dropdown .search-item{color:#fff}
+[data-theme="dark"] .voyage-flight-hero .search-dropdown .search-item:hover{background:rgba(125,211,252,.12)}
+[data-theme="dark"] .voyage-flight-hero .swap-btn{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.14);color:#7DD3FC}
+[data-theme="dark"] .voyage-flight-hero .search-btn{color:#05070D;background:linear-gradient(135deg,#7DD3FC,#A78BFA);box-shadow:0 8px 24px rgba(125,211,252,.35)}
+[data-theme="dark"] .voyage-flight-hero .search-btn:hover{filter:brightness(1.08)}
+[data-theme="dark"] .voyage-flight-hero .voyage-chips a{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12);color:rgba(255,255,255,.75)}
+[data-theme="dark"] .voyage-flight-hero .voyage-chips a:hover{background:rgba(255,255,255,.12);color:#fff}
+@media(max-width:768px){.voyage-flight-hero .form-search-row{flex-direction:column}.voyage-flight-hero .search-field{border-right:0;border-bottom:1px solid #E4E7EE}.voyage-flight-hero .search-btn{margin:8px;min-height:48px}.voyage-flight-hero .swap-btn{transform:rotate(90deg)}}
 </style>
 <section class="voyage-hero voyage-flight-hero">
     <div class="voyage-bg">
@@ -138,7 +164,7 @@ $fhBg = ($heroSlides[0]['image'] ?? '') ?: 'https://images.unsplash.com/photo-14
                             </div>
                             <?php endforeach; endif; ?>
                         </div>
-                        <button type="button" class="btn btn-sm btn-outline-light" id="addLegBtn" data-testid="add-leg"><i class="bi bi-plus-lg me-1"></i><?= t('Tambah leg') ?></button>
+                        <button type="button" class="btn btn-sm btn-outline-primary" id="addLegBtn" data-testid="add-leg"><i class="bi bi-plus-lg me-1"></i><?= t('Tambah leg') ?></button>
                         <div class="form-text"><?= t('Maksimal 6 leg.') ?></div>
                     </div>
                     <div class="form-search-row">
@@ -161,7 +187,7 @@ $fhBg = ($heroSlides[0]['image'] ?? '') ?: 'https://images.unsplash.com/photo-14
                             <span class="search-field-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> <?= $fhTripType === 'roundtrip' ? t('Tanggal Pergi') : t('Tanggal') ?></span>
                             <input type="date" name="date" value="<?= e($fhDate) ?>" min="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d', strtotime('+360 days')) ?>">
                             <?php if (!empty($fhCal)): ?>
-                            <div class="small fw-semibold mt-1 d-none" id="flightCalHint" data-testid="flight-cal-hint" style="color:#7DD3FC"></div>
+                            <div class="small fw-semibold mt-1 d-none" id="flightCalHint" data-testid="flight-cal-hint"></div>
                             <?php endif; ?>
                         </div>
                         <button class="search-btn" type="submit" name="search" value="1">
