@@ -2,6 +2,7 @@
 require_once 'includes/config.php';
 require_once 'includes/db.php';
 require_once 'includes/functions.php';
+require_once 'includes/components/date-picker.php';
 
 if (!isLoggedIn()) {
     header('Location: login.php?redirect=my-profiles.php');
@@ -115,7 +116,7 @@ require_once 'includes/header-shared.php';
                                 </div>
                                 <div class="col-6">
                                     <label class="form-label small fw-semibold"><?= t('Tanggal Lahir') ?></label>
-                                    <input type="date" name="dob" class="form-control" value="<?= e($editProfile['dob'] ?? '') ?>">
+                                    <?php renderDatePicker(['name' => 'dob', 'value' => $editProfile['dob'] ?? '', 'bare' => true]); ?>
                                 </div>
                             </div>
                             <div class="mb-3">

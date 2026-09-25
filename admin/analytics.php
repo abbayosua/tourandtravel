@@ -43,8 +43,8 @@ require_once __DIR__ . '/includes/admin-header.php';
 
 <form method="GET" class="row g-2 align-items-end mb-4">
     <input type="hidden" name="type" value="<?= e($vertFilter) ?>">
-    <div class="col-auto"><label class="form-label small mb-0"><?= t('Dari') ?></label><input type="date" name="from" class="form-control form-control-sm" value="<?= e($from) ?>"></div>
-    <div class="col-auto"><label class="form-label small mb-0"><?= t('Sampai') ?></label><input type="date" name="to" class="form-control form-control-sm" value="<?= e($to) ?>"></div>
+    <div class="col-auto"><?php renderDatePicker(['name' => 'from', 'value' => $from, 'label' => t('Dari'), 'cls' => 'form-control form-control-sm']); ?></div>
+    <div class="col-auto"><?php renderDatePicker(['name' => 'to', 'value' => $to, 'label' => t('Sampai'), 'cls' => 'form-control form-control-sm']); ?></div>
     <div class="col-auto"><button class="btn btn-sm btn-primary"><?= t('Filter') ?></button></div>
 </form>
 

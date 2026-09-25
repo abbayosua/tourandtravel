@@ -2,6 +2,7 @@
 require_once 'includes/config.php';
 require_once 'includes/db.php';
 require_once 'includes/functions.php';
+require_once 'includes/components/date-picker.php';
 require_once 'includes/seo.php';
 require_once 'includes/hotelapi.php';
 
@@ -626,11 +627,11 @@ require_once 'includes/header-shared.php';
                             </div>
                             <div class="mb-2">
                                 <label class="form-label small"><?= t('Check-in') ?></label>
-                                <input type="text" name="checkin" class="form-control flatpickr-hotel" value="<?= e($checkin) ?>" data-input="checkin" readonly>
+                                <?php renderDatePicker(['name' => 'checkin', 'value' => $checkin, 'cls' => 'form-control', 'bare' => true, 'prices' => $hotelCalendar, 'priceBase' => 'avg', 'onChange' => 'updateTotal']); ?>
                             </div>
                             <div class="mb-2">
                                 <label class="form-label small"><?= t('Check-out') ?></label>
-                                <input type="text" name="checkout" class="form-control flatpickr-hotel" value="<?= e($checkout) ?>" data-input="checkout" readonly>
+                                <?php renderDatePicker(['name' => 'checkout', 'value' => $checkout, 'cls' => 'form-control', 'bare' => true, 'prices' => $hotelCalendar, 'priceBase' => 'avg', 'onChange' => 'updateTotal']); ?>
                             </div>
                             <div class="row g-2 mb-3">
                                 <div class="col-6">
@@ -768,55 +769,7 @@ require_once 'includes/header-shared.php';
                                 sel.addEventListener('change', updateTotal);
                                 document.getElementById('guestsSelect').addEventListener('change', syncRoomUI);
                             }
-                            // Initialize flatpickr for hotel date range
-                            if (typeof flatpickr !== 'undefined') {
-                                var hotelDatepickers = document.querySelectorAll('.flatpickr-hotel');
-                                if (hotelDatepickers.length === 2) {
-                                    var hotelAvgPrice = HOTEL_CAL.length > 0 ? HOTEL_CAL.reduce(function(a, b) { return a + b.price; }, 0) / HOTEL_CAL.length : pricePerNight;
-                                    flatpickr(hotelDatepickers[0], {
-                                        inline: true,
-                                        showMonths: 2,
-                                        dateFormat: 'Y-m-d',
-                                        minDate: 'today',
-                                        maxDate: new Date(new Date().setMonth(new Date().getMonth() + 6)),
-                                        onChange: function(selectedDates, dateStr) {
-                                            checkinInput.value = dateStr;
-                                            if (selectedDates[1]) {
-                                                checkoutInput.value = flatpickr.formatDate(selectedDates[1], 'Y-m-d');
-                                            }
-                                            updateTotal();
-                                        },
-                                        onDayCreate: function(dObj, dStr, fp, dayElem) {
-                                            var dateStr = dayElem.dateObj.toISOString().split('T')[0];
-                                            var cal = HOTEL_CAL.find(function(r) { return r.date === dateStr; });
-                                            if (cal) {
-                                                dayElem.style.color = cal.price <= hotelAvgPrice ? '#198754' : '#dc3545';
-                                                dayElem.title = 'Rp ' + cal.price.toLocaleString('id-ID') + '/malam';
-                                            }
-                                        }
-                                    });
-                                    flatpickr(hotelDatepickers[1], {
-                                        inline: true,
-                                        showMonths: 2,
-                                        dateFormat: 'Y-m-d',
-                                        minDate: 'today',
-                                        maxDate: new Date(new Date().setMonth(new Date().getMonth() + 6)),
-                                        onChange: function(selectedDates, dateStr) {
-                                            checkoutInput.value = dateStr;
-                                            updateTotal();
-                                        },
-                                        onDayCreate: function(dObj, dStr, fp, dayElem) {
-                                            var dateStr = dayElem.dateObj.toISOString().split('T')[0];
-                                            var cal = HOTEL_CAL.find(function(r) { return r.date === dateStr; });
-                                            if (cal) {
-                                                dayElem.style.color = cal.price <= hotelAvgPrice ? '#198754' : '#dc3545';
-                                                dayElem.title = 'Rp ' + cal.price.toLocaleString('id-ID') + '/malam';
-                                            }
-                                        }
-                                    });
-                                }
-                            }
-                        });
+                            // Date picker ditangani komponen date-picker (onChange updateTotal).
                         document.querySelectorAll('.room-select-btn').forEach(function(btn) {
                             btn.addEventListener('click', function() {
                                 var roomId = btn.dataset.room;

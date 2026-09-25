@@ -8,6 +8,7 @@
  * Field legacy dipertahankan: from/to/date/return_date/passengers/class/search,
  * tripTypeHidden + trip-type-btn (flight), from_pid/from_spid/to_pid/to_spid (ferry).
  */
+require_once __DIR__ . '/../components/date-picker.php';
 $tsMode = $tsMode ?? 'flight';
 if (!in_array($tsMode, ['flight', 'ferry', 'train'], true)) $tsMode = 'flight';
 $isFlight = $tsMode === 'flight';
@@ -52,7 +53,7 @@ $tsChips = $tsChips ?? ($isFerry
     ? [['l' => 'Batam → Singapore', 'u' => 'ferries.php?from=Batam&to=Singapore&date=' . date('Y-m-d', strtotime('+7 days')) . '&search=1'], ['l' => 'Johor → Batam', 'u' => 'ferries.php?from=Johor&to=Batam&date=' . date('Y-m-d', strtotime('+7 days')) . '&search=1'], ['l' => 'Merak → Bakauheni', 'u' => 'ferries.php?from=Merak&to=Bakauheni&date=' . date('Y-m-d', strtotime('+7 days')) . '&search=1']]
     : ($isTrain
         ? [['l' => 'Jakarta → Bandung', 'u' => 'trains.php?from=Jakarta&to=Bandung'], ['l' => 'Jakarta → Surabaya', 'u' => 'trains.php?from=Jakarta&to=Surabaya'], ['l' => 'Yogyakarta → Jakarta', 'u' => 'trains.php?from=Yogyakarta&to=Jakarta']]
-        : [['l' => 'Jakarta → Denpasar', 'u' => 'flights.php?from=Jakarta&to=Denpasar&date=' . date('Y-m-d', strtotime('+7 days')) . '&search=1'], ['l' => 'Jakarta → Singapore', 'u' => 'flights.php?from=Jakarta&to=Singapore&date=' . date('Y-m-d', strtotime('+7 days')) . '&search=1'], ['l' => 'Jakarta → Tokyo', 'u' => 'flights.php?from=Jakarta&to=Tokyo&date=' . date('Y-m-d', strtotime('+7 days')) . '&search=1']]));
+        : [['l' => 'Jakarta → Denpasar', 'u' => 'flights.php?from=' . urlencode('Jakarta (CGK)') . '&to=' . urlencode('Denpasar (DPS)') . '&date=' . date('Y-m-d') . '&search=1'], ['l' => 'Jakarta → Singapore', 'u' => 'flights.php?from=' . urlencode('Jakarta (CGK)') . '&to=' . urlencode('Singapore (SIN)') . '&date=' . date('Y-m-d') . '&search=1'], ['l' => 'Jakarta → Tokyo', 'u' => 'flights.php?from=' . urlencode('Jakarta (CGK)') . '&to=' . urlencode('Tokyo (NRT)') . '&date=' . date('Y-m-d') . '&search=1']]));
 $tsPhFrom = $tsPhFrom ?? ($isFerry ? t('Kota atau terminal') : t('Kota atau bandara'));
 $tsPhTo = $tsPhTo ?? $tsPhFrom;
 ?>
@@ -186,7 +187,7 @@ $tsPhTo = $tsPhTo ?? $tsPhFrom;
                             <div class="row g-2 mb-2 leg-row">
                                 <div class="col-md-4"><input type="text" class="form-control form-control-sm city-search" name="leg_from[]" placeholder="<?= t('Dari (CGK)...') ?>" value="<?= e($lg['origin'] ?? '') ?>" autocomplete="off"></div>
                                 <div class="col-md-4"><input type="text" class="form-control form-control-sm city-search" name="leg_to[]" placeholder="<?= t('Ke (DPS)...') ?>" value="<?= e($lg['destination'] ?? '') ?>" autocomplete="off"></div>
-                                <div class="col-md-3"><input type="date" class="form-control form-control-sm" name="leg_date[]" value="<?= e($lg['departure_date'] ?? '') ?>" min="<?= date('Y-m-d') ?>"></div>
+                                <div class="col-md-3"><?php renderDatePicker(['name' => 'leg_date[]', 'value' => $lg['departure_date'] ?? '', 'cls' => 'form-control form-control-sm', 'min' => 'today', 'bare' => true]); ?></div>
                                 <div class="col-md-1"><button type="button" class="btn btn-sm btn-outline-danger w-100 leg-del">×</button></div>
                             </div>
                             <?php endforeach; endif; ?>
@@ -219,14 +220,14 @@ $tsPhTo = $tsPhTo ?? $tsPhFrom;
                         <?php if ($tsShowTrip): ?>
                         <div class="search-field voyage-field return-date-col" style="<?= $tsTrip === 'roundtrip' ? '' : 'display:none' ?>">
                             <span class="search-field-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> <?= t('Tanggal Pulang') ?></span>
-                            <input type="date" name="return_date" value="<?= e($tsReturn) ?>" min="<?= e($tsDate) ?>" max="<?= date('Y-m-d', strtotime('+360 days')) ?>">
+                            <?php renderDatePicker(['name' => 'return_date', 'value' => $tsReturn, 'min' => $tsDate, 'max' => date('Y-m-d', strtotime('+360 days')), 'bare' => true]); ?>
                         </div>
                         <?php endif; ?>
                         <div class="search-field voyage-field">
                             <span class="search-field-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> <?= ($tsShowTrip && $tsTrip === 'roundtrip') ? t('Tanggal Pergi') : t('Tanggal') ?></span>
-                            <input type="date" name="date" value="<?= e($tsDate) ?>" min="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d', strtotime('+360 days')) ?>">
+                            <?php renderDatePicker(['name' => 'date', 'value' => $tsDate, 'min' => 'today', 'max' => date('Y-m-d', strtotime('+360 days')), 'bare' => true, 'prices' => $tsCal, 'priceBase' => 'avg', 'resultId' => 'tsCalHint', 'resultBaseLabel' => t('Harga termurah')]); ?>
                             <?php if ($tsShowCal && !empty($tsCal)): ?>
-                            <div class="small fw-semibold mt-1 d-none" id="tsCalHint" data-testid="flight-cal-hint"></div>
+                            <div class="small fw-semibold mt-1" id="tsCalHint" data-testid="flight-cal-hint"></div>
                             <?php endif; ?>
                         </div>
                         <?php if (!$tsShowTrip): ?>
@@ -298,7 +299,7 @@ document.addEventListener('DOMContentLoaded', function () {
         row.className = 'row g-2 mb-2 leg-row';
         row.innerHTML = '<div class="col-md-4"><input type="text" class="form-control form-control-sm city-search" name="leg_from[]" placeholder="<?= t('Dari (CGK)...') ?>" value="' + (fv || '').replace(/"/g, '&quot;') + '" autocomplete="off"></div>'
             + '<div class="col-md-4"><input type="text" class="form-control form-control-sm city-search" name="leg_to[]" placeholder="<?= t('Ke (DPS)...') ?>" value="' + (tv || '').replace(/"/g, '&quot;') + '" autocomplete="off"></div>'
-            + '<div class="col-md-3"><input type="date" class="form-control form-control-sm" name="leg_date[]" value="' + (dv || '') + '" min="<?= date('Y-m-d') ?>"></div>'
+            + '<div class="col-md-3"><input type="text" class="form-control form-control-sm dp-flat" name="leg_date[]" value="' + (dv || '') + '" placeholder="YYYY-MM-DD" autocomplete="off" data-dp-mode="single" data-dp-months="1" data-dp-min="<?= date('Y-m-d') ?>"></div>'
             + '<div class="col-md-1"><button type="button" class="btn btn-sm btn-outline-danger w-100 leg-del">×</button></div>';
         legBox.appendChild(row);
         bindDel(row);
@@ -353,26 +354,6 @@ document.addEventListener('DOMContentLoaded', function () {
             if (wrapper && !wrapper.contains(e.target)) dropdown.classList.remove('show');
         });
     });
-    <?php if ($tsShowCal && !empty($tsCal)): ?>
-    var TS_CAL = <?= json_encode($tsCal) ?>;
-    function showTsCalHint() {
-        var hint = document.getElementById('tsCalHint');
-        if (!hint) return;
-        var d = form.querySelector('input[name="date"]');
-        if (!d) return;
-        var hit = null;
-        for (var i = 0; i < TS_CAL.length; i++) { if (TS_CAL[i].date === d.value) { hit = TS_CAL[i]; break; } }
-        if (hit) {
-            hint.textContent = '<?= t('Harga termurah') ?>: Rp ' + Number(hit.price).toLocaleString('id-ID');
-            hint.classList.remove('d-none');
-        } else {
-            hint.textContent = '';
-            hint.classList.add('d-none');
-        }
-    }
-    var dateInput = form.querySelector('input[name="date"]');
-    if (dateInput) dateInput.addEventListener('change', showTsCalHint);
-    showTsCalHint();
-    <?php endif; ?>
+    // Hint harga ditangani komponen date-picker via resultId tsCalHint.
 });
 </script>

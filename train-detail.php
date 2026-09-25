@@ -2,6 +2,7 @@
 require_once 'includes/config.php';
 require_once 'includes/db.php';
 require_once 'includes/functions.php';
+require_once 'includes/components/date-picker.php';
 
 $slug = $_GET['slug'] ?? '';
 $stmt = db()->prepare("SELECT * FROM trains WHERE slug = ? AND is_active = 1");
@@ -126,7 +127,7 @@ require_once 'includes/header-shared.php';
                         <input type="hidden" name="form_submitted" value="1">
                         <div class="mb-2">
                             <label class="form-label small"><?= t('Tanggal Perjalanan') ?></label>
-                            <input type="date" name="travel_date" class="form-control form-control-sm" min="<?= date('Y-m-d') ?>" required>
+                            <?php renderDatePicker(['name' => 'travel_date', 'cls' => 'form-control form-control-sm', 'min' => 'today', 'required' => true, 'bare' => true]); ?>
                         </div>
                         <div class="mb-2">
                             <label class="form-label small"><?= t('Jumlah Kursi') ?></label>

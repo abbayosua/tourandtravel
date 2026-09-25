@@ -109,11 +109,11 @@ require_once 'includes/admin-header.php';
             </div>
             <div class="col-md-2">
                 <label class="form-label small"><?= t('Berlaku Dari') ?></label>
-                <input name="valid_from" type="date" class="form-control form-control-sm" value="<?= $editItem['valid_from'] ?? date('Y-m-d') ?>">
+                <?php renderDatePicker(['name' => 'valid_from', 'value' => $editItem['valid_from'] ?? date('Y-m-d'), 'cls' => 'form-control form-control-sm', 'bare' => true]); ?>
             </div>
             <div class="col-md-2">
                 <label class="form-label small"><?= t('Berlaku Sampai') ?></label>
-                <input name="valid_until" type="date" class="form-control form-control-sm" value="<?= $editItem['valid_until'] ?? date('Y-m-d', strtotime('+1 year')) ?>">
+                <?php renderDatePicker(['name' => 'valid_until', 'value' => $editItem['valid_until'] ?? date('Y-m-d', strtotime('+1 year')), 'cls' => 'form-control form-control-sm', 'bare' => true]); ?>
             </div>
             <div class="col-md-2">
                 <label class="form-label small"><?= t('Aktif') ?></label>

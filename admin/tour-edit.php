@@ -283,11 +283,11 @@ require_once 'includes/admin-header.php';
             <form method="POST" class="row g-2 bg-light p-3 rounded">
                 <div class="col-md-3">
                     <label class="form-label small"><?= t('Tanggal Berangkat') ?></label>
-                    <input type="date" name="departure_date" class="form-control form-control-sm" required>
+                    <?php renderDatePicker(['name' => 'departure_date', 'cls' => 'form-control form-control-sm', 'required' => true, 'bare' => true]); ?>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small"><?= t('Tanggal Kembali') ?></label>
-                    <input type="date" name="return_date" class="form-control form-control-sm" required>
+                    <?php renderDatePicker(['name' => 'return_date', 'cls' => 'form-control form-control-sm', 'required' => true, 'bare' => true]); ?>
                 </div>
                 <div class="col-md-2">
                     <label class="form-label small"><?= t('Slot') ?></label>

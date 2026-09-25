@@ -21,6 +21,7 @@ try {
     }
 } catch (Throwable $e) {}
 $voyageToday = date('Y-m-d');
+require_once __DIR__ . '/../components/date-picker.php';
 ?>
 <section class="voyage-hero">
     <div class="voyage-bg">
@@ -42,7 +43,8 @@ $voyageToday = date('Y-m-d');
             <div class="voyage-field voyage-click" id="voyageWhenBtn" tabindex="0">
                 <label><?= t('Tanggal') ?></label>
                 <span class="voyage-val" id="voyageWhenVal"><?= t('Pilih tanggal') ?></span>
-                <input type="date" name="departure" id="voyageDate" min="<?= $voyageToday ?>" hidden>
+                <?php renderDatePicker(['name' => 'departure', 'id' => 'voyageDate', 'min' => $voyageToday, 'bare' => true, 'noName' => true, 'cls' => 'd-none']); ?>
+                <input type="hidden" name="departure" id="voyageDateHidden" value="">
             </div>
             <div class="voyage-div"></div>
             <div class="voyage-field voyage-click" id="voyageWhoBtn" tabindex="0">
@@ -52,14 +54,6 @@ $voyageToday = date('Y-m-d');
             <button type="submit" class="voyage-go" aria-label="<?= t('Cari') ?>">
                 <i class="bi bi-search"></i>
             </button>
-
-            <div class="voyage-pop" id="voyageDatePop">
-                <input type="date" id="voyageDatePick" min="<?= $voyageToday ?>" value="<?= $voyageToday ?>">
-                <div class="voyage-pop-foot">
-                    <span><?= t('Tanggal keberangkatan') ?></span>
-                    <button type="button" id="voyageDateOk"><?= t('Pilih') ?></button>
-                </div>
-            </div>
 
             <div class="voyage-pop voyage-pop-right" id="voyageWhoPop">
                 <?php $whoRows = [['k' => 'adults', 'l' => t('Dewasa'), 's' => '13+'], ['k' => 'children', 'l' => t('Anak'), 's' => '2-12']]; ?>
@@ -161,19 +155,19 @@ $voyageToday = date('Y-m-d');
 
 <script>
 (function(){
-var dateBtn=document.getElementById('voyageWhenBtn'),datePop=document.getElementById('voyageDatePop'),
-datePick=document.getElementById('voyageDatePick'),dateHidden=document.getElementById('voyageDate'),
-dateVal=document.getElementById('voyageWhenVal'),dateOk=document.getElementById('voyageDateOk'),
+var dateBtn=document.getElementById('voyageWhenBtn'),
+datePick=document.getElementById('voyageDate'),dateHidden=document.getElementById('voyageDateHidden'),
+dateVal=document.getElementById('voyageWhenVal'),
 whoBtn=document.getElementById('voyageWhoBtn'),whoPop=document.getElementById('voyageWhoPop'),
 whoVal=document.getElementById('voyageWhoVal'),whoOk=document.getElementById('voyageWhoOk');
 var adults=2,children=0;
 function fmt(d){try{return new Date(d+'T00:00:00').toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'})}catch(e){return d}}
-function closeAll(){datePop.classList.remove('show');whoPop.classList.remove('show')}
-dateBtn.addEventListener('click',function(e){e.stopPropagation();whoPop.classList.remove('show');datePop.classList.toggle('show')});
-whoBtn.addEventListener('click',function(e){e.stopPropagation();datePop.classList.remove('show');whoPop.classList.toggle('show')});
+function closeAll(){whoPop.classList.remove('show')}
+function syncDate(v){if(!v)return;dateHidden.value=v;dateVal.textContent=fmt(v);}
+dateBtn.addEventListener('click',function(e){e.stopPropagation();whoPop.classList.remove('show');if(datePick&&datePick._flatpickr){datePick._flatpickr.open();}else if(datePick){datePick.focus();}});
+whoBtn.addEventListener('click',function(e){e.stopPropagation();whoPop.classList.toggle('show')});
 document.addEventListener('click',function(e){if(!e.target.closest('.voyage-search'))closeAll()});
-dateOk.addEventListener('click',function(){if(datePick.value){dateHidden.value=datePick.value;dateVal.textContent=fmt(datePick.value)}closeAll()});
-datePick.addEventListener('change',function(){if(datePick.value){dateHidden.value=datePick.value;dateVal.textContent=fmt(datePick.value)}});
+if(datePick){datePick.addEventListener('dp:change',function(ev){syncDate(ev.detail&&ev.detail.date);});datePick.addEventListener('change',function(){syncDate(datePick.value);});}
 whoPop.querySelectorAll('button[data-who]').forEach(function(b){b.addEventListener('click',function(){
 var k=b.getAttribute('data-who'),d=parseInt(b.getAttribute('data-d'),10);
 if(k==='adults')adults=Math.max(1,adults+d);else children=Math.max(0,children+d);

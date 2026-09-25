@@ -2,6 +2,7 @@
 require_once 'includes/config.php';
 require_once 'includes/db.php';
 require_once 'includes/functions.php';
+require_once 'includes/components/date-picker.php';
 require_once 'includes/payments.php';
 require_once 'includes/seo.php';
 
@@ -632,7 +633,7 @@ require_once 'includes/header-shared.php';
                     <?php if (!empty($priceCalendar)): ?>
                     <div class="mb-3 p-2 rounded border bg-light" id="priceDatePicker">
                         <label class="form-label small fw-semibold mb-1" for="datePriceInput"><?= t('Cek Harga per Tanggal') ?></label>
-                        <input type="text" id="datePriceInput" class="form-control form-control-sm" placeholder="<?= t('Pilih tanggal') ?>">
+                        <?php renderDatePicker(['id' => 'datePriceInput', 'cls' => 'form-control form-control-sm', 'noName' => true, 'bare' => true, 'months' => 2, 'min' => !empty($priceCalendar) ? $priceCalendar[0]['date'] : 'today', 'prices' => $priceCalendar, 'priceBase' => (float)$tour['price'], 'priceCurrency' => $tour['price_currency'] ?? 'IDR', 'resultId' => 'datePriceResult', 'resultBaseLabel' => t('Harga normal')]); ?>
                         <div class="small mt-1" id="datePriceResult" aria-live="polite"></div>
                     </div>
                     <?php endif; ?>
@@ -981,50 +982,8 @@ function updateDots(index) {
         el.style.opacity = i === index ? '1' : '0.6';
     });
 }
-// ===== Harga per tanggal (price_calendar) =====
-var PRICE_CAL = <?= json_encode($priceCalendar) ?>;
-var PRICE_BASE = <?= (float)$tour['price'] ?>;
-var PRICE_CUR = <?= json_encode($tour['price_currency'] ?? 'IDR') ?>;
-var PRICE_CAL_LABEL = <?= json_encode(t('Harga normal')) ?>;
-function formatPriceLocal(amount, cur) {
-    var sym = { IDR: 'Rp', SGD: 'S$', USD: '$' }[cur] || cur;
-    var dec = cur === 'IDR' ? 0 : 2;
-    var loc = (window.I18N && window.I18N.locale === 'en') ? 'en-US' : 'id-ID';
-    return sym + ' ' + new Intl.NumberFormat(loc, { minimumFractionDigits: dec, maximumFractionDigits: dec }).format(amount);
-}
-function datePriceText(d) {
-    var hit = PRICE_CAL.find(function(r) { return r.date === d; });
-    if (hit) return formatPriceLocal(hit.price, PRICE_CUR);
-    return PRICE_CAL_LABEL + ' · ' + formatPriceLocal(PRICE_BASE, PRICE_CUR);
-}
+// ===== Harga per tanggal ditangani komponen date-picker (resultId datePriceResult) =====
 document.addEventListener('DOMContentLoaded', function() {
-    var input = document.getElementById('datePriceInput');
-    var out = document.getElementById('datePriceResult');
-    if (input && typeof flatpickr !== 'undefined') {
-        flatpickr(input, {
-            inline: false,
-            clickOpens: true,
-            showMonths: 2,
-            dateFormat: 'Y-m-d',
-            minDate: PRICE_CAL.length > 0 ? PRICE_CAL[0].date : 'today',
-            maxDate: new Date(new Date().setMonth(new Date().getMonth() + 3)),
-            onChange: function(selectedDates, dateStr) {
-                out.textContent = dateStr ? datePriceText(dateStr) : '';
-            },
-            onDayCreate: function(dObj, dStr, fp, dayElem) {
-                var dateStr = dayElem.dateObj.toISOString().split('T')[0];
-                var cal = PRICE_CAL.find(function(r) { return r.date === dateStr; });
-                if (cal) {
-                    dayElem.style.color = cal.price <= PRICE_BASE ? '#198754' : '#dc3545';
-                    dayElem.title = formatPriceLocal(cal.price, PRICE_CUR);
-                }
-            }
-        });
-    } else if (input && out) {
-        input.addEventListener('change', function() {
-            out.textContent = input.value ? datePriceText(input.value) : '';
-        });
-    }
     var sel = document.querySelector('select[name="tour_date_id"]');
     if (sel) {
         var hint = document.createElement('div');

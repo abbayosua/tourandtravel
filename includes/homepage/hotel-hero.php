@@ -14,6 +14,7 @@ $hotelCityV = $_GET['city'] ?? '';
 $hotelCities = [];
 try { $hotelCities = db()->query("SELECT DISTINCT city FROM hotels WHERE is_active = 1 ORDER BY city ASC LIMIT 8")->fetchAll(PDO::FETCH_COLUMN); } catch (Throwable $e) {}
 $hotelCards = array_slice($hotels ?? [], 0, 6);
+require_once __DIR__ . '/../components/date-picker.php';
 ?>
 <section class="voyage-hero voyage-hotel-hero<?= !empty($hotelSearched) ? ' is-searched' : '' ?>">
     <div class="voyage-bg">
@@ -38,14 +39,13 @@ $hotelCards = array_slice($hotels ?? [], 0, 6);
             <div class="voyage-field voyage-click" id="voyageInBtn" tabindex="0">
                 <label><?= t('Check-in') ?></label>
                 <span class="voyage-val" id="voyageInVal"><?= t('Tambah tanggal') ?></span>
-                <input type="date" name="checkin" id="voyageCheckin" value="<?= e($hotelCheckinD) ?>" min="<?= $hotelToday ?>" hidden>
             </div>
             <div class="voyage-div"></div>
             <div class="voyage-field voyage-click" id="voyageOutBtn" tabindex="0">
                 <label><?= t('Check-out') ?></label>
                 <span class="voyage-val" id="voyageOutVal"><?= t('Tambah tanggal') ?></span>
-                <input type="date" name="checkout" id="voyageCheckout" value="<?= e($hotelCheckoutD) ?>" min="<?= $hotelToday ?>" hidden>
             </div>
+            <?php renderDatePicker(['mode' => 'range', 'bare' => true, 'startName' => 'checkin', 'startId' => 'voyageCheckin', 'startValue' => $hotelCheckinD, 'endName' => 'checkout', 'endId' => 'voyageCheckout', 'endValue' => $hotelCheckoutD, 'id' => 'voyageRange', 'cls' => 'd-none', 'min' => $hotelToday, 'months' => 2]); ?>
             <div class="voyage-div"></div>
             <div class="voyage-field voyage-click" id="voyageRoomBtn" tabindex="0">
                 <label><?= t('Tamu & Kamar') ?></label>
@@ -54,22 +54,6 @@ $hotelCards = array_slice($hotels ?? [], 0, 6);
                 <input type="hidden" name="rooms" id="voyageRooms" value="<?= $hotelRoomsN ?>">
             </div>
             <button type="submit" class="voyage-go" aria-label="<?= t('Cari') ?>"><i class="bi bi-search"></i></button>
-
-            <div class="voyage-pop voyage-cal-pop" id="voyageCalPop">
-                <div class="voyage-cal-head">
-                    <button type="button" id="voyageCalPrev" aria-label="prev">&#8249;</button>
-                    <span id="voyageCalTitle"></span>
-                    <button type="button" id="voyageCalNext" aria-label="next">&#8250;</button>
-                </div>
-                <div class="voyage-cal-grid voyage-cal-dow">
-                    <span>Sn</span><span>Sl</span><span>Rb</span><span>Km</span><span>Jm</span><span>Sb</span><span>Mg</span>
-                </div>
-                <div class="voyage-cal-grid" id="voyageCalGrid"></div>
-                <div class="voyage-pop-foot">
-                    <span><?= t('Pilih rentang tanggal') ?></span>
-                    <button type="button" id="voyageCalOk"><?= t('Pilih') ?></button>
-                </div>
-            </div>
 
             <div class="voyage-pop voyage-pop-right" id="voyageRoomPop">
                 <?php $roomRows = [['k' => 'adults', 'l' => t('Dewasa'), 's' => t('Usia 13+')], ['k' => 'children', 'l' => t('Anak'), 's' => t('Usia 2-12')], ['k' => 'rooms', 'l' => t('Kamar'), 's' => t('Jumlah kamar')]]; ?>
@@ -132,31 +116,23 @@ $hotelCards = array_slice($hotels ?? [], 0, 6);
 <script>
 (function(){
 var inBtn=document.getElementById('voyageInBtn');
-var outBtn=document.getElementById('voyageOutBtn'),calPop=document.getElementById('voyageCalPop'),roomBtn=document.getElementById('voyageRoomBtn'),roomPop=document.getElementById('voyageRoomPop');
-if(!inBtn||!calPop)return;
-var inH=document.getElementById('voyageCheckin'),outH=document.getElementById('voyageCheckout'),inV=document.getElementById('voyageInVal'),outV=document.getElementById('voyageOutVal'),grid=document.getElementById('voyageCalGrid'),title=document.getElementById('voyageCalTitle');
+var outBtn=document.getElementById('voyageOutBtn'),roomBtn=document.getElementById('voyageRoomBtn'),roomPop=document.getElementById('voyageRoomPop');
+if(!inBtn||!roomPop)return;
+var inH=document.getElementById('voyageCheckin'),outH=document.getElementById('voyageCheckout'),inV=document.getElementById('voyageInVal'),outV=document.getElementById('voyageOutVal'),rangeEl=document.getElementById('voyageRange');
 var gH=document.getElementById('voyageGuests'),rH=document.getElementById('voyageRooms'),roomV=document.getElementById('voyageRoomVal');
-function p2(n){return String(n).padStart(2,'0');}function iso(d){return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());}
 function fmtS(s){try{return new Date(s+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});}catch(e){return s;}}
-function todayS(){var d=new Date();return iso(d);}
-function parseS(s){var p=(s||'').split('-');if(p.length!==3)return null;var d=new Date(+p[0],+p[1]-1,+p[2]);return isNaN(d)?null:d;}
-var ci=parseS(inH.value)||parseS(todayS()),co=parseS(outH.value)||null;
-var view=new Date(ci.getFullYear(),ci.getMonth(),1);var target='checkin';
-function syncLabel(){inV.textContent=ci?fmtS(iso(ci)):'Add date';outV.textContent=co?fmtS(iso(co)):'Add date';}
-function render(){var y=view.getFullYear(),m=view.getMonth();title.textContent=view.toLocaleDateString('en-US',{month:'long',year:'numeric'});grid.innerHTML='';var first=new Date(y,m,1).getDay();var days=new Date(y,m+1,0).getDate();var t0=todayS();for(var i=0;i<first;i++){grid.appendChild(document.createElement('span'));}for(var d=1;d<=days;d++){var dt=new Date(y,m,d);var b=document.createElement('button');b.type='button';b.textContent=d;var s=iso(dt);if(s<t0){b.disabled=true;}if(ci&&s===iso(ci)){b.classList.add('sel');}if(co&&s===iso(co)){b.classList.add('sel');}if(ci&&co&&s>iso(ci)&&s<iso(co)){b.classList.add('inrange');}(function(dd){b.addEventListener('click',function(){pick(dd);});})(dt);grid.appendChild(b);}}
-function pick(dt){var s=iso(dt);if(target==='checkin'||(ci&&co)){ci=dt;co=null;target='checkout';}else if(s>iso(ci)){co=dt;target='checkin';}else{ci=dt;co=null;target='checkout';}if(ci)inH.value=iso(ci);if(co)outH.value=iso(co);syncLabel();render();}
-function closeAll(){calPop.classList.remove('show');roomPop.classList.remove('show');}
-document.getElementById('voyageCalPrev').addEventListener('click',function(){view=new Date(view.getFullYear(),view.getMonth()-1,1);render();});
-document.getElementById('voyageCalNext').addEventListener('click',function(){view=new Date(view.getFullYear(),view.getMonth()+1,1);render();});
-document.getElementById('voyageCalOk').addEventListener('click',closeAll);
-inBtn.addEventListener('click',function(e){e.stopPropagation();roomPop.classList.remove('show');target='checkin';calPop.classList.toggle('show');});
-outBtn.addEventListener('click',function(e){e.stopPropagation();roomPop.classList.remove('show');target='checkout';calPop.classList.toggle('show');});
-roomBtn.addEventListener('click',function(e){e.stopPropagation();calPop.classList.remove('show');roomPop.classList.toggle('show');});
+function syncLabel(){inV.textContent=inH&&inH.value?fmtS(inH.value):'Add date';outV.textContent=outH&&outH.value?fmtS(outH.value):'Add date';}
+function closeAll(){roomPop.classList.remove('show');}
+function openRange(){if(rangeEl&&rangeEl._flatpickr){rangeEl._flatpickr.open();}else if(rangeEl){rangeEl.focus();}}
+if(rangeEl){rangeEl.addEventListener('dp:change',syncLabel);}
+inBtn.addEventListener('click',function(e){e.stopPropagation();roomPop.classList.remove('show');openRange();});
+outBtn.addEventListener('click',function(e){e.stopPropagation();roomPop.classList.remove('show');openRange();});
+roomBtn.addEventListener('click',function(e){e.stopPropagation();roomPop.classList.toggle('show');});
 document.addEventListener('click',function(e){if(!e.target.closest('#voyageHotelForm'))closeAll();});
 var adults=parseInt((document.getElementById('voyage-adults').textContent||'2'),10)||2,children=parseInt((document.getElementById('voyage-children').textContent||'0'),10)||0,rooms=parseInt((document.getElementById('voyage-rooms').textContent||'1'),10)||1;
 function syncRoom(){var g=adults+children;gH.value=g;rH.value=rooms;roomV.textContent=g+' Guests, '+rooms+' Rooms';document.getElementById('voyage-adults').textContent=adults;document.getElementById('voyage-children').textContent=children;document.getElementById('voyage-rooms').textContent=rooms;}
 roomPop.querySelectorAll('button[data-room]').forEach(function(b){b.addEventListener('click',function(){var k=b.getAttribute('data-room'),d=parseInt(b.getAttribute('data-d'),10);if(k==='adults')adults=Math.max(1,adults+d);else if(k==='children')children=Math.max(0,children+d);else rooms=Math.max(1,Math.min(8,rooms+d));syncRoom();});});
-document.getElementById('voyageRoomOk').addEventListener('click',closeAll);syncLabel();syncRoom();render();
+document.getElementById('voyageRoomOk').addEventListener('click',closeAll);syncLabel();syncRoom();
 
 })();
 </script>

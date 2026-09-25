@@ -116,12 +116,10 @@ require_once 'includes/admin-header.php';
     <div class="card-body py-3">
         <div class="row g-2 align-items-end">
             <div class="col-auto">
-                <label class="form-label small mb-0"><?= t('Dari') ?></label>
-                <input type="date" name="from" class="form-control form-control-sm" value="<?= e($from) ?>">
+                <?php renderDatePicker(['name' => 'from', 'value' => $from, 'label' => t('Dari'), 'cls' => 'form-control form-control-sm']); ?>
             </div>
             <div class="col-auto">
-                <label class="form-label small mb-0"><?= t('Sampai') ?></label>
-                <input type="date" name="to" class="form-control form-control-sm" value="<?= e($to) ?>">
+                <?php renderDatePicker(['name' => 'to', 'value' => $to, 'label' => t('Sampai'), 'cls' => 'form-control form-control-sm']); ?>
             </div>
             <div class="col-auto">
                 <button class="btn btn-sm btn-primary"><?= t('Filter') ?></button>
@@ -316,7 +314,7 @@ require_once 'includes/admin-header.php';
           </div>
           <div class="mb-1">
             <label class="form-label small fw-semibold"><?= t('Tanggal') ?></label>
-            <input type="date" name="expense_date" id="expenseDate" class="form-control" value="<?= e(date('Y-m-d')) ?>">
+            <?php renderDatePicker(['name' => 'expense_date', 'id' => 'expenseDate', 'value' => date('Y-m-d'), 'bare' => true]); ?>
           </div>
         </div>
         <div class="modal-footer py-1">
