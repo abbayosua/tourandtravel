@@ -13,7 +13,8 @@ $error = '';
 // Simpan setting mode + gateway + Midtrans + Tripay
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_settings'])) {
     $mode = ($_POST['payment_mode'] ?? 'manual') === 'instant' ? 'instant' : 'manual';
-    $gateway = ($_POST['payment_gateway'] ?? 'midtrans') === 'tripay' ? 'tripay' : 'midtrans';
+    $gwPost = $_POST['payment_gateway'] ?? 'midtrans';
+    $gateway = in_array($gwPost, ['tripay', 'singapay'], true) ? $gwPost : 'midtrans';
     setSetting('payment_mode', $mode);
     setSetting('payment_gateway', $gateway);
     $env = ($_POST['midtrans_env'] ?? 'sandbox') === 'production' ? 'production' : 'sandbox';
@@ -25,6 +26,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_settings'])) {
     setSetting('tripay_api_key', trim($_POST['tripay_api_key'] ?? ''));
     setSetting('tripay_private_key', trim($_POST['tripay_private_key'] ?? ''));
     setSetting('tripay_merchant_code', trim($_POST['tripay_merchant_code'] ?? ''));
+    $sgEnv = ($_POST['singapay_env'] ?? 'sandbox') === 'production' ? 'production' : 'sandbox';
+    setSetting('singapay_env', $sgEnv);
+    setSetting('singapay_client_id', trim($_POST['singapay_client_id'] ?? ''));
+    setSetting('singapay_client_secret', trim($_POST['singapay_client_secret'] ?? ''));
+    setSetting('singapay_api_key', trim($_POST['singapay_api_key'] ?? ''));
+    setSetting('singapay_account_id', trim($_POST['singapay_account_id'] ?? ''));
     setSetting('payment_enabled', isset($_POST['payment_enabled']) ? '1' : '0');
     header('Location: payments.php?msg=updated');
     exit;
@@ -100,6 +107,7 @@ require_once __DIR__ . '/includes/admin-header.php';
                 <select name="payment_gateway" class="form-select" data-testid="payment-gateway">
                     <option value="midtrans" <?= getSetting('payment_gateway','midtrans') === 'midtrans' ? 'selected' : '' ?>>Midtrans Snap</option>
                     <option value="tripay" <?= getSetting('payment_gateway') === 'tripay' ? 'selected' : '' ?>>Tripay</option>
+                    <option value="singapay" <?= getSetting('payment_gateway') === 'singapay' ? 'selected' : '' ?>>Singapay (VA)</option>
                 </select>
             </div>
             <div class="col-md-4 d-flex align-items-end gap-2">
@@ -156,8 +164,34 @@ require_once __DIR__ . '/includes/admin-header.php';
                 <input type="text" name="tripay_merchant_code" class="form-control" data-testid="tripay-merchant-code" value="<?= e(getSetting('tripay_merchant_code')) ?>">
             </div>
             <div class="col-12 mt-3">
+                <h6 class="fw-semibold mb-3 mt-2">Pengaturan Singapay (Virtual Account)</h6>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small fw-semibold">Environment</label>
+                <select name="singapay_env" class="form-select" autocomplete="off">
+                    <option value="sandbox" <?= getSetting('singapay_env','sandbox') === 'sandbox' ? 'selected' : '' ?>>Sandbox</option>
+                    <option value="production" <?= getSetting('singapay_env') === 'production' ? 'selected' : '' ?>>Production</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small fw-semibold">Client ID</label>
+                <input type="text" name="singapay_client_id" class="form-control" data-testid="singapay-client-id" autocomplete="off" readonly onfocus="this.removeAttribute('readonly')" value="<?= e(getSetting('singapay_client_id')) ?>">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small fw-semibold">Client Secret</label>
+                <input type="password" name="singapay_client_secret" class="form-control" data-testid="singapay-client-secret" autocomplete="new-password" value="<?= e(getSetting('singapay_client_secret')) ?>">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small fw-semibold">API Key</label>
+                <input type="text" name="singapay_api_key" class="form-control" data-testid="singapay-api-key" autocomplete="off" readonly onfocus="this.removeAttribute('readonly')" value="<?= e(getSetting('singapay_api_key')) ?>">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small fw-semibold">Account ID</label>
+                <input type="text" name="singapay_account_id" class="form-control" data-testid="singapay-account-id" value="<?= e(getSetting('singapay_account_id')) ?>">
+            </div>
+            <div class="col-12 mt-3">
                 <button type="submit" name="save_settings" class="btn btn-primary"><?= t('Simpan') ?></button>
-                <small class="text-muted ms-2"><?= t('Webhook Midtrans:') ?> <code><?= e(BASE_URL . '/webhook-midtrans.php') ?></code> · <?= t('Webhook Tripay:') ?> <code><?= e(BASE_URL . '/webhook-tripay.php') ?></code></small>
+                <small class="text-muted ms-2"><?= t('Webhook Midtrans:') ?> <code><?= e(BASE_URL . '/webhook-midtrans.php') ?></code> · <?= t('Webhook Tripay:') ?> <code><?= e(BASE_URL . '/webhook-tripay.php') ?></code> · Webhook Singapay: <code><?= e(BASE_URL . '/webhook-singapay.php') ?></code></small>
             </div>
         </form>
     </div>

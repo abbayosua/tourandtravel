@@ -10,6 +10,7 @@ require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/functions.php';
 require_once __DIR__ . '/../includes/payments.php';
 require_once __DIR__ . '/../includes/tripay.php';
+require_once __DIR__ . '/../includes/singapay.php';
 
 header('Content-Type: application/json');
 
@@ -71,6 +72,10 @@ if (tripayGateway() === 'tripay') {
     $tripayMethod = preg_replace('/[^A-Z0-9_]/', '', strtoupper((string)($_POST['method'] ?? 'BRIVA')));
     $result = createTripayTransaction($bookingId, $gross, $customer, $tripayMethod ?: 'BRIVA', $bookingType);
     $result['gateway'] = 'tripay';
+} elseif (singapayEnabled()) {
+    $bank = preg_replace('/[^A-Z]/', '', strtoupper((string)($_POST['bank'] ?? 'BRI')));
+    $result = singapayCreateVa($bookingId, $gross, $customer, $bank ?: 'BRI', $bookingType);
+    $result['gateway'] = 'singapay';
 } else {
     $result = createMidtransSnapTransaction($bookingType, $bookingId, $gross, $customer);
     $result['gateway'] = 'midtrans';

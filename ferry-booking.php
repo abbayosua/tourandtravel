@@ -4,6 +4,7 @@ require_once 'includes/db.php';
 require_once 'includes/functions.php';
 require_once 'includes/easybook.php';
 require_once 'includes/tripay.php';
+require_once 'includes/singapay.php';
 
 // Validate required trip params
 $company      = trim($_GET['company'] ?? '');
@@ -73,6 +74,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $ferryBookingId = (int)db()->lastInsertId();
         $success = true;
         $pageTitle = t('Booking Berhasil');
+
+        // Auto-create payment (idempotent) — user tidak perlu klik dulu,
+        // metode pembayaran langsung ditampilkan. Booking tetap pending
+        // sampai webhook paid; user bisa lanjutkan bayar kapan saja.
+        $ferryPaymentResult = null;
+        if (tripayInstantEnabled()) {
+            $ferryPaymentResult = createTripayTransaction($ferryBookingId, $totalPrice, ['name' => $name, 'email' => $email, 'phone' => $phone], 'BRIVA', 'ferry');
+        }
     } else {
         $defaultName  = $name;
         $defaultEmail = $email;
@@ -97,10 +106,34 @@ require_once 'includes/header-shared.php';
             <div class="col-lg-7">
                 <div class="card border-0 shadow-sm">
                     <div class="card-body text-center py-5 px-4">
+                        <?php
+                        $ferryPayment = null;
+                        if ($success) {
+                            $fp = db()->prepare("SELECT * FROM payments WHERE booking_type='ferry' AND booking_id=? ORDER BY id DESC LIMIT 1");
+                            $fp->execute([$ferryBookingId]);
+                            $ferryPayment = $fp->fetch();
+                        }
+                        $ferryPayEnabled = tripayInstantEnabled();
+                        $ferryPaid = ($ferryPayment['status'] ?? '') === 'paid';
+                        ?>
                         <div class="mb-3">
-                            <i class="bi bi-check-circle-fill text-success" style="font-size:64px;"></i>
+                            <?php if ($ferryPaid): ?>
+                                <i class="bi bi-check-circle-fill text-success" style="font-size:64px;"></i>
+                            <?php elseif ($ferryPayEnabled): ?>
+                                <i class="bi bi-hourglass-split text-warning" style="font-size:64px;"></i>
+                            <?php else: ?>
+                                <i class="bi bi-check-circle-fill text-success" style="font-size:64px;"></i>
+                            <?php endif; ?>
                         </div>
-                        <h3 class="fw-bold mb-2"><?= t('Booking Berhasil!') ?></h3>
+                        <h3 class="fw-bold mb-2">
+                            <?php if ($ferryPaid): ?>
+                                <?= t('Booking Berhasil!') ?>
+                            <?php elseif ($ferryPayEnabled): ?>
+                                <?= t('Menunggu Pembayaran') ?>
+                            <?php else: ?>
+                                <?= t('Booking Berhasil!') ?>
+                            <?php endif; ?>
+                        </h3>
                         <p class="text-muted mb-4"><?= t('Kode booking Anda:') ?></p>
                         <div class="bg-light rounded-pill px-4 py-2 d-inline-block mb-4">
                             <span class="fs-4 fw-bold text-primary" data-testid="booking-code"><?= e($bookingCode) ?></span>
@@ -134,10 +167,12 @@ require_once 'includes/header-shared.php';
                             </div>
                         </div>
 
+                        <?php if (!$ferryPayEnabled): ?>
                         <div class="alert alert-info small mb-3" style="border-left:3px solid var(--primary);">
                             <i class="bi bi-info-circle me-1"></i>
                             <?= t('Simpan kode booking Anda. Petugas akan meminta kode ini saat check-in di pelabuhan.') ?>
                         </div>
+                        <?php endif; ?>
 
                         <?php
                         $ferryPayment = null;
@@ -148,10 +183,19 @@ require_once 'includes/header-shared.php';
                         }
                         $ferryPayEnabled = tripayInstantEnabled();
                         ?>
-                        <?php if ($ferryPayEnabled): ?>
+                        <?php if ($ferryPayEnabled && !$ferryPaid): ?>
                         <div class="w-100 mb-3" data-testid="ferry-payment">
+                            <?php if (!empty($ferryPayment['pay_code'])): ?>
+                            <div class="alert alert-info text-start mb-3" data-testid="ferry-paycode">
+                                <div class="small text-muted"><?= t('Kode bayar Tripay') ?></div>
+                                <div class="fs-4 fw-bold"><?= e($ferryPayment['pay_code']) ?></div>
+                                <?php if (!empty($ferryPayment['checkout_url'])): ?>
+                                <a href="<?= e($ferryPayment['checkout_url']) ?>" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary mt-2"><?= t('Buka halaman checkout') ?></a>
+                                <?php endif; ?>
+                            </div>
+                            <?php endif; ?>
                             <?php if (tripayGateway() === 'tripay'): ?>
-                            <label class="form-label small fw-semibold" for="ferryTripayMethod"><?= t('Pilih channel pembayaran') ?></label>
+                            <label class="form-label small fw-semibold" for="ferryTripayMethod"><?= t('Atau pilih channel lain') ?></label>
                             <select id="ferryTripayMethod" class="form-select form-select-sm mx-auto mb-2" style="max-width:320px">
                                 <?php foreach (['BRIVA'=>'BRI VA','BCAVA'=>'BCA VA','BNIVA'=>'BNI VA','MANDIRIVA'=>'Mandiri VA','PERMATAVA'=>'Permata VA','QRIS'=>'QRIS','ALFAMART'=>'Alfamart','INDOMARET'=>'Indomaret'] as $tcode => $tname): ?>
                                 <option value="<?= $tcode ?>"><?= e($tname) ?></option>
@@ -163,10 +207,10 @@ require_once 'includes/header-shared.php';
                             </button>
                             <form method="POST" action="ajax/create-payment.php" id="ferryCreatePaymentForm" style="display:none;"></form>
                             <div id="ferryPaymentStatusArea" class="small mt-2" data-order-id="<?= e($ferryPayment['order_id'] ?? '') ?>">
-                                <?php if ($ferryPayment): ?><span class="text-muted"><?= t('Menunggu pembayaran...') ?></span><?php endif; ?>
+                                <span class="text-muted"><?= t('Menunggu pembayaran...') ?></span>
                             </div>
                         </div>
-                        <?php elseif (!empty($ferryPayment['pay_code']) && ($ferryPayment['gateway'] ?? '') === 'tripay'): ?>
+                        <?php elseif (!empty($ferryPayment['pay_code']) && ($ferryPayment['gateway'] ?? '') === 'tripay' && !$ferryPaid): ?>
                         <div class="alert alert-info text-start mb-3" data-testid="ferry-paycode">
                             <div class="small text-muted"><?= t('Kode bayar Tripay') ?></div>
                             <div class="fs-4 fw-bold"><?= e($ferryPayment['pay_code']) ?></div>
@@ -372,7 +416,6 @@ document.getElementById('passengers').addEventListener('change', function() {
 <script>
 (function () {
     var btn = document.getElementById('ferryPayNowBtn');
-    if (!btn) return;
     var statusArea = document.getElementById('ferryPaymentStatusArea');
 
     function pollStatus(orderId) {
@@ -383,12 +426,18 @@ document.getElementById('passengers').addEventListener('change', function() {
                 .then(function (d) {
                     if (d.status === 'paid') {
                         clearInterval(timer);
-                        if (statusArea) statusArea.innerHTML = '<span class="text-success fw-bold"><?= t('Pembayaran diterima. Terima kasih!') ?></span>';
-                        btn.remove();
+                        window.location.reload();
                     }
                 }).catch(function () {});
         }, 3000);
     }
+
+    // Auto-polling bila ada pembayaran pending (tidak perlu klik dulu)
+    if (statusArea && statusArea.dataset.orderId) {
+        pollStatus(statusArea.dataset.orderId);
+    }
+
+    if (!btn) return;
 
     btn.addEventListener('click', function () {
         btn.disabled = true;

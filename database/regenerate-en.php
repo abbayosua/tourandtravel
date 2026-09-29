@@ -316,6 +316,17 @@ $manual = [
     'Buka halaman Booking Saya, pilih booking confirmed, klik Minta Refund, dan isi alasan. Tim kami akan meninjau pengajuan maksimal 3x24 jam hari kerja. Status pengajuan (requested / approved / rejected) dapat dipantau di halaman yang sama.' => 'Open My Bookings, pick a confirmed booking, click Request Refund, and fill the reason. We review within 3x24 business hours. Track status (requested / approved / rejected) on the same page.',
     'Kontak Refund' => 'Refund Contact',
     'Taman Mediterania Blok JJ3 no 19, Batam, Kepulauan Riau, Indonesia' => 'Taman Mediterania Blok JJ3 no 19, Batam, Kepulauan Riau, Indonesia',
+    'Menunggu Pembayaran' => 'Awaiting Payment',
+    'Booking Anda sudah dibuat. Silakan pilih metode pembayaran dan selesaikan sebelum batas waktu.' => 'Your booking is created. Please choose a payment method and complete it before expiry.',
+    'Pilih metode pembayaran di bawah untuk konfirmasi instan.' => 'Choose a payment method below for instant confirmation.',
+    'Pilih channel pembayaran' => 'Choose a payment channel',
+    'Lanjutkan pembayaran di bawah untuk konfirmasi instan.' => 'Continue payment below for instant confirmation.',
+    'Bayar Sekarang' => 'Pay Now',
+    'Memproses...' => 'Processing...',
+    'Gagal memulai pembayaran. Coba lagi.' => 'Failed to start payment. Please try again.',
+    'Kode bayar Tripay' => 'Tripay payment code',
+    'Buka halaman checkout' => 'Open checkout page',
+    'Menunggu pembayaran...' => 'Waiting for payment...',
 ];
 
 // ---------- 3. Banding & insert ----------

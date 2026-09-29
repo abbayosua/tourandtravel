@@ -5,6 +5,7 @@ require_once 'includes/functions.php';
 
 require_once __DIR__ . '/includes/payments.php';
 require_once __DIR__ . '/includes/tripay.php';
+require_once __DIR__ . '/includes/singapay.php';
 
 $code = $_GET['code'] ?? '';
 
@@ -149,6 +150,8 @@ if (!empty($booking['user_id'])) {
 
 // Payment: manual (default) = admin approve; instant = gateway aktif
 $paymentEnabled = tripayInstantEnabled() && ($booking['status'] ?? '') === 'pending';
+// Judul pending vs sukses: bila gateway instant aktif + masih pending → tampil menunggu bayar.
+$isAwaitingPayment = $paymentEnabled && $btype === 'tour';
 $paymentStatus = 'unpaid';
 $paymentOrderId = null;
 if ($paymentEnabled && $btype === 'tour') {
@@ -177,7 +180,7 @@ if (!empty($booking['user_id']) && in_array($btype, ['flight', 'hotel'], true)) 
     $bundle['target'] = $btype === 'flight' ? 'hotels.php' : 'flights.php';
 }
 
-$pageTitle = t('Booking Berhasil');
+$pageTitle = $isAwaitingPayment ? t('Menunggu Pembayaran') : t('Booking Berhasil');
 require_once 'includes/header-shared.php';
 ?>
 <div class="container py-5">
@@ -188,11 +191,19 @@ require_once 'includes/header-shared.php';
 
             <div class="card border-0 shadow-sm text-center position-relative">
                 <div class="card-body py-5">
+                    <?php if ($isAwaitingPayment): ?>
+                    <div class="display-1 text-warning mb-3">
+                        <i class="bi bi-clock-fill"></i>
+                    </div>
+                    <h3 class="fw-bold mb-2"><?= t('Menunggu Pembayaran') ?></h3>
+                    <p class="text-muted mb-3"><?= t('Booking Anda sudah dibuat. Silakan pilih metode pembayaran dan selesaikan sebelum batas waktu.') ?></p>
+                    <?php else: ?>
                     <div class="display-1 text-success mb-3">
                         <i class="bi bi-check-circle-fill"></i>
                     </div>
                     <h3 class="fw-bold mb-2"><?= t('Booking Berhasil!') ?></h3>
                     <p class="text-muted mb-3"><?= t('Terima kasih, pemesanan Anda telah diterima.') ?></p>
+                    <?php endif; ?>
 
                     <!-- Step Tracker -->
                     <div class="d-flex justify-content-center gap-2 mb-4">
@@ -277,7 +288,7 @@ require_once 'includes/header-shared.php';
                     <p class="small text-muted mb-3">
                         <i class="bi bi-info-circle me-1"></i>
                         <?= t('Simpan kode booking dan link di atas untuk cek status pemesanan.') ?>
-                        <br><?= tripayInstantEnabled() ? t('Lanjutkan pembayaran di bawah untuk konfirmasi instan.') : t('Kami akan menghubungi Anda via WhatsApp untuk konfirmasi.') ?>
+                        <br><?= $isAwaitingPayment ? t('Pilih metode pembayaran di bawah untuk konfirmasi instan.') : (tripayInstantEnabled() ? t('Lanjutkan pembayaran di bawah untuk konfirmasi instan.') : t('Kami akan menghubungi Anda via WhatsApp untuk konfirmasi.')) ?>
                     </p>
 
                     <div class="d-flex gap-2 justify-content-center flex-wrap">
@@ -304,10 +315,33 @@ require_once 'includes/header-shared.php';
                             <?php endif; ?>
                             <?php if (($paymentGateway ?? tripayGateway()) === 'tripay'): ?>
                             <div class="w-100" data-testid="tripay-methods">
-                                <label class="form-label small fw-semibold" for="tripayMethod"><?= t('Pilih channel pembayaran') ?></label>
-                                <select id="tripayMethod" class="form-select form-select-sm mx-auto" style="max-width:320px">
-                                    <?php foreach (['BRIVA'=>'BRI VA','BCAVA'=>'BCA VA','BNIVA'=>'BNI VA','MANDIRIVA'=>'Mandiri VA','PERMATAVA'=>'Permata VA','QRIS'=>'QRIS','ALFAMART'=>'Alfamart','INDOMARET'=>'Indomaret'] as $tcode => $tname): ?>
-                                    <option value="<?= $tcode ?>"><?= e($tname) ?></option>
+                                <label class="form-label small fw-semibold d-block text-start"><?= t('Pilih channel pembayaran') ?></label>
+                                <div class="row g-2 text-start" id="tripayChannelGrid" role="radiogroup" aria-label="<?= e(t('Pilih channel pembayaran')) ?>">
+                                    <?php $tripaySel = 'BRIVA'; foreach (tripayUiChannels() as $tcode): $tm = tripayChannelMeta($tcode); if (!$tm) continue; $ticon = $tm['icon'] ?? 'bi-credit-card'; $isUrl = str_starts_with((string)$ticon, 'http'); ?>
+                                    <div class="col-6 col-md-4">
+                                        <label class="tripay-channel card h-100 p-2 d-flex flex-row align-items-center gap-2 <?= $tcode === $tripaySel ? 'border-primary shadow-sm' : '' ?>" style="cursor:pointer">
+                                            <input type="radio" name="tripayMethod" value="<?= $tcode ?>" class="visually-hidden" <?= $tcode === $tripaySel ? 'checked' : '' ?>>
+                                            <?php if ($isUrl): ?>
+                                            <img src="<?= e($ticon) ?>" alt="<?= e($tm['label']) ?>" width="36" height="36" loading="lazy" style="object-fit:contain">
+                                            <?php else: ?>
+                                            <span class="d-inline-flex align-items-center justify-content-center rounded bg-light" style="width:36px;height:36px"><i class="bi <?= e($ticon) ?> fs-5 text-primary"></i></span>
+                                            <?php endif; ?>
+                                            <span>
+                                                <span class="d-block fw-semibold small"><?= e($tm['label']) ?></span>
+                                                <?php if (!empty($tm['fee'])): ?><span class="d-block text-muted" style="font-size:11px">Fee <?= e($tm['fee']) ?></span><?php endif; ?>
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                            <?php endif; ?>
+                            <?php if (($paymentGateway ?? tripayGateway()) === 'singapay'): ?>
+                            <div class="w-100" data-testid="singapay-methods">
+                                <label class="form-label small fw-semibold" for="singapayBank"><?= t('Pilih bank') ?></label>
+                                <select id="singapayBank" class="form-select form-select-sm mx-auto" style="max-width:320px">
+                                    <?php foreach (['BRI'=>'BRI','BCA'=>'BCA','BNI'=>'BNI','MANDIRI'=>'Mandiri','PERMATA'=>'Permata','MAYBANK'=>'Maybank','CIMB'=>'CIMB Niaga','DANAMON'=>'Danamon'] as $bcode => $bname): ?>
+                                    <option value="<?= $bcode ?>"><?= e($bname) ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
@@ -351,8 +385,17 @@ require_once 'includes/header-shared.php';
 <script>
 (function () {
     var btn = document.getElementById('payNowBtn');
-    if (!btn) return;
     var statusArea = document.getElementById('paymentStatusArea');
+    function tripaySelectedMethod() {
+        var sel = document.querySelector('input[name="tripayMethod"]:checked');
+        return sel ? sel.value : 'BRIVA';
+    }
+    document.querySelectorAll('.tripay-channel').forEach(function (card) {
+        card.addEventListener('click', function () {
+            document.querySelectorAll('.tripay-channel').forEach(function (c) { c.classList.remove('border-primary', 'shadow-sm'); });
+            card.classList.add('border-primary', 'shadow-sm');
+        });
+    });
 
     function pollStatus(orderId) {
         if (!orderId) return;
@@ -371,13 +414,14 @@ require_once 'includes/header-shared.php';
         }, 3000);
     }
 
+    if (!btn) return;
     btn.addEventListener('click', function () {
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span><?= t('Memproses...') ?>';
         fetch('<?= BASE_URL ?>/ajax/create-payment.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: 'booking_type=tour&booking_id=' + btn.dataset.bookingId + (btn.dataset.gateway === 'tripay' ? '&method=' + encodeURIComponent((document.getElementById('tripayMethod') || {}).value || 'BRIVA') : '')
+            body: 'booking_type=tour&booking_id=' + btn.dataset.bookingId + (btn.dataset.gateway === 'tripay' ? '&method=' + encodeURIComponent(tripaySelectedMethod()) : '') + (btn.dataset.gateway === 'singapay' ? '&bank=' + encodeURIComponent((document.getElementById('singapayBank') || {}).value || 'BRI') : '')
         })
         .then(function (r) { return r.json(); })
         .then(function (d) {

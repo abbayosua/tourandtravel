@@ -23,9 +23,74 @@ function tripayMode(): string {
     return $mode === 'instant' ? 'instant' : 'manual';
 }
 
-/** Gateway aktif saat mode instant: midtrans | tripay */
+/** Gateway aktif saat mode instant: midtrans | tripay | singapay */
 function tripayGateway(): string {
-    return getSetting('payment_gateway', 'midtrans') === 'tripay' ? 'tripay' : 'midtrans';
+    $gw = (string)getSetting('payment_gateway', 'midtrans');
+    return in_array($gw, ['tripay', 'singapay'], true) ? $gw : 'midtrans';
+}
+
+/**
+ * tripayChannelMeta — metadata channel Tripay untuk UI picker ber-icon.
+ * Icon dari API /merchant/payment-channel (field icon_url); bila offline
+ * atau tidak terdaftar, fallback icon bootstrap + tanpa fee.
+ */
+function tripayChannelMeta(?string $code = null): ?array {
+    static $meta = null;
+    if ($meta === null) {
+        $meta = [
+            'BRIVA' => ['label' => 'BRI Virtual Account', 'group' => 'Virtual Account', 'icon' => 'bi-bank', 'fee' => 'Rp 4.250'],
+            'BNIVA' => ['label' => 'BNI Virtual Account', 'group' => 'Virtual Account', 'icon' => 'bi-bank', 'fee' => 'Rp 4.250'],
+            'BCAVA' => ['label' => 'BCA Virtual Account', 'group' => 'Virtual Account', 'icon' => 'bi-bank', 'fee' => 'Rp 5.500'],
+            'MANDIRIVA' => ['label' => 'Mandiri Virtual Account', 'group' => 'Virtual Account', 'icon' => 'bi-bank', 'fee' => 'Rp 4.250'],
+            'PERMATAVA' => ['label' => 'Permata Virtual Account', 'group' => 'Virtual Account', 'icon' => 'bi-bank', 'fee' => 'Rp 4.250'],
+            'MUAMALATVA' => ['label' => 'Muamalat Virtual Account', 'group' => 'Virtual Account', 'icon' => 'bi-bank', 'fee' => 'Rp 4.250'],
+            'CIMBVA' => ['label' => 'CIMB Niaga Virtual Account', 'group' => 'Virtual Account', 'icon' => 'bi-bank', 'fee' => 'Rp 4.250'],
+            'BSIVA' => ['label' => 'BSI Virtual Account', 'group' => 'Virtual Account', 'icon' => 'bi-bank', 'fee' => 'Rp 4.250'],
+            'OCBCVA' => ['label' => 'OCBC Virtual Account', 'group' => 'Virtual Account', 'icon' => 'bi-bank', 'fee' => 'Rp 4.250'],
+            'QRIS' => ['label' => 'QRIS', 'group' => 'E-Wallet / QR', 'icon' => 'bi-qr-code', 'fee' => 'Rp 750 + 0,7%'],
+            'QRIS2' => ['label' => 'QRIS', 'group' => 'E-Wallet / QR', 'icon' => 'bi-qr-code', 'fee' => 'Rp 750 + 0,7%'],
+            'ALFAMART' => ['label' => 'Alfamart', 'group' => 'Gerai Retail', 'icon' => 'bi-shop', 'fee' => 'Rp 3.500'],
+            'INDOMARET' => ['label' => 'Indomaret', 'group' => 'Gerai Retail', 'icon' => 'bi-shop', 'fee' => 'Rp 3.500'],
+            'ALFAMIDI' => ['label' => 'Alfamidi', 'group' => 'Gerai Retail', 'icon' => 'bi-shop', 'fee' => 'Rp 3.500'],
+        ];
+        try {
+            if (tripayConfigured()) {
+                $ch = curl_init(tripayBaseUrl() . '/merchant/payment-channel');
+                curl_setopt_array($ch, [
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . tripayApiKey()],
+                    CURLOPT_TIMEOUT => 8,
+                    CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
+                ]);
+                $res = curl_exec($ch);
+                curl_close($ch);
+                $j = json_decode((string)$res, true);
+                if (!empty($j['success']) && is_array($j['data'] ?? null)) {
+                    foreach ($j['data'] as $c) {
+                        $ccode = strtoupper((string)($c['code'] ?? ''));
+                        if ($ccode === '' || empty($c['active'])) continue;
+                        $feeFlat = (int)($c['fee_merchant']['flat'] ?? $c['total_fee']['flat'] ?? 0);
+                        $feePct = (float)($c['fee_merchant']['percent'] ?? $c['total_fee']['percent'] ?? 0);
+                        $feeTxt = $feeFlat > 0 ? 'Rp ' . number_format($feeFlat, 0, ',', '.') : '';
+                        if ($feePct > 0) $feeTxt .= ($feeTxt !== '' ? ' + ' : '') . rtrim(rtrim(number_format($feePct, 2, ',', '.'), '0'), ',') . '%';
+                        $meta[$ccode] = [
+                            'label' => (string)($c['name'] ?? $ccode),
+                            'group' => (string)($c['group'] ?? ''),
+                            'icon' => !empty($c['icon_url']) ? (string)$c['icon_url'] : ($meta[$ccode]['icon'] ?? 'bi-credit-card'),
+                            'fee' => $feeTxt !== '' ? $feeTxt : ($meta[$ccode]['fee'] ?? ''),
+                        ];
+                    }
+                }
+            }
+        } catch (Throwable $e) {}
+    }
+    if ($code === null) return $meta;
+    return $meta[strtoupper($code)] ?? null;
+}
+
+/** Channel yang ditawarkan di UI (urutan tampil). */
+function tripayUiChannels(): array {
+    return ['BRIVA', 'BCAVA', 'BNIVA', 'MANDIRIVA', 'PERMATAVA', 'QRIS', 'ALFAMART', 'INDOMARET'];
 }
 
 function tripayApiKey(): string {
@@ -57,6 +122,10 @@ function tripayConfigured(): bool {
 function tripayInstantEnabled(): bool {
     if (tripayMode() !== 'instant') return false;
     if (tripayGateway() === 'tripay') return tripayConfigured();
+    if (tripayGateway() === 'singapay') {
+        require_once __DIR__ . '/singapay.php';
+        return singapayConfigured();
+    }
     return midtransEnabled();
 }
 

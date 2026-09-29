@@ -69,4 +69,15 @@ INSERT IGNORE INTO translations (`key`, lang, value) VALUES
 ('0% (non-refundable)', 'zh', '0%（不可退款）'),
 ('Cara Mengajukan Refund', 'zh', '如何申请退款'),
 ('Kontak Refund', 'zh', '退款联系方式'),
-('Taman Mediterania Blok JJ3 no 19, Batam, Kepulauan Riau, Indonesia', 'zh', 'Taman Mediterania Blok JJ3 no 19, Batam, Kepulauan Riau, Indonesia');
+('Taman Mediterania Blok JJ3 no 19, Batam, Kepulauan Riau, Indonesia', 'zh', 'Taman Mediterania Blok JJ3 no 19, Batam, Kepulauan Riau, Indonesia'),
+('Menunggu Pembayaran', 'zh', '等待付款'),
+('Booking Anda sudah dibuat. Silakan pilih metode pembayaran dan selesaikan sebelum batas waktu.', 'zh', '您的订单已创建，请选择支付方式并在到期前完成付款。'),
+('Pilih metode pembayaran di bawah untuk konfirmasi instan.', 'zh', '请选择以下支付方式以即时确认。'),
+('Pilih channel pembayaran', 'zh', '选择支付渠道'),
+('Lanjutkan pembayaran di bawah untuk konfirmasi instan.', 'zh', '请在下方继续付款以即时确认。'),
+('Bayar Sekarang', 'zh', '立即付款'),
+('Memproses...', 'zh', '处理中...'),
+('Gagal memulai pembayaran. Coba lagi.', 'zh', '启动付款失败，请重试。'),
+('Kode bayar Tripay', 'zh', 'Tripay付款码'),
+('Buka halaman checkout', 'zh', '打开结账页面'),
+('Menunggu pembayaran...', 'zh', '等待付款...');
