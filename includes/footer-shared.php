@@ -62,6 +62,10 @@ $footMenus = getNavMenus();
                     <li class="mb-2"><a href="<?= BASE_URL ?>/register.php" class="text-secondary text-decoration-none hover-light"><?= t('Daftar') ?></a></li>
                     <?php endif; ?>
                     <li class="mb-2"><a href="<?= BASE_URL ?>/wishlist.php" class="text-secondary text-decoration-none hover-light"><?= t('Wishlist') ?></a></li>
+                    <li class="mb-2"><a href="<?= BASE_URL ?>/about.php" class="text-secondary text-decoration-none hover-light"><?= t('Tentang Kami') ?></a></li>
+                    <li class="mb-2"><a href="<?= BASE_URL ?>/terms.php" class="text-secondary text-decoration-none hover-light"><?= t('Ketentuan Layanan') ?></a></li>
+                    <li class="mb-2"><a href="<?= BASE_URL ?>/privacy.php" class="text-secondary text-decoration-none hover-light"><?= t('Kebijakan Privasi') ?></a></li>
+                    <li class="mb-2"><a href="<?= BASE_URL ?>/refund-policy.php" class="text-secondary text-decoration-none hover-light"><?= t('Kebijakan Refund') ?></a></li>
                 </ul>
             </div>
 

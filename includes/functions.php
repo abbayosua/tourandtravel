@@ -605,6 +605,22 @@ function brandText(string $s): string {
     return str_replace(['TourAndTravel', 'Tourandtravel'], $b, $s);
 }
 
+/** Kontak footer dinamis — diatur dari Admin (Brand & Logo). Fallback = nilai lama. */
+function siteContact(string $key): string {
+    $defaults = [
+        'address' => 'Jl. Merdeka No. 123, Jakarta',
+        'phone' => '021-12345678',
+        'wa' => '0812-3456-7890',
+        'email' => 'info@tourandtravel.web.id',
+        'hours_weekday' => 'Senin - Sabtu: 08:00 - 20:00',
+        'hours_sunday' => 'Minggu: 09:00 - 15:00',
+    ];
+    if (!array_key_exists($key, $defaults)) return '';
+    if (!function_exists('getSetting')) return $defaults[$key];
+    $v = trim((string)getSetting('contact_' . $key, ''));
+    return $v !== '' ? mb_substr($v, 0, 160) : $defaults[$key];
+}
+
 /** Label status booking/inventaris sesuai bahasa aktif (fallback ucfirst). */
 function bookingStatusLabel($st): string {
     $m = ['pending' => t('Pending'), 'confirmed' => t('Dikonfirmasi'), 'cancelled' => t('Dibatalkan'), 'paid' => t('Dibayar'), 'refunded' => t('Refund'), 'approved' => t('Disetujui'), 'rejected' => t('Ditolak')];

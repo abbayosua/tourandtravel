@@ -14,7 +14,7 @@ $add = function ($loc, $priority = '0.8', $changefreq = 'weekly') use (&$urls) {
 };
 
 $add(BASE_URL . '/', '1.0', 'daily');
-foreach (['tours.php','hotels.php','flights.php','ferries.php','trains.php','transfers.php','attractions.php','esim.php','rental-cars.php','faq.php','collection.php','blog.php'] as $p) {
+foreach (['tours.php','hotels.php','flights.php','ferries.php','trains.php','transfers.php','attractions.php','esim.php','rental-cars.php','faq.php','collection.php','blog.php','about.php','terms.php','privacy.php','refund-policy.php'] as $p) {
     $add(BASE_URL . '/' . $p, '0.9');
 }
 
