@@ -114,6 +114,7 @@ require_once __DIR__ . '/../components/date-picker.php';
         <?php endif; ?>
     </div>
 </section>
+<?php if (empty($hotelSearched)): ?><div class="voyage-hero-gap" aria-hidden="true"></div><?php endif; ?>
 
 
 <script>

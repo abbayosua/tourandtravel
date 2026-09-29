@@ -183,4 +183,5 @@
 [data-theme="dark"] .voyage-hotel-hero .voyage-cal-grid button.inrange{background:rgba(255,255,255,.1)}
 .voyage-hotel-hero.is-searched .voyage-inner{padding-top:110px}
 .voyage-hotel-hero.is-searched .voyage-title,.voyage-hotel-hero.is-searched .voyage-sub,.voyage-hotel-hero.is-searched .voyage-proof,.voyage-hotel-hero.is-searched .voyage-list{display:none!important}
+.voyage-hero-gap{height:45vh;min-height:280px;position:relative;z-index:1}
 body:has(.voyage-hotel-hero) section.bg-light,body:has(.voyage-hotel-hero) section.bg-white{position:relative;z-index:1}
