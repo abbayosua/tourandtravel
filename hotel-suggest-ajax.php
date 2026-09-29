@@ -16,8 +16,11 @@ $out = [];
 try {
     $r = hotelApiNusaAuto($q);
     foreach (array_slice($r['results'] ?? [], 0, 8) as $x) {
-        $label = (string)($x['label'] ?? '');
-        if ($label !== '') $out[] = ['label' => $label, 'location_id' => $x['location_id'] ?? null];
+        $full = (string)($x['label'] ?? '');
+        if ($full === '') continue;
+        $short = trim((string)explode(',', $full)[0]);
+        if ($short === '') $short = $full;
+        $out[] = ['label' => $short, 'full_label' => $full, 'location_id' => $x['location_id'] ?? null];
     }
 } catch (Throwable $e) {}
 
