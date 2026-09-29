@@ -10,15 +10,16 @@
  */
 require_once __DIR__ . '/../components/date-picker.php';
 $tsMode = $tsMode ?? 'flight';
-if (!in_array($tsMode, ['flight', 'ferry', 'train'], true)) $tsMode = 'flight';
+if (!in_array($tsMode, ['flight', 'ferry', 'train', 'pelni'], true)) $tsMode = 'flight';
 $isFlight = $tsMode === 'flight';
 $isFerry = $tsMode === 'ferry';
 $isTrain = $tsMode === 'train';
+$isPelni = $tsMode === 'pelni';
 
-$tsAction = $tsAction ?? ($isFerry ? 'ferries.php' : ($isTrain ? 'trains.php' : 'flights.php'));
-$tsFormId = $tsFormId ?? ($isFerry ? 'ferrySearchForm' : ($isTrain ? 'trainSearchForm' : 'flightSearchForm'));
-$tsAutocomplete = $tsAutocomplete ?? ($isFerry ? 'ajax/ferry-place-search.php' : 'city-search-ajax.php');
-$tsSearchClass = $tsSearchClass ?? ($isFerry ? 'ferry-search' : 'city-search');
+$tsAction = $tsAction ?? ($isPelni ? 'pelni.php' : ($isFerry ? 'ferries.php' : ($isTrain ? 'trains.php' : 'flights.php')));
+$tsFormId = $tsFormId ?? ($isPelni ? 'pelniSearchForm' : ($isFerry ? 'ferrySearchForm' : ($isTrain ? 'trainSearchForm' : 'flightSearchForm')));
+$tsAutocomplete = $tsAutocomplete ?? ($isPelni ? 'ajax/pelni-port-search.php' : ($isFerry ? 'ajax/ferry-place-search.php' : 'city-search-ajax.php'));
+$tsSearchClass = $tsSearchClass ?? ($isPelni ? 'pelni-search' : ($isFerry ? 'ferry-search' : 'city-search'));
 $tsShowTrip = $tsShowTrip ?? $isFlight;
 $tsShowClass = $tsShowClass ?? ($isFlight || $isTrain);
 $tsShowMulti = $tsShowMulti ?? $isFlight;
@@ -40,11 +41,13 @@ $tsFromSpid = $tsFromSpid ?? $fromSubPlace ?? (int)($_GET['from_spid'] ?? 0);
 $tsToPid = $tsToPid ?? $toPlaceId ?? (int)($_GET['to_pid'] ?? 0);
 $tsToSpid = $tsToSpid ?? $toSubPlace ?? (int)($_GET['to_spid'] ?? 0);
 
-$tsDefaultBg = $isFerry
-    ? 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=2070&q=80'
-    : ($isTrain
-        ? 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=2070&q=80'
-        : 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=2070&q=80');
+$tsDefaultBg = $isPelni
+    ? 'https://images.unsplash.com/photo-1605281317010-fe5ffe798166?auto=format&fit=crop&w=2070&q=80'
+    : ($isFerry
+        ? 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=2070&q=80'
+        : ($isTrain
+            ? 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=2070&q=80'
+            : 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=2070&q=80'));
 $tsBg = $tsBg ?? (($heroSlides[0]['image'] ?? '') ?: $tsDefaultBg);
 $tsTitleB = $tsTitleB ?? ($isFerry ? 'Ferry' : ($isTrain ? 'Train' : 'Flight'));
 $tsSub = $tsSub ?? ($isFerry ? t('Pesan tiket ferry — booking instan, harga terbaik.') : ($isTrain ? t('Tiket kereta pilihan — booking instan, harga terbaik.') : t('Tiket pesawat pilihan — booking instan, harga terbaik.')));
@@ -146,6 +149,7 @@ $tsPhTo = $tsPhTo ?? $tsPhFrom;
             <div class="booking-tabs" role="tablist">
                 <a href="flights.php" class="booking-tab <?= $isFlight ? 'active' : '' ?>" role="tab"><i class="bi bi-airplane"></i> <?= t('Pesawat') ?></a>
                 <a href="ferries.php" class="booking-tab <?= $isFerry ? 'active' : '' ?>" role="tab"><i class="bi bi-water"></i> <?= t('Ferry') ?></a>
+                <a href="pelni.php" class="booking-tab <?= $isPelni ? 'active' : '' ?>" role="tab"><i class="bi bi-ship"></i> <?= t('Pelni') ?></a>
                 <a href="trains.php" class="booking-tab <?= $isTrain ? 'active' : '' ?>" role="tab"><i class="bi bi-train-front"></i> <?= t('Kereta') ?></a>
                 <a href="rental-cars.php" class="booking-tab" role="tab"><i class="bi bi-car-front"></i> <?= t('Rental') ?></a>
             </div>

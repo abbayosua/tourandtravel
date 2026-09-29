@@ -102,12 +102,12 @@ function createTripayTransaction(int $bookingId, float $grossAmount, array $cust
     $existing = $stmt->fetch();
     $merchantRef = $existing['order_id'] ?? generateTripayRef($bookingId);
 
-    $codeTable = ['tour' => 'bookings', 'ferry' => 'ferry_bookings'][$bookingType] ?? 'bookings';
+    $codeTable = ['tour' => 'bookings', 'ferry' => 'ferry_bookings', 'pelni' => 'pelni_bookings'][$bookingType] ?? 'bookings';
     $b = db()->prepare("SELECT booking_code FROM `$codeTable` WHERE id = ?");
     $b->execute([$bookingId]);
     $bookingCode = $b->fetchColumn() ?: null;
 
-    $itemName = ['tour' => 'Paket Tour', 'ferry' => 'Tiket Ferry'][$bookingType] ?? 'Paket';
+    $itemName = ['tour' => 'Paket Tour', 'ferry' => 'Tiket Ferry', 'pelni' => 'Tiket Kapal PELNI'][$bookingType] ?? 'Paket';
     $amount = (int)round($grossAmount);
     $data = [
         'method'        => $method,
@@ -196,7 +196,7 @@ function handleTripayCallback(array $data): bool {
         'tour' => 'bookings', 'hotel' => 'hotel_bookings', 'flight' => 'flight_bookings',
         'train' => 'train_bookings', 'transfer' => 'transfer_bookings',
         'attraction' => 'attraction_bookings', 'esim' => 'connectivity_bookings',
-        'ferry' => 'ferry_bookings',
+        'ferry' => 'ferry_bookings', 'pelni' => 'pelni_bookings',
     ];
     $table = $typeMap[$payment['booking_type']] ?? null;
     if ($table) {
@@ -222,6 +222,11 @@ function handleTripayCallback(array $data): bool {
     if ($newStatus === 'paid' && $payment['booking_type'] === 'ferry') {
         // Ferry paid → confirmed
         db()->prepare("UPDATE ferry_bookings SET status = 'confirmed' WHERE id = ? AND status = 'pending'")
+            ->execute([(int)$payment['booking_id']]);
+    }
+    if ($newStatus === 'paid' && $payment['booking_type'] === 'pelni') {
+        // PELNI paid → confirmed
+        db()->prepare("UPDATE pelni_bookings SET status = 'confirmed' WHERE id = ? AND status = 'pending'")
             ->execute([(int)$payment['booking_id']]);
     }
     if (in_array($newStatus, ['failed', 'expired'], true) && $payment['booking_type'] === 'tour') {

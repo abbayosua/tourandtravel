@@ -30,7 +30,7 @@ $typeMap = [
     'tour' => 'bookings', 'hotel' => 'hotel_bookings', 'flight' => 'flight_bookings',
     'train' => 'train_bookings', 'transfer' => 'transfer_bookings',
     'attraction' => 'attraction_bookings', 'esim' => 'connectivity_bookings',
-    'ferry' => 'ferry_bookings',
+    'ferry' => 'ferry_bookings', 'pelni' => 'pelni_bookings',
 ];
 if (!isset($typeMap[$bookingType]) || $bookingId < 1) {
     echo json_encode(['ok' => false, 'error' => 'invalid_booking']);
@@ -41,7 +41,7 @@ if (!isset($typeMap[$bookingType]) || $bookingId < 1) {
 $table = $typeMap[$bookingType];
 $priceCol = ['tour' => 'total_price', 'hotel' => 'total_price', 'flight' => 'total_price',
              'train' => 'total_price', 'transfer' => 'total_price', 'attraction' => 'total_price', 'esim' => 'total_price',
-             'ferry' => 'total_price'];
+             'ferry' => 'total_price', 'pelni' => 'total_price'];
 $stmt = db()->prepare("SELECT * FROM `$table` WHERE id = ? LIMIT 1");
 $stmt->execute([$bookingId]);
 $booking = $stmt->fetch();
