@@ -194,7 +194,7 @@ function pdfTourHtml(string $title, string $meta, string $coverImgTag, array $da
     if ($meta !== '') $h .= '<div class="meta">' . e($meta) . '</div>';
     $h .= '<hr class="blue" />';
     if (empty($days)) {
-        $h .= '<div class="empty">No itinerary details available.</div>';
+        $h .= '<div class="empty">' . t('No itinerary details available.') . '</div>';
     }
     foreach ($days as $d) {
         $h .= '<div class="day"><h2>' . e(pdfDayTitle((int)$d['day_number'], $d['title'] ?? '')) . '</h2></div>';
@@ -220,12 +220,12 @@ function pdfUserHtml(string $title, string $sub, string $userName, array $days):
     if ($sub !== '') $h .= '<div class="meta">' . e($sub) . '</div>';
     $h .= '<hr class="blue" />';
     if (empty($days)) {
-        $h .= '<div class="empty">No activities planned yet.</div>';
+        $h .= '<div class="empty">' . t('No activities planned yet.') . '</div>';
     }
     foreach ($days as $dayNum => $day) {
         $h .= '<div class="day"><h2>Day ' . (int)$dayNum . '</h2></div>';
         if (empty($day['items'])) {
-            $h .= '<div class="desc">Free day / no activities</div>';
+            $h .= '<div class="desc">' . t('Free day / no activities') . '</div>';
             continue;
         }
         foreach ($day['items'] as $it) {

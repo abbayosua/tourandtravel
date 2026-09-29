@@ -76,7 +76,7 @@ require_once 'includes/admin-header.php';
                     <label class="form-label"><?= t('Sumber utama') ?></label>
                     <select name="hotel_live_source" class="form-select" data-testid="hotel-live-source">
                         <option value="nusatrip" <?= $liveSource === 'nusatrip' ? 'selected' : '' ?>><?= t('NusaTrip (utamakan)') ?></option>
-                        <option value="oyo" <?= $liveSource === 'oyo' ? 'selected' : '' ?>>OYO</option>
+                        <option value="oyo" <?= $liveSource === 'oyo' ? 'selected' : '' ?>><?= t('OYO') ?></option>
                         <option value="auto" <?= $liveSource === 'auto' ? 'selected' : '' ?>><?= t('Auto (NusaTrip native, fallback OYO)') ?></option>
                     </select>
                 </div>
@@ -135,8 +135,8 @@ require_once 'includes/admin-header.php';
                 <span class="badge bg-secondary" data-testid="hotel-live-status-off"><?= t('Nonaktif') ?></span>
             <?php endif; ?>
             <p class="small text-muted mt-2 mb-1"><?= t('Sumber') ?>: <b><?= e($liveSource) ?></b></p>
-            <p class="small text-muted mb-0">Modul NusaTrip: <?= $nusaModule ? '<span class="text-success">' . t('aktif') . '</span>' : '<span class="text-danger">' . t('nonaktif') . '</span>' ?></p>
-            <p class="small text-muted mb-0">Modul OYO: <?= $oyoModuleOn ? '<span class="text-success">' . t('aktif') . '</span>' : '<span class="text-danger">' . t('nonaktif') . '</span>' ?></p>
+            <p class="small text-muted mb-0"><?= t('Modul NusaTrip:') ?> <?= $nusaModule ? '<span class="text-success">' . t('aktif') . '</span>' : '<span class="text-danger">' . t('nonaktif') . '</span>' ?></p>
+            <p class="small text-muted mb-0"><?= t('Modul OYO:') ?> <?= $oyoModuleOn ? '<span class="text-success">' . t('aktif') . '</span>' : '<span class="text-danger">' . t('nonaktif') . '</span>' ?></p>
             <p class="small text-muted mb-0"><?= t('rkey NusaTrip') ?>: <?= $rkey !== '' ? '<span class="text-success">' . t('terisi') . '</span>' : '<span class="text-danger">' . t('kosong') . '</span>' ?></p>
         </div></div>
     </div>

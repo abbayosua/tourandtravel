@@ -35,9 +35,14 @@ if (isset($_GET['cancel']) && (int)$_GET['cancel'] > 0) {
     if (isset($tableMap[$type])) {
         $table = $tableMap[$type];
         // Refund wallet if paid with KlookCash (only refund the portion covered by wallet)
-        $ref = db()->prepare("SELECT id, total_price FROM `$table` WHERE id = ? AND user_id = ? AND status IN ('pending','confirmed')");
+        $ref = db()->prepare("SELECT id, total_price, payment_status FROM `$table` WHERE id = ? AND user_id = ? AND status IN ('pending','confirmed')");
         $ref->execute([$cancelId, $userId]);
         if ($brow = $ref->fetch()) {
+            // Booking yang sudah dibayar tidak bisa self-cancel — harus lewat refund
+            if (($brow['payment_status'] ?? null) === 'paid') {
+                header('Location: my-bookings.php?msg=cancel_paid');
+                exit;
+            }
             $walletPaid = db()->prepare("SELECT COALESCE(SUM(amount),0) FROM wallet_transactions WHERE user_id = ? AND reference_type = ? AND reference_id = ? AND amount < 0");
             $walletPaid->execute([$userId, $type . '_booking', $cancelId]);
             $paid = (float)$walletPaid->fetchColumn();
@@ -55,6 +60,11 @@ if (isset($_GET['cancel']) && (int)$_GET['cancel'] > 0) {
             }
         }
         db()->prepare("UPDATE `$table` SET status = 'cancelled' WHERE id = ? AND user_id = ? AND status IN ('pending','confirmed')")->execute([$cancelId, $userId]);
+        // Release slot tour (idempotent — no-op bila belum pernah deduct)
+        if ($type === 'tour') {
+            require_once 'includes/availability.php';
+            releaseTourSlotsOnCancel($cancelId);
+        }
     }
     header('Location: my-bookings.php?msg=cancelled');
     exit;
@@ -143,6 +153,9 @@ require_once 'includes/header-shared.php';
         <?php if (isset($_GET['msg']) && $_GET['msg'] === 'refund_fail'): ?>
             <div class="alert alert-danger py-2 small" data-testid="refund-fail"><i class="bi bi-x-circle me-1"></i><?= e($_GET['rmsg'] ?? 'Pengajuan refund gagal') ?></div>
         <?php endif; ?>
+        <?php if (isset($_GET['msg']) && $_GET['msg'] === 'cancel_paid'): ?>
+            <div class="alert alert-warning py-2 small"><i class="bi bi-info-circle me-1"></i><?= t('Booking sudah dibayar tidak dapat dibatalkan sendiri. Silakan ajukan refund.') ?></div>
+        <?php endif; ?>
 
         <?php if (count($all) > 0): ?>
         <div class="row g-3">
@@ -210,7 +223,7 @@ require_once 'includes/header-shared.php';
                                 <div class="mt-2 p-2 rounded bg-light" data-testid="refund-timeline-<?= $b['id'] ?>">
                                     <div class="small fw-semibold mb-1"><i class="bi bi-arrow-repeat me-1"></i><?= t('Status Refund') ?></div>
                                     <div class="d-flex align-items-center gap-1 small">
-                                        <span class="badge <?= $rs === 'requested' ? 'bg-warning text-dark' : 'bg-secondary' ?>">Diajukan</span>
+                                        <span class="badge <?= $rs === 'requested' ? 'bg-warning text-dark' : 'bg-secondary' ?>"><?= t('Diajukan') ?></span>
                                         <i class="bi bi-arrow-right text-muted"></i>
                                         <span class="badge <?= $timeline[$rs][0] ?>"><?= $timeline[$rs][1] ?></span>
                                     </div>

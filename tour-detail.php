@@ -26,23 +26,24 @@ foreach (db()->query("SELECT date, price FROM price_calendar WHERE item_type = '
     $datePrices[$pcRow['date']] = (float)$pcRow['price'];
 }
 $priceCalendar = array_map(fn($d, $p) => ['date' => $d, 'price' => $p], array_keys($datePrices), $datePrices);
+// Harga efektif = flash sale di atas harga kalender/dasar (sinkron dgn handler POST)
+$effectivePrices = [];
+foreach ($datePrices as $d => $p) {
+    $effectivePrices[$d] = getFlashSalePrice((float)$p, 'tour', (int)$tour['id'])['price'];
+}
 
 // Proses booking form
 $bookingMessage = '';
 $bookingError = '';
 $bookingCode = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
-    $tourDateId = (int)($_POST['tour_date_id'] ?? 0);
-    $name = trim($_POST['name'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $phone = trim($_POST['phone'] ?? '');
-    $participants = (int)($_POST['participants'] ?? 0);
-    $notes = trim($_POST['notes'] ?? '');
-
     $errors = [];
+    if (!csrfCheck()) $errors[] = t('Sesi tidak valid, silakan muat ulang halaman.');
     if (!$name) $errors[] = t('Nama harus diisi');
-    if (!$phone) $errors[] = t('No. WhatsApp harus diisi');
+    if (strlen($phone) < 8) $errors[] = t('No. WhatsApp tidak valid');
+    if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = t('Email tidak valid');
     if ($participants < 1) $errors[] = t('Jumlah peserta minimal 1');
+    if ($participants > (int)$tour['max_participants']) $errors[] = t('Jumlah peserta melebihi kapasitas tour');
 
     $sisaSlot = getSisaSlot($tourDateId);
     if ($sisaSlot < $participants) {
@@ -76,6 +77,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
         if ($corporateDiscountPct > 0) {
             $totalPrice = applyCorporateDiscount((int)$_SESSION['user_id'], $totalPrice);
         }
+
+        // Promo code — validasi server-side (source of truth), dipotong dari total
+        $promoCode = strtoupper(trim($_POST['promo_code'] ?? ''));
+        $promoDiscount = 0.0;
+        if ($promoCode !== '') {
+            $promo = validatePromoCode($promoCode, $totalPrice);
+            if ($promo) {
+                $promoDiscount = $promo['discount'];
+                $totalPrice -= $promoDiscount;
+            }
+        }
+
         $bookingCode = generateBookingCode();
 
         // Points redeem sederhana: checkbox use_points → tukar maksimal 100 point (Rp 10.000)
@@ -120,6 +133,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
         }
         $bookingId = (int)db()->lastInsertId();
 
+        // Catat pemakaian promo (idempotent per booking)
+        if ($promoDiscount > 0) {
+            db()->prepare("UPDATE promo_codes SET used_count = used_count + 1 WHERE code = ?")->execute([$promoCode]);
+        }
+
         // Fase 4: simpan add-on insurance (idempotent)
         if ($insurancePremi > 0) {
             require_once 'includes/insurance.php';
@@ -157,7 +175,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
             }
         }
 
-        error_log("PRD-DBG booking-created email fired");
         // Notifikasi in-app utk user (bila login)
         require_once 'includes/notifications.php';
         if (!empty($_SESSION['user_id'])) {
@@ -181,9 +198,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
     }
 }
 
-// SEO: meta + JSON-LD TouristTrip
-$metaDesc = mb_substr(trim(strip_tags((string)tContent($tour, 'description'))), 0, 160);
-$jsonLd = seoTour($tour);
 // SEO: meta + JSON-LD TouristTrip
 $metaDesc = mb_substr(trim(strip_tags((string)tContent($tour, 'description'))), 0, 160);
 $jsonLd = seoTour($tour);
@@ -346,9 +360,9 @@ require_once 'includes/header-shared.php';
                 <a href="tour-itinerary-pdf.php?slug=<?= e($tour['slug']) ?>&pdf_lang=<?= getCurrentLang() ?>" class="btn btn-sm btn-outline-primary" target="_blank" data-testid="pdf-download"><i class="bi bi-download me-1"></i><?= t('PDF') ?> (<?= strtoupper(getCurrentLang()) ?>)</a>
                 <?php $otherLangs = array_filter(array_keys(getSupportedLanguages()), fn($l) => $l !== getCurrentLang()); ?>
                 <?php foreach ($otherLangs as $ol): ?>
-                <a href="tour-itinerary-pdf.php?slug=<?= e($tour['slug']) ?>&pdf_lang=<?= $ol ?>" class="btn btn-sm btn-outline-secondary" target="_blank">PDF (<?= strtoupper($ol) ?>)</a>
+                <a href="tour-itinerary-pdf.php?slug=<?= e($tour['slug']) ?>&pdf_lang=<?= $ol ?>" class="btn btn-sm btn-outline-secondary" target="_blank"><?= t('PDF') ?> (<?= strtoupper($ol) ?>)</a>
                 <?php endforeach; ?>
-                <a href="tour-itinerary-pdf.php?slug=<?= e($tour['slug']) ?>&pdf_lang=all" class="btn btn-sm btn-outline-dark" target="_blank">PDF (EN+中文)</a>
+                <a href="tour-itinerary-pdf.php?slug=<?= e($tour['slug']) ?>&pdf_lang=all" class="btn btn-sm btn-outline-dark" target="_blank"><?= t('PDF') ?> (EN+中文)</a>
                 </div>
             </div>
             <div class="accordion mb-4" id="itineraryAccordion">
@@ -651,7 +665,7 @@ require_once 'includes/header-shared.php';
                                     <span class="d-block small text-muted"><?= tglIndonesia($td['return_date']) ?></span>
                                 </div>
                                 <div class="text-end">
-                                    <span class="d-block small fw-semibold text-primary"><?= formatCurrencySpan($datePrices[$td['departure_date']] ?? $tour['price'], $tour['price_currency'] ?? 'IDR') ?></span>
+                                    <span class="d-block small fw-semibold text-primary"><?= formatCurrencySpan($effectivePrices[$td['departure_date']] ?? getFlashSalePrice((float)$tour['price'], 'tour', (int)$tour['id'])['price'], $tour['price_currency'] ?? 'IDR') ?></span>
                                     <span class="badge <?= $sisa > 0 ? 'bg-success' : 'bg-danger' ?>">
                                         <?= $sisa > 0 ? "$sisa " . t('slot') : t('Penuh') ?>
                                     </span>
@@ -671,11 +685,12 @@ require_once 'includes/header-shared.php';
                     <?php endif; ?>
                     <form method="POST" enctype="multipart/form-data">
                         <input type="hidden" name="form_submitted" value="1">
+                        <input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>">
                         <div class="mb-2">
                             <label class="form-label small"><?= t('Kode Promo (opsional)') ?></label>
                             <div class="input-group input-group-sm">
                                 <input type="text" name="promo_code" class="form-control klook-promo-input" placeholder="HEMAT10" id="promoCodeTour" autocomplete="off">
-                                <button type="button" class="btn btn-outline-primary klook-promo-btn" onclick="applyPromo('promoCodeTour','promoResultTour',<?= (float)$tour['price'] ?>)"><?= t('Pakai') ?></button>
+                                <button type="button" class="btn btn-outline-primary klook-promo-btn" onclick="applyTourPromo()"><?= t('Pakai') ?></button>
                             </div>
                             <div class="klook-promo-result small mt-1" id="promoResultTour"></div>
                         </div>
@@ -686,7 +701,7 @@ require_once 'includes/header-shared.php';
                                 <?php foreach ($tourDates as $td): ?>
                                     <?php $sisa = getSisaSlot($td['id']); ?>
                                     <?php if ($sisa > 0): ?>
-                                    <option value="<?= $td['id'] ?>" data-price="<?= (float)($datePrices[$td['departure_date']] ?? $tour['price']) ?>" data-cal="<?= isset($datePrices[$td['departure_date']]) ? '1' : '0' ?>"><?= tglIndonesia($td['departure_date']) ?> (<?= $sisa ?> <?= t('slot') ?>)</option>
+                                    <option value="<?= $td['id'] ?>" data-price="<?= (float)($effectivePrices[$td['departure_date']] ?? getFlashSalePrice((float)$tour['price'], 'tour', (int)$tour['id'])['price']) ?>" data-cal="<?= isset($datePrices[$td['departure_date']]) ? '1' : '0' ?>"><?= tglIndonesia($td['departure_date']) ?> (<?= $sisa ?> <?= t('slot') ?>)</option>
                                     <?php endif; ?>
                                 <?php endforeach; ?>
                             </select>
@@ -736,7 +751,7 @@ require_once 'includes/header-shared.php';
                         $formCurrency = $tour['price_currency'] ?? 'IDR';
                         ?>
                         <div class="border rounded p-2 mb-3 bg-light small" data-testid="booking-summary">
-                            <div class="d-flex justify-content-between"><span><?= t('Harga × peserta') ?></span><span id="sumBase"><?= formatRupiah($formBasePrice) ?></span></div>
+                            <div class="d-flex justify-content-between"><span><?= t('Subtotal') ?></span><span id="sumBase"><?= formatRupiah($formBasePrice) ?></span></div>
                             <div class="d-flex justify-content-between text-success d-none" id="sumInsRow" data-testid="insurance-row"><span><?= t('Asuransi perjalanan') ?> (3%)</span><span id="sumIns">Rp 0</span></div>
                             <hr class="my-1">
                             <div class="d-flex justify-content-between fw-bold"><span><?= t('Total') ?></span><span id="sumTotal" data-testid="summary-total"><?= formatRupiah($formBasePrice) ?></span></div>
@@ -747,21 +762,76 @@ require_once 'includes/header-shared.php';
                             var baseEl = document.querySelector('select[name="tour_date_id"]');
                             var paxEl = document.querySelector('input[name="participants"]');
                             var insEl = document.getElementById('addInsuranceTour');
+                            var ptsEl = document.getElementById('usePointsTour');
+                            var walletEl = document.getElementById('useWalletTour');
                             var base = <?= json_encode($formBasePrice) ?>;
+                            var corporatePct = <?= json_encode($corporatePct) ?>;
+                            var pointsValue = 100 * 100; // 100 point = Rp 10.000 (maks, sinkron dgn backend)
+                            var walletBal = <?= json_encode($walletBal ?? 0) ?>;
+                            var promoDiscount = 0;
+                            var currentSubtotal = base;
                             function recalc() {
                                 var pax = Math.max(1, parseInt(paxEl && paxEl.value, 10) || 1);
                                 var sel = baseEl && baseEl.selectedOptions && baseEl.selectedOptions[0];
                                 var unit = (sel && parseFloat(sel.getAttribute('data-price'))) || base;
                                 var sub = unit * pax;
+                                currentSubtotal = sub;
+                                // Corporate discount (%)
+                                if (corporatePct > 0) sub = sub * (100 - corporatePct) / 100;
+                                // Promo code
+                                sub -= promoDiscount;
+                                // Points (maks 100 point)
+                                var ptsDeduct = 0;
+                                if (ptsEl && ptsEl.checked) {
+                                    ptsDeduct = Math.min(pointsValue, sub);
+                                    sub -= ptsDeduct;
+                                }
+                                // Wallet (KlookCash)
+                                var walletDeduct = 0;
+                                if (walletEl && walletEl.checked) {
+                                    walletDeduct = Math.min(walletBal, sub);
+                                    sub -= walletDeduct;
+                                }
+                                sub = Math.max(0, sub);
+                                // Asuransi 3% dari total setelah semua diskon (sinkron dgn backend)
                                 var premi = insEl && insEl.checked ? Math.round(sub * 0.03 / 100) * 100 : 0;
                                 document.getElementById('sumBase').textContent = fmt(sub);
                                 document.getElementById('sumIns').textContent = fmt(premi);
                                 document.getElementById('sumInsRow').classList.toggle('d-none', premi === 0);
                                 document.getElementById('sumTotal').textContent = fmt(sub + premi);
                             }
+                            window.applyTourPromo = function () {
+                                var input = document.getElementById('promoCodeTour');
+                                var result = document.getElementById('promoResultTour');
+                                if (!input || !result) return;
+                                var code = input.value.trim();
+                                if (!code) { result.textContent = 'Masukkan kode promo'; return; }
+                                fetch('apply-promo-ajax.php', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                                    body: 'code=' + encodeURIComponent(code) + '&subtotal=' + encodeURIComponent(currentSubtotal)
+                                })
+                                .then(function (r) { return r.json(); })
+                                .then(function (d) {
+                                    if (d.success) {
+                                        promoDiscount = parseFloat(d.discount) || 0;
+                                        result.innerHTML = '<i class="bi bi-check-circle-fill text-success me-1"></i>' + d.message +
+                                            ' Diskon: <strong>Rp ' + promoDiscount.toLocaleString('id-ID') + '</strong>';
+                                        result.className = 'klook-promo-result small mt-1 text-success';
+                                    } else {
+                                        promoDiscount = 0;
+                                        result.innerHTML = '<i class="bi bi-x-circle-fill text-danger me-1"></i>' + (d.message || 'Kode promo tidak valid');
+                                        result.className = 'klook-promo-result small mt-1 text-danger';
+                                    }
+                                    recalc();
+                                })
+                                .catch(function () { result.textContent = 'Terjadi kesalahan. Coba lagi nanti.'; });
+                            };
                             if (baseEl) baseEl.addEventListener('change', recalc);
                             if (paxEl) paxEl.addEventListener('input', recalc);
                             if (insEl) insEl.addEventListener('change', recalc);
+                            if (ptsEl) ptsEl.addEventListener('change', recalc);
+                            if (walletEl) walletEl.addEventListener('change', recalc);
                             recalc();
                         })();
                         </script>

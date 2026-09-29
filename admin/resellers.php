@@ -60,7 +60,7 @@ require_once 'includes/admin-header.php';
                     <tr>
                         <th>ID</th>
                         <th><?= t('Nama') ?></th>
-                        <th>Email</th>
+                        <th><?= t('Email') ?></th>
                         <th><?= t('Telepon') ?></th>
                         <th class="text-end"><?= t('Saldo') ?></th>
                         <th class="text-center"><?= t('Booking') ?></th>

@@ -465,7 +465,7 @@ if ($isFL) {
                 <?php if (isset($lastPage) && $lastPage > $currentPage): ?>
                 <div class="load-more-trigger text-center py-4" data-page="<?= $currentPage ?>" data-last-page="<?= $lastPage ?>" data-testid="flight-load-more">
                     <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
+                        <span class="visually-hidden"><?= t('Loading...') ?></span>
                     </div>
                 </div>
                 <?php endif; ?>

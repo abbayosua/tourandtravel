@@ -1,0 +1,31 @@
+-- Missing EN translations for t() keys added during hardcoded-text fix
+-- Idempotent: INSERT IGNORE
+
+INSERT IGNORE INTO translations (`key`, lang, value) VALUES
+('Booking Code:', 'en', 'Booking Code:'),
+('Contoh: pilih +62 lalu tulis 08517488415 — otomatis dikirim "62 8517488415"', 'en', 'Example: select +62 then type 08517488415 — automatically sent "62 8517488415"'),
+('Data Tamu', 'en', 'Guest Data'),
+('Diajukan', 'en', 'Submitted'),
+('Free day / no activities', 'en', 'Free day / no activities'),
+('Home', 'en', 'Home'),
+('Kartu Kredit / Debit', 'en', 'Credit / Debit Card'),
+('Kartu dummy akan ditolak bank (kode 12101) — booking tercatat tapi tidak terbayar.', 'en', 'Dummy card will be rejected by bank (code 12101) — booking recorded but unpaid.'),
+('Loading...', 'en', 'Loading...'),
+('Menunggu Pembayaran', 'en', 'Waiting for Payment'),
+('Minimal Rp 50.000', 'en', 'Minimum Rp 50,000'),
+('Modul NusaTrip:', 'en', 'NusaTrip Module:'),
+('Modul OYO:', 'en', 'OYO Module:'),
+('No activities planned yet.', 'en', 'No activities planned yet.'),
+('No itinerary details available.', 'en', 'No itinerary details available.'),
+('Nomor HP (pilih kode negara, tulis nomor lokal saja)', 'en', 'Phone Number (select country code, type local number only)'),
+('OYO', 'en', 'OYO'),
+('Pembayaran (langsung ke NusaTrip)', 'en', 'Payment (direct to NusaTrip)'),
+('Pembayaran Berhasil', 'en', 'Payment Successful'),
+('Pembayaran Gagal / Ditolak', 'en', 'Payment Failed / Rejected'),
+('Pesan tiket ferry — booking instan, harga terbaik.', 'en', 'Book ferry tickets — instant booking, best prices.'),
+('Status bayar:', 'en', 'Payment status:'),
+('Task:', 'en', 'Task:'),
+('Tiket kereta pilihan — booking instan, harga terbaik.', 'en', 'Best train tickets — instant booking, best prices.'),
+('Virtual Account', 'en', 'Virtual Account'),
+('ferries', 'en', 'ferries'),
+('trains', 'en', 'trains');

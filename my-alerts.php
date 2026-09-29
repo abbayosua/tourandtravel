@@ -71,9 +71,9 @@ require_once 'includes/header-shared.php';
                         <td class="fw-bold"><?= formatRupiah($a['target_price'], $a['currency']) ?></td>
                         <td class="text-center">
                             <?php if ($a['active']): ?>
-                                <span class="badge bg-success">Aktif</span>
+                                <span class="badge bg-success"><?= t('Aktif') ?></span>
                             <?php else: ?>
-                                <span class="badge bg-secondary">Nonaktif</span>
+                                <span class="badge bg-secondary"><?= t('Nonaktif') ?></span>
                             <?php endif; ?>
                         </td>
                         <td class="small text-muted"><?= $a['notified_at'] ? date('d M Y H:i', strtotime($a['notified_at'])) : '-' ?></td>
