@@ -205,6 +205,8 @@ $manual = [
     'Belum ada jadwal penerbangan tersedia.' => 'No flight schedules available yet.',
     'Flight' => 'Flight', 'flights' => 'flights',
     'Tiket pesawat pilihan — booking instan, harga terbaik.' => 'Handpicked flights — instant booking, best fares.',
+    'Paket tour pilihan, villa & pengalaman — booking instan, harga terbaik.' => 'Handpicked tours, villas & experiences — instant booking, best prices.',
+    'Hotel, vila & resor pilihan — booking instan, harga terbaik.' => 'Handpicked hotels, villas & resorts — instant booking, best rates.',
     'Dipercaya traveler' => 'Trusted by travelers',
     'Dari (CGK)...' => 'From (CGK)...', 'Ke (DPS)...' => 'To (DPS)...',
 
