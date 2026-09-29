@@ -43,7 +43,6 @@ function pdfNew(?string $lang = null): Dompdf
     $opt = new Options();
     $lang = $lang ?? getCurrentLang();
     $font = $lang === 'zh' ? 'NotoSansSC' : 'DejaVu Sans';
-    if ($lang === 'zh') pdfRegisterCjkFont();
     $opt->set('defaultFont', $font);
     $opt->set('isRemoteEnabled', false);
     $opt->set('isHtml5ParserEnabled', true);
@@ -51,6 +50,18 @@ function pdfNew(?string $lang = null): Dompdf
     $opt->set('tempDir', sys_get_temp_dir());
     $pdf = new Dompdf($opt);
     $pdf->setPaper('A4', 'portrait');
+    if ($lang === 'zh') {
+        $ttf = __DIR__ . '/../assets/fonts/NotoSansSC-Regular.ttf';
+        if (is_file($ttf)) {
+            $fontDir = $opt->getFontDir();
+            $dest = rtrim($fontDir, '/\\') . '/NotoSansSC-Regular.ttf';
+            if (!is_file($dest)) @copy($ttf, $dest);
+            if (is_file($dest)) {
+                $pdf->getFontMetrics()->registerFont(['family' => 'NotoSansSC', 'weight' => 'normal', 'style' => 'normal'], 'file://' . $dest);
+                $pdf->getFontMetrics()->registerFont(['family' => 'NotoSansSC', 'weight' => 'bold', 'style' => 'normal'], 'file://' . $dest);
+            }
+        }
+    }
     return $pdf;
 }
 

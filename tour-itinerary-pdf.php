@@ -34,7 +34,8 @@ if ($pdfLang === 'all') {
     $zhBody = pdfTourBrochureHtml($tour, $itineraries, $coverImg, $deps, 'zh');
     $zhBody = preg_replace('#^.*<body>#s', '', $zhBody);
     $zhBody = preg_replace('#</body>.*$#s', '', $zhBody);
-    $html = str_replace('</body></html>', '<div class="page" style="page-break-before:always">' . $zhBody . '</div></body></html>', $html);
+    $zhStyle = pdfBrochureCss('zh');
+    $html = str_replace('</body></html>', '<div class="page" style="page-break-before:always"><style>' . $zhStyle . '</style>' . $zhBody . '</div></body></html>', $html);
 } else {
     $html = pdfTourBrochureHtml($tour, $itineraries, $coverImg, $deps, $pdfLang);
 }
@@ -42,4 +43,4 @@ if ($pdfLang === 'all') {
 $filename = 'tour-itinerary-' . $tour['slug'] . '-' . $pdfLang . '.pdf';
 $filename = substr(preg_replace('/[^a-zA-Z0-9._-]/', '_', $filename), 0, 90) . '.pdf';
 
-pdfStreamDownload(pdfNew($pdfLang === 'all' ? 'en' : $pdfLang), $html, $filename, '/tmp/tour_itinerary_output.pdf');
+pdfStreamDownload(pdfNew($pdfLang === 'all' ? 'zh' : $pdfLang), $html, $filename, '/tmp/tour_itinerary_output.pdf');
