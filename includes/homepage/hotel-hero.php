@@ -24,7 +24,7 @@ require_once __DIR__ . '/../components/date-picker.php';
     </div>
 
     <div class="voyage-inner">
-        <h1 class="voyage-title"><?= t('Find Your') ?><br><span class="serif voyage-title-accent">Perfect</span> <?= t('Stay') ?></h1>
+        <h1 class="voyage-title"><?= t('Find Your') ?><br><span class="serif voyage-title-accent"><?= t('Perfect') ?></span> <?= t('Stay') ?></h1>
         <p class="voyage-sub"><?= t('Hotel, vila & resor pilihan — booking instan, harga terbaik.') ?></p>
 
         <form class="voyage-search" method="GET" action="hotels.php" id="voyageHotelForm">

@@ -31,7 +31,7 @@ require_once __DIR__ . '/../components/date-picker.php';
     </div>
 
     <div class="voyage-inner">
-        <h1 class="voyage-title"><?= t('Temukan') ?><br><span class="serif voyage-title-accent">Perfect</span> <?= t('Trip') ?></h1>
+        <h1 class="voyage-title"><?= t('Temukan') ?><br><span class="serif voyage-title-accent"><?= t('Perfect') ?></span> <?= t('Trip') ?></h1>
         <p class="voyage-sub"><?= t('Paket tour pilihan, villa & pengalaman — booking instan, harga terbaik.') ?></p>
 
         <form class="voyage-search" method="GET" action="tours.php" id="voyageSearchForm">

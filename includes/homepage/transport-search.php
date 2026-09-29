@@ -140,7 +140,7 @@ $tsPhTo = $tsPhTo ?? $tsPhFrom;
         <div class="ts-aurora ts-aurora-c"></div>
     </div>
     <div class="voyage-inner">
-        <h1 class="voyage-title"><?= t('Find Your') ?><br><span class="serif voyage-title-accent">Perfect</span> <?= t($tsTitleB) ?></h1>
+        <h1 class="voyage-title"><?= t('Find Your') ?><br><span class="serif voyage-title-accent"><?= t('Perfect') ?></span> <?= t($tsTitleB) ?></h1>
         <p class="voyage-sub"><?= e($tsSub) ?></p>
         <div class="flight-glass">
             <div class="booking-tabs" role="tablist">
@@ -200,7 +200,7 @@ $tsPhTo = $tsPhTo ?? $tsPhFrom;
                     <div class="form-search-row">
                         <div class="search-field voyage-field">
                             <span class="search-field-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 7 11.5 7.3 11.8a1 1 0 0 0 1.4 0C13 21.5 20 15.4 20 10a8 8 0 0 0-8-8z"/></svg> <?= t('Dari') ?></span>
-                            <input type="text" name="from" class="ts-search <?= e($tsSearchClass) ?>" placeholder="<?= e($tsPhFrom) ?>" value="<?= e($tsFrom) ?>" autocomplete="off" data-target="tsFromDropdown" id="<?= $isFlight ? 'fromInput' : 'tsFromInput' ?>">
+                            <input type="text" name="from" class="ts-search <?= e($tsSearchClass) ?>" placeholder="<?= e($tsPhFrom) ?>" value="<?= e($tsFrom) ?>" autocomplete="off" data-target="<?= $isFlight ? 'fromDropdown' : 'tsFromDropdown' ?>" id="<?= $isFlight ? 'fromInput' : 'tsFromInput' ?>">
                             <div class="search-dropdown" id="<?= $isFlight ? 'fromDropdown' : 'tsFromDropdown' ?>"></div>
                             <?php if ($isFerry): ?>
                             <input type="hidden" name="from_pid" value="<?= (int)$tsFromPid ?>">
@@ -210,7 +210,7 @@ $tsPhTo = $tsPhTo ?? $tsPhFrom;
                         <button type="button" class="swap-btn" aria-label="Tukar"><span class="swap-btn-inner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 16l-4-4 4-4"/><path d="M17 8l4 4-4 4"/><line x1="3" y1="12" x2="21" y2="12"/></svg></span></button>
                         <div class="search-field voyage-field">
                             <span class="search-field-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 7 11.5 7.3 11.8a1 1 0 0 0 1.4 0C13 21.5 20 15.4 20 10a8 8 0 0 0-8-8z"/></svg> <?= t('Ke') ?></span>
-                            <input type="text" name="to" class="ts-search <?= e($tsSearchClass) ?>" placeholder="<?= e($tsPhTo) ?>" value="<?= e($tsTo) ?>" autocomplete="off" data-target="tsToDropdown" id="<?= $isFlight ? 'toInput' : 'tsToInput' ?>">
+                            <input type="text" name="to" class="ts-search <?= e($tsSearchClass) ?>" placeholder="<?= e($tsPhTo) ?>" value="<?= e($tsTo) ?>" autocomplete="off" data-target="<?= $isFlight ? 'toDropdown' : 'tsToDropdown' ?>" id="<?= $isFlight ? 'toInput' : 'tsToInput' ?>">
                             <div class="search-dropdown" id="<?= $isFlight ? 'toDropdown' : 'tsToDropdown' ?>"></div>
                             <?php if ($isFerry): ?>
                             <input type="hidden" name="to_pid" value="<?= (int)$tsToPid ?>">
