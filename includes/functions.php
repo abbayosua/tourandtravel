@@ -505,6 +505,11 @@ function formatDate($date) {
     if ($lang === 'id') {
         return tglIndonesia($date);
     }
+    if ($lang === 'zh') {
+        $daysZh = ['Sunday' => '星期日', 'Monday' => '星期一', 'Tuesday' => '星期二', 'Wednesday' => '星期三', 'Thursday' => '星期四', 'Friday' => '星期五', 'Saturday' => '星期六'];
+        $dayZh = $daysZh[date('l', $t)] ?? date('l', $t);
+        return $dayZh . ' ' . date('Y', $t) . '年' . (int)date('n', $t) . '月' . date('j', $t) . '日';
+    }
     return date('l', $t) . ', ' . date('j', $t) . ' ' . date('F', $t) . ' ' . date('Y', $t);
 }
 

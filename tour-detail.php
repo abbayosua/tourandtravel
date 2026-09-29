@@ -668,8 +668,8 @@ require_once 'includes/header-shared.php';
                             <?php $sisa = getSisaSlot($td['id']); ?>
                             <div class="d-flex justify-content-between align-items-center py-2 border-bottom date-item" data-date="<?= $td['departure_date'] ?>">
                                 <div>
-                                    <strong><?= tglIndonesia($td['departure_date']) ?></strong>
-                                    <span class="d-block small text-muted"><?= tglIndonesia($td['return_date']) ?></span>
+                                    <strong><?= formatDate($td['departure_date']) ?></strong>
+                                    <span class="d-block small text-muted"><?= formatDate($td['return_date']) ?></span>
                                 </div>
                                 <div class="text-end">
                                     <span class="d-block small fw-semibold text-primary"><?= formatCurrencySpan($effectivePrices[$td['departure_date']] ?? getFlashSalePrice((float)$tour['price'], 'tour', (int)$tour['id'])['price'], $tour['price_currency'] ?? 'IDR') ?></span>

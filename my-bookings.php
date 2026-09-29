@@ -182,11 +182,11 @@ require_once 'includes/header-shared.php';
                                 <div class="row small text-muted g-2">
                                     <?php if (!empty($b['date_label'])): ?>
                                     <div class="col-6">
-                                        <i class="bi bi-calendar me-1"></i><?= tglIndonesia($b['date_label']) ?>
+                                        <i class="bi bi-calendar me-1"></i><?= formatDate($b['date_label']) ?>
                                     </div>
                                     <?php elseif (!empty($b['departure_date'])): ?>
                                     <div class="col-6">
-                                        <i class="bi bi-calendar me-1"></i><?= tglIndonesia($b['departure_date']) ?>
+                                        <i class="bi bi-calendar me-1"></i><?= formatDate($b['departure_date']) ?>
                                     </div>
                                     <?php endif; ?>
                                     <div class="col-6">
