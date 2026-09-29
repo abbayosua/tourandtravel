@@ -6,7 +6,7 @@ $items=db()->query("SELECT * FROM rental_cars ORDER BY city,name")->fetchAll();
 $pageTitle=t('Kelola Rental Mobil'); require_once 'includes/admin-header.php';
 ?>
 <div class="d-flex justify-content-between align-items-center mb-3"><h4 class="fw-bold mb-0"><?= t('Rental Mobil') ?></h4></div>
-<div class="card border-0 shadow-sm"><div class="card-body p-0">
+<div class="card border-0 shadow-sm"><div class="card-body p-0 table-responsive">
 <table class="table table-hover mb-0 admin-table"><thead class="table-light"><tr><th>#</th><th><?= t('Nama') ?></th><th><?= t('Tipe') ?></th><th><?= t('Kota') ?></th><th><?= t('Harga/Hari') ?></th><th><?= t('Transmisi') ?></th><th><?= t('Kursi') ?></th><th><?= t('Aksi') ?></th></tr></thead>
 <tbody><?php foreach($items as $i):?><tr>
 <td><?=$i['id']?></td><td><?=e($i['name'])?></td><td><?=e($i['car_type'])?></td><td><?=e($i['city'])?></td>

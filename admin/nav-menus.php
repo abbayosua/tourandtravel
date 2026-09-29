@@ -120,7 +120,7 @@ require_once 'includes/admin-header.php';
 </div>
 <?php endif; ?>
 
-<div class="card border-0 shadow-sm"><div class="card-body p-0">
+<div class="card border-0 shadow-sm"><div class="card-body p-0 table-responsive">
 <table class="table table-hover mb-0 admin-table">
 <thead class="table-light"><tr><th>#</th><th><?= t('Label') ?></th><th>URL</th><th>Tab</th><th>Menu</th><th><?= t('Status') ?></th><th><?= t('Aksi') ?></th></tr></thead>
 <tbody><?php foreach ($items as $i): ?><tr>

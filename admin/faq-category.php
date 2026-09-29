@@ -19,7 +19,7 @@ require_once 'includes/admin-header.php';
     <a href="faq-category-edit.php" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> <?= t('Tambah') ?></a>
 </div>
 <?php if ($msg): ?><div class="alert alert-success py-2"><?= $msg ?></div><?php endif; ?>
-<div class="card border-0 shadow-sm"><div class="card-body p-0">
+<div class="card border-0 shadow-sm"><div class="card-body p-0 table-responsive">
 <table class="table table-hover mb-0 admin-table">
 <thead class="table-light"><tr><th>#</th><th><?= t('Nama') ?></th><th><?= t('Urutan') ?></th><th><?= t('Jumlah FAQ') ?></th><th><?= t('Aksi') ?></th></tr></thead>
 <tbody><?php foreach ($items as $i): ?><tr>

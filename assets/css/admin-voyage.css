@@ -111,6 +111,29 @@ body {
     border-color: #0d6efd; box-shadow: 0 0 0 3px rgba(13, 110, 253, .12);
 }
 #adminContent .table { margin-bottom: 0; }
+/* ===== Anti-overflow: konten tak boleh lebih lebar dari viewport ===== */
+#adminContent {
+    overflow-x: clip;
+    min-width: 0;
+}
+#adminContent .card {
+    max-width: 100%;
+    overflow: hidden;
+}
+#adminContent .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+#adminContent .admin-table th, #adminContent .admin-table td {
+    white-space: nowrap;
+    vertical-align: middle;
+}
+#adminContent .admin-table th:last-child, #adminContent .admin-table td:last-child {
+    min-width: 120px;
+}
+#adminContent form.d-flex {
+    flex-wrap: wrap;
+}
 #adminContent h1, #adminContent h2, #adminContent h3,
 #adminContent h4, #adminContent h5, #adminContent h6 { color: var(--admin-ink); letter-spacing: -.01em; }
 [data-theme="dark"] .admin-bg-img {
