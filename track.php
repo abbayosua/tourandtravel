@@ -18,6 +18,7 @@ $booking = $stmt->fetch();
 
 $pageTitle = $booking ? t('Tracking') . ': ' . $booking['booking_code'] : t('Tracking Booking');
 require_once 'includes/components/breadcrumb.php';
+require_once 'includes/qrcode.php';
 require_once 'includes/header-shared.php';
 ?>
 
@@ -63,10 +64,10 @@ require_once 'includes/header-shared.php';
                             </div>
                         </div>
 
-                        <!-- QR Code placeholder -->
+                        <!-- QR Voucher (kode booking dari DB) -->
                         <div class="d-flex justify-content-center mb-3">
                             <div class="bg-white border rounded-3 p-3 text-center" style="width: 140px;">
-                                <div style="width: 100px; height: 100px; margin: 0 auto; background: repeating-linear-gradient(45deg, #212529 0 6px, #fff 6px 12px); border-radius: 4px;"></div>
+                                <img src="<?= e(qrCodeUrl($booking['booking_code'], 200)) ?>" width="100" height="100" alt="<?= e(t('QR Voucher') . ' ' . $booking['booking_code']) ?>" loading="lazy">
                                 <small class="d-block text-muted mt-2" style="font-size: 10px;"><?= t('Scan voucher') ?></small>
                             </div>
                         </div>
