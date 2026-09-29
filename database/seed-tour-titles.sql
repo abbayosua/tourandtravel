@@ -1,0 +1,21 @@
+-- tour titles EN ZH
+UPDATE tours SET title_en = '8D7N Shanghai Jiangnan Highlights: Ink-Wash Jiangnan + Wuzhen Water Town', title_zh = '8天7晚上海江南精华：水墨江南＋乌镇水乡' WHERE id = 63;
+UPDATE tours SET title_en = 'Beijing Qushui Lanting | Sihui Branch', title_zh = '北京曲水兰亭｜四会分店' WHERE id = 131;
+UPDATE tours SET title_en = 'Full-Day Small Group Tea Picking at Xixi Wetland Hangzhou + Longjing Village (Half-Day Option)', title_zh = '杭州西溪湿地采茶一日游小团＋龙井村（可选半日）' WHERE id = 140;
+UPDATE tours SET title_en = 'Spectrum of the Seas Cruise to South Korea from Shanghai by Royal Caribbean', title_zh = '皇家加勒比海洋光谱号上海出发韩国邮轮' WHERE id = 143;
+UPDATE tours SET title_en = 'Shanghai Huangpu River Night Tour (Michelin Hairy Crab Dinner Included)', title_zh = '上海黄浦江夜游（含米其林大闸蟹晚餐）' WHERE id = 144;
+UPDATE tours SET title_en = 'Half-Day Small Group Tour: Xian Terracotta Army', title_zh = '西安兵马俑半日小团游' WHERE id = 148;
+UPDATE tours SET title_en = '5-Day Essential Tour: Xian Terracotta Warriors + Yellow Emperor Mausoleum + Hukou Waterfall', title_zh = '5日精华游：西安兵马俑＋黄帝陵＋壶口瀑布' WHERE id = 149;
+UPDATE tours SET title_en = 'Daming Palace Banquet Xian', title_zh = '西安大明宫宴' WHERE id = 150;
+UPDATE tours SET title_en = 'Klook Pick: 3-Day Pure Jiuzhaigou Huanglong with High-Speed Train from Chengdu (Mandarin Group)', title_zh = 'Klook精选：成都出发九寨沟黄龙3日纯玩高铁团（中文团）' WHERE id = 151;
+UPDATE tours SET title_en = '2-Day Boutique Tour: Siguniang Mountain & Bipenggou Valley Sichuan', title_zh = '四姑娘山毕棚沟四川2日精品游' WHERE id = 152;
+UPDATE tours SET title_en = 'Shu Palace Banquet: Immersive Shu Culture Dinner Show | Chunxi Road Chengdu', title_zh = '蜀宫宴·蜀文化沉浸式晚宴秀｜成都春熙路' WHERE id = 153;
+UPDATE tours SET title_en = 'Full-Day Guided Tour: Panda Base & Leshan Giant Buddha', title_zh = '熊猫基地＋乐山大佛一日导览游' WHERE id = 154;
+UPDATE tours SET title_en = 'Klook Pick: Jiuzhaigou Premium + Panda Base/Huanglong | Various Packages', title_zh = 'Klook精选：九寨沟精品＋熊猫基地/黄龙｜多种套餐可选' WHERE id = 155;
+UPDATE tours SET title_en = 'One-Day Four-Star Cruise on Guilin Li River & Yulong Bamboo Raft', title_zh = '桂林漓江四星游船＋遇龙河竹筏一日游' WHERE id = 158;
+UPDATE tours SET title_en = '5-Day VIP Zhangjiajie + Tianmen Mountain (Luxury Mountaintop Homestay Option)', title_zh = '张家界＋天门山5日VIP游（可选山顶豪华民宿）' WHERE id = 161;
+UPDATE tours SET title_en = 'Zhangjiajie 1 Day: Furong Town + Avatar, Tianmen OR Glass Bridge', title_zh = '张家界一日：芙蓉镇＋阿凡达、天门或玻璃桥' WHERE id = 162;
+UPDATE tours SET title_en = 'Private Tour: 6-Day Yunnan Dali Lijiang Shangri-La Holiday', title_zh = '私家团：云南大理丽江香格里拉6日游' WHERE id = 166;
+UPDATE tours SET title_en = 'Ice and Snow Fantasy A | 7-Day Harbin, Changbai Mountain, Xuexiang, Yanji Northeast Tour', title_zh = '冰雪奇缘A｜哈尔滨、长白山、雪乡、延吉东北7日游' WHERE id = 171;
+UPDATE tours SET title_en = '1-Day Trip to Yabuli Ski & Snow Village', title_zh = '亚布力滑雪＋雪乡一日游' WHERE id = 174;
+UPDATE tours SET title_en = 'Century Cruises: Luxury Yangtze Three Gorges Cruise 4D3N/5D4N from Chongqing/Yichang', title_zh = '世纪游轮：长江三峡豪华游轮4天3晚/5天4晚（重庆/宜昌出发）' WHERE id = 179;
