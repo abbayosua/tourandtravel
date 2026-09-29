@@ -28,12 +28,13 @@ require_once __DIR__ . '/../components/date-picker.php';
         <p class="voyage-sub"><?= t('Hotel, vila & resor pilihan — booking instan, harga terbaik.') ?></p>
 
         <form class="voyage-search" method="GET" action="hotels.php" id="voyageHotelForm">
-            <div class="voyage-field">
+            <div class="voyage-field" style="position:relative">
                 <label><?= t('Kota / Hotel') ?></label>
                 <input type="text" name="city" id="voyageHotelCity" placeholder="<?= t('Mau menginap di mana?') ?>" value="<?= e($hotelCityV) ?>" autocomplete="off" list="voyageHotelCityList">
                 <datalist id="voyageHotelCityList">
                     <?php foreach ($hotelCities as $hc): ?><option value="<?= e($hc) ?>"></option><?php endforeach; ?>
                 </datalist>
+                <div class="search-dropdown" id="voyageHotelCityDrop" style="position:absolute;top:100%;left:0;right:0;z-index:500"></div>
             </div>
             <div class="voyage-div"></div>
             <div class="voyage-field voyage-click" id="voyageInBtn" tabindex="0">
@@ -133,6 +134,8 @@ var adults=parseInt((document.getElementById('voyage-adults').textContent||'2'),
 function syncRoom(){var g=adults+children;gH.value=g;rH.value=rooms;roomV.textContent=g+' Guests, '+rooms+' Rooms';document.getElementById('voyage-adults').textContent=adults;document.getElementById('voyage-children').textContent=children;document.getElementById('voyage-rooms').textContent=rooms;}
 roomPop.querySelectorAll('button[data-room]').forEach(function(b){b.addEventListener('click',function(){var k=b.getAttribute('data-room'),d=parseInt(b.getAttribute('data-d'),10);if(k==='adults')adults=Math.max(1,adults+d);else if(k==='children')children=Math.max(0,children+d);else rooms=Math.max(1,Math.min(8,rooms+d));syncRoom();});});
 document.getElementById('voyageRoomOk').addEventListener('click',closeAll);syncLabel();syncRoom();
+var cityIn=document.getElementById('voyageHotelCity'),cityDrop=document.getElementById('voyageHotelCityDrop');
+if(cityIn&&cityDrop){var deb;cityIn.addEventListener('input',function(){clearTimeout(deb);var q=cityIn.value.trim();if(q.length<2){cityDrop.classList.remove('show');cityDrop.innerHTML='';return;}deb=setTimeout(function(){fetch('hotel-suggest-ajax.php?q='+encodeURIComponent(q)).then(function(r){return r.json();}).then(function(data){if(!data||!data.length){cityDrop.classList.remove('show');return;}var html='';data.forEach(function(it){var lb=String(it.label||'').replace(/"/g,'&quot;');html+='<div class="search-item" data-label="'+lb+'"><div class="search-icon bg-light text-primary"><i class="bi bi-geo-alt"></i></div><div class="fw-semibold small">'+lb.replace(/</g,'&lt;')+'</div></div>';});cityDrop.innerHTML=html;cityDrop.classList.add('show');cityDrop.querySelectorAll('.search-item').forEach(function(el){el.addEventListener('click',function(){cityIn.value=el.getAttribute('data-label');cityDrop.classList.remove('show');});});}).catch(function(){});},250);});document.addEventListener('click',function(e){if(!e.target.closest('#voyageHotelForm'))cityDrop.classList.remove('show');});}
 
 })();
 </script>
