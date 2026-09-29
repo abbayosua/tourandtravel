@@ -72,9 +72,9 @@ $footMenus = getNavMenus();
             <div class="col-md-3">
                 <h6 class="fw-bold mb-3"><?= t('Kontak') ?></h6>
                 <ul class="list-unstyled small">
-                    <li class="mb-2"><i class="bi bi-geo-alt-fill me-2"></i> <?= t('Taman Mediterania Blok JJ3 No 19') ?></li>
+                    <li class="mb-2"><i class="bi bi-geo-alt-fill me-2"></i> <?= t('Taman Mediterania Blok JJ3 no 19, Batam, Kepulauan Riau, Indonesia') ?></li>
                     <li class="mb-2"><i class="bi bi-telephone-fill me-2"></i> 08117774884</li>
-                    <li class="mb-2"><i class="bi bi-whatsapp me-2"></i> 0812-3456-7890</li>
+                    <li class="mb-2"><i class="bi bi-whatsapp me-2"></i> 08117774884</li>
                     <li class="mb-2"><i class="bi bi-envelope-fill me-2"></i> hello@tourandtravel.web.id</li>
                 </ul>
                 <h6 class="fw-bold mt-3"><?= t('Jam Operasional') ?></h6>

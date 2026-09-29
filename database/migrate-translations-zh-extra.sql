@@ -68,4 +68,5 @@ INSERT IGNORE INTO translations (`key`, lang, value) VALUES
 ('H-3 atau kurang / setelah keberangkatan', 'zh', '出发前3天内/出发后'),
 ('0% (non-refundable)', 'zh', '0%（不可退款）'),
 ('Cara Mengajukan Refund', 'zh', '如何申请退款'),
-('Kontak Refund', 'zh', '退款联系方式');
+('Kontak Refund', 'zh', '退款联系方式'),
+('Taman Mediterania Blok JJ3 no 19, Batam, Kepulauan Riau, Indonesia', 'zh', 'Taman Mediterania Blok JJ3 no 19, Batam, Kepulauan Riau, Indonesia');

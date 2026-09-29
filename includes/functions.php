@@ -608,10 +608,10 @@ function brandText(string $s): string {
 /** Kontak footer dinamis — diatur dari Admin (Brand & Logo). Fallback = nilai lama. */
 function siteContact(string $key): string {
     $defaults = [
-        'address' => 'Jl. Merdeka No. 123, Jakarta',
-        'phone' => '021-12345678',
-        'wa' => '0812-3456-7890',
-        'email' => 'info@tourandtravel.web.id',
+        'address' => 'Taman Mediterania Blok JJ3 no 19, Batam, Kepulauan Riau, Indonesia',
+        'phone' => '08117774884',
+        'wa' => '08117774884',
+        'email' => 'hello@tourandtravel.web.id',
         'hours_weekday' => 'Senin - Sabtu: 08:00 - 20:00',
         'hours_sunday' => 'Minggu: 09:00 - 15:00',
     ];

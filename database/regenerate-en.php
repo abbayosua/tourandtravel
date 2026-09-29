@@ -315,6 +315,7 @@ $manual = [
     'Cara Mengajukan Refund' => 'How to Request a Refund',
     'Buka halaman Booking Saya, pilih booking confirmed, klik Minta Refund, dan isi alasan. Tim kami akan meninjau pengajuan maksimal 3x24 jam hari kerja. Status pengajuan (requested / approved / rejected) dapat dipantau di halaman yang sama.' => 'Open My Bookings, pick a confirmed booking, click Request Refund, and fill the reason. We review within 3x24 business hours. Track status (requested / approved / rejected) on the same page.',
     'Kontak Refund' => 'Refund Contact',
+    'Taman Mediterania Blok JJ3 no 19, Batam, Kepulauan Riau, Indonesia' => 'Taman Mediterania Blok JJ3 no 19, Batam, Kepulauan Riau, Indonesia',
 ];
 
 // ---------- 3. Banding & insert ----------

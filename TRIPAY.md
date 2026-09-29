@@ -119,7 +119,7 @@ $data = [
     'amount'         => $amount,
     'customer_name'  => 'Nama Pelanggan',
     'customer_email' => 'emailpelanggan@domain.com',
-    'customer_phone' => '081234567890',
+    'customer_phone' => '08117774884',
     'order_items'    => [
         [
             'sku'         => 'FB-06',

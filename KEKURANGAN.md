@@ -18,7 +18,7 @@
 
 | # | Kekurangan | Benchmark | Realita Kita |
 |---|---|---|---|
-| 6 | **Live chat & CS real-time** | Traveloka: chat 24/7, Klook: in-app chat | Hanya nomor WA statis `0812-3456-7890` + `webhook-wa.php`. Tidak ada widget tawk/crisp/intercom |
+| 6 | **Live chat & CS real-time** | Traveloka: chat 24/7, Klook: in-app chat | Hanya nomor WA statis `08117774884` + `webhook-wa.php`. Tidak ada widget tawk/crisp/intercom |
 | 7 | **Flight multi-city & akumulasi miles** | Duffel support multi-slice; Traveloka: pilih kursi, baggage add-on | `duffel.php` kirim 1 slice saja (`slices => [[...]]`), cabin_class satu nilai |
 | 8 | **Peta interaktif + "search by map"** | Agoda: peta heat harga per area, Klook: pin lokasi | Hanya **static map** Google di `tour-detail.php:222`, tidak ada peta interaktif hotel/attraction |
 | 9 | **Wishlist lintas vertikal** | Semua competitor: simpan hotel, flight, attraction | `wishlist-ajax.php` & `functions.php:554` hanya `tour_id`. Hotel/attraction tidak bisa di-wishlist |
