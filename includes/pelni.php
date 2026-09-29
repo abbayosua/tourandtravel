@@ -6,6 +6,8 @@
 
 define('PELNI_BASE', 'https://klikmbc.biz/v2');
 
+require_once __DIR__ . '/flight-cache.php';
+
 $PELNI_PORT_MAP = [
     '256' => 'Pulau Batam, Kota Batam',
     '431' => 'Tanjung Priok, Jakarta Utara',
