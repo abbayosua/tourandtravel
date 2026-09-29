@@ -74,7 +74,7 @@ require_once 'includes/header-shared.php';
 $tsMode = 'train';
 $tsAction = 'trains.php';
 $tsFormId = 'trainSearchForm';
-$tsAutocomplete = 'city-search-ajax.php';
+$tsAutocomplete = 'ajax/kereta-station-search.php';
 $tsSearchClass = 'city-search';
 $tsShowTrip = false;
 $tsShowClass = true;

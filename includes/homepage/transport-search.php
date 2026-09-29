@@ -18,7 +18,7 @@ $isPelni = $tsMode === 'pelni';
 
 $tsAction = $tsAction ?? ($isPelni ? 'pelni.php' : ($isFerry ? 'ferries.php' : ($isTrain ? 'trains.php' : 'flights.php')));
 $tsFormId = $tsFormId ?? ($isPelni ? 'pelniSearchForm' : ($isFerry ? 'ferrySearchForm' : ($isTrain ? 'trainSearchForm' : 'flightSearchForm')));
-$tsAutocomplete = $tsAutocomplete ?? ($isPelni ? 'ajax/pelni-port-search.php' : ($isFerry ? 'ajax/ferry-place-search.php' : 'city-search-ajax.php'));
+$tsAutocomplete = $tsAutocomplete ?? ($isPelni ? 'ajax/pelni-port-search.php' : ($isFerry ? 'ajax/ferry-place-search.php' : ($isTrain ? 'ajax/kereta-station-search.php' : 'city-search-ajax.php')));
 $tsSearchClass = $tsSearchClass ?? ($isPelni ? 'pelni-search' : ($isFerry ? 'ferry-search' : 'city-search'));
 $tsShowTrip = $tsShowTrip ?? $isFlight;
 $tsShowClass = $tsShowClass ?? ($isFlight || $isTrain);
