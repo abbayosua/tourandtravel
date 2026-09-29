@@ -15,6 +15,36 @@ body {
     background: #f5f9ff !important;
     color: var(--admin-ink);
 }
+/* ===== Background gambar ala landing (voyage-bg) ===== */
+.admin-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+.admin-bg-img {
+    position: absolute;
+    inset: 0;
+    opacity: .22;
+    background-size: cover;
+    background-position: center 35%;
+    background-image: url('https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=2070&q=80');
+}
+.admin-bg-grad {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(231,240,255,.55) 0%, rgba(245,249,255,.72) 35%, rgba(245,249,255,.6) 65%, rgba(245,249,255,.8) 100%), linear-gradient(90deg, rgba(13,110,253,.08), transparent 55%, rgba(102,16,242,.06));
+}
+.admin-bg-glow {
+    position: absolute;
+    inset: 0;
+    opacity: .5;
+    background: radial-gradient(900px circle at 15% 15%, rgba(13,110,253,.14), transparent 60%), radial-gradient(700px circle at 85% 25%, rgba(255,122,26,.10), transparent 60%);
+}
+#adminTopbar, #adminWrapper, #adminContent {
+    position: relative;
+    z-index: 1;
+}
 /* ===== Navbar: glass pill bar ===== */
 #adminTopbar {
     background: rgba(255, 255, 255, .72) !important;
@@ -83,6 +113,16 @@ body {
 #adminContent .table { margin-bottom: 0; }
 #adminContent h1, #adminContent h2, #adminContent h3,
 #adminContent h4, #adminContent h5, #adminContent h6 { color: var(--admin-ink); letter-spacing: -.01em; }
+[data-theme="dark"] .admin-bg-img {
+    opacity: .35;
+}
+[data-theme="dark"] .admin-bg-grad {
+    background: linear-gradient(180deg, rgba(8,8,10,.55) 0%, rgba(8,8,10,.72) 50%, #08080a 100%);
+}
+[data-theme="dark"] .admin-bg-glow {
+    opacity: .5;
+    background: radial-gradient(900px circle at 15% 15%, rgba(255,122,26,.14), transparent 60%), radial-gradient(700px circle at 85% 25%, rgba(140,130,255,.12), transparent 60%);
+}
 /* ===== Dark mode (toggle #adminThemeToggle) ===== */
 [data-theme="dark"] body { background: #08080a !important; color: #ececef; }
 [data-theme="dark"] #adminTopbar {

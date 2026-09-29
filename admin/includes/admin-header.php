@@ -112,7 +112,7 @@
     if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
 })();
 </script>
-
+<div class="admin-bg" aria-hidden="true"><div class="admin-bg-img"></div><div class="admin-bg-grad"></div><div class="admin-bg-glow"></div></div>
 <!-- Navbar -->
 <nav class="navbar navbar-expand sticky-top" id="adminTopbar">
     <div class="container-fluid">
