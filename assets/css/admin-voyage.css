@@ -1,0 +1,124 @@
+/* ============================================================
+   Admin Voyage — bahasa desain landing (Voyage) untuk admin panel.
+   Light default ala hotels/landing, gelap saat [data-theme="dark"]
+   via toggle (localStorage), pola sama seperti navbar publik.
+   Dimuat SETELAH style.css agar override Bootstrap polos.
+   ============================================================ */
+:root {
+    --admin-glass: rgba(255, 255, 255, .72);
+    --admin-glass-border: rgba(13, 110, 253, .16);
+    --admin-ink: #0b1e3f;
+    --admin-sub: #5b6b86;
+    --admin-muted: #7a8aa5;
+}
+body {
+    background: #f5f9ff !important;
+    color: var(--admin-ink);
+}
+/* ===== Navbar: glass pill bar ===== */
+#adminTopbar {
+    background: rgba(255, 255, 255, .72) !important;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-bottom: 1px solid var(--admin-glass-border);
+    box-shadow: 0 8px 32px rgba(13, 110, 253, .12), inset 0 1px 0 rgba(255, 255, 255, .9);
+}
+#adminTopbar .navbar-brand { color: var(--admin-ink) !important; letter-spacing: -.01em; }
+#adminTopbar .navbar-brand:hover { color: var(--admin-ink) !important; }
+#adminTopbar .admin-user { color: var(--admin-sub); }
+#adminTopbar .btn-voyage-ghost {
+    color: var(--admin-ink); border: 1px solid rgba(13, 110, 253, .3);
+    border-radius: 999px; padding: 6px 16px; font-weight: 600; font-size: 13px;
+    background: transparent; text-decoration: none; white-space: nowrap;
+}
+#adminTopbar .btn-voyage-ghost:hover { background: rgba(13, 110, 253, .08); color: var(--admin-ink); }
+#adminTopbar .voyage-icon-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px; border-radius: 50%; color: #33465f;
+    border: 1px solid transparent; background: transparent; cursor: pointer; font-size: 16px;
+}
+#adminTopbar .voyage-icon-btn:hover { color: var(--admin-ink); background: rgba(13, 110, 253, .08); border-color: rgba(13, 110, 253, .16); }
+/* ===== Sidebar: panel kaca + pill menu ===== */
+#adminSidebar {
+    background: rgba(255, 255, 255, .72) !important;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-right: 1px solid var(--admin-glass-border);
+    box-shadow: 8px 0 32px rgba(13, 110, 253, .08), inset 0 1px 0 rgba(255, 255, 255, .9);
+}
+#adminSidebar .nav-section-label { color: var(--admin-muted) !important; }
+#adminSidebar .nav-link {
+    display: flex; align-items: center; gap: 10px;
+    color: var(--admin-sub); font-size: 13.5px; font-weight: 500;
+    padding: 9px 16px; border-radius: 999px; margin: 1px 0;
+    transition: background .2s, color .2s;
+}
+#adminSidebar .nav-link i {
+    width: 32px; height: 32px; flex: none; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center; font-size: 15px;
+    background: rgba(13, 110, 253, .08); border: 1px solid rgba(13, 110, 253, .14); color: #0d6efd;
+}
+#adminSidebar .nav-link:hover { color: var(--admin-ink); background: rgba(13, 110, 253, .08); }
+#adminSidebar .nav-link.active { background: #0d6efd; color: #fff; box-shadow: 0 2px 12px rgba(13, 110, 253, .35); }
+#adminSidebar .nav-link.active i { background: rgba(255, 255, 255, .18); border-color: rgba(255, 255, 255, .3); color: #fff; }
+#adminSidebar hr { border-color: rgba(13, 110, 253, .12) !important; opacity: 1; }
+/* ===== Konten: kartu kaca + tombol pill + tabel rounded ===== */
+#adminContent .card {
+    border: 1px solid rgba(255, 255, 255, .65) !important;
+    background: rgba(255, 255, 255, .72) !important;
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border-radius: 20px !important;
+    box-shadow: 0 8px 32px rgba(13, 110, 253, .12), inset 0 1px 0 rgba(255, 255, 255, .75) !important;
+}
+#adminContent .btn-primary { border-radius: 999px; box-shadow: 0 4px 14px rgba(13, 110, 253, .25); }
+#adminContent .btn-outline-primary,
+#adminContent .btn-outline-secondary,
+#adminContent .btn-outline-success,
+#adminContent .btn-outline-danger,
+#adminContent .btn-outline-warning { border-radius: 999px; }
+#adminContent .form-control, #adminContent .form-select { border-radius: 12px; }
+#adminContent .form-control:focus, #adminContent .form-select:focus {
+    border-color: #0d6efd; box-shadow: 0 0 0 3px rgba(13, 110, 253, .12);
+}
+#adminContent .table { margin-bottom: 0; }
+#adminContent h1, #adminContent h2, #adminContent h3,
+#adminContent h4, #adminContent h5, #adminContent h6 { color: var(--admin-ink); letter-spacing: -.01em; }
+/* ===== Dark mode (toggle #adminThemeToggle) ===== */
+[data-theme="dark"] body { background: #08080a !important; color: #ececef; }
+[data-theme="dark"] #adminTopbar {
+    background: rgba(255, 255, 255, .06) !important; border-color: rgba(255, 255, 255, .12);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, .4), inset 0 1px 0 rgba(255, 255, 255, .14);
+}
+[data-theme="dark"] #adminTopbar .navbar-brand, [data-theme="dark"] #adminTopbar .navbar-brand:hover { color: #fff !important; }
+[data-theme="dark"] #adminTopbar .admin-user { color: rgba(255, 255, 255, .6); }
+[data-theme="dark"] #adminTopbar .btn-voyage-ghost { color: #fff; border-color: rgba(255, 255, 255, .2); }
+[data-theme="dark"] #adminTopbar .btn-voyage-ghost:hover { background: rgba(255, 255, 255, .08); color: #fff; }
+[data-theme="dark"] #adminTopbar .voyage-icon-btn { color: rgba(255, 255, 255, .8); }
+[data-theme="dark"] #adminTopbar .voyage-icon-btn:hover { color: #fff; background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .1); }
+[data-theme="dark"] #adminSidebar {
+    background: rgba(255, 255, 255, .06) !important; border-color: rgba(255, 255, 255, .12);
+    box-shadow: 8px 0 40px rgba(0, 0, 0, .4), inset 0 1px 0 rgba(255, 255, 255, .14);
+}
+[data-theme="dark"] #adminSidebar .nav-section-label { color: rgba(255, 255, 255, .35) !important; }
+[data-theme="dark"] #adminSidebar .nav-link { color: rgba(255, 255, 255, .6); }
+[data-theme="dark"] #adminSidebar .nav-link i { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .12); color: #fff; }
+[data-theme="dark"] #adminSidebar .nav-link:hover { color: #fff; background: rgba(255, 255, 255, .08); }
+[data-theme="dark"] #adminSidebar .nav-link.active { background: #fff; color: #000; box-shadow: 0 2px 12px rgba(255, 255, 255, .25); }
+[data-theme="dark"] #adminSidebar .nav-link.active i { background: rgba(0, 0, 0, .08); border-color: rgba(0, 0, 0, .12); color: #000; }
+[data-theme="dark"] #adminSidebar hr { border-color: rgba(255, 255, 255, .1) !important; }
+[data-theme="dark"] #adminSidebar .nav-label.text-secondary { color: rgba(255, 255, 255, .5) !important; }
+[data-theme="dark"] #adminContent .card {
+    background: rgba(255, 255, 255, .06) !important; border-color: rgba(255, 255, 255, .1) !important;
+    box-shadow: none !important; color: #fff;
+}
+[data-theme="dark"] #adminContent h1, [data-theme="dark"] #adminContent h2,
+[data-theme="dark"] #adminContent h3, [data-theme="dark"] #adminContent h4,
+[data-theme="dark"] #adminContent h5, [data-theme="dark"] #adminContent h6 { color: #fff; }
+[data-theme="dark"] #adminContent .card .text-muted { color: rgba(255, 255, 255, .5) !important; }
+[data-theme="dark"] #adminContent .table { color: #ececef; }
+[data-theme="dark"] #adminContent .form-control, [data-theme="dark"] #adminContent .form-select {
+    background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .14); color: #fff;
+}
+@media (max-width: 767.98px) {
+    #adminSidebar { top: 57px; height: calc(100vh - 57px); }
+}

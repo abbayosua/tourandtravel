@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/admin-voyage.css">
     <?php require_once __DIR__ . '/../../includes/components/date-picker.php'; dpAssets(); ?>
 <style>
 #adminSidebar {
@@ -81,19 +82,26 @@
 </style>
 </head>
 <body>
+<script>
+(function () {
+    var t = localStorage.getItem('theme') || 'light';
+    if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+})();
+</script>
 
 <!-- Navbar -->
-<nav class="navbar navbar-expand navbar-dark bg-primary sticky-top">
+<nav class="navbar navbar-expand sticky-top" id="adminTopbar">
     <div class="container-fluid">
-        <button class="btn btn-sm btn-outline-light me-2" id="sidebarToggle" title="<?= t("Toggle Sidebar") ?>">
+        <button class="voyage-icon-btn me-2" id="sidebarToggle" title="<?= t("Toggle Sidebar") ?>">
             <i class="bi bi-list"></i>
         </button>
         <a class="navbar-brand fw-bold" href="dashboard.php">
             <i class="bi bi-airplane-engines-fill"></i> <?= t('Admin Panel') ?>
         </a>
         <div class="d-flex align-items-center ms-auto">
-            <span class="text-white me-3 small"><?= e($_SESSION['admin_username']) ?></span>
-            <a href="logout.php" class="btn btn-sm btn-outline-light"><?= t('Logout') ?></a>
+            <button id="adminThemeToggle" class="voyage-icon-btn me-2" title="Theme"><i class="bi bi-moon-stars"></i></button>
+            <span class="admin-user me-3 small"><?= e($_SESSION['admin_username']) ?></span>
+            <a href="logout.php" class="btn-voyage-ghost"><?= t('Logout') ?></a>
         </div>
     </div>
 </nav>
@@ -102,7 +110,7 @@
     <div id="sidebarOverlay"></div>
     <div class="d-flex" id="adminWrapper">
         <!-- Sidebar -->
-        <div class="bg-dark sidebar p-3" id="adminSidebar">
+        <div class="sidebar p-3" id="adminSidebar">
             <nav class="nav flex-column">
                 <?php
                 $currentPage = basename($_SERVER['PHP_SELF']);
