@@ -75,6 +75,7 @@ require_once __DIR__ . '/../components/date-picker.php';
             </div>
         </form>
         <div class="voyage-proof"><span class="voyage-proof-rate"><i>★</i> 4.9 • 2M+ <?= t('stays') ?></span><span class="voyage-proof-sub"><?= t('Dipercaya traveler') ?></span></div>
+        <?php /* Top stays disembunyikan sementara */ if (false): ?>
         <div class="voyage-list">
             <div class="voyage-list-head">
                 <div class="voyage-list-title"><h2><?= $hotelCityV !== '' ? t('Top stays in') . ' ' . e($hotelCityV) : t('Top stays') ?></h2><span class="voyage-count"><?= count($hotelCards) ?> <?= t('hotel') ?></span></div>
@@ -110,6 +111,7 @@ require_once __DIR__ . '/../components/date-picker.php';
                 <?php endforeach; endif; ?>
             </div>
         </div>
+        <?php endif; ?>
     </div>
 </section>
 
