@@ -87,13 +87,14 @@ if ($city !== '' && $liveEnabled) {
 $displayHotels = $usingLive ? $liveHotels : $hotels;
 
 $hotelWishlistIds = isLoggedIn() ? (getUserWishlistItems($_SESSION['user_id'])['hotel'] ?? []) : [];
-$hotelSearched = ($city !== '') || ($stars !== '') || ($minPrice !== '') || ($maxPrice !== '') || count($amenities) || $freeCancel || $instantConf || $bestSeller || ((int)($_GET['page'] ?? 1) > 1) || (($sort ?? 'price') !== 'price');
+$hotelSearched = ($city !== '') || ($stars !== '') || ($minPrice !== '') || ($maxPrice !== '') || count($amenities) || $freeCancel || $instantConf || $bestSeller || ($checkin !== '') || ($checkout !== '') || ($guests !== 2) || ((int)($_GET['page'] ?? 1) > 1) || (($sort ?? 'price') !== 'price');
 require_once 'includes/components/breadcrumb.php';
 require_once 'includes/components/hero-loader.php';
 $heroSlides = getHeroSlides('hotel');
 require_once 'includes/header-shared.php';
 require __DIR__ . '/includes/homepage/hotel-hero.php';
 ?>
+<?php if ($hotelSearched): ?>
 <section class="py-4 bg-light">
     <div class="container">
 
@@ -303,6 +304,7 @@ require __DIR__ . '/includes/homepage/hotel-hero.php';
         </div>
     </div>
 </section>
+<?php endif; ?>
 
 <!-- Peta harga -->
 <?php if ($hotelSearched): ?>

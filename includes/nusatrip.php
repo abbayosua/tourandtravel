@@ -203,7 +203,7 @@ function nusaSummary(string $ref): array {
 }
 
 /** Polling result ala aplikasi (r.java, p.java:q): max 9x jeda 5dt, retry+1 + lastState. */
-function nusaPollResult(string $taskId, string $checkoutId, int $maxTries = 9, int $sleepSec = 5): array {
+function nusaPollResult(string $taskId, string $checkoutId, int $maxTries = 2, int $sleepSec = 3): array {
     $last = null;
     for ($i = 0; $i < $maxTries; $i++) {
         if ($i > 0) sleep($sleepSec);

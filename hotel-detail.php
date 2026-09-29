@@ -120,7 +120,7 @@ if (!empty($_GET['live'])) {
                                         </div>
                                         <div class="text-end">
                                             <div class="fw-bold text-primary"><?= $rt > 0 ? formatRupiah($rt) : '-' ?></div>
-                                            <a href="nusatrip-book.php?<?= e(http_build_query(['hotel_id' => $liveExtId, 'checkin' => $checkin, 'checkout' => $checkout, 'guests' => $guests, 'city' => $liveCity, 'room_idx' => $ri])) ?>" class="btn btn-sm btn-primary rounded-pill mt-1"><?= t('Pesan') ?></a>
+                                            <a href="nusatrip-book.php?<?= e(http_build_query(['hotel_id' => $liveExtId, 'checkin' => $checkin, 'checkout' => $checkout, 'guests' => $guests, 'city' => $liveCity, 'hotel_name' => $pageTitle, 'room_combo' => (string)($rm['room_category'] ?? '') . '|' . (string)($rm['board_type'] ?? '') . '|' . (string)($rm['display_average_rate'] ?? $rm['average_rate'] ?? ''), 'room_idx' => $ri])) ?>" class="btn btn-sm btn-primary rounded-pill mt-1"><?= t('Pesan') ?></a>
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
@@ -159,7 +159,7 @@ if (!empty($_GET['live'])) {
                                 <small class="text-muted d-block mb-3"><?= t('/malam · harga live dari') ?> <?= e($srcLabel) ?></small>
                                 <?php if ($isNusatrip && !empty($nusaRooms)): ?>
                                     <?php $cheapIdx = 0; $cheapRate = PHP_INT_MAX; foreach ($nusaRooms as $ri => $rm) { $rt = (float)($rm['display_average_rate'] ?? $rm['average_rate'] ?? PHP_INT_MAX); if ($rt < $cheapRate) { $cheapRate = $rt; $cheapIdx = $ri; } } ?>
-                                    <a href="nusatrip-book.php?<?= e(http_build_query(['hotel_id' => $liveExtId, 'checkin' => $checkin, 'checkout' => $checkout, 'guests' => $guests, 'city' => $liveCity, 'room_idx' => $cheapIdx])) ?>" class="btn btn-primary rounded-pill w-100 mb-2"><?= t('Pesan Sekarang') ?></a>
+                                    <a href="nusatrip-book.php?<?= e(http_build_query(['hotel_id' => $liveExtId, 'checkin' => $checkin, 'checkout' => $checkout, 'guests' => $guests, 'city' => $liveCity, 'hotel_name' => $pageTitle, 'room_combo' => (string)($nusaRooms[$cheapIdx]['room_category'] ?? '') . '|' . (string)($nusaRooms[$cheapIdx]['board_type'] ?? '') . '|' . (string)($nusaRooms[$cheapIdx]['display_average_rate'] ?? $nusaRooms[$cheapIdx]['average_rate'] ?? ''), 'room_idx' => $cheapIdx])) ?>" class="btn btn-primary rounded-pill w-100 mb-2"><?= t('Pesan Sekarang') ?></a>
                                     <small class="text-muted d-block mb-2"><?= count($nusaRooms) ?> <?= t('tipe kamar tersedia') ?> · <?= e($checkin) ?> → <?= e($checkout) ?></small>
                                 <?php elseif (!empty($live['url'])): ?>
                                     <a href="<?= e($live['url']) ?>" target="_blank" rel="noopener nofollow" class="btn btn-primary rounded-pill w-100 mb-2"><?= t('Pesan di') ?> <?= e($srcLabel) ?></a>

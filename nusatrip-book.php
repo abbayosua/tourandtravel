@@ -34,7 +34,7 @@ if ($step === 'form') {
     $guests = min(12, max(1, (int)($_GET['guests'] ?? 1)));
     $city = trim((string)($_GET['city'] ?? ''));
     $hotelName = trim((string)($_GET['hotel_name'] ?? ''));
-    $roomRef = trim((string)($_GET['room_ref'] ?? ''));
+    $roomCombo = trim((string)($_GET['room_combo'] ?? ''));
     $roomIdx = max(0, (int)($_GET['room_idx'] ?? 0));
     if ($hotelId === '' || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $checkin) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $checkout) || strtotime($checkout) <= strtotime($checkin)) {
         $err = 'Parameter booking tidak lengkap.';
@@ -42,10 +42,12 @@ if ($step === 'form') {
         $rt = nusaHotelRates($hotelId, $checkin, $checkout, $guests);
         $rooms = $rt['data']['rooms'] ?? [];
         $room = null;
-        if ($roomRef !== '') {
+        if ($roomCombo !== '') {
+            [$cc, $bb, $rr] = array_pad(explode('|', $roomCombo, 3), 3, '');
             foreach ($rooms as $r) {
-                if ((string)($r['book_reference'] ?? '') === $roomRef) { $room = $r; break; }
+                if ((string)($r['room_category'] ?? '') === $cc && (string)($r['board_type'] ?? '') === $bb && (string)($r['display_average_rate'] ?? $r['average_rate'] ?? '') === $rr) { $room = $r; break; }
             }
+            if (!$room) $room = $rooms[$roomIdx] ?? null;
         } else {
             $room = $rooms[$roomIdx] ?? null;
         }
@@ -73,9 +75,11 @@ if ($step === 'form') {
                         'rate' => $room['display_average_rate'] ?? $room['average_rate'] ?? 0],
                     'cartSession' => $sess['cartSession'], 'checkoutId' => $sess['checkoutId'],
                     'bookingTime' => $sess['bookingTime'],
+                    'all_methods' => $attr['data']['paymentInstruments'] ?? [],
                     'methods' => array_values(array_filter($attr['data']['paymentInstruments'] ?? [], function ($m) {
                         $nm = strtolower((string)($m['name'] ?? ''));
-                        if (str_contains($nm, 'test') || str_contains($nm, 'dummy')) return false;
+                        if (str_contains($nm, 'test') || str_contains($nm, 'dummy')) { $m['_hidden'] = true; return false; }
+                        if (str_contains($nm, 'deposit')) { $m['_hidden'] = true; return false; }
                         $bid = (string)($m['bank_id'] ?? '');
                         $bnm = strtolower((string)($m['bank_name'] ?? $m['name'] ?? ''));
                         if ($bid === '' && (str_contains($bnm, 'bank transfer') || str_contains($bnm, 'virtual account'))) return false;
@@ -106,7 +110,6 @@ if ($step === 'submit' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     elseif (empty($b['validate']['totalPrice']['IDR'])) { $err = 'Harga belum tervalidasi NusaTrip. Ulangi dari halaman hotel.'; $step = 'form'; }
     elseif ($payMethod !== 'cc' && !in_array($payMethod, $allowedMethods, true)) { $err = 'Metode pembayaran tidak valid.'; $step = 'form'; }
     else {
-        $payMethod = (string)($_POST['pay_method'] ?? 'cc');
         $phoneCc = (string)($_POST['phone_cc'] ?? '62');
         $contact = nusaContact((string)($_POST['title'] ?? 'MR'), trim((string)($_POST['first_name'] ?? '')),
             trim((string)($_POST['last_name'] ?? '')), trim((string)($_POST['email'] ?? '')),
