@@ -52,6 +52,12 @@ if (($booking['status'] ?? '') !== 'pending') {
     exit;
 }
 
+// Ownership: booking milik user lain tidak boleh dipayarkan (kecuali guest booking)
+if (!empty($booking['user_id']) && (int)$booking['user_id'] !== (int)($_SESSION['user_id'] ?? 0)) {
+    echo json_encode(['ok' => false, 'error' => 'forbidden']);
+    exit;
+}
+
 $gross = (float)$booking[$priceCol[$bookingType]];
 $customer = [
     'name' => $booking['name'] ?? null,

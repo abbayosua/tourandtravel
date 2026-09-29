@@ -45,6 +45,9 @@ $stmt->execute([$tourId]);
 $dates = $stmt->fetchAll();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!csrfCheck()) {
+        $errors[] = t('Sesi tidak valid, silakan muat ulang halaman.');
+    }
     $dateId = (int)($_POST['tour_date_id'] ?? 0);
     $passengers = max($resellerPrice['min_pax'], (int)($_POST['passengers'] ?? $resellerPrice['min_pax']));
     $name = trim($_POST['name'] ?? '');
@@ -55,6 +58,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = t('Email tidak valid.');
     if (strlen($phone) < 8) $errors[] = t('Nomor telepon tidak valid.');
     if (!$dateId) $errors[] = t('Pilih tanggal keberangkatan.');
+    if ($passengers > (int)$tour['max_participants']) $errors[] = t('Jumlah peserta melebihi kapasitas tour.');
+
+    // Validasi tanggal milik tour ini & belum lewat
+    $dateStmt = db()->prepare("SELECT id FROM tour_dates WHERE id = ? AND tour_id = ? AND is_active = 1 AND departure_date >= CURDATE()");
+    $dateStmt->execute([$dateId, $tourId]);
+    if (!$dateStmt->fetch()) $errors[] = t('Tanggal keberangkatan tidak valid.');
+
+    // Cek ketersediaan slot (mencegah overbooking)
+    if (empty($errors) && getSisaSlot($dateId) < $passengers) {
+        $errors[] = t('Slot tidak cukup untuk tanggal tersebut.');
+    }
 
     $totalPrice = $resellerPrice['price'] * $passengers;
 
@@ -67,10 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($newBal === false) {
                 $errors[] = t('Gagal memotong saldo. Silakan coba lagi.');
             } else {
-                // Generate booking code
-                $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-                $bookingCode = 'TAT-';
-                for ($i = 0; $i < 5; $i++) $bookingCode .= $chars[random_int(0, strlen($chars) - 1)];
+                $bookingCode = generateBookingCode();
 
                 $parts = preg_split('/\s+/', $name, 2);
                 $stmt = db()->prepare("INSERT INTO bookings (booking_code, tour_id, tour_date_id, name, email, phone, participants, total_price, booking_source, reseller_id, user_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'reseller', ?, ?, 'pending')");
@@ -83,12 +94,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         ->execute([$bookingId, 'Booking: ' . $bookingCode . ' - ' . $tour['title'], $userId]);
                 } catch (Throwable $e) {}
 
-                // Reduce available slots
-                db()->prepare("UPDATE tour_dates SET available_slots = available_slots - ? WHERE id = ? AND available_slots >= ?")
-                    ->execute([$passengers, $dateId, $passengers]);
-
-                $success = $bookingCode;
-                $balance = getResellerBalance($userId);
+                // Deduksi slot atomik (sama dgn flow webhook) — rollback saldo jika gagal
+                require_once 'includes/availability.php';
+                $deduct = deductTourSlotsOnPaid($bookingId);
+                if ($deduct !== 'deducted') {
+                    db()->prepare("DELETE FROM bookings WHERE id = ?")->execute([$bookingId]);
+                    topUpReseller($userId, $totalPrice);
+                    $errors[] = t('Slot tidak cukup. Silakan pilih tanggal lain.');
+                } else {
+                    $success = $bookingCode;
+                    $balance = getResellerBalance($userId);
+                }
             }
         }
     }
@@ -159,6 +175,7 @@ require_once 'includes/header-shared.php';
                                     <a href="reseller-topup.php" class="btn btn-sm btn-outline-primary mb-3 w-100"><?= t('Topup Saldo') ?></a>
 
                                     <form method="POST">
+                                        <input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>">
                                         <div class="mb-2">
                                             <label class="form-label small fw-semibold"><?= t('Tanggal Keberangkatan') ?></label>
                                             <select name="tour_date_id" class="form-select" required>

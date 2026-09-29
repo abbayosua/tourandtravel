@@ -37,6 +37,13 @@ $bookingMessage = '';
 $bookingError = '';
 $bookingCode = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
+    $tourDateId = (int)($_POST['tour_date_id'] ?? 0);
+    $name = trim($_POST['name'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $phone = trim($_POST['phone'] ?? '');
+    $participants = (int)($_POST['participants'] ?? 0);
+    $notes = trim($_POST['notes'] ?? '');
+
     $errors = [];
     if (!csrfCheck()) $errors[] = t('Sesi tidak valid, silakan muat ulang halaman.');
     if (!$name) $errors[] = t('Nama harus diisi');
@@ -756,6 +763,8 @@ require_once 'includes/header-shared.php';
                             <hr class="my-1">
                             <div class="d-flex justify-content-between fw-bold"><span><?= t('Total') ?></span><span id="sumTotal" data-testid="summary-total"><?= formatRupiah($formBasePrice) ?></span></div>
                         </div>
+                        <?php $corporatePct = isLoggedIn() ? getCorporateDiscount((int)$_SESSION['user_id']) : 0.0; ?>
+                        <?php if (!empty($_SESSION['user_id'])): require_once 'includes/wallet.php'; $walletBal = getWalletBalance($_SESSION['user_id']); else: $walletBal = 0; endif; ?>
                         <script>
                         (function () {
                             var fmt = function (n) { return 'Rp ' + Math.round(n).toLocaleString('id-ID'); };
@@ -767,7 +776,7 @@ require_once 'includes/header-shared.php';
                             var base = <?= json_encode($formBasePrice) ?>;
                             var corporatePct = <?= json_encode($corporatePct) ?>;
                             var pointsValue = 100 * 100; // 100 point = Rp 10.000 (maks, sinkron dgn backend)
-                            var walletBal = <?= json_encode($walletBal ?? 0) ?>;
+                            var walletBal = <?= json_encode($walletBal) ?>;
                             var promoDiscount = 0;
                             var currentSubtotal = base;
                             function recalc() {

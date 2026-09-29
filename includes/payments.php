@@ -255,6 +255,9 @@ function handleMidtransNotification(array $notif): bool {
     if ($newStatus === 'paid' && $payment['booking_type'] === 'tour') {
         require_once __DIR__ . '/availability.php';
         deductTourSlotsOnPaid((int)$payment['booking_id']);
+        // Booking paid → status confirmed (membuka akses refund & review)
+        db()->prepare("UPDATE bookings SET status = 'confirmed' WHERE id = ? AND status = 'pending'")
+            ->execute([(int)$payment['booking_id']]);
     }
     // Fase 2: kembalikan slot bila payment gagal permanen setelah sempat paid
     if (in_array($newStatus, ['failed', 'expired'], true) && $payment['booking_type'] === 'tour') {

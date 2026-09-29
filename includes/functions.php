@@ -698,22 +698,22 @@ function getTours($category = null, $search = null, $priceRange = null, $duratio
 
     // Waktu keberangkatan (dari tour_dates)
     if ($departure === 'today') {
-        $sql .= " AND id IN (SELECT tour_id FROM tour_dates WHERE departure_date = CURDATE() AND available_slots > 0)";
-        $countSql .= " AND id IN (SELECT tour_id FROM tour_dates WHERE departure_date = CURDATE() AND available_slots > 0)";
+        $sql .= " AND id IN (SELECT tour_id FROM tour_dates td2 WHERE departure_date = CURDATE() AND td2.available_slots > (SELECT COALESCE(SUM(b2.participants),0) FROM bookings b2 WHERE b2.tour_date_id = td2.id AND b2.status IN ('pending','confirmed') AND b2.created_at >= NOW() - INTERVAL 24 HOUR))";
+        $countSql .= " AND id IN (SELECT tour_id FROM tour_dates td2 WHERE departure_date = CURDATE() AND td2.available_slots > (SELECT COALESCE(SUM(b2.participants),0) FROM bookings b2 WHERE b2.tour_date_id = td2.id AND b2.status IN ('pending','confirmed') AND b2.created_at >= NOW() - INTERVAL 24 HOUR))";
     } elseif ($departure === 'tomorrow') {
-        $sql .= " AND id IN (SELECT tour_id FROM tour_dates WHERE departure_date = CURDATE() + INTERVAL 1 DAY AND available_slots > 0)";
-        $countSql .= " AND id IN (SELECT tour_id FROM tour_dates WHERE departure_date = CURDATE() + INTERVAL 1 DAY AND available_slots > 0)";
+        $sql .= " AND id IN (SELECT tour_id FROM tour_dates td2 WHERE departure_date = CURDATE() + INTERVAL 1 DAY AND td2.available_slots > (SELECT COALESCE(SUM(b2.participants),0) FROM bookings b2 WHERE b2.tour_date_id = td2.id AND b2.status IN ('pending','confirmed') AND b2.created_at >= NOW() - INTERVAL 24 HOUR))";
+        $countSql .= " AND id IN (SELECT tour_id FROM tour_dates td2 WHERE departure_date = CURDATE() + INTERVAL 1 DAY AND td2.available_slots > (SELECT COALESCE(SUM(b2.participants),0) FROM bookings b2 WHERE b2.tour_date_id = td2.id AND b2.status IN ('pending','confirmed') AND b2.created_at >= NOW() - INTERVAL 24 HOUR))";
     } elseif ($departure === 'week') {
-        $sql .= " AND id IN (SELECT tour_id FROM tour_dates WHERE departure_date BETWEEN CURDATE() AND CURDATE() + INTERVAL 7 DAY AND available_slots > 0)";
-        $countSql .= " AND id IN (SELECT tour_id FROM tour_dates WHERE departure_date BETWEEN CURDATE() AND CURDATE() + INTERVAL 7 DAY AND available_slots > 0)";
+        $sql .= " AND id IN (SELECT tour_id FROM tour_dates td2 WHERE departure_date BETWEEN CURDATE() AND CURDATE() + INTERVAL 7 DAY AND td2.available_slots > (SELECT COALESCE(SUM(b2.participants),0) FROM bookings b2 WHERE b2.tour_date_id = td2.id AND b2.status IN ('pending','confirmed') AND b2.created_at >= NOW() - INTERVAL 24 HOUR))";
+        $countSql .= " AND id IN (SELECT tour_id FROM tour_dates td2 WHERE departure_date BETWEEN CURDATE() AND CURDATE() + INTERVAL 7 DAY AND td2.available_slots > (SELECT COALESCE(SUM(b2.participants),0) FROM bookings b2 WHERE b2.tour_date_id = td2.id AND b2.status IN ('pending','confirmed') AND b2.created_at >= NOW() - INTERVAL 24 HOUR))";
     } elseif ($departure === 'month') {
-        $sql .= " AND id IN (SELECT tour_id FROM tour_dates WHERE departure_date BETWEEN CURDATE() AND CURDATE() + INTERVAL 30 DAY AND available_slots > 0)";
-        $countSql .= " AND id IN (SELECT tour_id FROM tour_dates WHERE departure_date BETWEEN CURDATE() AND CURDATE() + INTERVAL 30 DAY AND available_slots > 0)";
+        $sql .= " AND id IN (SELECT tour_id FROM tour_dates td2 WHERE departure_date BETWEEN CURDATE() AND CURDATE() + INTERVAL 30 DAY AND td2.available_slots > (SELECT COALESCE(SUM(b2.participants),0) FROM bookings b2 WHERE b2.tour_date_id = td2.id AND b2.status IN ('pending','confirmed') AND b2.created_at >= NOW() - INTERVAL 24 HOUR))";
+        $countSql .= " AND id IN (SELECT tour_id FROM tour_dates td2 WHERE departure_date BETWEEN CURDATE() AND CURDATE() + INTERVAL 30 DAY AND td2.available_slots > (SELECT COALESCE(SUM(b2.participants),0) FROM bookings b2 WHERE b2.tour_date_id = td2.id AND b2.status IN ('pending','confirmed') AND b2.created_at >= NOW() - INTERVAL 24 HOUR))";
     } elseif ($departure) {
         $dept = date('Y-m-d', strtotime((string)$departure));
         if ($dept && preg_match('/^\d{4}-\d{2}-\d{2}$/', (string)$departure)) {
-            $sql .= " AND id IN (SELECT tour_id FROM tour_dates WHERE departure_date = ? AND available_slots > 0)";
-            $countSql .= " AND id IN (SELECT tour_id FROM tour_dates WHERE departure_date = ? AND available_slots > 0)";
+            $sql .= " AND id IN (SELECT tour_id FROM tour_dates td2 WHERE departure_date = ? AND td2.available_slots > (SELECT COALESCE(SUM(b2.participants),0) FROM bookings b2 WHERE b2.tour_date_id = td2.id AND b2.status IN ('pending','confirmed') AND b2.created_at >= NOW() - INTERVAL 24 HOUR))";
+            $countSql .= " AND id IN (SELECT tour_id FROM tour_dates td2 WHERE departure_date = ? AND td2.available_slots > (SELECT COALESCE(SUM(b2.participants),0) FROM bookings b2 WHERE b2.tour_date_id = td2.id AND b2.status IN ('pending','confirmed') AND b2.created_at >= NOW() - INTERVAL 24 HOUR))";
             $params[] = $dept;
             $countParams[] = $dept;
         }
@@ -948,13 +948,57 @@ function getDestinasiImage($city) {
 
 
 /**
- * Hitung sisa slot
+ * Validasi kode promo terhadap subtotal. Return ['code','discount'] atau null.
+ * Sumber kebenaran tunggal untuk apply-promo-ajax.php dan handler booking.
+ */
+function validatePromoCode(string $code, float $subtotal): ?array {
+    $code = strtoupper(trim($code));
+    if ($code === '' || $subtotal <= 0) return null;
+    $stmt = db()->prepare("SELECT * FROM promo_codes WHERE code = ? AND is_active = 1 LIMIT 1");
+    $stmt->execute([$code]);
+    $promo = $stmt->fetch();
+    if (!$promo) return null;
+    $today = date('Y-m-d');
+    if ($today < $promo['valid_from'] || $today > $promo['valid_until']) return null;
+    if ($promo['usage_limit'] !== null && $promo['used_count'] >= $promo['usage_limit']) return null;
+    if ($promo['min_purchase'] !== null && $subtotal < $promo['min_purchase']) return null;
+    if ($promo['discount_type'] === 'percentage') {
+        $discount = $subtotal * ((float)$promo['discount_value'] / 100);
+        if ($promo['max_discount'] !== null && $discount > (float)$promo['max_discount']) {
+            $discount = (float)$promo['max_discount'];
+        }
+    } else {
+        $discount = (float)$promo['discount_value'];
+    }
+    $discount = min($discount, $subtotal);
+    return ['code' => $code, 'discount' => round($discount, 2)];
+}
+
+/** CSRF token per session (untuk form publik). */
+function csrfToken(): string {
+    if (session_status() === PHP_SESSION_NONE) session_start();
+    if (empty($_SESSION['csrf_token'])) $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    return $_SESSION['csrf_token'];
+}
+
+/** Validasi CSRF token dari POST. */
+function csrfCheck(): bool {
+    if (session_status() === PHP_SESSION_NONE) session_start();
+    $sent = (string)($_POST['csrf_token'] ?? '');
+    $known = (string)($_SESSION['csrf_token'] ?? '');
+    return $sent !== '' && $known !== '' && hash_equals($known, $sent);
+}
+
+/**
+ * Hitung sisa slot.
+ * Booking pending hanya dihitung 24 jam (setelah itu dianggap abandoned).
  */
 function getSisaSlot($tourDateId) {
     $stmt = db()->prepare("
         SELECT td.available_slots - COALESCE(SUM(b.participants), 0) as sisa
         FROM tour_dates td
         LEFT JOIN bookings b ON b.tour_date_id = td.id AND b.status IN ('pending', 'confirmed')
+            AND b.created_at >= NOW() - INTERVAL 24 HOUR
         WHERE td.id = ?
         GROUP BY td.id
     ");
@@ -1166,6 +1210,7 @@ function generateBookingCode() {
 function uploadWebP($file, $targetDir, $quality = 70) {
     $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
     if ($file['error'] !== UPLOAD_ERR_OK) return ['success' => false, 'message' => 'Gagal upload'];
+    if (($file['size'] ?? 0) > 2 * 1024 * 1024) return ['success' => false, 'message' => 'Ukuran file maksimal 2MB'];
     if (!in_array($file['type'], $allowedTypes)) return ['success' => false, 'message' => 'Tipe file harus JPG/PNG/WebP'];
     
     if (!is_dir($targetDir)) mkdir($targetDir, 0755, true);

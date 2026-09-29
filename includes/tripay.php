@@ -196,6 +196,9 @@ function handleTripayCallback(array $data): bool {
     if ($newStatus === 'paid') {
         require_once __DIR__ . '/availability.php';
         deductTourSlotsOnPaid((int)$payment['booking_id']);
+        // Booking paid → status confirmed (membuka akses refund & review)
+        db()->prepare("UPDATE bookings SET status = 'confirmed' WHERE id = ? AND status = 'pending'")
+            ->execute([(int)$payment['booking_id']]);
         // Poin loyalty: reuse pola midtrans
         $b2 = db()->prepare('SELECT total_price, booking_code, user_id FROM bookings WHERE id = ?');
         $b2->execute([(int)$payment['booking_id']]);
