@@ -1110,12 +1110,12 @@ function getGalleryKeywords($tour) {
  */
 function getTourFacilities() {
     return [
-        ['icon' => 'bi-building', 'label' => 'Hotel Bintang 4'],
-        ['icon' => 'bi-bus-front', 'label' => 'Transport AC'],
-        ['icon' => 'bi-cup-hot', 'label' => 'Makan Sesuai Itinerary'],
-        ['icon' => 'bi-person-badge', 'label' => 'Tour Guide Profesional'],
-        ['icon' => 'bi-shield-check', 'label' => 'Asuransi Perjalanan'],
-        ['icon' => 'bi-camera', 'label' => 'Dokumentasi'],
+        ['icon' => 'bi-building', 'label' => t('Hotel Bintang 4')],
+        ['icon' => 'bi-bus-front', 'label' => t('Transport AC')],
+        ['icon' => 'bi-cup-hot', 'label' => t('Makan Sesuai Itinerary')],
+        ['icon' => 'bi-person-badge', 'label' => t('Tour Guide Profesional')],
+        ['icon' => 'bi-shield-check', 'label' => t('Asuransi Perjalanan')],
+        ['icon' => 'bi-camera', 'label' => t('Dokumentasi')],
     ];
 }
 

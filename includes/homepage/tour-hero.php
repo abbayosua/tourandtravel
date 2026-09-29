@@ -93,16 +93,16 @@ require_once __DIR__ . '/../components/date-picker.php';
             <div class="voyage-tgrid">
                 <?php foreach ($voyageCards as $vc):
                     $vSlug = $vc['slug'] ?? $vc['id'];
-                    $vTitle = $vc['title'] ?? '';
-                    $vLoc = trim(($vc['location_city'] ?? '') ?: ($vc['category'] ?? ''));
+                    $vTitle = tContent($vc, 'title');
+                    $vLoc = trim(tContent($vc, 'location_city') ?: tContent($vc, 'category'));
                     $vRating = number_format((float)($vc['rating'] ?? 5), 1);
                     $vRev = (int)($vc['total_reviews'] ?? 0);
                     $vDays = (int)($vc['duration_days'] ?? 0);
                     $vDur = $vDays > 0 ? $vDays . 'D' . (!empty($vc['duration_nights']) ? (int)$vc['duration_nights'] . 'N' : '') : t('Tour');
                     try { $vDisc = function_exists('getDiskonPersen') ? (int)getDiskonPersen($vc) : 0; } catch (Throwable $e) { $vDisc = 0; }
                     $vHi = [];
-                    if (!empty($vc['highlights'])) {
-                        foreach (preg_split("/[\r\n]+/", (string)$vc['highlights']) as $hx) {
+                    if (!empty(tContent($vc, 'highlights'))) {
+                        foreach (preg_split("/[\r\n]+/", (string)tContent($vc, 'highlights')) as $hx) {
                             $hx = trim($hx);
                             $hx = trim($hx, "-\xe2\x80\xa2\xe2\x80\xa3*0123456789. ");
                             if ($hx !== '') $vHi[] = $hx;
