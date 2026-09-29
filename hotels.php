@@ -219,7 +219,7 @@ require __DIR__ . '/includes/homepage/hotel-hero.php';
                 <div id="hotelContent" style="display: none;">
                 <?php if (count($displayHotels) > 0): ?>
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <small class="text-muted"><?= count($displayHotels) ?> <?= t('hotel ditemukan') ?><?php if ($usingLive): ?> · <span class="badge bg-success-subtle text-success-emphasis"><?= t('Harga live') ?> (<?= e($liveSource) ?>)</span><?php endif; ?></small>
+                    <small class="text-muted"><?= count($displayHotels) ?> <?= t('hotel ditemukan') ?></small>
                     <div class="d-flex gap-1">
                         <a href="?<?= e(http_build_query(array_merge($_GET, ['sort' => 'price']))) ?>" class="btn btn-sm <?= $sort === 'price' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Harga Termurah') ?></a>
                         <a href="?<?= e(http_build_query(array_merge($_GET, ['sort' => 'price_desc']))) ?>" class="btn btn-sm <?= $sort === 'price_desc' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Harga Termahal') ?></a>
