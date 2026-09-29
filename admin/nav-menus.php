@@ -7,7 +7,7 @@ cekLogin();
 
 $pageTitle = t('Menu Navigasi');
 
-$icons = ['bi-map','bi-building','bi-airplane','bi-ship','bi-car-front','bi-train-front','bi-signpost-2','bi-arrow-left-right','bi-sim','bi-circle','bi-house','bi-grid'];
+$icons = ['bi-map','bi-building','bi-airplane','bi-water','bi-car-front','bi-train-front','bi-signpost-2','bi-arrow-left-right','bi-sim','bi-circle','bi-house','bi-grid'];
 $msg = '';
 if (isset($_GET['msg'])) $msg = match($_GET['msg']) { 'added' => t('Berhasil ditambahkan'), 'updated' => t('Berhasil diperbarui'), 'deleted' => t('Berhasil dihapus'), 'toggled' => t('Status diubah'), default => '' };
 

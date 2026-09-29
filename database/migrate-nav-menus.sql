@@ -19,7 +19,7 @@ INSERT IGNORE INTO nav_menus (id, label, url, icon, match_key, show_in_tabs, sho
 (1, 'Tour', 'tours.php', 'bi-map', 'tour', 1, 1, 1, 1),
 (2, 'Hotel', 'hotels.php', 'bi-building', 'hotel', 1, 1, 2, 1),
 (3, 'Pesawat', 'flights.php', 'bi-airplane', 'flight', 1, 1, 3, 1),
-(4, 'Ferry', 'ferries.php', 'bi-ship', 'ferri', 0, 1, 4, 1),
+(4, 'Ferry', 'ferries.php', 'bi-water', 'ferri', 0, 1, 4, 1),
 (5, 'Rental', 'rental-cars.php', 'bi-car-front', 'rental-car', 0, 1, 5, 1),
 (6, 'Kereta', 'trains.php', 'bi-train-front', 'train', 0, 1, 6, 1),
 (7, 'Atraksi', 'attractions.php', 'bi-signpost-2', 'attraction', 0, 1, 7, 1),

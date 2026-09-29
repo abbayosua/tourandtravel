@@ -157,7 +157,7 @@
                 $navItem('tours.php', 'bi-map', t('Kelola Tour'), ['tours.php', 'tour-edit.php', 'tour-add.php']);
                 $navItem('hotels.php', 'bi-building', t('Kelola Hotel'), ['hotels.php', 'hotel-edit.php', 'hotel-rooms.php']);
                 $navItem('flights.php', 'bi-airplane', t('Kelola Pesawat'), ['flights.php', 'flight-edit.php']);
-                $navItem('ferries.php', 'bi-ship', t('Kelola Ferry'), ['ferries.php', 'ferry-edit.php']);
+                $navItem('ferries.php', 'bi-water', t('Kelola Ferry'), ['ferries.php', 'ferry-edit.php']);
                 $navItem('rental-cars.php', 'bi-car-front', t('Kelola Rental'), ['rental-cars.php', 'rental-car-edit.php']);
                 $navItem('attractions.php', 'bi-signpost-2', t('Kelola Atraksi'), ['attractions.php', 'attraction-edit.php']);
                 $navItem('transfers.php', 'bi-car-front', t('Kelola Transfer'), ['transfers.php', 'transfer-edit.php']);

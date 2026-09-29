@@ -165,7 +165,7 @@ require_once 'includes/header-shared.php';
                             <img src="<?= e($logo) ?>" alt="<?= e($company) ?>" style="height:36px;">
                             <?php else: ?>
                             <div class="bg-primary bg-opacity-10 rounded-3 d-flex align-items-center justify-content-center" style="width:48px;height:48px;">
-                                <i class="bi bi-ship text-primary fs-5"></i>
+                                <i class="bi bi-water text-primary fs-5"></i>
                             </div>
                             <?php endif; ?>
                             <div class="flex-grow-1">
