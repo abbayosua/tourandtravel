@@ -30,6 +30,7 @@ $typeMap = [
     'tour' => 'bookings', 'hotel' => 'hotel_bookings', 'flight' => 'flight_bookings',
     'train' => 'train_bookings', 'transfer' => 'transfer_bookings',
     'attraction' => 'attraction_bookings', 'esim' => 'connectivity_bookings',
+    'ferry' => 'ferry_bookings',
 ];
 if (!isset($typeMap[$bookingType]) || $bookingId < 1) {
     echo json_encode(['ok' => false, 'error' => 'invalid_booking']);
@@ -39,7 +40,8 @@ if (!isset($typeMap[$bookingType]) || $bookingId < 1) {
 // Ambil booking (milik user login ATAU guest dengan code — untuk tour wajib cocok id+status pending)
 $table = $typeMap[$bookingType];
 $priceCol = ['tour' => 'total_price', 'hotel' => 'total_price', 'flight' => 'total_price',
-             'train' => 'total_price', 'transfer' => 'total_price', 'attraction' => 'total_price', 'esim' => 'total_price'];
+             'train' => 'total_price', 'transfer' => 'total_price', 'attraction' => 'total_price', 'esim' => 'total_price',
+             'ferry' => 'total_price'];
 $stmt = db()->prepare("SELECT * FROM `$table` WHERE id = ? LIMIT 1");
 $stmt->execute([$bookingId]);
 $booking = $stmt->fetch();
@@ -65,9 +67,9 @@ $customer = [
     'phone' => $booking['phone'] ?? null,
 ];
 
-if (tripayGateway() === 'tripay' && $bookingType === 'tour') {
+if (tripayGateway() === 'tripay') {
     $tripayMethod = preg_replace('/[^A-Z0-9_]/', '', strtoupper((string)($_POST['method'] ?? 'BRIVA')));
-    $result = createTripayTransaction($bookingId, $gross, $customer, $tripayMethod ?: 'BRIVA');
+    $result = createTripayTransaction($bookingId, $gross, $customer, $tripayMethod ?: 'BRIVA', $bookingType);
     $result['gateway'] = 'tripay';
 } else {
     $result = createMidtransSnapTransaction($bookingType, $bookingId, $gross, $customer);

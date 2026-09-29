@@ -3,6 +3,7 @@ require_once 'includes/config.php';
 require_once 'includes/db.php';
 require_once 'includes/functions.php';
 require_once 'includes/easybook.php';
+require_once 'includes/tripay.php';
 
 // Validate required trip params
 $company      = trim($_GET['company'] ?? '');
@@ -69,6 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             json_encode($paxData), $name, $email, $phone, 'pending'
         ]);
 
+        $ferryBookingId = (int)db()->lastInsertId();
         $success = true;
         $pageTitle = t('Booking Berhasil');
     } else {
@@ -136,6 +138,43 @@ require_once 'includes/header-shared.php';
                             <i class="bi bi-info-circle me-1"></i>
                             <?= t('Simpan kode booking Anda. Petugas akan meminta kode ini saat check-in di pelabuhan.') ?>
                         </div>
+
+                        <?php
+                        $ferryPayment = null;
+                        if ($success) {
+                            $fp = db()->prepare("SELECT * FROM payments WHERE booking_type='ferry' AND booking_id=? ORDER BY id DESC LIMIT 1");
+                            $fp->execute([$ferryBookingId]);
+                            $ferryPayment = $fp->fetch();
+                        }
+                        $ferryPayEnabled = tripayInstantEnabled();
+                        ?>
+                        <?php if ($ferryPayEnabled): ?>
+                        <div class="w-100 mb-3" data-testid="ferry-payment">
+                            <?php if (tripayGateway() === 'tripay'): ?>
+                            <label class="form-label small fw-semibold" for="ferryTripayMethod"><?= t('Pilih channel pembayaran') ?></label>
+                            <select id="ferryTripayMethod" class="form-select form-select-sm mx-auto mb-2" style="max-width:320px">
+                                <?php foreach (['BRIVA'=>'BRI VA','BCAVA'=>'BCA VA','BNIVA'=>'BNI VA','MANDIRIVA'=>'Mandiri VA','PERMATAVA'=>'Permata VA','QRIS'=>'QRIS','ALFAMART'=>'Alfamart','INDOMARET'=>'Indomaret'] as $tcode => $tname): ?>
+                                <option value="<?= $tcode ?>"><?= e($tname) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <?php endif; ?>
+                            <button type="button" id="ferryPayNowBtn" class="btn btn-success px-4" data-booking-id="<?= $ferryBookingId ?>" data-gateway="<?= e(tripayGateway()) ?>">
+                                <i class="bi bi-credit-card me-1"></i><?= t('Bayar Sekarang') ?>
+                            </button>
+                            <form method="POST" action="ajax/create-payment.php" id="ferryCreatePaymentForm" style="display:none;"></form>
+                            <div id="ferryPaymentStatusArea" class="small mt-2" data-order-id="<?= e($ferryPayment['order_id'] ?? '') ?>">
+                                <?php if ($ferryPayment): ?><span class="text-muted"><?= t('Menunggu pembayaran...') ?></span><?php endif; ?>
+                            </div>
+                        </div>
+                        <?php elseif (!empty($ferryPayment['pay_code']) && ($ferryPayment['gateway'] ?? '') === 'tripay'): ?>
+                        <div class="alert alert-info text-start mb-3" data-testid="ferry-paycode">
+                            <div class="small text-muted"><?= t('Kode bayar Tripay') ?></div>
+                            <div class="fs-4 fw-bold"><?= e($ferryPayment['pay_code']) ?></div>
+                            <?php if (!empty($ferryPayment['checkout_url'])): ?>
+                            <a href="<?= e($ferryPayment['checkout_url']) ?>" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary mt-2"><?= t('Buka halaman checkout') ?></a>
+                            <?php endif; ?>
+                        </div>
+                        <?php endif; ?>
 
                         <div class="d-flex gap-2 justify-content-center">
                             <a href="my-bookings.php" class="btn btn-primary rounded-pill px-4" data-testid="btn-my-bookings">
@@ -329,4 +368,52 @@ document.getElementById('passengers').addEventListener('change', function() {
         }
     });
 });
+</script>
+<script>
+(function () {
+    var btn = document.getElementById('ferryPayNowBtn');
+    if (!btn) return;
+    var statusArea = document.getElementById('ferryPaymentStatusArea');
+
+    function pollStatus(orderId) {
+        if (!orderId) return;
+        var timer = setInterval(function () {
+            fetch('<?= BASE_URL ?>/ajax/payment-status.php?order_id=' + encodeURIComponent(orderId))
+                .then(function (r) { return r.json(); })
+                .then(function (d) {
+                    if (d.status === 'paid') {
+                        clearInterval(timer);
+                        if (statusArea) statusArea.innerHTML = '<span class="text-success fw-bold"><?= t('Pembayaran diterima. Terima kasih!') ?></span>';
+                        btn.remove();
+                    }
+                }).catch(function () {});
+        }, 3000);
+    }
+
+    btn.addEventListener('click', function () {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span><?= t('Memproses...') ?>';
+        fetch('<?= BASE_URL ?>/ajax/create-payment.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'booking_type=ferry&booking_id=' + btn.dataset.bookingId + (btn.dataset.gateway === 'tripay' ? '&method=' + encodeURIComponent((document.getElementById('ferryTripayMethod') || {}).value || 'BRIVA') : '')
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+            if (d.ok && d.gateway === 'tripay') {
+                window.location.reload();
+            } else if (d.ok && d.redirect_url) {
+                window.location.href = d.redirect_url;
+            } else {
+                btn.disabled = false;
+                btn.innerHTML = '<?= t('Bayar Sekarang') ?>';
+                if (statusArea) statusArea.innerHTML = '<span class="text-danger"><?= t('Gagal memulai pembayaran. Coba lagi.') ?></span>';
+            }
+        })
+        .catch(function () {
+            btn.disabled = false;
+            btn.innerHTML = '<?= t('Bayar Sekarang') ?>';
+        });
+    });
+})();
 </script>

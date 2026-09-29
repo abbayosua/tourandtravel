@@ -92,20 +92,22 @@ function tripayMapStatus(string $status): string {
  * Buat transaksi Tripay untuk satu booking tour.
  * @return array ['ok'=>bool, 'pay_code'=>?, 'checkout_url'=>?, 'reference'=>?, 'merchant_ref'=>?, 'error'=>?]
  */
-function createTripayTransaction(int $bookingId, float $grossAmount, array $customer = [], string $method = 'BRIVA'): array {
+function createTripayTransaction(int $bookingId, float $grossAmount, array $customer = [], string $method = 'BRIVA', string $bookingType = 'tour'): array {
     if (!tripayConfigured()) {
         return ['ok' => false, 'error' => 'tripay_not_configured'];
     }
 
-    $stmt = db()->prepare("SELECT * FROM payments WHERE gateway='tripay' AND booking_type='tour' AND booking_id=? AND status='pending' ORDER BY id DESC LIMIT 1");
-    $stmt->execute([$bookingId]);
+    $stmt = db()->prepare("SELECT * FROM payments WHERE gateway='tripay' AND booking_type=? AND booking_id=? AND status='pending' ORDER BY id DESC LIMIT 1");
+    $stmt->execute([$bookingType, $bookingId]);
     $existing = $stmt->fetch();
     $merchantRef = $existing['order_id'] ?? generateTripayRef($bookingId);
 
-    $b = db()->prepare('SELECT booking_code FROM bookings WHERE id = ?');
+    $codeTable = ['tour' => 'bookings', 'ferry' => 'ferry_bookings'][$bookingType] ?? 'bookings';
+    $b = db()->prepare("SELECT booking_code FROM `$codeTable` WHERE id = ?");
     $b->execute([$bookingId]);
     $bookingCode = $b->fetchColumn() ?: null;
 
+    $itemName = ['tour' => 'Paket Tour', 'ferry' => 'Tiket Ferry'][$bookingType] ?? 'Paket';
     $amount = (int)round($grossAmount);
     $data = [
         'method'        => $method,
@@ -115,7 +117,7 @@ function createTripayTransaction(int $bookingId, float $grossAmount, array $cust
         'customer_email'=> $customer['email'] ?? 'noreply@' . preg_replace('#^https?://#', '', defined('BASE_URL') ? BASE_URL : 'tourandtravel.web.id'),
         'customer_phone'=> $customer['phone'] ?? '',
         'order_items'   => [[
-            'name'     => 'Paket Tour' . ($bookingCode ? ' ' . $bookingCode : ''),
+            'name'     => $itemName . ($bookingCode ? ' ' . $bookingCode : ''),
             'price'    => $amount,
             'quantity' => 1,
         ]],
@@ -144,8 +146,8 @@ function createTripayTransaction(int $bookingId, float $grossAmount, array $cust
     $d = $json['data'];
 
     if (!$existing) {
-        db()->prepare("INSERT INTO payments (booking_type, booking_id, booking_code, gateway, order_id, reference, pay_code, pay_url, checkout_url, gross_amount, status) VALUES ('tour', ?, ?, 'tripay', ?, ?, ?, ?, ?, ?, 'pending')")
-            ->execute([$bookingId, $bookingCode, $merchantRef, $d['reference'], $d['pay_code'] ?? null, $d['pay_url'] ?? null, $d['checkout_url'] ?? null, $grossAmount]);
+        db()->prepare("INSERT INTO payments (booking_type, booking_id, booking_code, gateway, order_id, reference, pay_code, pay_url, checkout_url, gross_amount, status) VALUES (?, ?, ?, 'tripay', ?, ?, ?, ?, ?, ?, 'pending')")
+            ->execute([$bookingType, $bookingId, $bookingCode, $merchantRef, $d['reference'], $d['pay_code'] ?? null, $d['pay_url'] ?? null, $d['checkout_url'] ?? null, $grossAmount]);
     } else {
         db()->prepare('UPDATE payments SET reference=?, pay_code=?, pay_url=?, checkout_url=? WHERE id=?')
             ->execute([$d['reference'], $d['pay_code'] ?? null, $d['pay_url'] ?? null, $d['checkout_url'] ?? null, $existing['id']]);
@@ -189,11 +191,20 @@ function handleTripayCallback(array $data): bool {
     $upd = db()->prepare('UPDATE payments SET status=?, payment_type=?, raw_payload=?, paid_at=? WHERE id=?');
     $upd->execute([$newStatus, $data['payment_method_code'] ?? $data['payment_method'] ?? null, json_encode($data, JSON_UNESCAPED_UNICODE), $paidAt, $payment['id']]);
 
-    // Sinkron booking tour (kolom payment_status)
-    db()->prepare('UPDATE bookings SET payment_status = ? WHERE id = ?')
-        ->execute([$newStatus === 'paid' ? 'paid' : 'unpaid', (int)$payment['booking_id']]);
+    // Sinkron booking (kolom payment_status) sesuai tipe — pola sama dgn midtrans
+    $typeMap = [
+        'tour' => 'bookings', 'hotel' => 'hotel_bookings', 'flight' => 'flight_bookings',
+        'train' => 'train_bookings', 'transfer' => 'transfer_bookings',
+        'attraction' => 'attraction_bookings', 'esim' => 'connectivity_bookings',
+        'ferry' => 'ferry_bookings',
+    ];
+    $table = $typeMap[$payment['booking_type']] ?? null;
+    if ($table) {
+        db()->prepare("UPDATE `$table` SET payment_status = ? WHERE id = ?")
+            ->execute([$newStatus === 'paid' ? 'paid' : 'unpaid', (int)$payment['booking_id']]);
+    }
 
-    if ($newStatus === 'paid') {
+    if ($newStatus === 'paid' && $payment['booking_type'] === 'tour') {
         require_once __DIR__ . '/availability.php';
         deductTourSlotsOnPaid((int)$payment['booking_id']);
         // Booking paid → status confirmed (membuka akses refund & review)
@@ -208,7 +219,12 @@ function handleTripayCallback(array $data): bool {
             autoAssignTier((int)$bk2['user_id']);
         }
     }
-    if (in_array($newStatus, ['failed', 'expired'], true)) {
+    if ($newStatus === 'paid' && $payment['booking_type'] === 'ferry') {
+        // Ferry paid → confirmed
+        db()->prepare("UPDATE ferry_bookings SET status = 'confirmed' WHERE id = ? AND status = 'pending'")
+            ->execute([(int)$payment['booking_id']]);
+    }
+    if (in_array($newStatus, ['failed', 'expired'], true) && $payment['booking_type'] === 'tour') {
         require_once __DIR__ . '/availability.php';
         releaseTourSlotsOnCancel((int)$payment['booking_id']);
     }

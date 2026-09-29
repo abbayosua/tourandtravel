@@ -244,6 +244,7 @@ function handleMidtransNotification(array $notif): bool {
         'tour' => 'bookings', 'hotel' => 'hotel_bookings', 'flight' => 'flight_bookings',
         'train' => 'train_bookings', 'transfer' => 'transfer_bookings',
         'attraction' => 'attraction_bookings', 'esim' => 'connectivity_bookings',
+        'ferry' => 'ferry_bookings',
     ];
     $table = $typeMap[$payment['booking_type']] ?? null;
     if ($table) {
@@ -257,6 +258,11 @@ function handleMidtransNotification(array $notif): bool {
         deductTourSlotsOnPaid((int)$payment['booking_id']);
         // Booking paid → status confirmed (membuka akses refund & review)
         db()->prepare("UPDATE bookings SET status = 'confirmed' WHERE id = ? AND status = 'pending'")
+            ->execute([(int)$payment['booking_id']]);
+    }
+    // Ferry paid → confirmed
+    if ($newStatus === 'paid' && $payment['booking_type'] === 'ferry') {
+        db()->prepare("UPDATE ferry_bookings SET status = 'confirmed' WHERE id = ? AND status = 'pending'")
             ->execute([(int)$payment['booking_id']]);
     }
     // Fase 2: kembalikan slot bila payment gagal permanen setelah sempat paid
