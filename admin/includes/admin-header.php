@@ -12,14 +12,38 @@
 <style>
 #adminSidebar {
     width: 250px;
-    min-height: calc(100vh - 56px);
+    height: calc(100vh - 56px);
+    position: sticky;
+    top: 56px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior-y: contain;
     transition: width 0.3s ease, padding 0.3s ease;
-    overflow: hidden;
     flex-shrink: 0;
+    align-self: flex-start;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(13,110,253,.35) transparent;
+}
+#adminSidebar::-webkit-scrollbar {
+    width: 6px;
+}
+#adminSidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+#adminSidebar::-webkit-scrollbar-thumb {
+    background: rgba(13,110,253,.3);
+    border-radius: 999px;
+}
+[data-theme="dark"] #adminSidebar {
+    scrollbar-color: rgba(255,255,255,.25) transparent;
+}
+[data-theme="dark"] #adminSidebar::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,.22);
 }
 #adminSidebar.collapsed {
     width: 0;
     padding: 0;
+    overflow: hidden;
 }
 /* Icon-only mode (desktop): 64px, labels hidden */
 @media (min-width: 768px) {
