@@ -61,7 +61,7 @@ $tsPhFrom = $tsPhFrom ?? ($isFerry ? t('Kota atau terminal') : t('Kota atau band
 $tsPhTo = $tsPhTo ?? $tsPhFrom;
 ?>
 <style>
-.voyage-transport-hero{overflow:clip}
+.voyage-transport-hero{overflow-x:clip;overflow-y:visible}
 .voyage-transport-hero .ts-aurora{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none}
 .voyage-transport-hero .ts-aurora-a{top:-30%;left:-20%;width:80%;height:80%;opacity:.25;background:radial-gradient(60% 60% at 50% 50%,#7DD3FC 0%,#38BDF8 20%,transparent 70%);animation:tsAurora 18s ease-in-out infinite}
 .voyage-transport-hero .ts-aurora-b{top:-20%;right:-10%;width:70%;height:70%;opacity:.2;background:radial-gradient(60% 60% at 50% 50%,#A78BFA 0%,#8B5CF6 25%,transparent 70%);animation:tsAurora 22s ease-in-out infinite reverse}
@@ -69,7 +69,7 @@ $tsPhTo = $tsPhTo ?? $tsPhFrom;
 @keyframes tsAurora{0%,100%{transform:translate(-10%,-10%) scale(1)}50%{transform:translate(5%,5%) scale(1.1)}}
 .voyage-transport-hero .voyage-inner{padding-top:150px;padding-bottom:8px}
 .voyage-transport-hero .voyage-sub{max-width:560px}
-.voyage-transport-hero .flight-glass{position:relative;max-width:1000px;background:rgba(255,255,255,.72);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(13,110,253,.18);border-radius:24px;box-shadow:0 12px 40px rgba(13,110,253,.14),inset 0 1px 0 rgba(255,255,255,.9);padding:0;overflow:hidden}
+.voyage-transport-hero .flight-glass{position:relative;max-width:1000px;background:rgba(255,255,255,.72);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(13,110,253,.18);border-radius:24px;box-shadow:0 12px 40px rgba(13,110,253,.14),inset 0 1px 0 rgba(255,255,255,.9);padding:0}
 .voyage-transport-hero .flight-glass::before{content:'';position:absolute;top:0;left:1px;right:1px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.9) 20%,#fff 50%,rgba(255,255,255,.9) 80%,transparent);z-index:3;pointer-events:none}
 .voyage-transport-hero .booking-tabs{display:flex;gap:4px;padding:18px 22px 0;border-bottom:1px solid #E4E7EE;overflow-x:auto;scrollbar-width:none}
 .voyage-transport-hero .booking-tabs::-webkit-scrollbar{display:none}
@@ -93,7 +93,7 @@ $tsPhTo = $tsPhTo ?? $tsPhFrom;
 .voyage-transport-hero .search-field input{border:0;background:transparent;font-size:14px;font-weight:600;color:#1A1A2E;width:100%;outline:0}
 .voyage-transport-hero .search-field input::placeholder{color:#5A6178;font-weight:500}
 .voyage-transport-hero .search-field select{border:0;background:transparent;font-size:14px;font-weight:600;color:#1A1A2E;width:100%;outline:0;appearance:none;-webkit-appearance:none;cursor:pointer}
-.voyage-transport-hero .search-dropdown{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid #E4E7EE;border-radius:14px;z-index:300;display:none;overflow:hidden;box-shadow:0 20px 60px rgba(13,110,253,.18)}
+.voyage-transport-hero .search-dropdown{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid #E4E7EE;border-radius:14px;z-index:600;display:none;overflow:hidden;box-shadow:0 20px 60px rgba(13,110,253,.18)}
 .voyage-transport-hero .search-dropdown.show{display:block}
 .voyage-transport-hero .search-dropdown .search-item{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;color:#1A1A2E;font-size:13px}
 .voyage-transport-hero .search-dropdown .search-item:hover{background:rgba(13,110,253,.08)}
