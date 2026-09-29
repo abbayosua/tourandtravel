@@ -46,9 +46,9 @@ function renderHotelCard($hotel, $maxDescription = 90) {
                 <?php endif; ?>
                 <div class="mt-auto d-flex justify-content-between align-items-center pt-2 border-top">
                     <div>
-                        <span class="fw-bold text-primary klook-price" data-testid="card-price"><?= formatRupiah($displayPrice) ?></span>
+                        <span class="fw-bold text-primary klook-price" data-testid="card-price"><?= formatCurrencySpan($displayPrice, 'IDR') ?></span>
                         <?php if ($flashSale): ?>
-                            <small class="text-decoration-line-through text-muted ms-1"><?= formatRupiah($hotel['price_per_night']) ?></small>
+                            <small class="text-decoration-line-through text-muted ms-1"><?= formatCurrencySpan($hotel['price_per_night'], 'IDR') ?></small>
                             <span class="badge bg-danger ms-1">-<?= (int)$flashSale['discount_percent'] ?>%</span>
                             <?php if ($flashSale['stock_limit'] !== null): ?><small class="d-block text-danger" data-testid="card-flash-stock"><?= t('Sisa') ?> <?= max(0, (int)$flashSale['stock_limit'] - (int)$flashSale['sold_count']) ?> <?= t('slot') ?></small><?php endif; ?>
                             <small class="d-block text-muted flash-countdown" data-deadline="<?= e(date('c', strtotime($flashSale['ends_at']))) ?>" data-testid="card-countdown"></small>

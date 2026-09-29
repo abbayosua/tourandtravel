@@ -105,9 +105,9 @@ foreach ($hotels as $h):
                             <small class="text-muted"><i class="bi bi-geo-alt me-1"></i><?= e($h['city']) ?></small>
                         </div>
                         <div class="text-end">
-                            <span class="fw-bold text-primary fs-5" data-testid="card-price"><?= formatRupiah($displayPriceH) ?></span>
+                            <span class="fw-bold text-primary fs-5" data-testid="card-price"><?= formatCurrencySpan($displayPriceH, 'IDR') ?></span>
                             <?php if ($flashSaleH): ?>
-                                <small class="text-decoration-line-through text-muted d-block" style="font-size: 11px;"><?= formatRupiah($h['price_per_night']) ?></small>
+                                <small class="text-decoration-line-through text-muted d-block" style="font-size: 11px;"><?= formatCurrencySpan($h['price_per_night'], 'IDR') ?></small>
                                 <span class="badge bg-danger" style="font-size: 10px;">-<?= (int)$flashSaleH['discount_percent'] ?>%</span>
                                 <?php if ($flashSaleH['stock_limit'] !== null): ?><small class="d-block text-danger" style="font-size: 11px;" data-testid="card-flash-stock"><?= t('Sisa') ?> <?= max(0, (int)$flashSaleH['stock_limit'] - (int)$flashSaleH['sold_count']) ?> <?= t('slot') ?></small><?php endif; ?>
                                 <small class="d-block text-muted flash-countdown" data-deadline="<?= e(date('c', strtotime($flashSaleH['ends_at']))) ?>" data-testid="card-countdown"></small>

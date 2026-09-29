@@ -100,7 +100,7 @@ require_once __DIR__ . '/../components/date-picker.php';
                         <div class="voyage-tcard-loc"><i class="bi bi-geo-alt"></i> <?= e($hCity) ?> • <?= str_repeat('★', min(5, max(1, $hStars))) ?></div>
                         <div class="voyage-tcard-foot">
                             <div class="voyage-tcard-price">
-                                <span class="voyage-tcard-now"><?= formatRupiah((float)($hc['price_per_night'] ?? 0)) ?></span>
+                                <span class="voyage-tcard-now"><?= formatCurrencySpan((float)($hc['price_per_night'] ?? 0), 'IDR') ?></span>
                                 <span class="voyage-tcard-per">/<?= t('malam') ?> • <?= !empty($hc['free_cancellation']) ? t('Batal gratis') : t('Konfirmasi instan') ?></span>
                             </div>
                             <a class="voyage-tcard-add" href="<?= $hLink ?>"><?= t('Pesan') ?> <i class="bi bi-arrow-right"></i></a>

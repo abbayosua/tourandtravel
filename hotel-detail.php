@@ -34,7 +34,7 @@ if (!empty($_GET['live'])) {
         $heroImgs = $isBooking ? ($live['images'] ?? []) : array_values(array_filter([$live['image'] ?? null]));
         $hero = $heroImgs[0] ?? ('https://placehold.co/1200x500?text=' . urlencode($pageTitle));
         $star = (int)($live['star'] ?? 0);
-        $priceText = $live['price_formatted'] ?? (($live['price'] ?? 0) ? formatRupiah((float)$live['price']) : '');
+        $priceText = isset($live['price']) && $live['price'] ? formatCurrencySpan((float)$live['price'], $live['currency'] ?? 'IDR') : '';
         $lat = !empty($live['lat']) ? (float)$live['lat'] : null;
         $lng = !empty($live['lng']) ? (float)$live['lng'] : null;
         $srcLabel = ['oyorooms' => 'OYO', 'nusatrip' => 'NusaTrip', 'booking' => 'Booking.com'][$live['source'] ?? ''] ?? (string)($live['source'] ?? '');
@@ -119,7 +119,7 @@ if (!empty($_GET['live'])) {
                                             <small class="text-muted"><?= e((string)($rm['board_type'] ?? '')) ?><?php if ($avail > 0): ?> · <?= t('Sisa') ?> <?= $avail ?><?php endif; ?></small>
                                         </div>
                                         <div class="text-end">
-                                            <div class="fw-bold text-primary"><?= $rt > 0 ? formatRupiah($rt) : '-' ?></div>
+                                            <div class="fw-bold text-primary"><?= $rt > 0 ? formatCurrencySpan($rt, 'IDR') : '-' ?></div>
                                             <a href="nusatrip-book.php?<?= e(http_build_query(['hotel_id' => $liveExtId, 'checkin' => $checkin, 'checkout' => $checkout, 'guests' => $guests, 'city' => $liveCity, 'hotel_name' => $pageTitle, 'room_combo' => (string)($rm['room_category'] ?? '') . '|' . (string)($rm['board_type'] ?? '') . '|' . (string)($rm['display_average_rate'] ?? $rm['average_rate'] ?? ''), 'room_idx' => $ri])) ?>" class="btn btn-sm btn-primary rounded-pill mt-1"><?= t('Pesan') ?></a>
                                         </div>
                                     </div>
@@ -155,7 +155,7 @@ if (!empty($_GET['live'])) {
                     <div class="col-lg-4">
                         <div class="card border-0 shadow-sm sticky-lg-top" style="top: 80px;">
                             <div class="card-body p-3">
-                                <h5 class="fw-bold text-primary mb-1"><?= $priceText !== '' ? e($priceText) : '-' ?></h5>
+                                <h5 class="fw-bold text-primary mb-1"><?= $priceText !== '' ? $priceText : '-' ?></h5>
                                 <small class="text-muted d-block mb-3"><?= t('/malam · harga live dari') ?> <?= e($srcLabel) ?></small>
                                 <?php if ($isNusatrip && !empty($nusaRooms)): ?>
                                     <?php $cheapIdx = 0; $cheapRate = PHP_INT_MAX; foreach ($nusaRooms as $ri => $rm) { $rt = (float)($rm['display_average_rate'] ?? $rm['average_rate'] ?? PHP_INT_MAX); if ($rt < $cheapRate) { $cheapRate = $rt; $cheapIdx = $ri; } } ?>

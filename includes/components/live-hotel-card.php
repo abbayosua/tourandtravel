@@ -15,7 +15,7 @@ function renderLiveHotelCard(array $h, string $city = '', string $checkin = '', 
     $name = (string)($h['name'] ?? '');
     $img = $h['image'] ?: 'https://placehold.co/640x480?text=' . urlencode($name);
     $star = (int)($h['star'] ?? 0);
-    $price = $h['price_formatted'] ?? ($h['price'] ? formatRupiah((float)$h['price']) : '-');
+    $price = isset($h['price']) && $h['price'] ? formatCurrencySpan((float)$h['price'], $h['currency'] ?? 'IDR') : '-';
     $sourceLabel = ['oyorooms' => 'OYO', 'nusatrip' => 'NusaTrip', 'booking' => 'Booking.com'][$h['source'] ?? ''] ?? ($h['source'] ?? '');
     $detailParams = http_build_query(array_filter([
         'live' => 1,
@@ -47,7 +47,7 @@ function renderLiveHotelCard(array $h, string $city = '', string $checkin = '', 
                             <?php endif; ?>
                         </div>
                         <div class="text-end">
-                            <span class="fw-bold text-primary fs-5" data-testid="card-price"><?= e($price) ?></span>
+                            <span class="fw-bold text-primary fs-5" data-testid="card-price"><?= $price ?></span>
                             <small class="d-block text-muted" style="font-size: 11px;"><?= t('/malam') ?></small>
                         </div>
                     </div>
