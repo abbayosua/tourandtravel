@@ -44,6 +44,8 @@ $voyageNoSpacer = !empty($voyageNoSpacer) || in_array($voyagePage, $voyageHeroPa
 (function () {
     var t = localStorage.getItem('theme') || 'light';
     if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+    var ic = document.getElementById('themeIcon');
+    if (ic) ic.className = t === 'dark' ? 'bi bi-moon-stars' : 'bi bi-sun';
 })();
 </script>
 

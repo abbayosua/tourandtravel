@@ -63,7 +63,7 @@ $navMenuItems = array_values(array_filter($voyageMenus, fn($m) => !empty($m['sho
                 <?php endforeach; ?>
             </ul>
         </div>
-        <button id="themeToggle" class="voyage-icon" title="Theme" onclick="var t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);localStorage.setItem('theme',t);this.innerHTML=t==='dark'?'?':'?';"><script>document.write(document.documentElement.getAttribute('data-theme')==='dark'?'?':'?')</script></button>
+        <button id="themeToggle" class="voyage-icon" title="Theme" onclick="var t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);localStorage.setItem('theme',t);var ic=document.getElementById('themeIcon');if(ic)ic.className=t==='dark'?'bi bi-moon-stars':'bi bi-sun';"><i class="bi bi-sun" id="themeIcon"></i></button>
         <?php if (isset($_SESSION['user_id'])): ?>
         <div class="dropdown voyage-drop">
             <a class="voyage-user klook-user-dropdown dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="bi bi-person-circle"></i><?= e($_SESSION['user_name'] ?? 'User') ?><?php if (!empty($navTier)): ?><span class="badge tier-badge ms-1" id="headerTierBadge" style="background: <?= e($navTier['color']) ?>; font-size: 10px;"><i class="bi <?= e($navTier['icon']) ?>"></i> <?= e($navTier['display_name']) ?></span><?php endif; ?></a>
