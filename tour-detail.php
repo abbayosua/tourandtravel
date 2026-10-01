@@ -369,7 +369,6 @@ require_once 'includes/header-shared.php';
                 <?php foreach ($otherLangs as $ol): ?>
                 <a href="tour-itinerary-pdf.php?slug=<?= e($tour['slug']) ?>&pdf_lang=<?= $ol ?>" class="btn btn-sm btn-outline-secondary" target="_blank"><?= t('PDF') ?> (<?= strtoupper($ol) ?>)</a>
                 <?php endforeach; ?>
-                <a href="tour-itinerary-pdf.php?slug=<?= e($tour['slug']) ?>&pdf_lang=all" class="btn btn-sm btn-outline-dark" target="_blank"><?= t('PDF') ?> (EN+中文)</a>
                 </div>
             </div>
             <div class="accordion mb-4" id="itineraryAccordion">
