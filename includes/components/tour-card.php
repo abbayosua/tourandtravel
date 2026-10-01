@@ -30,7 +30,7 @@ function renderTourCard($tour, $wishlistIds = [], $options = []) {
                      onerror="this.src='<?= getTourImageFallback($tour, 'medium') ?>'" 
                      class="w-100 h-100" 
                      style="object-fit: cover;" 
-                     alt="<?= e($tour['title']) ?>">
+                     alt="<?= e(tContent($tour, 'title')) ?>">
 
                 <!-- Badge diskon -->
                 <?php if ($diskon > 0): ?>
@@ -63,12 +63,12 @@ function renderTourCard($tour, $wishlistIds = [], $options = []) {
                 <?php endif; ?>
 
                 <!-- Category badge -->
-                <span class="badge bg-white text-dark position-absolute top-0 start-0 m-2 shadow-sm" style="margin-top: 40px !important;"><?= e($tour['category']) ?></span>
+                <span class="badge bg-white text-dark position-absolute top-0 start-0 m-2 shadow-sm" style="margin-top: 40px !important;"><?= e(tContent($tour, 'category')) ?></span>
             </div>
 
             <div class="card-body p-3 d-flex flex-column">
                 <!-- Title -->
-                <h6 class="fw-semibold mb-1 klook-card-title"><?= e(t($tour['title'], null, $tour['content_language'] ?? 'id')) ?></h6>
+                <h6 class="fw-semibold mb-1 klook-card-title"><?= e(tContent($tour, 'title')) ?></h6>
                 
                 <!-- Rating -->
                 <div class="d-flex align-items-center gap-2 small mb-1">
@@ -78,7 +78,7 @@ function renderTourCard($tour, $wishlistIds = [], $options = []) {
 
                 <!-- Description -->
                 <?php if ($opts['show_description']): ?>
-                <p class="small text-muted flex-grow-1 mb-2"><?= substr(e($tour['description']), 0, 100) ?>...</p>
+                <p class="small text-muted flex-grow-1 mb-2"><?= substr(e(tContent($tour, 'description')), 0, 100) ?>...</p>
                 <?php endif; ?>
 
                 <!-- Price + CTA -->

@@ -110,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = t('Booking Reseller') . ' — ' . e($tour['title']);
+$pageTitle = t('Booking Reseller') . ' — ' . e(tContent($tour, 'title'));
 require_once 'includes/header-shared.php';
 ?>
 
@@ -120,7 +120,7 @@ require_once 'includes/header-shared.php';
             <div class="col-md-8">
 
                 <h4 class="fw-bold mb-1"><i class="bi bi-ticket-perforated me-2"></i><?= t('Booking Reseller') ?></h4>
-                <p class="text-muted small mb-4"><?= e($tour['title']) ?></p>
+                <p class="text-muted small mb-4"><?= e(tContent($tour, 'title')) ?></p>
 
                 <?php if ($success): ?>
                     <div class="alert alert-success">
@@ -145,10 +145,10 @@ require_once 'includes/header-shared.php';
                                     <h6 class="fw-semibold mb-3"><?= t('Detail Tour') ?></h6>
                                     <div class="d-flex align-items-center gap-3 mb-3">
                                         <?php $img = getTourImage($tour, 'small'); ?>
-                                        <img src="<?= $img ?>" alt="<?= e($tour['title']) ?>" class="rounded-3" style="width:80px;height:60px;object-fit:cover;" onerror="this.src='<?= getTourImageFallback($tour, 'small') ?>'">
+                                        <img src="<?= $img ?>" alt="<?= e(tContent($tour, 'title')) ?>" class="rounded-3" style="width:80px;height:60px;object-fit:cover;" onerror="this.src='<?= getTourImageFallback($tour, 'small') ?>'">
                                         <div>
-                                            <div class="fw-semibold small"><?= e($tour['title']) ?></div>
-                                            <div class="text-muted" style="font-size:0.8rem"><?= e($tour['category']) ?> · <?= t('Max') ?> <?= $tour['max_participants'] ?> <?= t('pax') ?></div>
+                                            <div class="fw-semibold small"><?= e(tContent($tour, 'title')) ?></div>
+                                            <div class="text-muted" style="font-size:0.8rem"><?= e(tContent($tour, 'category')) ?> · <?= t('Max') ?> <?= $tour['max_participants'] ?> <?= t('pax') ?></div>
                                         </div>
                                     </div>
                                     <hr>

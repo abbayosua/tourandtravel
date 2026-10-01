@@ -73,7 +73,7 @@ renderPageHero(t('Paket Tour'), $total . ' ' . t('tour ditemukan'), [['label' =>
                                 <select name="category" class="form-select form-select-sm mb-3" onchange="this.form.submit()">
                                     <option value=""><?= t('Semua Kategori') ?></option>
                                     <?php foreach ($categories as $cat): ?>
-                                        <option value="<?= e($cat) ?>" <?= $category === $cat ? 'selected' : '' ?>><?= e($cat) ?></option>
+                                        <option value="<?= e($cat) ?>" <?= $category === $cat ? 'selected' : '' ?>><?= e(t($cat)) ?></option>
                                     <?php endforeach; ?>
                                 </select>
 
@@ -173,7 +173,7 @@ renderPageHero(t('Paket Tour'), $total . ' ' . t('tour ditemukan'), [['label' =>
                 <?php if ($lastPage > $currentPage): ?>
                 <div class="load-more-trigger text-center py-4" data-page="<?= $currentPage ?>" data-last-page="<?= $lastPage ?>">
                     <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
+                        <span class="visually-hidden"><?= t('Loading...') ?></span>
                     </div>
                 </div>
                 <?php endif; ?>

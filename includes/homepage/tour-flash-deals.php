@@ -12,13 +12,13 @@
                 <a href="tour-detail.php?slug=<?= e($promo['slug']) ?>" class="text-decoration-none">
                     <div class="card overflow-hidden promo-card voyage-flash-card h-100">
                         <div class="voyage-flash-media">
-                            <img src="<?= getTourImage($promo, 'medium') ?>" onerror="this.src='https://placehold.co/640x360?text=Promo'" alt="<?= e($promo['title']) ?>" loading="lazy">
+                            <img src="<?= getTourImage($promo, 'medium') ?>" onerror="this.src='https://placehold.co/640x360?text=Promo'" alt="<?= e(tContent($promo, 'title')) ?>" loading="lazy">
                             <span class="voyage-flash-shade"></span>
                             <span class="badge bg-danger voyage-flash-hot"><?= t('HOT') ?></span>
                         </div>
                         <div class="card-body py-2 px-3">
                             <small class="text-muted"><?= t('Promo') ?></small>
-                            <h6 class="fw-semibold small mb-1 text-dark"><?= e(t($promo['title'], null, $promo['content_language'] ?? 'id')) ?></h6>
+                            <h6 class="fw-semibold small mb-1 text-dark"><?= e(tContent($promo, 'title')) ?></h6>
                             <?php if ($promo['price'] > 0): ?>
                                 <span class="fw-bold text-primary small"><?= formatCurrencySpan($promo['price'], $promo['price_currency'] ?? 'IDR') ?></span>
                             <?php else: ?>

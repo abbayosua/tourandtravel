@@ -36,9 +36,9 @@ require_once 'includes/header-shared.php';
                     <div class="col-md-3 col-6">
                         <a href="tour-detail.php?slug=<?= e($t['slug']) ?>" class="text-decoration-none">
                             <div class="card border-0 shadow-sm h-100 klook-hover-card">
-                                <img src="<?= getTourImage($t, 'small') ?>" class="w-100" style="height: 110px; object-fit: cover;" alt="<?= e(t($t['title'])) ?>">
+                                <img src="<?= getTourImage($t, 'small') ?>" class="w-100" style="height: 110px; object-fit: cover;" alt="<?= e(tContent($t, 'title')) ?>">
                                 <div class="card-body p-2">
-                                    <h6 class="fw-semibold small text-dark mb-1"><?= e(t($t['title'], null, $t['content_language'] ?? 'id')) ?></h6>
+                                    <h6 class="fw-semibold small text-dark mb-1"><?= e(tContent($t, 'title')) ?></h6>
                                     <span class="fw-bold text-primary small"><?= formatRupiah($t['price']) ?></span>
                                 </div>
                             </div>

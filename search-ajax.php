@@ -1,7 +1,7 @@
 <?php
 /**
  * AJAX search autocomplete
- * Returns JSON of matching tour titles & categories
+ * Returns JSON of matching tour titles & categories (dilokalkan sesuai bahasa aktif)
  */
 require_once 'includes/config.php';
 require_once 'includes/db.php';
@@ -15,16 +15,20 @@ if (strlen($q) < 2) {
 
 $like = "%$q%";
 
-// Cari tour
-$stmt = db()->prepare("SELECT title as label, slug, 'tour' as type, price FROM tours WHERE is_active = 1 AND title LIKE ? LIMIT 8");
-$stmt->execute([$like]);
-$tours = $stmt->fetchAll();
+// Cari tour (cocokkan judul semua bahasa, tampilkan judul sesuai bahasa aktif)
+$stmt = db()->prepare("SELECT title, title_en, title_zh, slug, price FROM tours WHERE is_active = 1 AND (title LIKE ? OR title_en LIKE ? OR title_zh LIKE ?) LIMIT 8");
+$stmt->execute([$like, $like, $like]);
+$tours = [];
+foreach ($stmt->fetchAll() as $r) {
+    $tours[] = ['label' => tContent($r, 'title'), 'slug' => $r['slug'], 'type' => 'tour', 'price' => $r['price']];
+}
 
 // Cari kategori
-$stmt = db()->prepare("SELECT DISTINCT category as label, NULL as slug, 'category' as type, NULL as price FROM tours WHERE is_active = 1 AND category LIKE ? LIMIT 4");
-$stmt->execute([$like]);
-$categories = $stmt->fetchAll();
+$stmt = db()->prepare("SELECT DISTINCT category, category_en, category_zh FROM tours WHERE is_active = 1 AND (category LIKE ? OR category_en LIKE ? OR category_zh LIKE ?) LIMIT 4");
+$stmt->execute([$like, $like, $like]);
+$categories = [];
+foreach ($stmt->fetchAll() as $r) {
+    $categories[] = ['label' => tContent($r, 'category'), 'slug' => null, 'type' => 'category', 'price' => null];
+}
 
-$result = array_merge($tours, $categories);
-
-echo json_encode($result);
+echo json_encode(array_merge($tours, $categories));

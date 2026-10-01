@@ -938,7 +938,7 @@ require_once 'includes/header-shared.php';
 <script>
 (function () {
   var tourId = <?= (int)$tour['id'] ?>;
-  var tourTitle = <?= json_encode($tour['title']) ?>;
+  var tourTitle = <?= json_encode(tContent($tour, 'title')) ?>;
   var modalEl = document.getElementById('itinBuilderModal');
   var btn = document.createElement('button');
   btn.className = 'btn btn-outline-primary btn-sm rounded-pill px-3 mb-3';
