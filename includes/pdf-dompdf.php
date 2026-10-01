@@ -162,7 +162,7 @@ function pdfDayTitle(int $dayNum, string $title): string
 function pdfBaseCss(): string
 {
     return <<<CSS
-    body { font-family: 'DejaVu Sans', sans-serif; font-size: 10pt; color: #1a1a2e; margin: 0; }
+    body { font-family: 'DejaVu Sans', sans-serif; font-size: 10pt; color: #1a1a2e; margin: 0; word-break: break-word; }
     .topbar { background: #0064d2; color: #fff; text-align: center; font-size: 11pt; font-weight: bold; padding: 10px 0; margin: 0 0 14px 0; }
     .cover { width: 100%; display: block; margin-bottom: 10px; }
     h1 { font-size: 20pt; margin: 0 0 4px 0; color: #1a1a2e; }

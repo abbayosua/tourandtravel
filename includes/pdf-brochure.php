@@ -15,7 +15,7 @@ function pdfBrochureCss(string $lang = 'id'): string
     $font = $lang === 'zh' ? "'NotoSansSC', 'DejaVu Sans', sans-serif" : "'DejaVu Sans', sans-serif";
     return <<<CSS
     @page { size: A4 portrait; margin: 9mm 8mm 12mm 8mm; }
-    body { font-family: $font; font-size: 9pt; color: #1a1a2e; margin: 0; }
+    body { font-family: $font; font-size: 9pt; color: #1a1a2e; margin: 0; word-break: break-word; }
     .page { border: 2.5px solid #d4b86a; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; page-break-inside: auto; }
     .secbar, .secbar-green, .secbar-red { page-break-after: avoid; }
     table.itin tr, table.price tr { page-break-inside: avoid; }
