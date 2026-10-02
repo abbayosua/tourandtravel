@@ -235,6 +235,19 @@ usort($all, function ($a, $b) { return strtotime($b['created_at']) - strtotime($
 $typeName = ['tour' => t('Tour'), 'attraction' => t('Atraksi'), 'transfer' => t('Transfer'), 'train' => t('Kereta'), 'esim' => 'eSIM', 'hotel' => t('Hotel'), 'flight' => t('Pesawat')];
 $typeBadge = ['tour' => 'primary', 'attraction' => 'info', 'transfer' => 'warning text-dark', 'train' => 'success', 'esim' => 'secondary', 'hotel' => 'danger', 'flight' => 'dark'];
 
+// Daftar peserta multi-peserta (tour)
+$tourBookingIds = [];
+foreach ($all as $r) { if (($r['btype'] ?? '') === 'tour') $tourBookingIds[] = (int)$r['id']; }
+$participantMap = [];
+if ($tourBookingIds) {
+    try {
+        $in = implode(',', array_fill(0, count($tourBookingIds), '?'));
+        $ps = db()->prepare("SELECT booking_id, full_name, passport_photo FROM booking_participants WHERE booking_id IN ($in) ORDER BY id ASC");
+        $ps->execute($tourBookingIds);
+        foreach ($ps->fetchAll() as $p) { $participantMap[(int)$p['booking_id']][] = $p; }
+    } catch (Throwable $e) { $participantMap = []; }
+}
+
 $pageTitle = t('Kelola Booking');
 if (!function_exists('bookingStatusLabel')) { function bookingStatusLabel($st) { $m = ['pending' => t('Pending'), 'confirmed' => t('Dikonfirmasi'), 'cancelled' => t('Dibatalkan'), 'paid' => t('Dibayar'), 'refunded' => t('Refund')]; return $m[$st] ?? ucfirst((string)$st); } }
 require_once 'includes/admin-header.php';
@@ -318,6 +331,30 @@ require_once 'includes/admin-header.php';
                                 <a href="../uploads/passports/<?= e($b['passport_photo']) ?>" target="_blank" class="text-primary small"><?= t('Foto') ?></a>
                             <?php endif; ?>
                             <a href="https://wa.me/<?= preg_replace('/[^0-9]/', '', $b['phone']) ?>" target="_blank" class="text-success small"><?= e($b['phone']) ?></a>
+                            <?php if ($btype === 'tour' && !empty($participantMap[$b['id']])): ?>
+                            <button type="button" class="btn btn-sm btn-outline-secondary d-block mt-1" data-bs-toggle="modal" data-bs-target="#paxModal<?= $b['id'] ?>" data-testid="pax-view-<?= $b['id'] ?>"><i class="bi bi-people"></i> <?= t('Peserta') ?> (<?= count($participantMap[$b['id']]) ?>)</button>
+                            <div class="modal fade" id="paxModal<?= $b['id'] ?>" tabindex="-1">
+                              <div class="modal-dialog modal-dialog-scrollable">
+                                <div class="modal-content">
+                                  <div class="modal-header py-2"><h6 class="modal-title"><?= t('Data Peserta') ?> — <?= e($b['booking_code'] ?? '') ?></h6><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                                  <div class="modal-body p-0">
+                                    <table class="table table-sm mb-0">
+                                      <thead class="table-light"><tr><th>#</th><th><?= t('Nama') ?></th><th><?= t('Foto Paspor') ?></th></tr></thead>
+                                      <tbody>
+                                      <?php foreach ($participantMap[$b['id']] as $pi => $p): ?>
+                                        <tr>
+                                          <td><?= $pi + 1 ?></td>
+                                          <td><?= e($p['full_name']) ?></td>
+                                          <td><?php if ($p['passport_photo']): ?><a href="../uploads/passports/<?= e($p['passport_photo']) ?>" target="_blank" class="text-primary small"><?= t('Lihat') ?></a><?php else: ?>-<?php endif; ?></td>
+                                        </tr>
+                                      <?php endforeach; ?>
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <?php endif; ?>
                         </td>
                         <td>
                             <span class="badge bg-<?= in_array($b['status'], ['confirmed', 'paid'], true) ? 'success' : ($b['status'] === 'pending' ? 'warning text-dark' : ($b['status'] === 'refunded' ? 'info' : 'danger')) ?>">

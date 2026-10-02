@@ -16,6 +16,15 @@ $stmt = db()->prepare("
 $stmt->execute([$code]);
 $booking = $stmt->fetch();
 
+$participants = [];
+if ($booking) {
+    try {
+        $pq = db()->prepare("SELECT full_name, passport_photo FROM booking_participants WHERE booking_id = ? ORDER BY id ASC");
+        $pq->execute([(int)$booking['id']]);
+        $participants = $pq->fetchAll();
+    } catch (Throwable $e) { $participants = []; }
+}
+
 $pageTitle = $booking ? t('Tracking') . ': ' . $booking['booking_code'] : t('Tracking Booking');
 require_once 'includes/components/breadcrumb.php';
 require_once 'includes/qrcode.php';
@@ -94,7 +103,16 @@ require_once 'includes/header-shared.php';
                             <tr><td class="text-muted ps-0"><?= t('Keberangkatan') ?></td><td class="fw-semibold"><?= formatDate($booking['departure_date']) ?></td></tr>
                             <tr><td class="text-muted ps-0"><?= t('Peserta') ?></td><td class="fw-semibold"><?= $booking['participants'] ?> <?= t('orang') ?></td></tr>
                             <tr><td class="text-muted ps-0"><?= t('Total') ?></td><td class="fw-semibold text-primary"><?= formatRupiah($booking['total_price']) ?></td></tr>
-                            <?php if ($booking['passport_photo']): ?>
+                            <?php if ($participants): ?>
+                            <tr><td class="text-muted ps-0"><?= t('Data Peserta') ?></td><td>
+                                <?php foreach ($participants as $pi => $p): ?>
+                                <div class="d-flex justify-content-between align-items-center border-bottom py-1">
+                                    <span class="fw-semibold small"><?= $pi + 1 ?>. <?= e($p['full_name']) ?></span>
+                                    <?php if ($p['passport_photo']): ?><a href="uploads/passports/<?= e($p['passport_photo']) ?>" target="_blank" class="btn btn-sm btn-outline-primary py-0"><?= t('Lihat') ?></a><?php endif; ?>
+                                </div>
+                                <?php endforeach; ?>
+                            </td></tr>
+                            <?php elseif ($booking['passport_photo']): ?>
                             <tr><td class="text-muted ps-0"><?= t('Foto Paspor') ?></td>
                                 <td><a href="uploads/passports/<?= e($booking['passport_photo']) ?>" target="_blank" class="btn btn-sm btn-outline-primary"><?= t('Lihat') ?> <i class="bi bi-box-arrow-up-right ms-1"></i></a></td>
                             </tr>
