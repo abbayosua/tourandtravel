@@ -77,7 +77,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
     $errors = [];
     if (!csrfCheck()) $errors[] = t('Sesi tidak valid, silakan muat ulang halaman.');
     if (!$name) $errors[] = t('Nama harus diisi');
-    if (strlen($phone) < 8) $errors[] = t('No. WhatsApp tidak valid');
+    elseif (strlen($name) < 3) $errors[] = t('Nama minimal 3 karakter');
+    elseif (preg_match('/[0-9]/', $name)) $errors[] = t('Nama tidak boleh mengandung angka');
+    if (!$phone) $errors[] = t('No. WhatsApp harus diisi');
+    elseif (!preg_match('/^08\d{8,11}$/', $phone)) $errors[] = t('No. WhatsApp tidak valid (format: 08xxxxxxxxxx)');
     if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = t('Email tidak valid');
     if ($participants < 1) $errors[] = t('Jumlah peserta minimal 1');
     if ($participants > (int)$tour['max_participants']) $errors[] = t('Jumlah peserta melebihi kapasitas tour');
