@@ -26,6 +26,8 @@ import com.google.firebase.messaging.FirebaseMessaging;
 public class MainActivity extends AppCompatActivity {
 
     private WebView webView;
+    private android.view.View loadingOverlay;
+    private android.animation.ObjectAnimator pulseAnimator;
     private static final String BASE_URL = "https://tourandtravel.web.id";
     private static final String FCM_TOKEN_URL = BASE_URL + "/api/fcm-token.php";
     private static final int NOTIFICATION_PERMISSION_CODE = 1001;
@@ -43,6 +45,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupWebView() {
         webView = findViewById(R.id.webView);
+        loadingOverlay = findViewById(R.id.loadingOverlay);
+        pulseAnimator = android.animation.ObjectAnimator.ofFloat(loadingOverlay, "alpha", 1f, 0.55f);
+        pulseAnimator.setDuration(700);
+        pulseAnimator.setRepeatCount(android.animation.ValueAnimator.INFINITE);
+        pulseAnimator.setRepeatMode(android.animation.ValueAnimator.REVERSE);
+        pulseAnimator.start();
 
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
@@ -67,8 +75,21 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
+            public void onPageStarted(WebView view, String url, android.graphics.Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+                showLoading();
+            }
+
+            @Override
+            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                super.onReceivedError(view, errorCode, description, failingUrl);
+                hideLoading();
+            }
+
+            @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
+                hideLoading();
                 view.evaluateJavascript(
                     "(function() {" +
                     "  if (document.getElementById('android-hide-elements')) return;" +
@@ -77,12 +98,45 @@ public class MainActivity extends AppCompatActivity {
                     "  style.textContent = '.sticky-top { display: none !important; }" +
                     "    footer, .footer, .site-footer { display: none !important; }';" +
                     "  document.head.appendChild(style);" +
-                    "})();", null);
+                    "})();" + spaHookJs(), null);
             }
         });
 
         webView.setWebChromeClient(new WebChromeClient());
         webView.loadUrl(BASE_URL);
+    }
+
+    private String spaHookJs() {
+        return "(function() {" +
+            "  if (window.__androidSpaHook) return; window.__androidSpaHook = true;" +
+            "  var t, mo;" +
+            "  function end() { clearTimeout(t); if (mo) mo.disconnect(); mo = null;" +
+            "    if (window.AndroidBridge) AndroidBridge.pageLoadEnd(); }" +
+            "  function start() { if (window.AndroidBridge) AndroidBridge.pageLoadStart();" +
+            "    clearTimeout(t); t = setTimeout(end, 1500);" +
+            "    if (!mo) { mo = new MutationObserver(function() { clearTimeout(t); t = setTimeout(end, 400); });" +
+            "      mo.observe(document.body, {childList: true, subtree: true}); } }" +
+            "  ['pushState','replaceState'].forEach(function(m) { var o = history[m];" +
+            "    history[m] = function() { var r = o.apply(this, arguments); start(); return r; }; });" +
+            "  window.addEventListener('popstate', start);" +
+            "  document.addEventListener('click', function(e) { var a = e.target.closest('a');" +
+            "    if (a && a.href && a.href.indexOf(location.origin) === 0 && !a.target) start(); }, true);" +
+            "})();";
+    }
+
+    private void showLoading() {
+        if (loadingOverlay == null) return;
+        loadingOverlay.animate().cancel();
+        loadingOverlay.setAlpha(1f);
+        loadingOverlay.setVisibility(android.view.View.VISIBLE);
+        if (pulseAnimator != null && !pulseAnimator.isRunning()) pulseAnimator.start();
+    }
+
+    private void hideLoading() {
+        if (loadingOverlay == null || loadingOverlay.getVisibility() != android.view.View.VISIBLE) return;
+        if (pulseAnimator != null) pulseAnimator.cancel();
+        loadingOverlay.animate().alpha(0f).setDuration(250).withEndAction(() ->
+                loadingOverlay.setVisibility(android.view.View.GONE)).start();
     }
 
     private void requestNotificationPermission() {
@@ -154,6 +208,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public class WebAppBridge {
+
+        @JavascriptInterface
+        public void pageLoadStart() {
+            runOnUiThread(() -> showLoading());
+        }
+
+        @JavascriptInterface
+        public void pageLoadEnd() {
+            runOnUiThread(() -> hideLoading());
+        }
 
         @JavascriptInterface
         public void showToast(String message) {
