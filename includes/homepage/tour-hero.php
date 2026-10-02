@@ -36,23 +36,32 @@ require_once __DIR__ . '/../components/date-picker.php';
 
         <form class="voyage-search" method="GET" action="tours.php" id="voyageSearchForm">
             <div class="voyage-field">
+                <span class="voyage-m-ico" aria-hidden="true"><i class="bi bi-send"></i></span>
+                <div style="min-width:0;flex:1">
                 <label><?= t('Destinasi') ?></label>
                 <input type="text" name="search" id="voyageWhere" placeholder="<?= t('Cari destinasi atau aktivitas...') ?>" autocomplete="off">
+                </div>
             </div>
             <div class="voyage-div"></div>
             <div class="voyage-field voyage-click" id="voyageWhenBtn" tabindex="0">
+                <span class="voyage-m-ico" aria-hidden="true"><i class="bi bi-calendar3"></i></span>
+                <div style="min-width:0;flex:1">
                 <label><?= t('Tanggal') ?></label>
                 <span class="voyage-val" id="voyageWhenVal"><?= t('Pilih tanggal') ?></span>
+                </div>
                 <?php renderDatePicker(['name' => 'departure', 'id' => 'voyageDate', 'min' => $voyageToday, 'bare' => true, 'noName' => true, 'cls' => 'd-none']); ?>
                 <input type="hidden" name="departure" id="voyageDateHidden" value="">
             </div>
             <div class="voyage-div"></div>
             <div class="voyage-field voyage-click" id="voyageWhoBtn" tabindex="0">
+                <span class="voyage-m-ico" aria-hidden="true"><i class="bi bi-people"></i></span>
+                <div style="min-width:0;flex:1">
                 <label><?= t('Peserta') ?></label>
                 <span class="voyage-val" id="voyageWhoVal">2 <?= t('Peserta') ?></span>
+                </div>
             </div>
             <button type="submit" class="voyage-go" aria-label="<?= t('Cari') ?>">
-                <i class="bi bi-search"></i>
+                <i class="bi bi-search"></i><span class="voyage-go-txt"><?= t('Cari Tour') ?></span>
             </button>
 
             <div class="voyage-pop voyage-pop-right" id="voyageWhoPop">
