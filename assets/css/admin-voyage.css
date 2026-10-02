@@ -41,9 +41,15 @@ body {
     opacity: .5;
     background: radial-gradient(900px circle at 15% 15%, rgba(13,110,253,.14), transparent 60%), radial-gradient(700px circle at 85% 25%, rgba(255,122,26,.10), transparent 60%);
 }
-#adminTopbar, #adminWrapper, #adminContent {
+#adminTopbar {
     position: relative;
     z-index: 1;
+}
+/* Wrapper & content JANGAN diberi z-index: itu membentuk stacking context baru
+   sehingga modal admin (z-index 1055) terkurung di bawah .modal-backdrop (1050)
+   dan tidak bisa diklik. */
+#adminWrapper, #adminContent {
+    position: relative;
 }
 /* ===== Navbar: glass pill bar ===== */
 #adminTopbar {

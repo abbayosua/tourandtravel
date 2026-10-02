@@ -263,15 +263,7 @@ $typeBadge = ['tour' => 'primary', 'attraction' => 'info', 'transfer' => 'warnin
 // Daftar peserta multi-peserta (tour)
 $tourBookingIds = [];
 foreach ($all as $r) { if (($r['btype'] ?? '') === 'tour') $tourBookingIds[] = (int)$r['id']; }
-$participantMap = [];
-if ($tourBookingIds) {
-    try {
-        $in = implode(',', array_fill(0, count($tourBookingIds), '?'));
-        $ps = db()->prepare("SELECT booking_id, full_name, passport_photo FROM booking_participants WHERE booking_id IN ($in) ORDER BY id ASC");
-        $ps->execute($tourBookingIds);
-        foreach ($ps->fetchAll() as $p) { $participantMap[(int)$p['booking_id']][] = $p; }
-    } catch (Throwable $e) { $participantMap = []; }
-}
+$participantMap = getBookingParticipantsMap($tourBookingIds);
 
 $pageTitle = t('Kelola Booking');
 if (!function_exists('bookingStatusLabel')) { function bookingStatusLabel($st) { $m = ['pending' => t('Pending'), 'confirmed' => t('Dikonfirmasi'), 'cancelled' => t('Dibatalkan'), 'paid' => t('Dibayar'), 'refunded' => t('Refund')]; return $m[$st] ?? ucfirst((string)$st); } }
@@ -358,6 +350,23 @@ require_once 'includes/admin-header.php';
                             <a href="https://wa.me/<?= preg_replace('/[^0-9]/', '', $b['phone']) ?>" target="_blank" class="text-success small"><?= e($b['phone']) ?></a>
                             <?php if ($btype === 'tour' && !empty($participantMap[$b['id']])): ?>
                             <button type="button" class="btn btn-sm btn-outline-secondary d-block mt-1" data-bs-toggle="modal" data-bs-target="#paxModal<?= $b['id'] ?>" data-testid="pax-view-<?= $b['id'] ?>"><i class="bi bi-people"></i> <?= t('Peserta') ?> (<?= count($participantMap[$b['id']]) ?>)</button>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                    <?php if (empty($all)): ?>
+                    <tr><td colspan="12" class="text-center py-4 text-muted"><?= t('Belum ada booking') ?></td></tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<?php // Modal admin dipindah ke luar <table> agar position:fixed bekerja benar ?>
+<?php foreach ($all as $b): $btype = $b['btype']; ?>
+                            <?php if ($btype === 'tour' && !empty($participantMap[$b['id']])): ?>
                             <div class="modal fade" id="paxModal<?= $b['id'] ?>" tabindex="-1">
                               <div class="modal-dialog modal-lg modal-dialog-scrollable">
                                 <div class="modal-content">
@@ -365,20 +374,21 @@ require_once 'includes/admin-header.php';
                                   <form method="POST">
                                     <input type="hidden" name="pax_update" value="1">
                                     <input type="hidden" name="booking_id" value="<?= (int)$b['id'] ?>">
-                                    <div class="modal-body p-0">
-                                      <table class="table table-sm mb-0">
-                                        <thead class="table-light"><tr><th>#</th><th><?= t('Nama') ?></th><th><?= t('Foto Paspor') ?></th><th></th></tr></thead>
-                                        <tbody>
+                                    <div class="modal-body">
+                                      <div class="d-flex flex-column gap-2">
                                         <?php foreach ($participantMap[$b['id']] as $pi => $p): ?>
-                                          <tr>
-                                            <td><?= $pi + 1 ?></td>
-                                            <td><input type="text" name="pax_name[<?= (int)$p['id'] ?>]" class="form-control form-control-sm" value="<?= e($p['full_name']) ?>" data-testid="pax-name-<?= (int)$p['id'] ?>"></td>
-                                            <td><?php if ($p['passport_photo']): ?><a href="../uploads/passports/<?= e($p['passport_photo']) ?>" target="_blank" class="text-primary small"><?= t('Lihat') ?></a><?php else: ?>-<?php endif; ?></td>
-                                            <td class="text-end"><a href="bookings.php?delete_pax=<?= (int)$p['id'] ?>&booking=<?= (int)$b['id'] ?>" class="btn btn-sm btn-outline-danger" data-testid="pax-del-<?= (int)$p['id'] ?>" onclick="return confirm('<?= t('Hapus peserta ini?') ?>')"><i class="bi bi-trash"></i></a></td>
-                                          </tr>
+                                        <div class="border rounded p-2">
+                                          <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="badge bg-light text-dark">#<?= $pi + 1 ?></span>
+                                            <div class="d-flex gap-1 align-items-center">
+                                              <?php if ($p['passport_photo']): ?><a href="../uploads/passports/<?= e($p['passport_photo']) ?>" target="_blank" class="btn btn-sm btn-outline-primary"><?= t('Foto') ?></a><?php else: ?><span class="text-muted small"><?= t('Tanpa paspor') ?></span><?php endif; ?>
+                                              <a href="bookings.php?delete_pax=<?= (int)$p['id'] ?>&booking=<?= (int)$b['id'] ?>" class="btn btn-sm btn-outline-danger" data-testid="pax-del-<?= (int)$p['id'] ?>" onclick="return confirm('<?= t('Hapus peserta ini?') ?>')"><i class="bi bi-trash"></i></a>
+                                            </div>
+                                          </div>
+                                          <input type="text" name="pax_name[<?= (int)$p['id'] ?>]" class="form-control form-control-sm" value="<?= e($p['full_name']) ?>" placeholder="<?= t('Nama lengkap sesuai paspor') ?>" data-testid="pax-name-<?= (int)$p['id'] ?>">
+                                        </div>
                                         <?php endforeach; ?>
-                                        </tbody>
-                                      </table>
+                                      </div>
                                     </div>
                                     <div class="modal-footer py-2 justify-content-end">
                                       <button type="submit" class="btn btn-primary btn-sm" data-testid="pax-save-<?= (int)$b['id'] ?>"><?= t('Simpan Nama') ?></button>
@@ -448,16 +458,6 @@ require_once 'includes/admin-header.php';
                                 </div>
                               </div>
                             </div>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                    <?php if (empty($all)): ?>
-                    <tr><td colspan="12" class="text-center py-4 text-muted"><?= t('Belum ada booking') ?></td></tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
+<?php endforeach; ?>
 
 <?php require_once 'includes/admin-footer.php'; ?>

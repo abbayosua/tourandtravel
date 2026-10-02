@@ -6,6 +6,7 @@ export default defineConfig({
   retries: 1,
   workers: 1,
   globalSetup: './tests/e2e/global-setup.ts',
+  globalTeardown: './tests/e2e/global-teardown.ts',
   use: {
     baseURL: process.env.E2E_BASE_URL || 'http://localhost/tourandtravel',
     browserName: 'chromium',
