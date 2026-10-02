@@ -45,15 +45,56 @@ function seoOrganization(): array {
 }
 
 function seoTour(array $tour): array {
-    return [
+    $schema = [
         '@context' => 'https://schema.org',
         '@type' => 'TouristTrip',
         'name' => tContent($tour, 'title'),
         'description' => mb_substr((string)tContent($tour, 'description'), 0, 300),
         'url' => BASE_URL . '/tour-detail.php?slug=' . $tour['slug'],
         'image' => getTourImage($tour, 'medium'),
-        'offers' => ['@type' => 'Offer', 'price' => (float)$tour['price'], 'priceCurrency' => 'IDR'],
+        'offers' => [
+            '@type' => 'Offer',
+            'price' => (float)$tour['price'],
+            'priceCurrency' => $tour['price_currency'] ?? 'IDR',
+            'availability' => 'https://schema.org/InStock',
+            'url' => BASE_URL . '/tour-detail.php?slug=' . $tour['slug'],
+        ],
     ];
+
+    // Add rating if available
+    if (!empty($tour['rating']) && (float)$tour['rating'] > 0) {
+        $schema['aggregateRating'] = [
+            '@type' => 'AggregateRating',
+            'ratingValue' => (float)$tour['rating'],
+            'reviewCount' => (int)($tour['total_reviews'] ?? 0),
+            'bestRating' => 5,
+        ];
+    }
+
+    // Add duration if available
+    if (!empty($tour['duration_days'])) {
+        $schema['timeRequired'] = 'P' . (int)$tour['duration_days'] . 'D';
+    }
+
+    // Add tourist type if available
+    if (!empty($tour['tourist_type'])) {
+        $schema['touristType'] = $tour['tourist_type'];
+    }
+
+    // Add available languages
+    $langs = [];
+    if (!empty($tour['content_language'])) $langs[] = $tour['content_language'];
+    if (!empty($tour['available_languages'])) $langs = array_merge($langs, explode(',', $tour['available_languages']));
+    if (!empty($langs)) {
+        $schema['availableLanguage'] = array_values(array_unique($langs));
+    }
+
+    // Add includes if available
+    if (!empty($tour['includes'])) {
+        $schema['includes'] = array_map('trim', explode("\n", $tour['includes']));
+    }
+
+    return $schema;
 }
 
 function seoHotel(array $hotel): array {
