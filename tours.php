@@ -55,6 +55,30 @@ renderPageHero(t('Paket Tour'), $total . ' ' . t('tour ditemukan'), [['label' =>
             </a>
         </div>
 
+        <!-- Active Filter Chips -->
+        <?php
+        $activeFilters = [];
+        if ($category) $activeFilters[] = ['key' => 'category', 'label' => t($category), 'removeUrl' => 'tours.php?' . http_build_query(array_diff_key($_GET, ['category' => 1]))];
+        if ($search) $activeFilters[] = ['key' => 'search', 'label' => t('Pencarian') . ': ' . $search, 'removeUrl' => 'tours.php?' . http_build_query(array_diff_key($_GET, ['search' => 1]))];
+        if ($priceRange && isset($hargaOptions[$priceRange])) $activeFilters[] = ['key' => 'harga', 'label' => $hargaOptions[$priceRange], 'removeUrl' => 'tours.php?' . http_build_query(array_diff_key($_GET, ['harga' => 1]))];
+        if ($duration && isset($durasiOptions[$duration])) $activeFilters[] = ['key' => 'durasi', 'label' => $durasiOptions[$duration], 'removeUrl' => 'tours.php?' . http_build_query(array_diff_key($_GET, ['durasi' => 1]))];
+        if ($rating && isset($ratingOptions[$rating])) $activeFilters[] = ['key' => 'rating', 'label' => $ratingOptions[$rating], 'removeUrl' => 'tours.php?' . http_build_query(array_diff_key($_GET, ['rating' => 1]))];
+        if ($departure && isset($departureOptions[$departure])) $activeFilters[] = ['key' => 'departure', 'label' => $departureOptions[$departure], 'removeUrl' => 'tours.php?' . http_build_query(array_diff_key($_GET, ['departure' => 1]))];
+        if ($minPrice !== null && $minPrice !== '') $activeFilters[] = ['key' => 'min_price', 'label' => t('Min') . ' Rp ' . number_format((float)$minPrice, 0, ',', '.'), 'removeUrl' => 'tours.php?' . http_build_query(array_diff_key($_GET, ['min_price' => 1]))];
+        if ($maxPrice !== null && $maxPrice !== '') $activeFilters[] = ['key' => 'max_price', 'label' => t('Maks') . ' Rp ' . number_format((float)$maxPrice, 0, ',', '.'), 'removeUrl' => 'tours.php?' . http_build_query(array_diff_key($_GET, ['max_price' => 1]))];
+        if ($sort && isset($sortOptions[$sort])) $activeFilters[] = ['key' => 'sort', 'label' => $sortOptions[$sort], 'removeUrl' => 'tours.php?' . http_build_query(array_diff_key($_GET, ['sort' => 1]))];
+        ?>
+        <?php if (!empty($activeFilters)): ?>
+        <div class="d-flex flex-wrap gap-2 mb-3" data-testid="active-filters">
+            <?php foreach ($activeFilters as $filter): ?>
+            <a href="<?= e($filter['removeUrl']) ?>" class="btn btn-sm btn-outline-primary rounded-pill d-inline-flex align-items-center gap-1">
+                <?= e($filter['label']) ?>
+                <i class="bi bi-x-circle"></i>
+            </a>
+            <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
+
         <div class="row">
             <!-- Sidebar Filter (desktop sticky / mobile collapse) -->
             <div class="col-lg-3 mb-3">
