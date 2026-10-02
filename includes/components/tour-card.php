@@ -25,11 +25,11 @@ function renderTourCard($tour, $wishlistIds = [], $options = []) {
     ?>
     <div class="col-md-6 col-lg-4">
         <div class="card tour-card-klook border-0 shadow-sm h-100 klook-card">
-            <div class="position-relative overflow-hidden rounded-top klook-card-img" style="height: 200px;">
-                <img src="<?= getTourImage($tour, 'medium') ?>" 
-                     onerror="this.src='<?= getTourImageFallback($tour, 'medium') ?>'" 
-                     class="w-100 h-100" 
-                     style="object-fit: cover;" 
+            <div class="position-relative overflow-hidden rounded-top klook-card-img" style="height: 180px;">
+                <img src="<?= getTourImage($tour, 'medium') ?>"
+                     onerror="this.src='<?= getTourImageFallback($tour, 'medium') ?>'"
+                     class="w-100 h-100"
+                     style="object-fit: cover;"
                      alt="<?= e(tContent($tour, 'title')) ?>">
 
                 <!-- Badge diskon -->
@@ -41,29 +41,29 @@ function renderTourCard($tour, $wishlistIds = [], $options = []) {
 
                 <!-- Badge Instant Confirmation -->
                 <?php if (!empty($tour['instant_confirmation'])): ?>
-                    <span class="badge bg-success position-absolute top-0 end-0 m-2 shadow-sm" style="font-size: 10px;">
+                    <span class="badge bg-success position-absolute top-0 end-0 m-2 shadow-sm" style="font-size: 10px; margin-top: 28px !important;">
                         <i class="bi bi-lightning-charge-fill me-1"></i><?= t('Instan') ?>
                     </span>
                 <?php endif; ?>
 
                 <!-- Badge Free Cancellation -->
                 <?php if (!empty($tour['free_cancellation'])): ?>
-                    <span class="badge bg-info text-white position-absolute top-0 end-0 m-2 shadow-sm" style="font-size: 10px; margin-top: 28px !important;">
+                    <span class="badge bg-info text-white position-absolute top-0 end-0 m-2 shadow-sm" style="font-size: 10px; margin-top: 52px !important;">
                         <i class="bi bi-shield-check me-1"></i><?= t('Batal Gratis') ?>
                     </span>
                 <?php endif; ?>
 
                 <!-- Wishlist button -->
                 <?php if ($opts['show_wishlist']): ?>
-                <button class="btn btn-sm position-absolute top-0 end-0 m-1 like-btn wishlist-btn klook-wishlist-btn <?= $isWishlisted ? 'text-danger' : 'text-white' ?>" 
-                    data-tour-id="<?= $tour['id'] ?>" 
+                <button class="btn btn-sm position-absolute bottom-0 end-0 m-2 like-btn wishlist-btn klook-wishlist-btn <?= $isWishlisted ? 'text-danger' : 'text-white' ?>"
+                    data-tour-id="<?= $tour['id'] ?>"
                     onclick="toggleWishlist(this, <?= $tour['id'] ?>)">
                     <i class="bi bi-heart<?= $isWishlisted ? '-fill' : '' ?>"></i>
                 </button>
                 <?php endif; ?>
 
                 <!-- Category badge -->
-                <span class="badge bg-white text-dark position-absolute top-0 start-0 m-2 shadow-sm" style="margin-top: 40px !important;"><?= e(tContent($tour, 'category')) ?></span>
+                <span class="badge bg-white text-dark position-absolute bottom-0 start-0 m-2 shadow-sm"><?= e(tContent($tour, 'category')) ?></span>
             </div>
 
             <div class="card-body p-3 d-flex flex-column">
