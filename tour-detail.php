@@ -712,7 +712,24 @@ require_once 'includes/header-shared.php';
                         </div>
                         <div class="mb-2">
                             <label class="form-label small"><?= t('Pilih Tanggal') ?></label>
-                            <select name="tour_date_id" class="form-select form-select-sm" required>
+                            <?php if (count($tourDates) > 0): ?>
+                            <div class="mb-2 p-2 rounded border bg-light" id="bookingCalendar">
+                                <label class="form-label small fw-semibold mb-1"><?= t('Kalender Ketersediaan') ?></label>
+                                <?php
+                                $calPrices = [];
+                                foreach ($tourDates as $td) {
+                                    $sisa = getSisaSlot($td['id']);
+                                    if ($sisa > 0) {
+                                        $calPrices[$td['departure_date']] = $effectivePrices[$td['departure_date']] ?? getFlashSalePrice((float)$tour['price'], 'tour', (int)$tour['id'])['price'];
+                                    }
+                                }
+                                $calPriceCalendar = array_map(fn($d, $p) => ['date' => $d, 'price' => $p], array_keys($calPrices), $calPrices);
+                                renderDatePicker(['id' => 'bookingDateCal', 'cls' => 'form-control form-control-sm', 'noName' => true, 'bare' => true, 'months' => 2, 'min' => !empty($calPriceCalendar) ? $calPriceCalendar[0]['date'] : 'today', 'prices' => $calPriceCalendar, 'priceBase' => (float)$tour['price'], 'priceCurrency' => $tour['price_currency'] ?? 'IDR', 'resultId' => 'bookingDateResult', 'resultBaseLabel' => t('Pilih tanggal di kalender'), 'onChange' => 'onBookingDateSelect']);
+                                ?>
+                                <div class="small mt-1" id="bookingDateResult" aria-live="polite"></div>
+                            </div>
+                            <?php endif; ?>
+                            <select name="tour_date_id" class="form-select form-select-sm" required id="tourDateSelect">
                                 <option value=""><?= t('-- Pilih Tanggal --') ?></option>
                                 <?php foreach ($tourDates as $td): ?>
                                     <?php $sisa = getSisaSlot($td['id']); ?>
@@ -826,6 +843,18 @@ require_once 'includes/header-shared.php';
                                 document.getElementById('sumInsRow').classList.toggle('d-none', premi === 0);
                                 document.getElementById('sumTotal').textContent = fmt(sub + premi);
                             }
+                            window.onBookingDateSelect = function (dateStr, inputEl) {
+                                var select = document.getElementById('tourDateSelect');
+                                if (!select) return;
+                                for (var i = 0; i < select.options.length; i++) {
+                                    var opt = select.options[i];
+                                    if (opt.textContent && opt.textContent.indexOf(dateStr) !== -1) {
+                                        select.selectedIndex = i;
+                                        recalc();
+                                        break;
+                                    }
+                                }
+                            };
                             window.applyTourPromo = function () {
                                 var input = document.getElementById('promoCodeTour');
                                 var result = document.getElementById('promoResultTour');
