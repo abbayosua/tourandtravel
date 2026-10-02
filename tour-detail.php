@@ -104,6 +104,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
         // Flash sale berlaku pada harga final (kalender atau dasar)
         $unitPrice = getFlashSalePrice((float)$unitPrice, 'tour', (int)$tour['id'])['price'];
         $totalPrice = $unitPrice * $participants;
+
+        // Group discount: tiered discount for larger groups
+        $groupDiscountPct = 0.0;
+        if ($participants >= 20) {
+            $groupDiscountPct = 15.0;
+        } elseif ($participants >= 10) {
+            $groupDiscountPct = 10.0;
+        } elseif ($participants >= 5) {
+            $groupDiscountPct = 5.0;
+        }
+        $groupDiscountAmount = 0.0;
+        if ($groupDiscountPct > 0) {
+            $groupDiscountAmount = $totalPrice * ($groupDiscountPct / 100);
+            $totalPrice -= $groupDiscountAmount;
+        }
+
         // Corporate rate (FOLLOW item 5): diskon % untuk user korporat
         $corporateDiscountPct = !empty($_SESSION['user_id']) ? getCorporateDiscount((int)$_SESSION['user_id']) : 0.0;
         if ($corporateDiscountPct > 0) {
@@ -848,6 +864,7 @@ require_once 'includes/header-shared.php';
                         ?>
                         <div class="border rounded p-2 mb-3 bg-light small" data-testid="booking-summary">
                             <div class="d-flex justify-content-between"><span><?= t('Subtotal') ?></span><span id="sumBase"><?= formatRupiah($formBasePrice) ?></span></div>
+                            <div class="d-flex justify-content-between text-success d-none" id="sumGroupRow"><span><?= t('Diskon Grup') ?> <span id="sumGroupPct"></span></span><span id="sumGroup">-Rp 0</span></div>
                             <div class="d-flex justify-content-between text-success d-none" id="sumInsRow" data-testid="insurance-row"><span><?= t('Asuransi perjalanan') ?> (3%)</span><span id="sumIns">Rp 0</span></div>
                             <hr class="my-1">
                             <div class="d-flex justify-content-between fw-bold"><span><?= t('Total') ?></span><span id="sumTotal" data-testid="summary-total"><?= formatRupiah($formBasePrice) ?></span></div>
@@ -874,6 +891,15 @@ require_once 'includes/header-shared.php';
                                 var unit = (sel && parseFloat(sel.getAttribute('data-price'))) || base;
                                 var sub = unit * pax;
                                 currentSubtotal = sub;
+
+                                // Group discount (tiered)
+                                var groupPct = 0;
+                                if (pax >= 20) groupPct = 15;
+                                else if (pax >= 10) groupPct = 10;
+                                else if (pax >= 5) groupPct = 5;
+                                var groupDiscount = sub * groupPct / 100;
+                                sub -= groupDiscount;
+
                                 // Corporate discount (%)
                                 if (corporatePct > 0) sub = sub * (100 - corporatePct) / 100;
                                 // Promo code
@@ -894,6 +920,9 @@ require_once 'includes/header-shared.php';
                                 // Asuransi 3% dari total setelah semua diskon (sinkron dgn backend)
                                 var premi = insEl && insEl.checked ? Math.round(sub * 0.03 / 100) * 100 : 0;
                                 document.getElementById('sumBase').textContent = fmt(sub);
+                                document.getElementById('sumGroupPct').textContent = groupPct > 0 ? '(' + groupPct + '%)' : '';
+                                document.getElementById('sumGroup').textContent = '-' + fmt(groupDiscount);
+                                document.getElementById('sumGroupRow').classList.toggle('d-none', groupPct === 0);
                                 document.getElementById('sumIns').textContent = fmt(premi);
                                 document.getElementById('sumInsRow').classList.toggle('d-none', premi === 0);
                                 document.getElementById('sumTotal').textContent = fmt(sub + premi);
