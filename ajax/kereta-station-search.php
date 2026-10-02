@@ -4,10 +4,10 @@
  * Returns JSON array with label, label_code for train stations
  */
 
-require_once __DIR__ . '/../config.php';
-require_once __DIR__ . '/../db.php';
-require_once __DIR__ . '/../functions.php';
-require_once __DIR__ . '/../kereta.php';
+require_once __DIR__ . '/../includes/config.php';
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../includes/kereta.php';
 
 header('Content-Type: application/json');
 

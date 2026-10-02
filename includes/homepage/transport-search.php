@@ -150,7 +150,7 @@ $tsPhTo = $tsPhTo ?? $tsPhFrom;
                 <a href="flights.php" class="booking-tab <?= $isFlight ? 'active' : '' ?>" role="tab"><i class="bi bi-airplane"></i> <?= t('Pesawat') ?></a>
                 <a href="ferries.php" class="booking-tab <?= $isFerry ? 'active' : '' ?>" role="tab"><i class="bi bi-water"></i> <?= t('Ferry') ?></a>
                 <a href="pelni.php" class="booking-tab <?= $isPelni ? 'active' : '' ?>" role="tab"><i class="bi bi-ship"></i> <?= t('Pelni') ?></a>
-                <a href="trains.php" class="booking-tab <?= $isTrain ? 'active' : '' ?>" role="tab"><i class="bi bi-train-front"></i> <?= t('Kereta') ?></a>
+                <a href="trains.php" class="booking-tab <?= $isTrain ? 'active' : '' ?>" role="tab"><i class="bi bi-train-front"></i> <?= t('KAI') ?></a>
                 <a href="rental-cars.php" class="booking-tab" role="tab"><i class="bi bi-car-front"></i> <?= t('Rental') ?></a>
             </div>
             <div class="booking-form">
@@ -204,7 +204,7 @@ $tsPhTo = $tsPhTo ?? $tsPhFrom;
                     <div class="form-search-row">
                         <div class="search-field voyage-field">
                             <span class="search-field-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 7 11.5 7.3 11.8a1 1 0 0 0 1.4 0C13 21.5 20 15.4 20 10a8 8 0 0 0-8-8z"/></svg> <?= t('Dari') ?></span>
-                            <input type="text" name="from" class="ts-search <?= e($tsSearchClass) ?>" placeholder="<?= e($tsPhFrom) ?>" value="<?= e($tsFrom) ?>" autocomplete="off" data-target="<?= $isFlight ? 'fromDropdown' : 'tsFromDropdown' ?>" id="<?= $isFlight ? 'fromInput' : 'tsFromInput' ?>">
+                            <input type="text" name="from" class="ts-search <?= e($tsSearchClass) ?>" placeholder="<?= e($tsPhFrom) ?>" value="<?= e($tsFrom) ?>" autocomplete="off"<?php if ($isTrain): ?> readonly data-kai-picker="from"<?php endif; ?> data-target="<?= $isFlight ? 'fromDropdown' : 'tsFromDropdown' ?>" id="<?= $isFlight ? 'fromInput' : 'tsFromInput' ?>">
                             <div class="search-dropdown" id="<?= $isFlight ? 'fromDropdown' : 'tsFromDropdown' ?>"></div>
                             <?php if ($isFerry): ?>
                             <input type="hidden" name="from_pid" value="<?= (int)$tsFromPid ?>">
@@ -214,7 +214,7 @@ $tsPhTo = $tsPhTo ?? $tsPhFrom;
                         <button type="button" class="swap-btn" aria-label="Tukar"><span class="swap-btn-inner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 16l-4-4 4-4"/><path d="M17 8l4 4-4 4"/><line x1="3" y1="12" x2="21" y2="12"/></svg></span></button>
                         <div class="search-field voyage-field">
                             <span class="search-field-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 7 11.5 7.3 11.8a1 1 0 0 0 1.4 0C13 21.5 20 15.4 20 10a8 8 0 0 0-8-8z"/></svg> <?= t('Ke') ?></span>
-                            <input type="text" name="to" class="ts-search <?= e($tsSearchClass) ?>" placeholder="<?= e($tsPhTo) ?>" value="<?= e($tsTo) ?>" autocomplete="off" data-target="<?= $isFlight ? 'toDropdown' : 'tsToDropdown' ?>" id="<?= $isFlight ? 'toInput' : 'tsToInput' ?>">
+                            <input type="text" name="to" class="ts-search <?= e($tsSearchClass) ?>" placeholder="<?= e($tsPhTo) ?>" value="<?= e($tsTo) ?>" autocomplete="off"<?php if ($isTrain): ?> readonly data-kai-picker="to"<?php endif; ?> data-target="<?= $isFlight ? 'toDropdown' : 'tsToDropdown' ?>" id="<?= $isFlight ? 'toInput' : 'tsToInput' ?>">
                             <div class="search-dropdown" id="<?= $isFlight ? 'toDropdown' : 'tsToDropdown' ?>"></div>
                             <?php if ($isFerry): ?>
                             <input type="hidden" name="to_pid" value="<?= (int)$tsToPid ?>">
@@ -258,6 +258,83 @@ $tsPhTo = $tsPhTo ?? $tsPhFrom;
         </div>
     </div>
 </section>
+<?php if ($isTrain && !empty($KERETA_STATION_CODE_MAP)):
+$kaiStations = [];
+foreach ($KERETA_STATION_CODE_MAP as $kaiName => $kaiCode) { $kaiStations[] = ['name' => $kaiName, 'code' => $kaiCode]; }
+?>
+<div class="modal fade" id="kaiStationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content" style="border-radius:20px">
+            <div class="modal-header border-0 pb-0">
+                <div>
+                    <h6 class="fw-bold mb-0"><?= t('Pilih Stasiun') ?></h6>
+                    <small class="text-muted" id="kaiModalSub"></small>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<?= t('Tutup') ?>"></button>
+            </div>
+            <div class="modal-body pt-2">
+                <div class="input-group mb-2">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control border-start-0" id="kaiStationSearch" placeholder="<?= t('Cari stasiun / kota / kode…') ?>" autocomplete="off">
+                </div>
+                <div id="kaiStationList" class="list-group list-group-flush overflow-auto" style="max-height:320px"></div>
+                <div id="kaiStationEmpty" class="text-center text-muted small py-4 d-none"><?= t('Stasiun tidak ditemukan. Coba kata kunci lain.') ?></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+(function () {
+    var STATIONS = <?= json_encode($kaiStations, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
+    var FORM_SEL = '#<?= e($tsFormId) ?>';
+    var modalEl = document.getElementById('kaiStationModal');
+    if (!modalEl || typeof bootstrap === 'undefined') return;
+    var modal = new bootstrap.Modal(modalEl);
+    var search = document.getElementById('kaiStationSearch');
+    var list = document.getElementById('kaiStationList');
+    var empty = document.getElementById('kaiStationEmpty');
+    var sub = document.getElementById('kaiModalSub');
+    var target = 'from';
+    function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+    function render(q) {
+        q = (q || '').toLowerCase();
+        var html = '', shown = 0;
+        STATIONS.forEach(function (s) {
+            if (q && s.name.toLowerCase().indexOf(q) < 0 && s.code.toLowerCase().indexOf(q) < 0) return;
+            shown++;
+            var nm = s.name.split(',');
+            var station = nm[0].trim(), city = nm.slice(1).join(',').trim();
+            html += '<button type="button" class="kai-station-item list-group-item list-group-item-action d-flex justify-content-between align-items-center" data-name="' + esc(s.name).replace(/"/g, '&quot;') + '">'
+                + '<span><span class="fw-semibold d-block">' + esc(station) + '</span>'
+                + (city ? '<small class="text-muted">' + esc(city) + '</small>' : '') + '</span>'
+                + '<span class="badge bg-primary-subtle text-primary rounded-pill ms-2">' + esc(s.code) + '</span></button>';
+        });
+        list.innerHTML = html;
+        empty.classList.toggle('d-none', shown > 0);
+        list.querySelectorAll('.kai-station-item').forEach(function (b) {
+            b.addEventListener('click', function () {
+                var inp = document.querySelector(FORM_SEL + ' input[name=' + target + ']');
+                if (inp) inp.value = b.getAttribute('data-name');
+                modal.hide();
+            });
+        });
+    }
+    function openPicker(t) {
+        target = t;
+        sub.textContent = t === 'from' ? '<?= t('Stasiun keberangkatan') ?>' : '<?= t('Stasiun tujuan') ?>';
+        search.value = '';
+        render('');
+        modal.show();
+        setTimeout(function () { search.focus(); }, 350);
+    }
+    document.querySelectorAll(FORM_SEL + ' [data-kai-picker]').forEach(function (inp) {
+        inp.addEventListener('click', function () { openPicker(inp.getAttribute('data-kai-picker')); });
+        inp.addEventListener('focus', function () { inp.blur(); openPicker(inp.getAttribute('data-kai-picker')); });
+    });
+    search.addEventListener('input', function () { render(search.value); });
+})();
+</script>
+<?php endif; ?>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     var form = document.getElementById('<?= $tsFormId ?>');
@@ -317,6 +394,7 @@ document.addEventListener('DOMContentLoaded', function () {
     syncTrip();
     var endpoint = form.getAttribute('data-autocomplete') || 'city-search-ajax.php';
     form.querySelectorAll('.ts-search').forEach(function (input) {
+        if (input.hasAttribute('data-kai-picker')) return; // KAI: pakai modal picker, bukan dropdown autocomplete
         var dropdownId = input.getAttribute('data-target');
         var dropdown = dropdownId ? document.getElementById(dropdownId) : null;
         if (!dropdown) return;

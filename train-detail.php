@@ -11,9 +11,9 @@ $train = $stmt->fetch();
 
 if (!$train) {
     header('HTTP/1.0 404 Not Found');
-    $pageTitle = t('Kereta Tidak Ditemukan');
+    $pageTitle = t('KAI Tidak Ditemukan');
     require_once 'includes/header-shared.php';
-    echo '<div class="container py-5 text-center"><h3>' . t('Kereta tidak ditemukan') . '</h3><a href="trains.php" class="btn btn-primary mt-3">' . t('Kembali ke Katalog') . '</a></div>';
+    echo '<div class="container py-5 text-center"><h3>' . t('KAI tidak ditemukan') . '</h3><a href="trains.php" class="btn btn-primary mt-3">' . t('Kembali ke Katalog') . '</a></div>';
     require_once 'includes/footer-shared.php';
     exit;
 }
@@ -69,13 +69,13 @@ require_once 'includes/header-shared.php';
 ?>
 <div class="container py-4">
     <?php renderBreadcrumb([
-        ['label' => t('Kereta Api'), 'url' => 'trains.php'],
+        ['label' => t('KAI'), 'url' => 'trains.php'],
         ['label' => $train['name'], 'url' => null],
     ]); ?>
 
     <div class="row">
         <div class="col-lg-8">
-            <img src="https://placehold.co/800x450?text=Train" class="w-100 rounded-4 shadow-sm mb-3" style="max-height: 350px; object-fit: cover;" alt="">
+            <img src="https://placehold.co/800x450?text=KAI" class="w-100 rounded-4 shadow-sm mb-3" style="max-height: 350px; object-fit: cover;" alt="">
 
             <h2 class="fw-bold"><?= e($train['name']) ?></h2>
             <div class="d-flex flex-wrap gap-3 mb-3">
@@ -93,7 +93,7 @@ require_once 'includes/header-shared.php';
             </div>
 
             <?php if (count($similar) > 0): ?>
-            <h5 class="fw-bold mt-4 mb-3"><?= t('Kereta Lain') ?></h5>
+            <h5 class="fw-bold mt-4 mb-3"><?= t('KAI Lainnya') ?></h5>
             <div class="row g-3">
                 <?php foreach ($similar as $s): ?>
                 <div class="col-md-4">

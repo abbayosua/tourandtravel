@@ -117,7 +117,7 @@ $trainBookings = db()->prepare("
     ORDER BY tb.created_at DESC
 ");
 $trainBookings->execute([$userId]);
-foreach ($trainBookings->fetchAll() as $b) { $b['img'] = 'https://placehold.co/300x200?text=Kereta'; $all[] = $b; }
+foreach ($trainBookings->fetchAll() as $b) { $b['img'] = 'https://placehold.co/300x200?text=KAI'; $all[] = $b; }
 
 $esimBookings = db()->prepare("
     SELECT cb.*, cp.name as item_title, cp.slug as item_slug, 'esim' AS btype,
@@ -134,7 +134,7 @@ foreach ($esimBookings->fetchAll() as $b) { $b['img'] = 'https://placehold.co/30
 usort($all, function ($a, $b) { return strtotime($b['created_at']) - strtotime($a['created_at']); });
 
 $typeIcon = ['tour' => 'map', 'attraction' => 'signpost-2', 'transfer' => 'arrow-left-right', 'train' => 'train-front', 'esim' => 'sim'];
-$typeName = ['tour' => t('Tour'), 'attraction' => t('Atraksi'), 'transfer' => t('Transfer'), 'train' => t('Kereta'), 'esim' => t('eSIM')];
+$typeName = ['tour' => t('Tour'), 'attraction' => t('Atraksi'), 'transfer' => t('Transfer'), 'train' => t('KAI'), 'esim' => t('eSIM')];
 $typeLink = ['tour' => 'tour-detail.php', 'attraction' => 'attraction-detail.php', 'transfer' => 'transfer-detail.php', 'train' => 'train-detail.php', 'esim' => 'esim-detail.php'];
 
 require_once 'includes/participants.php';

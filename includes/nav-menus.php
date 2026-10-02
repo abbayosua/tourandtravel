@@ -11,7 +11,7 @@ function navMenuDefaults() {
         ['label' => 'Pesawat', 'url' => 'flights.php', 'icon' => 'bi-airplane', 'match_key' => 'flight', 'show_in_tabs' => 1, 'show_in_menu' => 1],
         ['label' => 'Ferry', 'url' => 'ferries.php', 'icon' => 'bi-water', 'match_key' => 'ferri', 'show_in_tabs' => 0, 'show_in_menu' => 1],
         ['label' => 'Rental', 'url' => 'rental-cars.php', 'icon' => 'bi-car-front', 'match_key' => 'rental-car', 'show_in_tabs' => 0, 'show_in_menu' => 1],
-        ['label' => 'Kereta', 'url' => 'trains.php', 'icon' => 'bi-train-front', 'match_key' => 'train', 'show_in_tabs' => 0, 'show_in_menu' => 1],
+        ['label' => 'KAI', 'url' => 'trains.php', 'icon' => 'bi-train-front', 'match_key' => 'train', 'show_in_tabs' => 0, 'show_in_menu' => 1],
         ['label' => 'Atraksi', 'url' => 'attractions.php', 'icon' => 'bi-signpost-2', 'match_key' => 'attraction', 'show_in_tabs' => 0, 'show_in_menu' => 1],
         ['label' => 'Transfer', 'url' => 'transfers.php', 'icon' => 'bi-arrow-left-right', 'match_key' => 'transfer', 'show_in_tabs' => 0, 'show_in_menu' => 1],
         ['label' => 'eSIM', 'url' => 'esim.php', 'icon' => 'bi-sim', 'match_key' => 'esim', 'show_in_tabs' => 0, 'show_in_menu' => 1],

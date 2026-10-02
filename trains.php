@@ -4,7 +4,7 @@ require_once 'includes/db.php';
 require_once 'includes/functions.php';
 require_once 'includes/kereta.php';
 
-$pageTitle = t('Kereta Api');
+$pageTitle = t('KAI');
 $routeFrom = $_GET['from'] ?? '';
 $routeTo = $_GET['to'] ?? '';
 $date = $_GET['date'] ?? date('Y-m-d', strtotime('+3 days'));
@@ -80,8 +80,8 @@ $tsShowTrip = false;
 $tsShowClass = true;
 $tsShowMulti = false;
 $tsShowCal = false;
-$tsTitleB = 'Kereta';
-$tsSub = t('Pesan tiket kereta api — booking instan, harga terbaik.');
+$tsTitleB = 'KAI';
+$tsSub = t('Pesan tiket KAI — booking instan, harga terbaik.');
 $tsProof = t('trains');
 $tsChips = [
     ['l' => 'Jakarta → Bandung', 'u' => 'trains.php?from=' . urlencode('Jakarta Kota, Jakarta') . '&to=' . urlencode('Bandung, Bandung') . '&date=' . date('Y-m-d', strtotime('+7 days')) . '&search=1'],
@@ -97,7 +97,7 @@ require __DIR__ . '/includes/homepage/transport-search.php';
 <?php if ($search): ?>
 <section class="py-4">
     <div class="container">
-        <?php renderBreadcrumb([['label' => t('Kereta Api'), 'url' => null]]); ?>
+        <?php renderBreadcrumb([['label' => t('KAI'), 'url' => null]]); ?>
 
         <div class="row">
             <div class="col-lg-3 mb-3">
@@ -148,7 +148,7 @@ require __DIR__ . '/includes/homepage/transport-search.php';
             <div class="col-lg-9">
                 <?php if (count($trains) > 0): ?>
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <small class="text-muted"><?= count($trains) ?> <?= t('kereta ditemukan') ?></small>
+                    <small class="text-muted"><?= count($trains) ?> <?= t('jadwal ditemukan') ?></small>
                 </div>
                 <?php if ($keretaError): ?>
                 <div class="alert alert-warning py-2 small mb-3"><?= e($keretaError) ?></div>
@@ -164,7 +164,7 @@ require __DIR__ . '/includes/homepage/transport-search.php';
                             </div>
                             <?php else: ?>
                             <div class="position-relative overflow-hidden rounded-top" style="height: 160px;">
-                                <img src="https://placehold.co/640x400?text=Train" class="w-100 h-100" style="object-fit: cover;" alt="<?= e(tContent($tr, 'name')) ?>">
+                                <img src="https://placehold.co/640x400?text=KAI" class="w-100 h-100" style="object-fit: cover;" alt="<?= e(tContent($tr, 'name')) ?>">
                                 <span class="badge bg-primary position-absolute top-0 start-0 m-2 shadow-sm"><?= e($tr['class']) ?></span>
                             </div>
                             <?php endif; ?>
@@ -193,7 +193,7 @@ require __DIR__ . '/includes/homepage/transport-search.php';
                 <?php else: ?>
                 <div class="text-center py-5">
                     <i class="bi bi-train-front fs-1 text-muted"></i>
-                    <p class="mt-2 text-muted"><?= t('Tidak ada kereta ditemukan.') ?></p>
+                    <p class="mt-2 text-muted"><?= t('Tidak ada jadwal ditemukan.') ?></p>
                     <a href="trains.php" class="btn btn-primary rounded-pill px-4"><?= t('Reset Filter') ?></a>
                 </div>
                 <?php endif; ?>
