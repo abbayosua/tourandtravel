@@ -61,6 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
     $stmtDate->execute([$tourDateId, $tour['id']]);
     $selectedDate = $stmtDate->fetch();
     if (!$selectedDate) $errors[] = t('Tanggal keberangkatan tidak valid');
+    if ($selectedDate && $selectedDate['departure_date'] < date('Y-m-d')) $errors[] = t('Tanggal keberangkatan sudah lewat, silakan pilih tanggal lain');
 
     require_once 'includes/participants.php';
     $selfIncluded = !empty($_POST['self_included']);
@@ -191,6 +192,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
             'booking_code' => $bookingCode,
             'total' => formatRupiah($totalPrice),
             'tour_title' => tContent($tour, 'title'),
+            'departure_date' => tglIndonesia($selectedDate['departure_date']),
+            'participants' => $participants,
+            'meeting_point' => tContent($tour, 'meeting_point'),
+            'includes' => tContent($tour, 'includes'),
+            'notes' => $notes,
             'pay_link' => BASE_URL . '/booking-success.php?code=' . $bookingCode,
             'track_link' => BASE_URL . '/track.php?code=' . $bookingCode,
         ], null);
@@ -689,6 +695,13 @@ require_once 'includes/header-shared.php';
                     <form method="POST" enctype="multipart/form-data" id="tourBookingForm">
                         <input type="hidden" name="form_submitted" value="1">
                         <input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>">
+                        <?php $totalSisa = 0; foreach ($tourDates as $td) { $totalSisa += max(0, getSisaSlot($td['id'])); } ?>
+                        <?php if ($totalSisa < 1): ?>
+                        <div class="alert alert-warning py-3 text-center mb-0">
+                            <i class="bi bi-x-circle me-1"></i><?= t('Semua jadwal keberangkatan sudah penuh.') ?>
+                            <div class="mt-2"><a href="tours.php" class="btn btn-sm btn-outline-primary"><?= t('Lihat Tour Lain') ?></a></div>
+                        </div>
+                        <?php else: ?>
                         <div class="mb-2">
                             <label class="form-label small"><?= t('Kode Promo (opsional)') ?></label>
                             <div class="input-group input-group-sm">
@@ -887,15 +900,10 @@ require_once 'includes/header-shared.php';
                             <a href="reseller-booking.php?tour_id=<?= $tour['id'] ?>" class="btn btn-sm btn-info text-white"><?= t('Bayar dari Saldo') ?></a>
                         </div>
                         <?php endif; ?>
-                        <?php $totalSisa = 0; foreach ($tourDates as $td) { $totalSisa += max(0, getSisaSlot($td['id'])); } ?>
-                        <?php if ($totalSisa < 1): ?>
-                        <button type="button" class="btn btn-danger w-100 fw-semibold" disabled data-testid="tour-full-btn"><i class="bi bi-x-circle me-1"></i><?= t('Penuh') ?></button>
-                        <div class="alert alert-warning py-2 small mt-2 mb-0"><i class="bi bi-info-circle me-1"></i><?= t('Semua jadwal keberangkatan sudah penuh. Silakan pilih tour lain.') ?></div>
-                        <?php else: ?>
                         <button type="submit" class="btn btn-primary w-100 fw-semibold" id="bookingSubmitBtn" onclick="var btn=this;btn.disabled=true;btn.innerHTML='<span class=\'spinner-border spinner-border-sm me-2\'></span><?= t('Memproses...') ?>';setTimeout(function(){btn.form.submit();},100);return false;"><?= t(abVariant('tour_cta_text') === 'B' ? 'Booking Sekarang — Gratis Batal' : 'Pesan Sekarang') ?></button>
-                        <?php endif; ?>
                         <?php if (!isLoggedIn()): ?>
                         <div class="alert alert-warning py-2 small mt-2 mb-0"><i class="bi bi-info-circle me-1"></i><?= t('Anda booking sebagai tamu. Masuk akun untuk melacak booking.') ?></div>
+                        <?php endif; ?>
                         <?php endif; ?>
                     <?php else: ?>
                     <div class="alert alert-warning py-2 small mb-0">

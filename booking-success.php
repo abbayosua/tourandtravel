@@ -348,12 +348,28 @@ require_once 'includes/header-shared.php';
                             <?php endif; ?>
                             <?php if (($paymentGateway ?? tripayGateway()) === 'singapay'): ?>
                             <div class="w-100" data-testid="singapay-methods">
-                                <label class="form-label small fw-semibold" for="singapayBank"><?= t('Pilih bank') ?></label>
-                                <select id="singapayBank" class="form-select form-select-sm mx-auto" style="max-width:320px">
-                                    <?php foreach (['BRI'=>'BRI','BCA'=>'BCA','BNI'=>'BNI','MANDIRI'=>'Mandiri','PERMATA'=>'Permata','MAYBANK'=>'Maybank','CIMB'=>'CIMB Niaga','DANAMON'=>'Danamon'] as $bcode => $bname): ?>
-                                    <option value="<?= $bcode ?>"><?= e($bname) ?></option>
-                                    <?php endforeach; ?>
-                                </select>
+                                <div class="btn-group btn-group-sm mb-2" role="group">
+                                    <input type="radio" class="btn-check" name="sgKind" id="sgKindVa" value="va" checked>
+                                    <label class="btn btn-outline-primary" for="sgKindVa">Virtual Account</label>
+                                    <input type="radio" class="btn-check" name="sgKind" id="sgKindCard" value="card">
+                                    <label class="btn btn-outline-primary" for="sgKindCard"><?= t('Kartu Kredit') ?></label>
+                                </div>
+                                <div id="sgVaPane">
+                                    <label class="form-label small fw-semibold" for="singapayBank"><?= t('Pilih bank') ?></label>
+                                    <select id="singapayBank" class="form-select form-select-sm mx-auto" style="max-width:320px">
+                                        <?php foreach (['BRI'=>'BRI','BCA'=>'BCA','BNI'=>'BNI','MANDIRI'=>'Mandiri','PERMATA'=>'Permata','MAYBANK'=>'Maybank','CIMB'=>'CIMB Niaga','DANAMON'=>'Danamon'] as $bcode => $bname): ?>
+                                        <option value="<?= $bcode ?>"><?= e($bname) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div id="sgCardPane" class="d-none mx-auto" style="max-width:320px">
+                                    <input id="sgCardNumber" inputmode="numeric" class="form-control form-control-sm mb-1" placeholder="4111 1111 1111 1111" maxlength="23" autocomplete="cc-number">
+                                    <div class="d-flex gap-1">
+                                        <input id="sgCardExpiry" inputmode="numeric" class="form-control form-control-sm" placeholder="MMYY" maxlength="4" autocomplete="cc-exp">
+                                        <input id="sgCardCvv" inputmode="numeric" type="password" class="form-control form-control-sm" placeholder="CVV" maxlength="4" autocomplete="cc-csc">
+                                    </div>
+                                    <small class="text-muted"><?= t('Visa / Mastercard / Amex. 3DS bila perlu.') ?></small>
+                                </div>
                             </div>
                             <?php endif; ?>
                             <button type="button" id="payNowBtn" class="btn btn-success px-4" data-booking-id="<?= (int)$booking['id'] ?>" data-gateway="<?= e($paymentGateway ?? tripayGateway()) ?>">
@@ -366,9 +382,9 @@ require_once 'includes/header-shared.php';
                     </div>
 
                     <?php if ($paymentEnabled && $btype === 'tour'): ?>
-                    <?php if (!empty($paymentPayCode) && ($paymentGateway ?? '') === 'tripay'): ?>
-                    <div class="alert alert-info text-start mt-3" data-testid="tripay-paycode">
-                        <div class="small text-muted"><?= t('Kode bayar Tripay') ?></div>
+                    <?php if (!empty($paymentPayCode) && in_array($paymentGateway ?? '', ['tripay', 'singapay'], true)): ?>
+                    <div class="alert alert-info text-start mt-3" data-testid="paycode">
+                        <div class="small text-muted"><?= ($paymentGateway ?? '') === 'singapay' ? t('Nomor Virtual Account') : t('Kode bayar Tripay') ?></div>
                         <div class="fs-4 fw-bold"><?= e($paymentPayCode) ?></div>
                         <?php if (!empty($paymentCheckoutUrl)): ?>
                         <a href="<?= e($paymentCheckoutUrl) ?>" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary mt-2"><?= t('Buka halaman checkout') ?></a>
@@ -400,10 +416,24 @@ require_once 'includes/header-shared.php';
         var sel = document.querySelector('input[name="tripayMethod"]:checked');
         return sel ? sel.value : 'BRIVA';
     }
+    document.querySelectorAll('input[name="sgKind"]').forEach(function (r) {
+        r.addEventListener('change', function () {
+            var isCard = document.getElementById('sgKindCard') && document.getElementById('sgKindCard').checked;
+            document.getElementById('sgVaPane').classList.toggle('d-none', isCard);
+            document.getElementById('sgCardPane').classList.toggle('d-none', !isCard);
+        });
+    });
     document.querySelectorAll('.tripay-channel').forEach(function (card) {
         card.addEventListener('click', function () {
             document.querySelectorAll('.tripay-channel').forEach(function (c) { c.classList.remove('border-primary', 'shadow-sm'); });
             card.classList.add('border-primary', 'shadow-sm');
+        });
+    });
+    document.querySelectorAll('input[name="sgKind"]').forEach(function (r) {
+        r.addEventListener('change', function () {
+            var isCard = document.getElementById('sgKindCard') && document.getElementById('sgKindCard').checked;
+            document.getElementById('sgVaPane').classList.toggle('d-none', isCard);
+            document.getElementById('sgCardPane').classList.toggle('d-none', !isCard);
         });
     });
 
@@ -428,15 +458,27 @@ require_once 'includes/header-shared.php';
     btn.addEventListener('click', function () {
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span><?= t('Memproses...') ?>';
+            var sgBody = '';
+            if (btn.dataset.gateway === 'singapay') {
+                if (document.getElementById('sgKindCard') && document.getElementById('sgKindCard').checked) {
+                    sgBody = '&pay_kind=card'
+                        + '&card_number=' + encodeURIComponent(((document.getElementById('sgCardNumber') || {}).value || '').replace(/\s+/g, ''))
+                        + '&card_expiry=' + encodeURIComponent((document.getElementById('sgCardExpiry') || {}).value || '')
+                        + '&card_cvv=' + encodeURIComponent((document.getElementById('sgCardCvv') || {}).value || '');
+                } else {
+                    sgBody = '&bank=' + encodeURIComponent((document.getElementById('singapayBank') || {}).value || 'BRI');
+                }
+            }
         fetch('<?= BASE_URL ?>/ajax/create-payment.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: 'booking_type=tour&booking_id=' + btn.dataset.bookingId + (btn.dataset.gateway === 'tripay' ? '&method=' + encodeURIComponent(tripaySelectedMethod()) : '') + (btn.dataset.gateway === 'singapay' ? '&bank=' + encodeURIComponent((document.getElementById('singapayBank') || {}).value || 'BRI') : '')
+            body: 'booking_type=tour&booking_id=' + btn.dataset.bookingId + (btn.dataset.gateway === 'tripay' ? '&method=' + encodeURIComponent(tripaySelectedMethod()) : '') + sgBody
         })
         .then(function (r) { return r.json(); })
         .then(function (d) {
-            if (d.ok && d.gateway === 'tripay') {
-                window.location.reload();
+            if (d.ok && (d.gateway === 'tripay' || d.gateway === 'singapay')) {
+                if (d.payment_url) { window.location.href = d.payment_url; }
+                else { window.location.reload(); }
             } else if (d.ok && d.redirect_url) {
                 window.location.href = d.redirect_url;
             } else {

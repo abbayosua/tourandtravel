@@ -19,6 +19,7 @@
  *   resultBaseLabel (label bila tanggal tak ada di prices),
  *   onChange (nama fungsi JS global: fn(dateStr, inputEl)),
  *   attrs (atribut tambahan assoc), bare (tanpa wrapper/label),
+ *   positionEl (selector elemen anchor kalender; wajib bila input disembunyikan),
  *   mode 'single' (default) | 'range' (butuh startName/endName [+ids/values]).
  */
 function dpAssets(): void {
@@ -66,6 +67,7 @@ function renderDatePicker(array $o = []): void {
     if (!empty($o['resultId'])) $data['dp-result'] = (string)$o['resultId'];
     if (!empty($o['resultBaseLabel'])) $data['dp-result-base'] = (string)$o['resultBaseLabel'];
     if (!empty($o['onChange'])) $data['dp-onchange'] = (string)$o['onChange'];
+    if (!empty($o['positionEl'])) $data['dp-anchor'] = (string)$o['positionEl'];
     if ($isRange) {
         $data['dp-start'] = $startId;
         $data['dp-end'] = $endId;
@@ -131,6 +133,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var baseLabel = el.getAttribute('data-dp-result-base') || '';
         var cbName = el.getAttribute('data-dp-onchange');
         var isRange = el.getAttribute('data-dp-mode') === 'range';
+        var anchorSel = el.getAttribute('data-dp-anchor');
         function paintDay(dObj, dStr, fp, dayElem) {
             if (!prices.length || !dayElem.dateObj) return;
             var k = dayElem.dateObj.getFullYear() + '-' + String(dayElem.dateObj.getMonth() + 1).padStart(2, '0') + '-' + String(dayElem.dateObj.getDate()).padStart(2, '0');
@@ -176,6 +179,7 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             opts.onChange = function (sel, dateStr) { fire(dateStr, sel); };
         }
+        if (anchorSel) { var anchorEl = document.querySelector(anchorSel); if (anchorEl) opts.positionElement = anchorEl; }
         flatpickr(el, opts);
     }
     document.querySelectorAll('.dp-flat').forEach(dpBind);

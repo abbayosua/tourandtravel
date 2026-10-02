@@ -136,11 +136,131 @@ function singapayCreateVa(int $bookingId, float $grossAmount, array $customer, s
 }
 
 /**
- * Handler webhook VA transaction (event=va-transaction). Idempotent.
+ * Charge kartu kredit one-time (Visa/Mastercard/Amex + 3DS bila perlu).
+ * $card = ['number','expiry' MMYY,'cvv','holder_name','holder_email'].
+ * Return: ['ok'=>true,'status'=>'success|processing','payment_url'=>?,'transaction_id'=>?]
+ * Bila 3DS (action=redirect + payment_url) -> user selesaikan di bank,
+ * frontend polling payment-status sampai paid.
+ */
+function singapayCreateCard(int $bookingId, float $grossAmount, array $customer, array $card, string $bookingType = 'tour'): array {
+    if (!singapayConfigured()) return ['ok' => false, 'error' => 'singapay_not_configured'];
+    if (singapayAccountId() === '') return ['ok' => false, 'error' => 'singapay_no_account'];
+    $token = singapayAccessToken();
+    if ($token === '') return ['ok' => false, 'error' => 'singapay_token_failed'];
+
+    $num = preg_replace('/\s+/', '', (string)($card['number'] ?? ''));
+    $exp = (string)($card['expiry'] ?? '');
+    $cvv = (string)($card['cvv'] ?? '');
+    if (!preg_match('/^\d{13,19}$/', $num)) return ['ok' => false, 'error' => 'card_number_invalid'];
+    if (!preg_match('/^\d{4}$/', $exp)) return ['ok' => false, 'error' => 'card_expiry_invalid'];
+    if (!preg_match('/^\d{3,4}$/', $cvv)) return ['ok' => false, 'error' => 'card_cvv_invalid'];
+
+    $codeTable = ['tour' => 'bookings', 'ferry' => 'ferry_bookings'][$bookingType] ?? 'bookings';
+    $cb = db()->prepare("SELECT booking_code FROM `$codeTable` WHERE id = ?");
+    $cb->execute([$bookingId]);
+    $bookingCode = (string)($cb->fetchColumn() ?: ('BK-' . $bookingId));
+
+    $body = [
+        'amount' => (int)round($grossAmount),
+        'reference_no' => $bookingCode,
+        'goods_name' => mb_substr(($bookingType === 'ferry' ? 'Tiket Ferry ' : 'Paket Tour ') . $bookingCode, 0, 255),
+        'customer_name' => mb_substr($customer['name'] ?? 'Pelanggan', 0, 255),
+        'customer_email' => mb_substr($customer['email'] ?? 'noreply@tourandtravel.web.id', 0, 255),
+        'customer_phone' => mb_substr($customer['phone'] ?? '', 0, 50),
+        'customer_address' => mb_substr($customer['address'] ?? '-', 0, 500),
+        'customer_city' => mb_substr($customer['city'] ?? 'Jakarta', 0, 100),
+        'customer_state' => mb_substr($customer['state'] ?? 'DKI Jakarta', 0, 100),
+        'customer_postal_code' => mb_substr($customer['postal'] ?? '10110', 0, 20),
+        'customer_country' => 'ID',
+        'card_number' => $num,
+        'card_expiry' => $exp,
+        'card_cvv' => $cvv,
+        'card_holder_name' => mb_substr($card['holder_name'] ?? ($customer['name'] ?? 'Pelanggan'), 0, 255),
+        'card_holder_email' => mb_substr($card['holder_email'] ?? ($customer['email'] ?? 'noreply@tourandtravel.web.id'), 0, 255),
+    ];
+
+    $ch = curl_init(singapayBaseUrl() . '/api/v2.0/card/' . singapayAccountId() . '/payment');
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST => true,
+        CURLOPT_HTTPHEADER => [
+            'Authorization: Bearer ' . $token,
+            'X-PARTNER-ID: ' . singapayApiKey(),
+            'Content-Type: application/json',
+        ],
+        CURLOPT_POSTFIELDS => json_encode($body, JSON_UNESCAPED_UNICODE),
+        CURLOPT_TIMEOUT => 30,
+    ]);
+    $res = curl_exec($ch);
+    $http = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    $json = json_decode((string)$res, true);
+    if ($http !== 200 || ($json['response_code'] ?? '') !== 'SP000') {
+        error_log('singapay card error: http=' . $http . ' ' . substr((string)$res, 0, 300));
+        return ['ok' => false, 'error' => 'card_declined', 'detail' => $json['response_message'] ?? null];
+    }
+    $d = $json['data'];
+    $txId = (string)($d['transaction_id'] ?? '');
+
+    db()->prepare("INSERT INTO payments (booking_type, booking_id, booking_code, gateway, order_id, reference, pay_code, pay_url, checkout_url, gross_amount, status, payment_type)
+        VALUES (?, ?, ?, 'singapay', ?, ?, NULL, ?, ?, ?, 'pending', 'CARD')")
+        ->execute([$bookingType, $bookingId, $bookingCode, $txId, $txId, $d['payment_url'] ?? null, $d['payment_url'] ?? null, $grossAmount]);
+
+    return [
+        'ok' => true,
+        'status' => ($d['requires_3ds'] ?? false) ? 'processing' : (($d['status'] ?? '') === 'success' ? 'success' : 'processing'),
+        'payment_url' => $d['payment_url'] ?? null,
+        'transaction_id' => $txId,
+        'card_masked' => $d['card_masked'] ?? null,
+    ];
+}
+
+/**
+ * Inquiry status transaksi kartu (untuk polling 3DS). Return: success|processing|failed.
+ */
+function singapayCardStatus(string $transactionId): string {
+    if (!singapayConfigured()) return 'failed';
+    $token = singapayAccessToken();
+    if ($token === '') return 'processing';
+    $ch = curl_init(singapayBaseUrl() . '/api/v2.0/card/' . singapayAccountId() . '/inquiry-status/' . urlencode($transactionId));
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER => [
+            'Authorization: Bearer ' . $token,
+            'X-PARTNER-ID: ' . singapayApiKey(),
+        ],
+        CURLOPT_TIMEOUT => 20,
+    ]);
+    $res = curl_exec($ch);
+    $http = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    $json = json_decode((string)$res, true);
+    if ($http !== 200) return 'processing';
+    return (string)($json['data']['status'] ?? 'processing');
+}
+
+
+/**
+ * Handler webhook Singapay (va-transaction + card). Idempotent.
  * Return true bila sah & diproses (termasuk duplikat no-op).
  */
 function singapayHandleWebhook(array $data): bool {
-    if (($data['event'] ?? '') !== 'va-transaction') return false;
+    $event = (string)($data['event'] ?? '');
+    if ($event === 'card-transaction' || $event === 'card') {
+        $cd = $data['data'] ?? $data;
+        $ctx = $cd['transaction'] ?? $cd;
+        $cref = (string)($ctx['reference_no'] ?? $ctx['reff_no'] ?? '');
+        if ($cref === '') return false;
+        $cs = db()->prepare("SELECT * FROM payments WHERE gateway='singapay' AND (order_id=? OR reference=? OR booking_code=?) LIMIT 1");
+        $cs->execute([$cref, $cref, $cref]);
+        $cpay = $cs->fetch();
+        if (!$cpay) return false;
+        $cst = strtolower((string)($ctx['status'] ?? ''));
+        $cpaid = in_array($cst, ['success', 'paid', 'settlement', 'capture'], true);
+        return singapayApplyPaid($cpay, (string)($ctx['transaction_id'] ?? $cref), $data, $cpaid);
+    }
+    if ($event !== 'va-transaction') return false;
     $tx = $data['data']['transaction'] ?? [];
     $reffNo = (string)($tx['reff_no'] ?? '');
     if ($reffNo === '') return false;
@@ -152,6 +272,14 @@ function singapayHandleWebhook(array $data): bool {
     if (!$payment) return false;
 
     $isPaid = ($tx['status'] ?? '') === 'paid';
+    return singapayApplyPaid($payment, (string)($tx['transaction_id'] ?? ''), $data, $isPaid);
+}
+
+/**
+ * Terapkan status paid/failed ke payment singapay + booking terkait (idempotent).
+ */
+function singapayApplyPaid(array $payment, string $txId, array $data, bool $isPaid): bool {
+    $newStatus = $isPaid ? 'paid' : 'failed';
     $newStatus = $isPaid ? 'paid' : 'failed';
 
     // Idempotent: sudah final → no-op
@@ -159,7 +287,7 @@ function singapayHandleWebhook(array $data): bool {
     if ($payment['status'] === $newStatus) return true;
 
     db()->prepare("UPDATE payments SET status=?, transaction_id=?, raw_payload=?, paid_at=? WHERE id=?")
-        ->execute([$newStatus, (string)($tx['transaction_id'] ?? ''), json_encode($data, JSON_UNESCAPED_UNICODE), $isPaid ? date('Y-m-d H:i:s') : null, $payment['id']]);
+        ->execute([$newStatus, $txId, json_encode($data, JSON_UNESCAPED_UNICODE), $isPaid ? date('Y-m-d H:i:s') : null, $payment['id']]);
 
     // Sinkron booking (kolom payment_status) via typeMap
     $typeMap = [

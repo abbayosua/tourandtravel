@@ -49,7 +49,7 @@ require_once __DIR__ . '/../components/date-picker.php';
                 <label><?= t('Tanggal') ?></label>
                 <span class="voyage-val" id="voyageWhenVal"><?= t('Pilih tanggal') ?></span>
                 </div>
-                <?php renderDatePicker(['name' => 'departure', 'id' => 'voyageDate', 'min' => $voyageToday, 'bare' => true, 'noName' => true, 'cls' => 'd-none']); ?>
+                <?php renderDatePicker(['name' => 'departure', 'id' => 'voyageDate', 'min' => $voyageToday, 'bare' => true, 'noName' => true, 'cls' => 'd-none', 'positionEl' => '#voyageWhenBtn']); ?>
                 <input type="hidden" name="departure" id="voyageDateHidden" value="">
             </div>
             <div class="voyage-div"></div>

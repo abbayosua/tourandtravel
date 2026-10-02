@@ -46,7 +46,7 @@ require_once __DIR__ . '/../components/date-picker.php';
                 <label><?= t('Check-out') ?></label>
                 <span class="voyage-val" id="voyageOutVal"><?= t('Tambah tanggal') ?></span>
             </div>
-            <?php renderDatePicker(['mode' => 'range', 'bare' => true, 'startName' => 'checkin', 'startId' => 'voyageCheckin', 'startValue' => $hotelCheckinD, 'endName' => 'checkout', 'endId' => 'voyageCheckout', 'endValue' => $hotelCheckoutD, 'id' => 'voyageRange', 'cls' => 'd-none', 'min' => $hotelToday, 'months' => 2]); ?>
+            <?php renderDatePicker(['mode' => 'range', 'bare' => true, 'startName' => 'checkin', 'startId' => 'voyageCheckin', 'startValue' => $hotelCheckinD, 'endName' => 'checkout', 'endId' => 'voyageCheckout', 'endValue' => $hotelCheckoutD, 'id' => 'voyageRange', 'cls' => 'd-none', 'min' => $hotelToday, 'months' => 2, 'positionEl' => '#voyageInBtn']); ?>
             <div class="voyage-div"></div>
             <div class="voyage-field voyage-click" id="voyageRoomBtn" tabindex="0">
                 <label><?= t('Tamu & Kamar') ?></label>

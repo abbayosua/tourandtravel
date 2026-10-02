@@ -73,8 +73,18 @@ if (tripayGateway() === 'tripay') {
     $result = createTripayTransaction($bookingId, $gross, $customer, $tripayMethod ?: 'BRIVA', $bookingType);
     $result['gateway'] = 'tripay';
 } elseif (singapayEnabled()) {
-    $bank = preg_replace('/[^A-Z]/', '', strtoupper((string)($_POST['bank'] ?? 'BRI')));
-    $result = singapayCreateVa($bookingId, $gross, $customer, $bank ?: 'BRI', $bookingType);
+    if (($_POST['pay_kind'] ?? 'va') === 'card' && !empty($_POST['card_number'])) {
+        $result = singapayCreateCard($bookingId, $gross, $customer, [
+            'number' => (string)($_POST['card_number'] ?? ''),
+            'expiry' => (string)($_POST['card_expiry'] ?? ''),
+            'cvv' => (string)($_POST['card_cvv'] ?? ''),
+            'holder_name' => (string)($_POST['card_holder'] ?? ''),
+            'holder_email' => (string)($_POST['card_email'] ?? ''),
+        ], $bookingType);
+    } else {
+        $bank = preg_replace('/[^A-Z]/', '', strtoupper((string)($_POST['bank'] ?? 'BRI')));
+        $result = singapayCreateVa($bookingId, $gross, $customer, $bank ?: 'BRI', $bookingType);
+    }
     $result['gateway'] = 'singapay';
 } else {
     $result = createMidtransSnapTransaction($bookingType, $bookingId, $gross, $customer);
