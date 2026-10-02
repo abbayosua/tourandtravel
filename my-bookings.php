@@ -10,6 +10,66 @@ if (!isLoggedIn()) {
 
 $userId = $_SESSION['user_id'];
 
+// Handle booking modification (tour only)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'modify_booking') {
+    $bookingId = (int)($_POST['booking_id'] ?? 0);
+    $newDateId = (int)($_POST['new_date_id'] ?? 0);
+    $newParticipants = (int)($_POST['new_participants'] ?? 0);
+
+    // Verify booking belongs to user and is modifiable
+    $checkBooking = db()->prepare("SELECT b.*, t.max_participants FROM bookings b JOIN tours t ON b.tour_id = t.id WHERE b.id = ? AND b.user_id = ? AND b.status IN ('pending','confirmed') AND b.payment_status != 'paid'");
+    $checkBooking->execute([$bookingId, $userId]);
+    $booking = $checkBooking->fetch();
+
+    if (!$booking) {
+        header('Location: my-bookings.php?msg=modify_fail&rmsg=' . urlencode(t('Booking tidak dapat diubah')));
+        exit;
+    }
+
+    // Validate new date
+    $checkDate = db()->prepare("SELECT * FROM tour_dates WHERE id = ? AND tour_id = ?");
+    $checkDate->execute([$newDateId, $booking['tour_id']]);
+    $newDate = $checkDate->fetch();
+
+    if (!$newDate) {
+        header('Location: my-bookings.php?msg=modify_fail&rmsg=' . urlencode(t('Tanggal tidak valid')));
+        exit;
+    }
+
+    // Validate participants
+    if ($newParticipants < 1 || $newParticipants > (int)$booking['max_participants']) {
+        header('Location: my-bookings.php?msg=modify_fail&rmsg=' . urlencode(t('Jumlah peserta tidak valid')));
+        exit;
+    }
+
+    // Check slot availability
+    $sisaSlot = getSisaSlot($newDateId);
+    // Add back the current booking's participants to available slots
+    $sisaSlot += (int)$booking['participants'];
+    if ($sisaSlot < $newParticipants) {
+        header('Location: my-bookings.php?msg=modify_fail&rmsg=' . urlencode(t('Slot tidak cukup')));
+        exit;
+    }
+
+    // Calculate new price
+    $unitPrice = getPriceForDate('tour', $booking['tour_id'], $newDate['departure_date'], $booking['total_price'] / $booking['participants']);
+    $unitPrice = getFlashSalePrice((float)$unitPrice, 'tour', (int)$booking['tour_id'])['price'];
+    $newTotalPrice = $unitPrice * $newParticipants;
+
+    // Update booking
+    db()->prepare("UPDATE bookings SET tour_date_id = ?, participants = ?, total_price = ? WHERE id = ?")
+        ->execute([$newDateId, $newParticipants, $newTotalPrice, $bookingId]);
+
+    // Update participants if count changed
+    if ($newParticipants !== (int)$booking['participants']) {
+        // Delete old participants and let user re-add them
+        db()->prepare("DELETE FROM booking_participants WHERE booking_id = ?")->execute([$bookingId]);
+    }
+
+    header('Location: my-bookings.php?msg=modified');
+    exit;
+}
+
 // Fase 3: refund self-service — ajukan refund
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'request_refund') {
     require_once 'includes/refund.php';
@@ -150,6 +210,12 @@ require_once 'includes/header-shared.php';
         <?php if (isset($_GET['msg']) && $_GET['msg'] === 'cancelled'): ?>
             <div class="alert alert-success py-2 small"><?= t('Booking berhasil dibatalkan. KlookCash yang digunakan telah dikembalikan.') ?></div>
         <?php endif; ?>
+        <?php if (isset($_GET['msg']) && $_GET['msg'] === 'modified'): ?>
+            <div class="alert alert-success py-2 small"><?= t('Booking berhasil diubah.') ?></div>
+        <?php endif; ?>
+        <?php if (isset($_GET['msg']) && $_GET['msg'] === 'modify_fail'): ?>
+            <div class="alert alert-danger py-2 small"><?= e($_GET['rmsg'] ?? t('Gagal mengubah booking')) ?></div>
+        <?php endif; ?>
         <?php if (isset($_GET['msg']) && $_GET['msg'] === 'refund_requested'): ?>
             <div class="alert alert-success py-2 small" data-testid="refund-ok"><i class="bi bi-check-circle me-1"></i><?= e($_GET['rmsg'] ?? t('Pengajuan refund diterima')) ?></div>
         <?php endif; ?>
@@ -213,6 +279,9 @@ require_once 'includes/header-shared.php';
                                 <?php endif; ?>
                                 <div class="d-flex gap-2 mt-2 flex-wrap">
                                     <a href="<?= $typeLink[$btype] ?>?slug=<?= urlencode($b['item_slug']) ?>" class="btn btn-sm btn-outline-primary rounded-pill px-3"><i class="bi bi-eye me-1"></i><?= t('Detail') ?></a>
+                                    <?php if ($btype === 'tour' && ($b['status'] === 'pending' || $b['status'] === 'confirmed') && ($b['payment_status'] ?? null) !== 'paid'): ?>
+                                    <button type="button" class="btn btn-sm btn-outline-info rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modifyModal<?= $b['id'] ?>"><i class="bi bi-pencil me-1"></i><?= t('Ubah') ?></button>
+                                    <?php endif; ?>
                                     <?php if ($b['status'] === 'pending' || $b['status'] === 'confirmed'): ?>
                                     <a href="my-bookings.php?cancel=<?= $b['id'] ?>&type=<?= $btype ?>" class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="return confirm('<?= t('Batalkan booking ini?') ?>')"><i class="bi bi-x-circle me-1"></i><?= t('Batalkan') ?></a>
                                     <?php endif; ?>
@@ -276,6 +345,53 @@ require_once 'includes/header-shared.php';
                 <div class="modal-footer">
                     <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal"><?= t('Batal') ?></button>
                     <button type="submit" class="btn btn-sm btn-warning" data-testid="refund-submit"><?= t('Ajukan Refund') ?></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<?php endforeach; ?>
+
+<?php $modModalsRendered = $modModalsRendered ?? []; ?>
+<?php foreach ($all as $b): if ($b['btype'] !== 'tour' || !in_array($b['status'], ['pending','confirmed']) || ($b['payment_status'] ?? null) === 'paid') continue; if (isset($modModalsRendered[$b['id']])) continue; $modModalsRendered[$b['id']] = true; ?>
+<?php
+// Get available dates for this tour
+$availDates = db()->prepare("SELECT td.*, (td.max_participants - COALESCE(SUM(b.participants), 0)) as sisa_slot
+    FROM tour_dates td
+    LEFT JOIN bookings b ON b.tour_date_id = td.id AND b.status IN ('pending','confirmed')
+    WHERE td.tour_id = ? AND td.departure_date >= CURDATE()
+    GROUP BY td.id
+    HAVING sisa_slot > 0 OR td.id = ?
+    ORDER BY td.departure_date");
+$availDates->execute([$b['tour_id'], $b['tour_date_id']]);
+$dates = $availDates->fetchAll();
+?>
+<div class="modal fade" id="modifyModal<?= $b['id'] ?>" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="POST" action="my-bookings.php">
+                <input type="hidden" name="action" value="modify_booking">
+                <input type="hidden" name="booking_id" value="<?= (int)$b['id'] ?>">
+                <div class="modal-header">
+                    <h6 class="modal-title"><i class="bi bi-pencil me-2"></i><?= t('Ubah Booking') ?> — #<?= e($b['booking_code'] ?? $b['id']) ?></h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<?= t('Tutup') ?>"></button>
+                </div>
+                <div class="modal-body">
+                    <label class="form-label small fw-semibold"><?= t('Tanggal Keberangkatan') ?></label>
+                    <select name="new_date_id" class="form-select form-select-sm mb-3" required>
+                        <?php foreach ($dates as $d): ?>
+                        <option value="<?= $d['id'] ?>" <?= $d['id'] == $b['tour_date_id'] ? 'selected' : '' ?>>
+                            <?= formatDate($d['departure_date']) ?> (<?= $d['sisa_slot'] ?> <?= t('slot') ?>)
+                        </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <label class="form-label small fw-semibold"><?= t('Jumlah Peserta') ?></label>
+                    <input type="number" name="new_participants" class="form-control form-control-sm" min="1" max="<?= (int)$b['max_participants'] ?>" value="<?= (int)$b['participants'] ?>" required>
+                    <small class="text-muted"><?= t('Jika jumlah peserta berubah, Anda perlu mengisi ulang data peserta.') ?></small>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal"><?= t('Batal') ?></button>
+                    <button type="submit" class="btn btn-sm btn-primary"><?= t('Simpan Perubahan') ?></button>
                 </div>
             </form>
         </div>
