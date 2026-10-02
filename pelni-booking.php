@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             (booking_code, user_id, ship_name, ship_number, ship_class, ship_code, route_from, route_to, 
              departure_date, departure_time, arrival_time, passengers, price_per_pax, total_price,
              passenger_data, name, email, phone, status)
-            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
         $stmt->execute([
             $bookingCode, $userId, $shipName, $shipNumber, $shipClass, $shipCode, $routeFrom, $routeTo,
             $departDate, $departTime, $arrivalTime, $passengers, $pricePerPax, $totalPrice,
