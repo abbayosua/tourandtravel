@@ -72,6 +72,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $totalPrice = $resellerPrice['price'] * $passengers;
 
+    require_once 'includes/participants.php';
+    $paxNames = collectParticipantNames($passengers, false, $name, $errors);
+    $passportFiles = empty($errors) ? collectPassportFiles($passengers, $errors) : [];
+
     if (!$errors) {
         if ($balance < $totalPrice) {
             $errors[] = t('Saldo tidak cukup. Butuh ') . formatRupiah($totalPrice) . t(', saldo Anda ') . formatRupiah($balance) . '.';
@@ -84,11 +88,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $bookingCode = generateBookingCode();
 
                 $parts = preg_split('/\s+/', $name, 2);
-                $stmt = db()->prepare("INSERT INTO bookings (booking_code, tour_id, tour_date_id, name, email, phone, participants, total_price, booking_source, reseller_id, user_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'reseller', ?, ?, 'pending')");
-                $stmt->execute([$bookingCode, $tourId, $dateId, $name, $email, $phone, $passengers, $totalPrice, $userId, $userId]);
+                $stmt = db()->prepare("INSERT INTO bookings (booking_code, tour_id, tour_date_id, name, email, phone, participants, total_price, passport_photo, booking_source, reseller_id, user_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'reseller', ?, ?, 'pending')");
+                $stmt->execute([$bookingCode, $tourId, $dateId, $name, $email, $phone, $passengers, $totalPrice, $passportFiles[1] ?? null, $userId, $userId]);
 
                 // Update wallet transaction with booking ref
                 $bookingId = (int)db()->lastInsertId();
+                saveBookingParticipants($bookingId, $paxNames, $passportFiles, $name);
                 try {
                     db()->prepare("UPDATE wallet_transactions SET reference_id = ?, description = ? WHERE user_id = ? AND reference_type = 'reseller_booking' AND reference_id IS NULL ORDER BY id DESC LIMIT 1")
                         ->execute([$bookingId, 'Booking: ' . $bookingCode . ' - ' . $tour['title'], $userId]);
@@ -174,7 +179,7 @@ require_once 'includes/header-shared.php';
                                     <div class="fs-4 fw-bold text-primary mb-3"><?= formatRupiah($balance) ?></div>
                                     <a href="reseller-topup.php" class="btn btn-sm btn-outline-primary mb-3 w-100"><?= t('Topup Saldo') ?></a>
 
-                                    <form method="POST">
+                                    <form method="POST" id="resellerBookingForm">
                                         <input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>">
                                         <div class="mb-2">
                                             <label class="form-label small fw-semibold"><?= t('Tanggal Keberangkatan') ?></label>
@@ -189,9 +194,15 @@ require_once 'includes/header-shared.php';
                                             <label class="form-label small fw-semibold"><?= t('Jumlah Peserta') ?></label>
                                             <input type="number" name="passengers" class="form-control" min="<?= $resellerPrice['min_pax'] ?>" max="<?= $tour['max_participants'] ?>" value="<?= $resellerPrice['min_pax'] ?>" required>
                                         </div>
+                                        <div class="mb-3">
+                                            <button type="button" class="btn btn-outline-primary btn-sm w-100" id="paxDataBtn" data-testid="open-pax-modal">
+                                                <i class="bi bi-people me-1"></i><?= t('Isi Data Peserta & Paspor') ?> <span class="badge bg-secondary ms-1" id="paxDataCount"><?= $resellerPrice['min_pax'] ?></span>
+                                            </button>
+                                            <div class="form-text"><?= t('Lengkapi nama & foto paspor setiap peserta.') ?></div>
+                                        </div>
                                         <div class="mb-2">
                                             <label class="form-label small fw-semibold"><?= t('Nama Lengkap') ?></label>
-                                            <input type="text" name="name" class="form-control" value="<?= e($_SESSION['user_name'] ?? '') ?>" required>
+                                            <input type="text" name="name" id="resellerName" class="form-control" value="<?= e($_SESSION['user_name'] ?? '') ?>" required>
                                         </div>
                                         <div class="mb-2">
                                             <label class="form-label small fw-semibold"><?= t('Email') ?></label>
@@ -214,4 +225,11 @@ require_once 'includes/header-shared.php';
     </div>
 </section>
 
+<?php
+$paxForm = 'resellerBookingForm';
+$paxCountSelector = 'input[name="passengers"]';
+$paxShowSelf = false;
+$paxSelfChecked = false;
+require __DIR__ . '/includes/components/pax-modal.php';
+?>
 <?php require_once 'includes/footer-shared.php'; ?>

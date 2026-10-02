@@ -137,6 +137,9 @@ $typeIcon = ['tour' => 'map', 'attraction' => 'signpost-2', 'transfer' => 'arrow
 $typeName = ['tour' => t('Tour'), 'attraction' => t('Atraksi'), 'transfer' => t('Transfer'), 'train' => t('Kereta'), 'esim' => t('eSIM')];
 $typeLink = ['tour' => 'tour-detail.php', 'attraction' => 'attraction-detail.php', 'transfer' => 'transfer-detail.php', 'train' => 'train-detail.php', 'esim' => 'esim-detail.php'];
 
+require_once 'includes/participants.php';
+$participantMap = getBookingParticipantsMap(array_map(fn($b) => (int)$b['id'], array_filter($all, fn($b) => ($b['btype'] ?? '') === 'tour')));
+
 $pageTitle = t('Riwayat Booking');
 require_once 'includes/header-shared.php';
 ?>
@@ -202,6 +205,12 @@ require_once 'includes/header-shared.php';
                                         <i class="bi bi-clock me-1"></i><?= date('d/m/Y', strtotime($b['created_at'])) ?>
                                     </div>
                                 </div>
+                                <?php if ($btype === 'tour' && !empty($participantMap[$b['id']])): ?>
+                                <div class="small text-muted mt-2">
+                                    <i class="bi bi-person-lines-fill me-1"></i><?= t('Data Peserta') ?>:
+                                    <?= e(implode(', ', array_column($participantMap[$b['id']], 'full_name'))) ?>
+                                </div>
+                                <?php endif; ?>
                                 <div class="d-flex gap-2 mt-2 flex-wrap">
                                     <a href="<?= $typeLink[$btype] ?>?slug=<?= urlencode($b['item_slug']) ?>" class="btn btn-sm btn-outline-primary rounded-pill px-3"><i class="bi bi-eye me-1"></i><?= t('Detail') ?></a>
                                     <?php if ($b['status'] === 'pending' || $b['status'] === 'confirmed'): ?>

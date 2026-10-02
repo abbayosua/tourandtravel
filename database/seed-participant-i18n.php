@@ -19,6 +19,10 @@ $rows = [
     'Mengunggah...' => ['Uploading...', '上传中...'],
     'Terunggah' => ['Uploaded', '已上传'],
     'Gagal mengunggah' => ['Upload failed', '上传失败'],
+    'Data peserta berhasil diperbarui' => ['Participant data updated', '参与者信息已更新'],
+    'Simpan Nama' => ['Save Names', '保存姓名'],
+    'Tambah peserta' => ['Add participant', '添加参与者'],
+    'Hapus peserta ini?' => ['Delete this participant?', '删除此参与者？'],
 ];
 
 $stmt = db()->prepare("INSERT IGNORE INTO translations (`key`, lang, value) VALUES (?, ?, ?)");

@@ -13,6 +13,7 @@ $code = $_GET['code'] ?? '';
 $booking = null;
 $btype = 'tour';
 $itemLink = '';
+$participants = [];
 
 // 1) Tour bookings
 $stmt = db()->prepare("
@@ -30,6 +31,8 @@ if ($row = $stmt->fetch()) {
     $booking['date_label'] = $row['departure_date'];
     $booking['qty_label'] = $row['participants'] . ' ' . t('orang');
     $itemLink = 'tour-detail.php?slug=' . urlencode($row['tour_slug']);
+    require_once 'includes/participants.php';
+    $participants = getBookingParticipants((int)$row['id']);
 }
 
 // 2) Attraction bookings
@@ -274,6 +277,13 @@ require_once 'includes/header-shared.php';
                             <tr><td class="text-muted ps-0"><?= t('Tanggal') ?></td><td class="fw-semibold"><?= formatDate($booking['date_label']) ?></td></tr>
                             <?php endif; ?>
                             <tr><td class="text-muted ps-0"><?= t('Peserta') ?></td><td class="fw-semibold"><?= $booking['qty_label'] ?></td></tr>
+                            <?php if ($btype === 'tour' && !empty($participants)): ?>
+                            <tr><td class="text-muted ps-0"><?= t('Data Peserta') ?></td><td>
+                                <?php foreach ($participants as $pi => $p): ?>
+                                <div class="fw-semibold"><?= $pi + 1 ?>. <?= e($p['full_name']) ?></div>
+                                <?php endforeach; ?>
+                            </td></tr>
+                            <?php endif; ?>
                             <tr><td class="text-muted ps-0"><?= t('Total Harga') ?></td><td class="fw-semibold text-primary"><?= formatRupiah($booking['total_price']) ?></td></tr>
                             <tr><td class="text-muted ps-0"><?= t('Status') ?></td><td>
                                 <?php if ($paymentStatus === 'paid'): ?>

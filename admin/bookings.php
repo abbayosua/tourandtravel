@@ -121,10 +121,35 @@ if (isset($_GET['delete'])) {
     header('Location: bookings.php?msg=deleted'); exit;
 }
 
+// Kelola peserta tour (ubah nama / hapus / tambah)
+require_once '../includes/participants.php';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['pax_update'])) {
+    $bid = (int)($_POST['booking_id'] ?? 0);
+    $names = is_array($_POST['pax_name'] ?? null) ? $_POST['pax_name'] : [];
+    if ($bid && $names) updateParticipantNames($bid, $names);
+    header('Location: bookings.php?type=tour&msg=pax_updated'); exit;
+}
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['pax_add'])) {
+    $bid = (int)($_POST['booking_id'] ?? 0);
+    $nm = trim($_POST['new_pax_name'] ?? '');
+    $pf = null;
+    if (isset($_FILES['new_pax_file']) && (int)($_FILES['new_pax_file']['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) {
+        $up = uploadWebP($_FILES['new_pax_file'], dirname(__DIR__) . '/uploads/passports');
+        if ($up['success']) $pf = $up['filename'];
+    }
+    if ($bid && $nm !== '') addParticipant($bid, $nm, $pf);
+    header('Location: bookings.php?type=tour&msg=pax_updated'); exit;
+}
+if (isset($_GET['delete_pax'], $_GET['booking'])) {
+    deleteParticipant((int)$_GET['booking'], (int)$_GET['delete_pax']);
+    header('Location: bookings.php?type=tour&msg=pax_updated'); exit;
+}
+
 $msg = '';
 if (isset($_GET['msg'])) {
     if ($_GET['msg'] === 'updated') $msg = t('Status booking berhasil diperbarui');
     if ($_GET['msg'] === 'deleted') $msg = t('Booking berhasil dihapus');
+    if ($_GET['msg'] === 'pax_updated') $msg = t('Data peserta berhasil diperbarui');
 }
 
 // Filter
@@ -334,23 +359,45 @@ require_once 'includes/admin-header.php';
                             <?php if ($btype === 'tour' && !empty($participantMap[$b['id']])): ?>
                             <button type="button" class="btn btn-sm btn-outline-secondary d-block mt-1" data-bs-toggle="modal" data-bs-target="#paxModal<?= $b['id'] ?>" data-testid="pax-view-<?= $b['id'] ?>"><i class="bi bi-people"></i> <?= t('Peserta') ?> (<?= count($participantMap[$b['id']]) ?>)</button>
                             <div class="modal fade" id="paxModal<?= $b['id'] ?>" tabindex="-1">
-                              <div class="modal-dialog modal-dialog-scrollable">
+                              <div class="modal-dialog modal-lg modal-dialog-scrollable">
                                 <div class="modal-content">
                                   <div class="modal-header py-2"><h6 class="modal-title"><?= t('Data Peserta') ?> — <?= e($b['booking_code'] ?? '') ?></h6><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-                                  <div class="modal-body p-0">
-                                    <table class="table table-sm mb-0">
-                                      <thead class="table-light"><tr><th>#</th><th><?= t('Nama') ?></th><th><?= t('Foto Paspor') ?></th></tr></thead>
-                                      <tbody>
-                                      <?php foreach ($participantMap[$b['id']] as $pi => $p): ?>
-                                        <tr>
-                                          <td><?= $pi + 1 ?></td>
-                                          <td><?= e($p['full_name']) ?></td>
-                                          <td><?php if ($p['passport_photo']): ?><a href="../uploads/passports/<?= e($p['passport_photo']) ?>" target="_blank" class="text-primary small"><?= t('Lihat') ?></a><?php else: ?>-<?php endif; ?></td>
-                                        </tr>
-                                      <?php endforeach; ?>
-                                      </tbody>
-                                    </table>
-                                  </div>
+                                  <form method="POST">
+                                    <input type="hidden" name="pax_update" value="1">
+                                    <input type="hidden" name="booking_id" value="<?= (int)$b['id'] ?>">
+                                    <div class="modal-body p-0">
+                                      <table class="table table-sm mb-0">
+                                        <thead class="table-light"><tr><th>#</th><th><?= t('Nama') ?></th><th><?= t('Foto Paspor') ?></th><th></th></tr></thead>
+                                        <tbody>
+                                        <?php foreach ($participantMap[$b['id']] as $pi => $p): ?>
+                                          <tr>
+                                            <td><?= $pi + 1 ?></td>
+                                            <td><input type="text" name="pax_name[<?= (int)$p['id'] ?>]" class="form-control form-control-sm" value="<?= e($p['full_name']) ?>" data-testid="pax-name-<?= (int)$p['id'] ?>"></td>
+                                            <td><?php if ($p['passport_photo']): ?><a href="../uploads/passports/<?= e($p['passport_photo']) ?>" target="_blank" class="text-primary small"><?= t('Lihat') ?></a><?php else: ?>-<?php endif; ?></td>
+                                            <td class="text-end"><a href="bookings.php?delete_pax=<?= (int)$p['id'] ?>&booking=<?= (int)$b['id'] ?>" class="btn btn-sm btn-outline-danger" data-testid="pax-del-<?= (int)$p['id'] ?>" onclick="return confirm('<?= t('Hapus peserta ini?') ?>')"><i class="bi bi-trash"></i></a></td>
+                                          </tr>
+                                        <?php endforeach; ?>
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                    <div class="modal-footer py-2 justify-content-end">
+                                      <button type="submit" class="btn btn-primary btn-sm" data-testid="pax-save-<?= (int)$b['id'] ?>"><?= t('Simpan Nama') ?></button>
+                                    </div>
+                                  </form>
+                                  <form method="POST" enctype="multipart/form-data" class="border-top p-2">
+                                    <input type="hidden" name="pax_add" value="1">
+                                    <input type="hidden" name="booking_id" value="<?= (int)$b['id'] ?>">
+                                    <div class="d-flex gap-2 align-items-end flex-wrap">
+                                      <div class="flex-grow-1">
+                                        <label class="form-label small mb-1"><?= t('Tambah peserta') ?></label>
+                                        <input type="text" name="new_pax_name" class="form-control form-control-sm" placeholder="<?= t('Nama lengkap sesuai paspor') ?>" data-testid="pax-new-name-<?= (int)$b['id'] ?>">
+                                      </div>
+                                      <div class="flex-grow-1">
+                                        <input type="file" name="new_pax_file" class="form-control form-control-sm" accept="image/jpeg,image/png,image/webp">
+                                      </div>
+                                      <button type="submit" class="btn btn-outline-primary btn-sm" data-testid="pax-add-<?= (int)$b['id'] ?>"><i class="bi bi-plus-lg"></i></button>
+                                    </div>
+                                  </form>
                                 </div>
                               </div>
                             </div>
