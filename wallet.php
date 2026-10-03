@@ -97,7 +97,7 @@ require_once 'includes/header-shared.php';
                         <div class="text-white fs-2 fw-bold" data-testid="points-balance"><?= number_format($pointsBalance) ?></div>
                         <small class="text-white-50"><?= t('1 point = Rp 100 · diperoleh dari booking yang dibayar') ?></small>
                     </div>
-                    <form method="POST" action="?tab=points" class="d-flex gap-2 align-items-end" data-testid="redeem-form">
+                    <form method="POST" action="?tab=points" class="d-flex gap-2 align-items-end" data-testid="redeem-form" onsubmit="return confirm('<?= t('Tukar points menjadi KlookCash? Penukaran tidak dapat dibatalkan.') ?>')">
                         <input type="hidden" name="redeem_points" value="1">
                         <div>
                             <label class="form-label small text-white-50 mb-0"><?= t('Tukar points') ?></label>
