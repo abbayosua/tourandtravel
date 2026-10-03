@@ -763,6 +763,18 @@ test.describe('i18n hotel content zh', () => {
     await page.waitForLoadState('domcontentloaded');
     await expect(page.locator('body')).toContainText('The Ritz-Carlton Jakarta, Mega Kuningan');
   });
+
+  // Nama tipe kamar (hotel_rooms.name_zh) dulu kosong → tampil Inggris di zh.
+  test('nama tipe kamar mengikuti bahasa', async ({ page }) => {
+    await page.goto(`${BASE}/hotel-detail.php?slug=grand-hyatt-bali&lang=zh`);
+    await page.waitForLoadState('domcontentloaded');
+    await expect(page.locator('body')).toContainText('高级大床房');
+    await expect(page.locator('body')).not.toContainText('Superior Double');
+
+    await page.goto(`${BASE}/hotel-detail.php?slug=grand-hyatt-bali&lang=en`);
+    await page.waitForLoadState('domcontentloaded');
+    await expect(page.locator('body')).toContainText('Superior Double');
+  });
 });
 
 test.describe('i18n admin hero slide edit', () => {
