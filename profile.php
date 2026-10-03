@@ -135,7 +135,7 @@ require_once 'includes/header-shared.php';
                 <!-- Form 2 kolom -->
                 <div class="card border-0 shadow-sm">
                     <div class="card-body p-4">
-                        <form method="POST">
+                        <form method="POST" data-submit-once>
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label class="form-label small fw-semibold"><?= t('Nama Lengkap') ?></label>

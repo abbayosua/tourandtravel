@@ -113,6 +113,7 @@ $footMenus = getNavMenus();
 document.addEventListener('submit', function (e) {
     var form = e.target;
     if (!form || form.tagName !== 'FORM' || !form.hasAttribute('data-submit-once')) return;
+    if (e.defaultPrevented) return;
     var btn = (e.submitter && e.submitter.form === form) ? e.submitter : form.querySelector('button[type="submit"], input[type="submit"]');
     if (!btn || btn.disabled) return;
     if (btn.name) {

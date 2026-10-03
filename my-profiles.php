@@ -98,7 +98,7 @@ require_once 'includes/header-shared.php';
                 <div class="card border-0 shadow-sm">
                     <div class="card-body p-4">
                         <h6 class="fw-bold mb-3"><?= $editProfile ? t('Edit Profil') : t('Tambah Profil Baru') ?></h6>
-                        <form method="POST">
+                        <form method="POST" data-submit-once>
                             <input type="hidden" name="action" value="save">
                             <input type="hidden" name="id" value="<?= $editProfile['id'] ?? 0 ?>">
                             <div class="mb-3">
@@ -161,14 +161,14 @@ require_once 'includes/header-shared.php';
                                     </div>
                                     <div class="d-flex gap-1">
                                         <?php if (!$p['is_default']): ?>
-                                        <form method="POST" class="d-inline">
+                                        <form method="POST" class="d-inline" data-submit-once>
                                             <input type="hidden" name="action" value="default">
                                             <input type="hidden" name="id" value="<?= (int)$p['id'] ?>">
                                             <button type="submit" class="btn btn-sm btn-outline-primary" title="<?= t('Jadikan default') ?>"><i class="bi bi-star"></i></button>
                                         </form>
                                         <?php endif; ?>
                                         <a href="my-profiles.php?edit=<?= (int)$p['id'] ?>" class="btn btn-sm btn-outline-secondary" title="<?= t('Edit') ?>"><i class="bi bi-pencil"></i></a>
-                                        <form method="POST" class="d-inline" onsubmit="return confirm('<?= t('Hapus profil ini?') ?>')">
+                                        <form method="POST" class="d-inline" data-submit-once onsubmit="return confirm('<?= t('Hapus profil ini?') ?>')">
                                             <input type="hidden" name="action" value="delete">
                                             <input type="hidden" name="id" value="<?= (int)$p['id'] ?>">
                                             <button type="submit" class="btn btn-sm btn-outline-danger" title="<?= t('Hapus') ?>"><i class="bi bi-trash"></i></button>

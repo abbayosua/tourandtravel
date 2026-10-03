@@ -75,7 +75,7 @@ require_once 'includes/header-shared.php';
                         <div class="fs-3 fw-bold text-primary mb-3"><?= formatRupiah(getResellerBalance($userId)) ?></div>
 
                         <h6 class="fw-semibold mb-3"><?= t('Permintaan Topup Baru') ?></h6>
-                        <form method="POST" enctype="multipart/form-data">
+                        <form method="POST" enctype="multipart/form-data" data-submit-once>
                             <div class="mb-3">
                                 <label class="form-label small fw-semibold"><?= t('Jumlah Topup') ?></label>
                                 <div class="input-group">
