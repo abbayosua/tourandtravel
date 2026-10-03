@@ -237,7 +237,7 @@ require_once 'includes/header-shared.php';
                 </div>
                 <?php endif; ?>
 
-                <form method="POST" id="pelniBookingForm">
+                <form method="POST" id="pelniBookingForm" data-submit-once>
                     <div class="card border-0 shadow-sm mb-4">
                         <div class="card-header bg-white border-bottom fw-semibold">
                             <i class="bi bi-person-lines-fill me-2"></i><?= t('Data Penumpang Utama') ?>

@@ -207,7 +207,7 @@ require_once 'includes/header-shared.php';
         <h5 class="fw-bold text-primary mt-2 mb-0">Rp<?= number_format((float)$total, 0, ',', '.') ?></h5>
     </div></div>
     <div class="card border-0 shadow-sm"><div class="card-body">
-    <form method="POST" action="nusatrip-book.php">
+    <form method="POST" action="nusatrip-book.php" data-submit-once>
         <input type="hidden" name="action" value="submit">
         <input type="hidden" name="csrf" value="<?= e($_SESSION['nusa_csrf'] ?? '') ?>">
         <h6 class="fw-semibold"><?= t('Data Tamu') ?></h6>

@@ -710,7 +710,7 @@ require_once 'includes/header-shared.php';
                     <?php if ($bookingMessage): ?>
                         <div class="alert alert-success py-2 small"><?= $bookingMessage ?></div>
                     <?php endif; ?>
-                    <form method="POST" enctype="multipart/form-data" id="tourBookingForm">
+                    <form method="POST" enctype="multipart/form-data" id="tourBookingForm" data-submit-once>
                         <input type="hidden" name="form_submitted" value="1">
                         <input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>">
                         <?php $totalSisa = 0; foreach ($tourDates as $td) { $totalSisa += max(0, getSisaSlot($td['id'])); } ?>
@@ -986,7 +986,7 @@ require_once 'includes/header-shared.php';
                             <a href="reseller-booking.php?tour_id=<?= $tour['id'] ?>" class="btn btn-sm btn-info text-white"><?= t('Bayar dari Saldo') ?></a>
                         </div>
                         <?php endif; ?>
-                        <button type="submit" class="btn btn-primary w-100 fw-semibold" id="bookingSubmitBtn" onclick="var btn=this;btn.disabled=true;btn.innerHTML='<span class=\'spinner-border spinner-border-sm me-2\'></span><?= t('Memproses...') ?>';setTimeout(function(){btn.form.submit();},100);return false;"><?= t(abVariant('tour_cta_text') === 'B' ? 'Booking Sekarang — Gratis Batal' : 'Pesan Sekarang') ?></button>
+                        <button type="submit" class="btn btn-primary w-100 fw-semibold" id="bookingSubmitBtn"><?= t(abVariant('tour_cta_text') === 'B' ? 'Booking Sekarang — Gratis Batal' : 'Pesan Sekarang') ?></button>
                         <?php if (!isLoggedIn()): ?>
                         <div class="alert alert-warning py-2 small mt-2 mb-0"><i class="bi bi-info-circle me-1"></i><?= t('Anda booking sebagai tamu. Masuk akun untuk melacak booking.') ?></div>
                         <?php endif; ?>

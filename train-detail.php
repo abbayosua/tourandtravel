@@ -123,7 +123,7 @@ require_once 'includes/header-shared.php';
                         <div class="alert alert-danger py-2 small"><?= $bookingError ?></div>
                     <?php endif; ?>
 
-                    <form method="POST">
+                    <form method="POST" data-submit-once>
                         <input type="hidden" name="form_submitted" value="1">
                         <div class="mb-2">
                             <label class="form-label small"><?= t('Tanggal Perjalanan') ?></label>

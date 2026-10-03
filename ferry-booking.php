@@ -283,7 +283,7 @@ require_once 'includes/header-shared.php';
                 </div>
                 <?php endif; ?>
 
-                <form method="POST" id="ferryBookingForm">
+                <form method="POST" id="ferryBookingForm" data-submit-once>
                     <!-- Passenger Info -->
                     <div class="card border-0 shadow-sm mb-4">
                         <div class="card-header bg-white border-bottom fw-semibold">

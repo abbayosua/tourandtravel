@@ -70,7 +70,7 @@ require_once 'includes/header-shared.php';
                         <?php if (!isLoggedIn()): ?>
                             <div class="alert alert-warning py-2 small mb-2"><i class="bi bi-info-circle me-1"></i><?= t('Anda dapat booking sebagai tamu.') ?></div>
                         <?php endif; ?>
-                        <form method="POST">
+                        <form method="POST" data-submit-once>
                             <div class="mb-2"><label class="form-label small"><?= t('Kode Promo (opsional)') ?></label>
                                 <div class="input-group input-group-sm">
                                     <input type="text" name="promo_code" class="form-control klook-promo-input" placeholder="HEMAT10" id="promoCodeRental" autocomplete="off">

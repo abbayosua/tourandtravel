@@ -179,7 +179,7 @@ require_once 'includes/header-shared.php';
                                     <div class="fs-4 fw-bold text-primary mb-3"><?= formatRupiah($balance) ?></div>
                                     <a href="reseller-topup.php" class="btn btn-sm btn-outline-primary mb-3 w-100"><?= t('Topup Saldo') ?></a>
 
-                                    <form method="POST" id="resellerBookingForm">
+                                    <form method="POST" id="resellerBookingForm" data-submit-once>
                                         <input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>">
                                         <div class="mb-2">
                                             <label class="form-label small fw-semibold"><?= t('Tanggal Keberangkatan') ?></label>
