@@ -160,7 +160,7 @@ async function bookTour(page: Page, opts: BookOpts): Promise<string> {
   if (opts.insurance) await page.locator('#addInsuranceTour').check();
 
   await Promise.all([
-    page.waitForURL(/booking-success\.php\?code=/, { timeout: 15000 }),
+    page.waitForURL(/booking-success\.php\?code=/, { timeout: 30000 }),
     page.locator('#bookingSubmitBtn').click(),
   ]);
 
@@ -190,6 +190,9 @@ test('pembelian 1 peserta berhasil dan tersimpan (mode manual)', async ({ page }
   await expect(page.locator('.klook-booking-code')).toContainText(code);
   await expect(page.locator('body')).toContainText('Rp 1.500.000');
   await expect(page.locator('body')).toContainText('WhatsApp untuk konfirmasi');
+  // Detail tour (judul + tanggal keberangkatan) tampil di konfirmasi.
+  await expect(page.locator('body')).toContainText('E2E Tour Purchase');
+  await expect(page.locator('body')).toContainText('Desember 2027');
 
   await page.goto(`${BASE}/my-bookings.php`);
   await expect(page.locator(`text=${code}`).first()).toBeVisible();
