@@ -118,3 +118,12 @@ function testPdfBrochureLabelsTrilingual(): void {
     assertTrue($id['itinerary'] !== $en['itinerary'], 'label itinerary en masih sama dengan id');
     assertTrue($id['highlights'] !== $en['highlights'], 'label highlights en masih sama dengan id');
 }
+
+/** Email booking-status harus menampilkan label status per bahasa, bukan kode mentah. */
+function testBookingStatusEmailLocalizesStatusLabel(): void {
+    foreach (['en' => 'Paid', 'zh' => '已付款'] as $lang => $label) {
+        $t = renderEmailTemplate('booking-status', ['booking_code' => 'TAT-9', 'status' => 'paid', 'track_link' => 'http://x'], $lang);
+        assertContains($label, $t['html'], "label status $lang");
+        assertTrue(strpos($t['html'], '>paid<') === false, "kode status mentah bocor di $lang");
+    }
+}
