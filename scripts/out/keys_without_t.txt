@@ -33,7 +33,6 @@ NusaTrip
 OYO
 Open
 PELNI
-Pengaturan Singapay (Virtual Account)
 Production
 Refund
 Rp 0
@@ -53,4 +52,3 @@ ada 5 paket
 ada :n paket
 id-ID
 · #
-· Webhook Singapay:

@@ -33,6 +33,7 @@ const ID_MARKERS = new RegExp(
       'profil', 'notifikasi', 'tentang', 'ketentuan', 'kebijakan', 'hubungi', 'beranda',
       'reseller', 'favorit', 'mitra', 'terpercaya', 'diskon', 'segera', 'segala',
       'kuota', 'seluruh', 'khusus', 'pengiriman', 'selama', 'dimuat', 'peta', 'ulasan', 'penumpang',
+      'kembali', 'lanjut', 'simpan', 'kirim', 'jadwal', 'stasiun', 'pelabuhan',
     ].join('|') +
     ')\\b',
   'i'
@@ -61,6 +62,7 @@ const PAGES = [
   'destinasi.php',
   'pelni.php',
   'track.php',
+  'collection.php?slug=best-seller',
   'nusatrip-book.php',
   'ferry-booking.php',
   'pelni-booking.php',
