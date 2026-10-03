@@ -790,3 +790,39 @@ echo "Upserted $c2 refund/flight error rows.\n";
 $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
 $stmt->execute(['Cari', 'en', 'Search']);
 echo "Corrected 'Cari' translation (en).\n";
+
+// ---- Error/status messages: trains, refund timeline, profile, upload ----
+$err3 = [
+    'en' => [
+        'Tidak ada jadwal kereta ditemukan untuk rute/tanggal ini.' => 'No train schedules found for this route/date.',
+        'Stasiun tidak ditemukan. Coba: Jakarta Kota, Bandung, Yogyakarta.' => 'Station not found. Try: Jakarta Kota, Bandung, Yogyakarta.',
+        'Menunggu persetujuan admin' => 'Awaiting admin approval',
+        'Disetujui' => 'Approved',
+        'ke KlookCash' => 'to KlookCash',
+        'Ditolak admin' => 'Rejected by admin',
+        'Nama wajib diisi' => 'Name is required',
+        'Gagal upload file' => 'File upload failed',
+        'Gagal menyimpan file' => 'Failed to save file',
+        'Gagal upload' => 'Upload failed',
+        'Ukuran file maksimal 2MB' => 'Maximum file size is 2MB',
+        'Tipe file harus JPG/PNG/WebP' => 'File type must be JPG/PNG/WebP',
+    ],
+    'zh' => [
+        'Tidak ada jadwal kereta ditemukan untuk rute/tanggal ini.' => '该航线/日期暂无火车班次。',
+        'Stasiun tidak ditemukan. Coba: Jakarta Kota, Bandung, Yogyakarta.' => '未找到车站。请尝试：雅加达城区、万隆、日惹。',
+        'Menunggu persetujuan admin' => '等待管理员批准',
+        'Disetujui' => '已批准',
+        'ke KlookCash' => '至 KlookCash',
+        'Ditolak admin' => '管理员已拒绝',
+        'Nama wajib diisi' => '请填写姓名',
+        'Gagal upload file' => '文件上传失败',
+        'Gagal menyimpan file' => '保存文件失败',
+        'Gagal upload' => '上传失败',
+        'Ukuran file maksimal 2MB' => '文件大小上限为 2MB',
+        'Tipe file harus JPG/PNG/WebP' => '文件类型必须为 JPG/PNG/WebP',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$c3 = 0;
+foreach ($err3 as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c3++; } }
+echo "Upserted $c3 train/status/upload rows.\n";

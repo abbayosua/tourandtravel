@@ -540,15 +540,15 @@ function uploadGambar($file, $targetDir) {
     $maxSize = 2 * 1024 * 1024; // 2MB
 
     if ($file['error'] !== UPLOAD_ERR_OK) {
-        return ['success' => false, 'message' => 'Gagal upload file'];
+        return ['success' => false, 'message' => t('Gagal upload file')];
     }
 
     if (!in_array($file['type'], $allowedTypes)) {
-        return ['success' => false, 'message' => 'Tipe file harus JPG/PNG/WebP'];
+        return ['success' => false, 'message' => t('Tipe file harus JPG/PNG/WebP')];
     }
 
     if ($file['size'] > $maxSize) {
-        return ['success' => false, 'message' => 'Ukuran file maksimal 2MB'];
+        return ['success' => false, 'message' => t('Ukuran file maksimal 2MB')];
     }
 
     $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
@@ -563,7 +563,7 @@ function uploadGambar($file, $targetDir) {
         return ['success' => true, 'filename' => $filename];
     }
 
-    return ['success' => false, 'message' => 'Gagal menyimpan file'];
+    return ['success' => false, 'message' => t('Gagal menyimpan file')];
 }
 
 /**
@@ -1230,9 +1230,9 @@ function generateBookingCode() {
  */
 function uploadWebP($file, $targetDir, $quality = 70) {
     $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-    if ($file['error'] !== UPLOAD_ERR_OK) return ['success' => false, 'message' => 'Gagal upload'];
-    if (($file['size'] ?? 0) > 2 * 1024 * 1024) return ['success' => false, 'message' => 'Ukuran file maksimal 2MB'];
-    if (!in_array($file['type'], $allowedTypes)) return ['success' => false, 'message' => 'Tipe file harus JPG/PNG/WebP'];
+    if ($file['error'] !== UPLOAD_ERR_OK) return ['success' => false, 'message' => t('Gagal upload')];
+    if (($file['size'] ?? 0) > 2 * 1024 * 1024) return ['success' => false, 'message' => t('Ukuran file maksimal 2MB')];
+    if (!in_array($file['type'], $allowedTypes)) return ['success' => false, 'message' => t('Tipe file harus JPG/PNG/WebP')];
     
     if (!is_dir($targetDir)) mkdir($targetDir, 0755, true);
     

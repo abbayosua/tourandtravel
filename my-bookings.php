@@ -293,9 +293,9 @@ require_once 'includes/header-shared.php';
                                 <?php
                                     $rs = $b['refund_status'];
                                     $timeline = [
-                                        'requested' => ['bg-warning text-dark', 'Menunggu persetujuan admin'],
-                                        'approved'  => ['bg-success', 'Disetujui — refund ' . formatRupiah((float)($b['refund_amount'] ?? 0)) . ' ke KlookCash'],
-                                        'rejected'  => ['bg-danger', 'Ditolak admin'],
+                                        'requested' => ['bg-warning text-dark', t('Menunggu persetujuan admin')],
+                                        'approved'  => ['bg-success', t('Disetujui') . ' — refund ' . formatRupiah((float)($b['refund_amount'] ?? 0)) . ' ' . t('ke KlookCash')],
+                                        'rejected'  => ['bg-danger', t('Ditolak admin')],
                                     ];
                                 ?>
                                 <div class="mt-2 p-2 rounded bg-light" data-testid="refund-timeline-<?= $b['id'] ?>">

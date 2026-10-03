@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $isDefault = isset($_POST['is_default']) ? 1 : 0;
 
         if (!$fullName) {
-            $msg = 'error:Nama wajib diisi';
+            $msg = 'error:' . t('Nama wajib diisi');
         } else {
             if ($isDefault) {
                 db()->prepare("UPDATE passenger_profiles SET is_default = 0 WHERE user_id = ?")->execute([$userId]);

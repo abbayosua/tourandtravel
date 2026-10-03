@@ -44,10 +44,10 @@ if ($search && $routeFrom && $routeTo) {
                 ];
             }
         } else {
-            $keretaError = 'Tidak ada jadwal kereta ditemukan untuk rute/tanggal ini.';
+            $keretaError = t('Tidak ada jadwal kereta ditemukan untuk rute/tanggal ini.');
         }
     } else {
-        $keretaError = 'Stasiun tidak ditemukan. Coba: Jakarta Kota, Bandung, Yogyakarta.';
+        $keretaError = t('Stasiun tidak ditemukan. Coba: Jakarta Kota, Bandung, Yogyakarta.');
     }
 }
 
