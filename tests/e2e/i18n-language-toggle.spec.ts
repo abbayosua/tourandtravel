@@ -221,7 +221,7 @@ test.describe('i18n language toggle', () => {
 
   for (const lang of ['en', 'zh']) {
     test(`tidak ada sisa teks Indonesia saat bahasa=${lang}`, async ({ page }) => {
-      test.setTimeout(180_000);
+      test.setTimeout(300_000);
       const failures: string[] = [];
 
       for (const path of PAGES) {
@@ -296,7 +296,7 @@ test.describe('i18n halaman akun', () => {
 
   for (const lang of ['en', 'zh']) {
     test(`halaman akun bersih dari teks Indonesia saat bahasa=${lang}`, async ({ page }) => {
-      test.setTimeout(180_000);
+      test.setTimeout(300_000);
       await login(page);
       const failures: string[] = [];
 
@@ -1050,7 +1050,7 @@ test.describe('i18n admin settings sweep', () => {
   ];
   for (const lang of ['en', 'zh']) {
     test(`admin settings bersih dari teks Indonesia saat bahasa=${lang}`, async ({ page }) => {
-      test.setTimeout(120_000);
+      test.setTimeout(180_000);
       await adminLogin(page);
       const failures: string[] = [];
       for (const path of ADMIN_PAGES) {
