@@ -755,3 +755,38 @@ $fixPesan = [
 $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
 foreach ($fixPesan as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); } }
 echo "Corrected 'Pesan' translation (en/zh).\n";
+
+// ---- Error messages: refund/flightlist/duffel ----
+$err2 = [
+    'en' => [
+        'Hanya booking confirmed yang bisa diajukan refund' => 'Only confirmed bookings can be refunded',
+        'Refund sudah diajukan/sebelumnya' => 'Refund already requested/previously submitted',
+        'Pengajuan refund sebelumnya sudah ditolak' => 'Previous refund request was rejected',
+        'Kode bandara tidak valid. Contoh: CGK, DPS, atau pilih dari daftar.' => 'Invalid airport code. E.g. CGK, DPS, or pick from the list.',
+        'Kota asal dan tujuan tidak boleh sama.' => 'Origin and destination cannot be the same.',
+        'Tanggal tidak valid.' => 'Invalid date.',
+        'Tanggal keberangkatan tidak boleh di masa lalu.' => 'Departure date cannot be in the past.',
+        'Penerbangan FlightList tidak ditemukan (sesi kadaluarsa). Silakan cari ulang.' => 'FlightList flight not found (session expired). Please search again.',
+        'Minimal 1 leg.' => 'At least 1 leg.',
+    ],
+    'zh' => [
+        'Hanya booking confirmed yang bisa diajukan refund' => '仅已确认的订单可以申请退款',
+        'Refund sudah diajukan/sebelumnya' => '退款已申请/此前已提交',
+        'Pengajuan refund sebelumnya sudah ditolak' => '此前的退款申请已被拒绝',
+        'Kode bandara tidak valid. Contoh: CGK, DPS, atau pilih dari daftar.' => '机场代码无效。例如：CGK、DPS，或从列表中选择。',
+        'Kota asal dan tujuan tidak boleh sama.' => '出发地和目的地不能相同。',
+        'Tanggal tidak valid.' => '日期无效。',
+        'Tanggal keberangkatan tidak boleh di masa lalu.' => '出发日期不能是过去。',
+        'Penerbangan FlightList tidak ditemukan (sesi kadaluarsa). Silakan cari ulang.' => '未找到 FlightList 航班（会话已过期）。请重新搜索。',
+        'Minimal 1 leg.' => '至少 1 段。',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$c2 = 0;
+foreach ($err2 as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c2++; } }
+echo "Upserted $c2 refund/flight error rows.\n";
+
+// ---- Koreksi: key 'Cari' dipakai tombol "Search" (bukan "Go") ----
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$stmt->execute(['Cari', 'en', 'Search']);
+echo "Corrected 'Cari' translation (en).\n";

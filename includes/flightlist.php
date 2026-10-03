@@ -16,12 +16,12 @@ function flightlistCabin($cabin) {
 function flightlistSearchOffers($origin, $dest, $date, $cabinClass = 'economy', $passengers = 1) {
     $originCode = parseIata($origin);
     $destCode = parseIata($dest);
-    if (!$originCode || !$destCode) return ['error' => 'Kode bandara tidak valid. Contoh: CGK, DPS, atau pilih dari daftar.'];
-    if ($originCode === $destCode) return ['error' => 'Kota asal dan tujuan tidak boleh sama.'];
+    if (!$originCode || !$destCode) return ['error' => t('Kode bandara tidak valid. Contoh: CGK, DPS, atau pilih dari daftar.')];
+    if ($originCode === $destCode) return ['error' => t('Kota asal dan tujuan tidak boleh sama.')];
     $ts = strtotime($date);
-    if (!$ts) return ['error' => 'Tanggal tidak valid.'];
+    if (!$ts) return ['error' => t('Tanggal tidak valid.')];
     $dateStr = date('Y-m-d', $ts);
-    if ($dateStr < date('Y-m-d')) return ['error' => 'Tanggal keberangkatan tidak boleh di masa lalu.'];
+    if ($dateStr < date('Y-m-d')) return ['error' => t('Tanggal keberangkatan tidak boleh di masa lalu.')];
     if ($dateStr > date('Y-m-d', strtotime('+360 days'))) return ['error' => 'Tanggal terlalu jauh (maks 360 hari).'];
     $passengers = max(1, min(9, (int)$passengers));
     $cabin = flightlistCabin($cabinClass);
@@ -110,5 +110,5 @@ function flightlistGetOffer($id) {
     if (session_status() === PHP_SESSION_NONE) @session_start();
     if (isset($_SESSION['flightlist_offers'][$id])) return ['offer' => $_SESSION['flightlist_offers'][$id]];
     // Try to fetch via minimal re-search -> not available without context, return not found
-    return ['error' => 'Penerbangan FlightList tidak ditemukan (sesi kadaluarsa). Silakan cari ulang.'];
+    return ['error' => t('Penerbangan FlightList tidak ditemukan (sesi kadaluarsa). Silakan cari ulang.')];
 }

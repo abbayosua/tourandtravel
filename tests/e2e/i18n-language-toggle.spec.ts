@@ -183,6 +183,16 @@ test.describe('i18n language toggle', () => {
     }
   });
 
+  // Tombol "Search" (key 'Cari') harus diterjemahkan, bukan "Go".
+  test('tombol pencarian memakai label bahasa aktif', async ({ page }) => {
+    const expected: Record<string, string> = { en: 'Search', zh: '搜索' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/track.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('button[type="submit"]').first()).toContainText(label);
+    }
+  });
+
   for (const lang of ['en', 'zh']) {
     test(`tidak ada sisa teks Indonesia saat bahasa=${lang}`, async ({ page }) => {
       test.setTimeout(180_000);

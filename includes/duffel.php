@@ -49,16 +49,16 @@ function duffelSearchOffers($origin, $dest, $date, $cabinClass = 'economy', $pas
         $slices = [['origin' => (string)$origin, 'destination' => (string)$dest, 'departure_date' => (string)$date]];
     }
     $slices = array_slice($slices, 0, 6); // Duffel max 6 slices
-    if (count($slices) < 1) return ['error' => 'Minimal 1 leg.'];
+    if (count($slices) < 1) return ['error' => t('Minimal 1 leg.')];
 
     $parsedSlices = [];
     foreach ($slices as $i => $s) {
         $o = parseIata($s['origin'] ?? '');
         $d = parseIata($s['destination'] ?? '');
-        if (!$o || !$d) return ['error' => 'Kode bandara tidak valid. Contoh: CGK, DPS, atau pilih dari daftar.'];
-        if ($o === $d) return ['error' => 'Kota asal dan tujuan leg ' . ($i + 1) . ' tidak boleh sama.'];
+        if (!$o || !$d) return ['error' => t('Kode bandara tidak valid. Contoh: CGK, DPS, atau pilih dari daftar.')];
+        if ($o === $d) return ['error' => t('Kota asal dan tujuan tidak boleh sama') . ' (leg ' . ($i + 1) . ').'];
         $ts = strtotime($s['departure_date'] ?? '');
-        if (!$ts) return ['error' => 'Tanggal leg ' . ($i + 1) . ' tidak valid.'];
+        if (!$ts) return ['error' => t('Tanggal tidak valid') . ' (leg ' . ($i + 1) . ').'];
         $dateStr = date('Y-m-d', $ts);
         if ($dateStr < date('Y-m-d')) return ['error' => 'Tanggal leg ' . ($i + 1) . ' tidak boleh di masa lalu.'];
         if ($dateStr > date('Y-m-d', strtotime('+360 days'))) return ['error' => 'Tanggal leg ' . ($i + 1) . ' terlalu jauh (maks 360 hari).'];

@@ -68,9 +68,9 @@ function requestRefund(int $bookingId, int $userId, string $reason): array {
     $bk = $b->fetch();
     if (!$bk) return [false, t('Booking tidak ditemukan')];
     if ((int)($bk['user_id'] ?? 0) !== $userId) return [false, t('Bukan booking Anda')];
-    if ($bk['status'] !== 'confirmed') return [false, 'Hanya booking confirmed yang bisa diajukan refund'];
-    if (in_array($bk['refund_status'], ['requested', 'approved'], true)) return [false, 'Refund sudah diajukan/sebelumnya'];
-    if ($bk['refund_status'] === 'rejected') return [false, 'Pengajuan refund sebelumnya sudah ditolak'];
+    if ($bk['status'] !== 'confirmed') return [false, t('Hanya booking confirmed yang bisa diajukan refund')];
+    if (in_array($bk['refund_status'], ['requested', 'approved'], true)) return [false, t('Refund sudah diajukan/sebelumnya')];
+    if ($bk['refund_status'] === 'rejected') return [false, t('Pengajuan refund sebelumnya sudah ditolak')];
 
     $calc = calculateRefund($bookingId);
     if (!$calc || $calc['pct'] === 0) return [false, 'Booking ini sudah tidak bisa direfund (melewati batas waktu / non-refundable)'];
