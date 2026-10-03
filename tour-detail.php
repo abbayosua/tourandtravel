@@ -766,7 +766,7 @@ require_once 'includes/header-shared.php';
                         </div>
                         <div class="mb-2">
                             <label class="form-label small"><?= t('Email (opsional)') ?></label>
-                            <input type="email" name="email" class="form-control form-control-sm" placeholder="email@contoh.com">
+                            <input type="email" name="email" class="form-control form-control-sm" placeholder="<?= e(t('email@contoh.com')) ?>">
                         </div>
                         <div class="mb-2">
                             <label class="form-label small"><?= t('No. WhatsApp') ?></label>

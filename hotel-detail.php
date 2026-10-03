@@ -670,7 +670,7 @@ require_once 'includes/header-shared.php';
                             </div>
                             <div class="mb-3">
                                 <label class="form-label small"><?= t('Email') ?></label>
-                                <input type="email" name="email" class="form-control" value="<?= e(getUser()['email'] ?? '') ?>" placeholder="email@contoh.com">
+                                <input type="email" name="email" class="form-control" value="<?= e(getUser()['email'] ?? '') ?>" placeholder="<?= e(t('email@contoh.com')) ?>">
                             </div>
                             <?php if (!empty($_SESSION['user_id'])): require_once 'includes/wallet.php'; $walletBal = getWalletBalance($_SESSION['user_id']); ?>
                                 <?php if ($walletBal > 0): ?>
