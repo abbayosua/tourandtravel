@@ -185,6 +185,12 @@ test('pembelian 1 peserta berhasil dan tersimpan (mode manual)', async ({ page }
   expect(row).toContain(String(UNIT_PRICE));
   expect(mysql(`SELECT COUNT(*) FROM booking_participants b JOIN bookings bk ON b.booking_id = bk.id WHERE bk.booking_code = '${code}'`)).toBe('1');
 
+  // Halaman konfirmasi menampilkan total & instruksi pembayaran manual.
+  await page.goto(`${BASE}/booking-success.php?code=${code}`);
+  await expect(page.locator('.klook-booking-code')).toContainText(code);
+  await expect(page.locator('body')).toContainText('Rp 1.500.000');
+  await expect(page.locator('body')).toContainText('WhatsApp untuk konfirmasi');
+
   await page.goto(`${BASE}/my-bookings.php`);
   await expect(page.locator(`text=${code}`).first()).toBeVisible();
 });
