@@ -338,7 +338,7 @@ require_once 'includes/header-shared.php';
                                             <?php endif; ?>
                                             <span>
                                                 <span class="d-block fw-semibold small"><?= e($tm['label']) ?></span>
-                                                <?php if (!empty($tm['fee'])): ?><span class="d-block text-muted" style="font-size:11px">Fee <?= e($tm['fee']) ?></span><?php endif; ?>
+                                                <?php if (!empty($tm['fee'])): ?><span class="d-block text-muted" style="font-size:11px"><?= t('Biaya') ?> <?= e($tm['fee']) ?></span><?php endif; ?>
                                             </span>
                                         </label>
                                     </div>
@@ -350,7 +350,7 @@ require_once 'includes/header-shared.php';
                             <div class="w-100" data-testid="singapay-methods">
                                 <div class="btn-group btn-group-sm mb-2" role="group">
                                     <input type="radio" class="btn-check" name="sgKind" id="sgKindVa" value="va" checked>
-                                    <label class="btn btn-outline-primary" for="sgKindVa">Virtual Account</label>
+                                    <label class="btn btn-outline-primary" for="sgKindVa"><?= t('Virtual Account') ?></label>
                                     <input type="radio" class="btn-check" name="sgKind" id="sgKindCard" value="card">
                                     <label class="btn btn-outline-primary" for="sgKindCard"><?= t('Kartu Kredit') ?></label>
                                 </div>

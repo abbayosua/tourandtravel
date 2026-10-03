@@ -809,6 +809,52 @@ test.describe('i18n tour detail notes', () => {
     }
   });
 });
+test.describe('i18n label pembayaran', () => {
+  // Label channel pembayaran (Virtual Account / Biaya) dulu hardcoded Inggris.
+  const CODE = 'E2EPAYLBL';
+  const saved: Record<string, string> = {};
+
+  test.beforeAll(() => {
+    try {
+      for (const key of ['payment_mode', 'payment_gateway', 'singapay_account_id']) {
+        saved[key] = mysql(`SELECT setting_value FROM settings WHERE setting_key = '${key}'`);
+      }
+      const set = (k: string, v: string) =>
+        mysql(`INSERT INTO settings (setting_key, setting_value) VALUES ('${k}', '${v}') ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)`);
+      set('payment_mode', 'instant');
+      set('payment_gateway', 'singapay');
+      set('singapay_account_id', 'E2EACC');
+      const td = mysql(`SELECT id, tour_id FROM tour_dates WHERE is_active = 1 ORDER BY id LIMIT 1`).split('\t');
+      mysql(
+        `INSERT INTO bookings (booking_code, tour_id, tour_date_id, name, email, phone, participants, total_price, status) ` +
+          `VALUES ('${CODE}', ${td[1]}, ${td[0]}, 'E2E Pay', 'e2epay@t.local', '0800000000', 1, 100000, 'pending')`
+      );
+    } catch { /* ignore */ }
+  });
+
+  test.afterAll(() => {
+    try { mysql(`DELETE FROM bookings WHERE booking_code = '${CODE}'`); } catch { /* ignore */ }
+    try {
+      for (const [k, v] of Object.entries(saved)) {
+        if (v !== '') mysql(`UPDATE settings SET setting_value = '${v}' WHERE setting_key = '${k}'`);
+        else mysql(`DELETE FROM settings WHERE setting_key = '${k}'`);
+      }
+    } catch { /* ignore */ }
+  });
+
+  test('label Virtual Account mengikuti bahasa', async ({ page }) => {
+    const expected: Record<string, string> = { en: 'Virtual Account', zh: '虚拟账户' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/booking-success.php?code=${CODE}&lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      const methods = page.locator('[data-testid="singapay-methods"]');
+      await expect(methods).toBeVisible();
+      await expect(methods).toContainText(label);
+      if (lang === 'zh') await expect(methods).not.toContainText('Virtual Account');
+    }
+  });
+});
+
 test.describe('i18n email templates', () => {
   // Render each transactional email in id/en/zh and assert no Indonesian leaks.
   test('template email tidak menyisakan teks Indonesia', async () => {

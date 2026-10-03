@@ -66,6 +66,7 @@ Alasan (opsional)
 Alasan Refund
 Alert harga disimpan!
 All rights reserved.
+Amount refund 0 — pengajuan otomatis ditolak
 Anak
 Analytics
 Anda booking sebagai tamu. Masuk akun untuk melacak booking.
@@ -93,6 +94,7 @@ Bagikan pengalaman Anda...
 Bahan bakar
 Bahasa
 Bahasa Konten
+Bahasa tidak didukung
 Bahasa tidak valid
 Bahasa ulasan
 Balas
@@ -436,6 +438,7 @@ Fokus tidak valid
 Fokus website berhasil disimpan.
 Format FlightList tidak valid
 Format JPG/PNG/WebP, max 2MB
+Format token tidak valid
 Foto
 Foto Paspor
 Foto Ulasan
@@ -445,6 +448,7 @@ Funnel Booking
 Gagal
 Gagal kirim WA ke %s. Cek server log.
 Gagal membuat sesi booking. Silakan coba lagi atau pilih kamar lain.
+Gagal membuat session
 Gagal memesan: 
 Gagal memotong saldo. Silakan coba lagi.
 Gagal memproses refund
@@ -1036,9 +1040,11 @@ Pembayaran (langsung ke NusaTrip)
 Pembayaran 1-klik gagal: 
 Pembayaran Aman
 Pembayaran Berhasil
+Pembayaran Diterima
 Pembayaran Gagal / Ditolak
 Pembayaran TravelPoints berhasil
 Pembayaran aman & terenkripsi
+Pembayaran diterima
 Pembayaran diterima. Terima kasih!
 Pembayaran menggunakan TravelPoints
 Pemesan
@@ -1187,6 +1193,9 @@ Refresh
 Refresh QR
 Refund
 Refund dihitung otomatis: 100% (≥H-8), 50% (H-4–H-7), 0% (<H-3) sesuai kebijakan produk.
+Refund disetujui:
+Refund ditolak
+Refund pembatalan booking
 Refund poin
 Refund sudah diajukan/sebelumnya
 Refundable
@@ -1353,6 +1362,7 @@ Stasiun tujuan
 Status
 Status Booking - %s
 Status Refund
+Status Topup
 Status bayar:
 Status booking berhasil diperbarui
 Status booking: %s
@@ -1487,6 +1497,7 @@ Tidak ada jadwal kapal untuk rute/tanggal ini.
 Tidak ada jadwal kereta ditemukan untuk rute/tanggal ini.
 Tidak ada jadwal lokal yang cocok dengan filter.
 Tidak ada mobil.
+Tidak ada penerbangan untuk rute/tanggal ini.
 Tidak ada penerbangan untuk rute/tanggal tersebut.
 Tidak ada pengajuan refund pending
 Tidak ada produk ditemukan.
@@ -1525,6 +1536,7 @@ Toggle Sidebar
 Toggle status?
 Toilet
 Token Akun WUZAPI
+Token Google tidak valid atau email tidak terverifikasi
 Token NusaTrip kosong
 Token akun pengirim WA. Kosongkan jika tidak diubah.
 Token tidak valid (key angka atau rkey hex dari /hotels/result?...)
@@ -1536,6 +1548,8 @@ Top experiences
 Top stays
 Top stays in
 Topup
+Topup Disetujui
+Topup Ditolak
 Topup History
 Topup Reseller
 Topup Saldo
@@ -1645,6 +1659,7 @@ Yang berubah saat fokus diganti
 Your World of Joy
 add-on gagal: 
 aktif
+alamat email tidak valid
 alert dinotifikasi
 asli
 atau
@@ -1665,6 +1680,7 @@ dengan
 dengan estimasi perjalanan
 detail gagal
 di halaman katalog.
+dikredit ke wallet
 diskon
 diterapkan
 ditolak
@@ -1724,6 +1740,9 @@ ships
 slot
 stays
 tahun melayani pelanggan
+telah dibayar.
+telah disetujui. Saldo bertambah.
+telah ditolak.
 terisi
 terkirim,
 tiket

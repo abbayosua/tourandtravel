@@ -16,7 +16,6 @@ Buka
 Client ID
 Client Secret
 Environment
-Fee
 Ferry
 Frankfurter API
 Gagal. Coba lagi.
@@ -47,7 +46,6 @@ TravelPoints
 Tripay
 URL
 USD ($)
-Virtual Account
 ada 5 paket
 ada :n paket
 id-ID
