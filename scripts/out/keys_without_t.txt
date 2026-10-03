@@ -1,40 +1,54 @@
+) + (rooms > 1 ?
++ I18N.t(
++ rooms +
 4.9 • 2M+
+<i class=
+></i>
 API Key
 Account ID
 Auto
+Berhasil! Cek email Anda.
 Booking.com
+Buka
 Client ID
 Client Secret
 Environment
 Fee
 Ferry
 Frankfurter API
+Gagal. Coba lagi.
 IDR
 IDR (Rp)
 JPG/PNG/WebP, maks 5MB
 KlookCash
+Kode promo tidak valid
 Loading...
 MRS
+Masukkan kode promo
 Menu
 Midtrans Snap
 NOW() AND (stock_limit IS NULL OR sold_count
 NusaTrip
 OYO
+Open
 PELNI
 Pengaturan Singapay (Virtual Account)
 Production
 Refund
-Rp ' + promoDiscount.toLocaleString('id-ID') + '
 Rp 0
 SGD (S$)
 Sandbox
 Singapay (VA)
 Tab
+Terjadi kesalahan. Coba lagi nanti.
 Test.php — berisi satu atau lebih fungsi
  *   function test
 Tripay
 URL
 USD ($)
 Virtual Account
+ada 5 paket
+ada :n paket
+id-ID
 · #
 · Webhook Singapay:

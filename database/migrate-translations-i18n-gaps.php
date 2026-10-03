@@ -598,3 +598,32 @@ foreach ($priceAlertExtra as $lang => $dict) {
     }
 }
 echo "Upserted $paCount price-alert notification rows.\n";
+
+// ---- JS i18n (promo result, newsletter toast, upload hint) ----
+$jsExtra = [
+    'en' => [
+        'Berhasil! Cek email Anda.' => 'Success! Check your email.',
+        'Gagal. Coba lagi.' => 'Failed. Try again.',
+        'Diskon:' => 'Discount:',
+        'Kode promo tidak valid' => 'Invalid promo code',
+        'Kode promo tidak berlaku' => 'Promo code not applicable',
+        'JPG/PNG/WebP, maks 5MB' => 'JPG/PNG/WebP, max 5MB',
+    ],
+    'zh' => [
+        'Berhasil! Cek email Anda.' => '成功！请查看您的邮箱。',
+        'Gagal. Coba lagi.' => '失败，请重试。',
+        'Diskon:' => '折扣：',
+        'Kode promo tidak valid' => '优惠码无效',
+        'Kode promo tidak berlaku' => '优惠码不适用',
+        'JPG/PNG/WebP, maks 5MB' => 'JPG/PNG/WebP，最大 5MB',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$jsCount = 0;
+foreach ($jsExtra as $lang => $dict) {
+    foreach ($dict as $key => $value) {
+        $stmt->execute([$key, $lang, $value]);
+        $jsCount++;
+    }
+}
+echo "Upserted $jsCount JS i18n rows.\n";

@@ -948,7 +948,7 @@ require_once 'includes/header-shared.php';
                                 var result = document.getElementById('promoResultTour');
                                 if (!input || !result) return;
                                 var code = input.value.trim();
-                                if (!code) { result.textContent = 'Masukkan kode promo'; return; }
+                                if (!code) { result.textContent = I18N.t('Masukkan kode promo'); return; }
                                 fetch('apply-promo-ajax.php', {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -959,16 +959,16 @@ require_once 'includes/header-shared.php';
                                     if (d.success) {
                                         promoDiscount = parseFloat(d.discount) || 0;
                                         result.innerHTML = '<i class="bi bi-check-circle-fill text-success me-1"></i>' + d.message +
-                                            ' Diskon: <strong>Rp ' + promoDiscount.toLocaleString((window.I18N && window.I18N.locale) || 'id-ID') + '</strong>';
+                                            ' ' + I18N.t('Diskon:') + ' <strong>Rp ' + promoDiscount.toLocaleString((window.I18N && window.I18N.locale) || 'id-ID') + '</strong>';
                                         result.className = 'klook-promo-result small mt-1 text-success';
                                     } else {
                                         promoDiscount = 0;
-                                        result.innerHTML = '<i class="bi bi-x-circle-fill text-danger me-1"></i>' + (d.message || 'Kode promo tidak valid');
+                                        result.innerHTML = '<i class="bi bi-x-circle-fill text-danger me-1"></i>' + (d.message || I18N.t('Kode promo tidak valid'));
                                         result.className = 'klook-promo-result small mt-1 text-danger';
                                     }
                                     recalc();
                                 })
-                                .catch(function () { result.textContent = 'Terjadi kesalahan. Coba lagi nanti.'; });
+                                .catch(function () { result.textContent = I18N.t('Terjadi kesalahan. Coba lagi nanti.'); });
                             };
                             if (baseEl) baseEl.addEventListener('change', recalc);
                             if (paxEl) paxEl.addEventListener('input', recalc);

@@ -95,7 +95,7 @@ require_once 'includes/header-shared.php';
                             <div class="mb-3">
                                 <label class="form-label small fw-semibold"><?= t('Bukti Transfer (opsional)') ?></label>
                                 <input type="file" name="proof" class="form-control" accept="image/jpeg,image/png,image/webp">
-                                <div class="form-text">JPG/PNG/WebP, maks 5MB</div>
+                                <div class="form-text"><?= t('JPG/PNG/WebP, maks 5MB') ?></div>
                             </div>
                             <button type="submit" class="btn btn-primary fw-semibold"><?= t('Kirim Permintaan Topup') ?></button>
                         </form>

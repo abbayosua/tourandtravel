@@ -152,6 +152,20 @@ test.describe('i18n language toggle', () => {
     }
   });
 
+  // Pesan interaktif (toast/error) di tour-detail harus ikut bahasa aktif.
+  test('pesan promo tour-detail mengikuti bahasa', async ({ page }) => {
+    const slug = '8d7n-shanghai-jiangnan-highlights-ink-wash-jiangnan-wuzhen-water-town';
+    const expected: Record<string, string> = { en: 'Enter a promo code', zh: '输入优惠码' };
+    for (const [lang, phrase] of Object.entries(expected)) {
+      await page.goto(`${BASE}/tour-detail.php?slug=${slug}&lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await page.waitForTimeout(400);
+      await page.locator('.klook-promo-btn').first().click();
+      await expect(page.locator('#promoResultTour')).toContainText(phrase);
+      await expect(page.locator('#promoResultTour')).not.toContainText('Masukkan kode promo');
+    }
+  });
+
   for (const lang of ['en', 'zh']) {
     test(`tidak ada sisa teks Indonesia saat bahasa=${lang}`, async ({ page }) => {
       test.setTimeout(180_000);

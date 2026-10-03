@@ -3,6 +3,7 @@
 "Pertama kali ke China, awalnya khawatir tapi ternyata lancar semua. Guide lokalnya speak Indonesian,很棒!"
 $ (USD)
 %d tour berhasil diatur ke bahasa %s
+%s sekarang %s (target: %s)
 + Tambah
 , saldo Anda 
 -- Pilih --
@@ -504,6 +505,7 @@ Harga Termahal
 Harga Termurah
 Harga Tertinggi
 Harga Transparan
+Harga Turun! 🎉
 Harga harus diisi
 Harga mulai dari — per malam
 Harga mulai dari — per penumpang, one way
