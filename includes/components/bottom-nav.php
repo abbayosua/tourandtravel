@@ -19,7 +19,7 @@ $bottomNavItems = [
     ['icon' => 'bi-person', 'label' => 'Akun', 'url' => isLoggedIn() ? 'profile.php' : 'login.php', 'pages' => ['profile.php', 'login.php', 'register.php', 'forgot-password.php', 'reset-password.php', 'my-points.php', 'my-coupons.php', 'my-alerts.php', 'my-profiles.php', 'notifications.php', 'referral.php']],
 ];
 ?>
-<nav class="bottom-nav" aria-label="Bottom Navigation">
+<nav class="bottom-nav" aria-label="<?= e(t('Navigasi Bawah')) ?>">
     <?php foreach ($bottomNavItems as $item): ?>
     <a href="<?= e($item['url']) ?>" class="<?= in_array($currentPage, $item['pages']) ? 'active' : '' ?>">
         <i class="bi <?= $item['icon'] ?>"></i>

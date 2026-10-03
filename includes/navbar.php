@@ -27,7 +27,7 @@ $navTabs = array_values(array_filter($voyageMenus, fn($m) => !empty($m['show_in_
 $navMenuItems = array_values(array_filter($voyageMenus, fn($m) => !empty($m['show_in_menu'])));
 ?>
 <div class="voyage-nav-wrap">
-<nav id="navbarNav" class="voyage-nav" aria-label="Main">
+<nav id="navbarNav" class="voyage-nav" aria-label="<?= e(t('Menu Utama')) ?>">
     <?php $navLogo = function_exists('siteLogoUrl') ? siteLogoUrl() : ''; ?>
     <a class="voyage-brand" href="<?= BASE_URL ?>/" data-testid="brand-nav"><?php if ($navLogo): ?><img src="<?= e($navLogo) ?>" alt="<?= e(siteName()) ?>" style="height:28px;width:auto" data-testid="brand-logo"><?php else: ?><span class="voyage-brand-dot"></span><?php endif; ?><?= e(siteName()) ?></a>
     <div class="voyage-tabs">

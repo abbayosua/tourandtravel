@@ -1215,6 +1215,21 @@ test.describe('i18n bottom nav (mobile)', () => {
       for (const l of labels) await expect(nav).toContainText(l);
     }
   });
+
+  // aria-label landmark dulu hardcoded Inggris.
+  test('label landmark navigasi mengikuti bahasa', async ({ page }) => {
+    const expected: Record<string, { main: string; bottom: string }> = {
+      en: { main: 'Main Menu', bottom: 'Bottom Navigation' },
+      zh: { main: '主菜单', bottom: '底部导航' },
+    };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.goto(`${BASE}/index.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('#navbarNav')).toHaveAttribute('aria-label', label.main);
+      await expect(page.locator('.bottom-nav')).toHaveAttribute('aria-label', label.bottom);
+    }
+  });
 });
 
 test.describe('i18n document title', () => {
