@@ -237,7 +237,7 @@ require_once __DIR__ . '/includes/admin-header.php';
                         <td><small class="text-muted"><?= formatDate($r['created_at']) ?></small></td>
                         <td class="text-end">
                             <?php if ($r['status'] === 'pending'): ?>
-                                <a href="payments.php?expire=<?= (int)$r['id'] ?>" class="btn btn-sm btn-outline-secondary"><?= t('Tandai Kedaluwarsa') ?></a>
+                                <a href="payments.php?expire=<?= (int)$r['id'] ?>" class="btn btn-sm btn-outline-secondary" onclick="return confirm('<?= t('Tandai pembayaran ini kedaluwarsa?') ?>')"><?= t('Tandai Kedaluwarsa') ?></a>
                             <?php else: ?>
                                 -
                             <?php endif; ?>
