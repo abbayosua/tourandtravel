@@ -851,6 +851,15 @@ test.describe('i18n tour detail notes', () => {
       await expect(page.locator('body')).not.toContainText('Catatan Penting');
     }
   });
+
+  // Akomodasi itinerary (itineraries.accommodation_zh) dulu kosong → tampil Inggris di zh.
+  test('akomodasi itinerary mengikuti bahasa', async ({ page }) => {
+    const slug = '8d7n-shanghai-jiangnan-highlights-ink-wash-jiangnan-wuzhen-water-town';
+    await page.goto(`${BASE}/tour-detail.php?slug=${slug}&lang=zh`);
+    await page.waitForLoadState('domcontentloaded');
+    await expect(page.locator('body')).toContainText('4-5星酒店（上海）');
+    await expect(page.locator('body')).not.toContainText('Hotel 4-5* (Shanghai)');
+  });
 });
 test.describe('i18n itinerary builder tour-detail', () => {
   // Tombol "Buat Itinerary" + placeholder aktivitas dulu punya nilai en identity (tetap ID).
