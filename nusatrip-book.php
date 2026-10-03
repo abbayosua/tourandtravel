@@ -213,8 +213,8 @@ require_once 'includes/header-shared.php';
         <h6 class="fw-semibold"><?= t('Data Tamu') ?></h6>
         <div class="row g-2 mb-3">
             <div class="col-3"><select name="title" class="form-select"><option>MR</option><option>MRS</option><option>MS</option></select></div>
-            <div class="col-4"><input name="first_name" class="form-control" placeholder="Nama depan" required></div>
-            <div class="col-5"><input name="last_name" class="form-control" placeholder="Nama belakang" required></div>
+            <div class="col-4"><input name="first_name" class="form-control" placeholder="<?= e(t('Nama depan')) ?>" required></div>
+            <div class="col-5"><input name="last_name" class="form-control" placeholder="<?= e(t('Nama belakang')) ?>" required></div>
             <div class="col-6"><input name="email" type="email" class="form-control" placeholder="Email" required></div>
             <div class="col-6">
                 <label class="form-label small text-muted mb-1"><?= t('Nomor HP (pilih kode negara, tulis nomor lokal saja)') ?></label>
@@ -234,7 +234,7 @@ require_once 'includes/header-shared.php';
             <div class="form-check"><input class="form-check-input" type="radio" name="pay_method" value="cc" id="pmCC" checked>
             <label class="form-check-label" for="pmCC"><?= t('Kartu Kredit / Debit') ?></label></div>
             <div class="row g-2 mt-1 mb-2">
-                <div class="col-6"><input name="card_no" class="form-control" placeholder="Nomor kartu" inputmode="numeric"></div>
+                <div class="col-6"><input name="card_no" class="form-control" placeholder="<?= e(t('Nomor kartu')) ?>" inputmode="numeric"></div>
                 <div class="col-3"><input name="card_exp" class="form-control" placeholder="MMYY" inputmode="numeric"></div>
                 <div class="col-3"><input name="card_cvv" class="form-control" placeholder="CVV" inputmode="numeric"></div>
             </div>

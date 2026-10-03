@@ -389,7 +389,7 @@ require_once 'includes/admin-header.php';
                 </div>
                 <div class="col-md-2">
                     <label class="form-label small"><?= t('Makan') ?> (ID)</label>
-                    <input type="text" name="meals" class="form-control form-control-sm" placeholder="Sarapan, makan siang">
+                    <input type="text" name="meals" class="form-control form-control-sm" placeholder="<?= e(t('Sarapan, makan siang')) ?>">
                     <input type="text" name="meals_en" class="form-control form-control-sm mt-1" placeholder="Meals (EN)">
                     <input type="text" name="meals_zh" class="form-control form-control-sm mt-1" placeholder="餐饮 (中文)">
                 </div>

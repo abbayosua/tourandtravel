@@ -395,6 +395,14 @@ test.describe('i18n admin editor tour', () => {
       await expect(page.locator('body')).toContainText(label);
     }
   });
+
+  // Placeholder input meals dulu hardcoded Indonesia.
+  test('placeholder editor tour mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    await page.goto(`${BASE}/admin/tour-edit.php?id=63&lang=zh`);
+    await page.waitForLoadState('domcontentloaded');
+    await expect(page.locator('input[name="meals"]')).toHaveAttribute('placeholder', '早餐、午餐');
+  });
 });
 
 test.describe('i18n admin pengeluaran', () => {
