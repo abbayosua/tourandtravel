@@ -123,7 +123,7 @@
             <i class="bi bi-airplane-engines-fill"></i> <?= t('Admin Panel') ?>
         </a>
         <div class="d-flex align-items-center ms-auto">
-            <button id="adminThemeToggle" class="voyage-icon-btn me-2" title="Theme"><i class="bi bi-moon-stars"></i></button>
+            <button id="adminThemeToggle" class="voyage-icon-btn me-2" title="<?= e(t('Tema')) ?>"><i class="bi bi-moon-stars"></i></button>
             <span class="admin-user me-3 small"><?= e($_SESSION['admin_username']) ?></span>
             <a href="logout.php" class="btn-voyage-ghost"><?= t('Logout') ?></a>
         </div>

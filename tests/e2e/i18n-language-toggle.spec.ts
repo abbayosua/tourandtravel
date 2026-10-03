@@ -381,6 +381,17 @@ test.describe('i18n admin dashboard', () => {
       await expect(page.locator('body')).toContainText(label);
     }
   });
+
+  // title tombol tema admin dulu hardcoded Inggris.
+  test('tombol tema admin mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    const expected: Record<string, string> = { en: 'Theme', zh: '主题' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/admin/dashboard.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('#adminThemeToggle')).toHaveAttribute('title', label);
+    }
+  });
 });
 
 test.describe('i18n admin bookings', () => {
