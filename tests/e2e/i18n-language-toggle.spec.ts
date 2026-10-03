@@ -487,6 +487,18 @@ test.describe('i18n admin flash sales', () => {
       await expect(page.locator('body')).toContainText(label);
     }
   });
+
+  // 'Mulai' = waktu mulai flash sale harus "Start", bukan "From" (key lama dipakai ganda).
+  test('header waktu flash sale memakai label start/end', async ({ page }) => {
+    await adminLogin(page);
+    const expected: Record<string, string> = { id: 'Mulai', en: 'Start', zh: '开始' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/admin/flash-sales.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('thead')).toContainText(label);
+      if (lang !== 'id') await expect(page.locator('thead')).not.toContainText('Mulai');
+    }
+  });
 });
 
 test.describe('i18n admin email log', () => {

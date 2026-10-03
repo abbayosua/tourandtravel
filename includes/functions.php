@@ -465,7 +465,7 @@ function getJsI18nKeys() {
         'Kode promo tidak valid',
         'Diskon:',
         'Kategori',
-        'Mulai',
+        'Mulai dari',
         'Memproses...',
         'Mencari...',
         'Tidak ada hasil ditemukan',

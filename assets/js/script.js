@@ -84,7 +84,7 @@ function initSearchAutocomplete(inputId, dropdownId) {
                         } else {
                             url = 'tour-detail.php?slug=' + item.slug;
                             icon = 'bi-geo-alt';
-                            label2 = I18N.t('Mulai') + ' ' + (item.price ? 'Rp' + Number(item.price).toLocaleString(I18N.locale) : '-');
+                            label2 = I18N.t('Mulai dari') + ' ' + (item.price ? 'Rp' + Number(item.price).toLocaleString(I18N.locale) : '-');
                         }
                         html += '<a href="' + url + '" class="search-item">' +
                             '<div class="search-icon bg-light text-primary"><i class="bi ' + icon + '"></i></div>' +
