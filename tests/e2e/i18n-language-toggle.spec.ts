@@ -1,4 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
+import { execFileSync } from 'child_process';
 
 /**
  * Regresi i18n: setiap halaman publik harus benar-benar berganti bahasa.
@@ -146,6 +147,82 @@ test.describe('i18n language toggle', () => {
       const failures: string[] = [];
 
       for (const path of PAGES) {
+        await page.goto(withLang(path, 'id'));
+        await page.waitForLoadState('domcontentloaded');
+        await page.waitForTimeout(300);
+        const idStrings = await visibleStrings(page);
+
+        await page.goto(withLang(path, lang));
+        await page.waitForLoadState('domcontentloaded');
+        await page.waitForTimeout(300);
+        const otherStrings = await visibleStrings(page);
+
+        const leaked = leakedStrings(idStrings, otherStrings);
+        if (leaked.length) failures.push(`${path}:\n  - ${leaked.join('\n  - ')}`);
+      }
+
+      expect(failures, `Teks Indonesia bocor di bahasa ${lang}:\n${failures.join('\n')}`).toEqual([]);
+    });
+  }
+});
+
+// ---- Halaman akun (perlu login) ----
+const AUTH_EMAIL = 'i18ncheck@t.local';
+const AUTH_PASS = 'tmpcheck123';
+
+// Halaman yang butuh sesi login.
+const AUTH_PAGES = [
+  'my-bookings.php',
+  'profile.php',
+  'wallet.php',
+  'my-points.php',
+  'wishlist.php',
+  'referral.php',
+  'my-coupons.php',
+  'my-itinerary.php',
+  'notifications.php',
+  'my-alerts.php',
+  'my-profiles.php',
+];
+
+function mysql(sql: string): string {
+  return execFileSync('mysql', ['-uroot', 'tourandtravel', '-N', '-B', '-e', sql], { encoding: 'utf8' }).trim();
+}
+
+async function login(page: Page) {
+  await page.goto(`${BASE}/login.php`);
+  await page.fill('input[name="email"]', AUTH_EMAIL);
+  await page.fill('input[name="password"]', AUTH_PASS);
+  await Promise.all([page.waitForLoadState('domcontentloaded'), page.click('button[type="submit"]')]);
+  await page.waitForLoadState('domcontentloaded');
+}
+
+test.describe('i18n halaman akun', () => {
+  test.beforeAll(() => {
+    const hash = execFileSync('php', ['-r', `echo password_hash(${JSON.stringify(AUTH_PASS)}, PASSWORD_DEFAULT);`], {
+      encoding: 'utf8',
+    }).trim();
+    mysql(
+      `INSERT INTO users (name, email, password_hash, role) VALUES ('I18N Checker', '${AUTH_EMAIL}', '${hash}', 'user') ` +
+        `ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash)`
+    );
+  });
+
+  test.afterAll(() => {
+    try {
+      mysql(`DELETE FROM users WHERE email = '${AUTH_EMAIL}'`);
+    } catch {
+      // abaikan: user mungkin masih direferensikan baris lain
+    }
+  });
+
+  for (const lang of ['en', 'zh']) {
+    test(`halaman akun bersih dari teks Indonesia saat bahasa=${lang}`, async ({ page }) => {
+      test.setTimeout(180_000);
+      await login(page);
+      const failures: string[] = [];
+
+      for (const path of AUTH_PAGES) {
         await page.goto(withLang(path, 'id'));
         await page.waitForLoadState('domcontentloaded');
         await page.waitForTimeout(300);
