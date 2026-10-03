@@ -70,9 +70,9 @@ require_once 'includes/header-shared.php';
             <div class="card-body p-4">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <small class="text-white-50"><?= t('Saldo TravelPoints') ?></small>
+                        <small class="text-white"><?= t('Saldo TravelPoints') ?></small>
                         <div class="text-white fs-2 fw-bold"><?= formatRupiah($balance) ?></div>
-                        <small class="text-white-50"><?= t('Gunakan untuk potongan booking berikutnya') ?></small>
+                        <small class="text-white"><?= t('Gunakan untuk potongan booking berikutnya') ?></small>
                     </div>
                     <div class="text-white text-center">
                         <i class="bi bi-coin display-4"></i>
@@ -93,14 +93,14 @@ require_once 'includes/header-shared.php';
             <div class="card-body p-4">
                 <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                     <div>
-                        <small class="text-white-50"><?= t('Saldo Points') ?></small>
+                        <small class="text-white"><?= t('Saldo Points') ?></small>
                         <div class="text-white fs-2 fw-bold" data-testid="points-balance"><?= number_format($pointsBalance) ?></div>
-                        <small class="text-white-50"><?= t('1 point = Rp 100 · diperoleh dari booking yang dibayar') ?></small>
+                        <small class="text-white"><?= t('1 point = Rp 100 · diperoleh dari booking yang dibayar') ?></small>
                     </div>
                     <form method="POST" action="?tab=points" class="d-flex gap-2 align-items-end" data-testid="redeem-form" onsubmit="return confirm('<?= t('Tukar points menjadi TravelPoints? Penukaran tidak dapat dibatalkan.') ?>')">
                         <input type="hidden" name="redeem_points" value="1">
                         <div>
-                            <label class="form-label small text-white-50 mb-0"><?= t('Tukar points') ?></label>
+                            <label class="form-label small text-white mb-0"><?= t('Tukar points') ?></label>
                             <input type="number" name="points" class="form-control form-control-sm" min="100" step="100" value="100" style="width:120px;">
                         </div>
                         <button type="submit" class="btn btn-light btn-sm" data-testid="redeem-btn"><?= t('Tukar') ?></button>
@@ -115,9 +115,9 @@ require_once 'includes/header-shared.php';
             <div class="card-body p-4">
                 <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                     <div>
-                        <small class="text-white-50"><?= t('Saldo Reseller') ?></small>
+                        <small class="text-white"><?= t('Saldo Reseller') ?></small>
                         <div class="text-white fs-2 fw-bold" data-testid="reseller-balance"><?= formatRupiah(getResellerBalance($userId)) ?></div>
-                        <small class="text-white-50"><?= t('Untuk booking paket wisata dengan harga reseller') ?></small>
+                        <small class="text-white"><?= t('Untuk booking paket wisata dengan harga reseller') ?></small>
                     </div>
                     <a href="reseller-topup.php" class="btn btn-light btn-sm fw-semibold"><i class="bi bi-plus-circle me-1"></i><?= t('Topup') ?></a>
                 </div>

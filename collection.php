@@ -62,9 +62,9 @@ require_once 'includes/header-shared.php';
                 <div class="container py-4">
                     <h3 class="fw-bold text-white mb-1"><?= e(t($collection['name'])) ?></h3>
                     <?php if ($collection['description']): ?>
-                        <p class="text-white-50 mb-0"><?= e(t($collection['description'])) ?></p>
+                        <p class="text-white mb-0"><?= e(t($collection['description'])) ?></p>
                     <?php endif; ?>
-                    <small class="text-white-50"><?= count($tours) ?> <?= t('tour') ?></small>
+                    <small class="text-white"><?= count($tours) ?> <?= t('tour') ?></small>
                 </div>
             </div>
         </div>

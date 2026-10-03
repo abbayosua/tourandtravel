@@ -57,7 +57,7 @@ require_once 'includes/header-shared.php';
                 <div class="row align-items-center">
                     <div class="col-md-8">
                         <h5 class="fw-bold text-white mb-1"><?= t('Ajak Teman, Dapatkan TravelPoints!') ?></h5>
-                        <p class="text-white-50 small mb-2"><?= t('Bagikan link di bawah — Anda & teman dapat reward Rp50.000 saat teman berhasil daftar.') ?></p>
+                        <p class="text-white small mb-2"><?= t('Bagikan link di bawah — Anda & teman dapat reward Rp50.000 saat teman berhasil daftar.') ?></p>
                         <div class="input-group">
                             <input type="text" class="form-control" id="refLinkInput" value="<?= e($refLink) ?>" readonly>
                             <button class="btn btn-light" type="button" onclick="navigator.clipboard.writeText(document.getElementById('refLinkInput').value);this.textContent='<?= t('✓ Disalin!') ?>';setTimeout(()=>this.textContent='<?= t('Salin') ?>',1500);"><?= t('Salin') ?></button>
@@ -66,7 +66,7 @@ require_once 'includes/header-shared.php';
                     <div class="col-md-4 text-center text-white">
                         <div class="fs-1"><i class="bi bi-gift"></i></div>
                         <div class="fs-3 fw-bold"><?= formatRupiah(50000) ?></div>
-                        <small class="text-white-50"><?= t('per referral') ?></small>
+                        <small class="text-white"><?= t('per referral') ?></small>
                     </div>
                 </div>
             </div>
