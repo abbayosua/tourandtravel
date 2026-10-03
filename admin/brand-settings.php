@@ -18,6 +18,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_brand'])) {
     } else {
         setSetting('site_name', $name);
         setSetting('site_tagline', mb_substr($tagline, 0, 120));
+        foreach (['instagram', 'facebook', 'youtube', 'tiktok'] as $sn) {
+            setSetting('social_' . $sn, trim((string)($_POST['social_' . $sn] ?? '')));
+        }
         if (!empty($_POST['remove_logo'])) {
             setSetting('site_logo', '');
             $message = t('Nama tersimpan, logo dihapus');
@@ -39,6 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_brand'])) {
 
 $siteName = siteName();
 $siteTagline = (string)getSetting('site_tagline', '');
+$social = [];
+foreach (['instagram', 'facebook', 'youtube', 'tiktok'] as $sn) { $social[$sn] = (string)getSetting('social_' . $sn, ''); }
 $logoUrl = function_exists('siteLogoUrl') ? siteLogoUrl() : '';
 $pageTitle = t('Brand & Logo');
 require_once 'includes/admin-header.php';
@@ -60,6 +65,13 @@ require_once 'includes/admin-header.php';
                 <div class="mb-3">
                     <label class="form-label"><?= t('Tagline (opsional)') ?></label>
                     <input name="site_tagline" class="form-control" maxlength="120" value="<?= e($siteTagline) ?>" placeholder="Your World of Joy" data-testid="brand-tagline">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><?= t('Media Sosial') ?></label>
+                    <?php foreach (['instagram' => 'Instagram', 'facebook' => 'Facebook', 'youtube' => 'YouTube', 'tiktok' => 'TikTok'] as $sn => $snLabel): ?>
+                    <input name="social_<?= $sn ?>" class="form-control form-control-sm mb-1" type="url" value="<?= e($social[$sn]) ?>" placeholder="<?= $snLabel ?> URL" data-testid="brand-social-<?= $sn ?>">
+                    <?php endforeach; ?>
+                    <div class="form-text"><?= t('Kosongkan untuk menyembunyikan.') ?></div>
                 </div>
                 <div class="mb-3">
                     <label class="form-label"><?= t('Logo (JPG/PNG/WebP, maks 2MB)') ?></label>

@@ -1142,27 +1142,29 @@ test.describe('i18n admin settings sweep', () => {
 
 test.describe('i18n admin list chrome', () => {
   // Header tabel daftar admin harus ikut bahasa (chrome, bukan data).
-  const PAGES = [
-    'admin/attractions.php',
-    'admin/esim.php',
-    'admin/collections.php',
-    'admin/faq-category.php',
-    'admin/faq.php',
-    'admin/trains.php',
-    'admin/transfers.php',
-    'admin/hotels.php',
-    'admin/flights.php',
-    'admin/ferries.php',
-    'admin/hero-slides.php',
-    'admin/posts.php',
-    'admin/rental-cars.php',
-    'admin/promo-codes.php',
-  ];
+  // Sebagian besar pakai "Actions"/"操作"; hotel-rooms & resellers pakai "Name"/"姓名".
+  const PAGES: Record<string, { en: string; zh: string }> = {
+    'admin/attractions.php': { en: 'Actions', zh: '操作' },
+    'admin/esim.php': { en: 'Actions', zh: '操作' },
+    'admin/collections.php': { en: 'Actions', zh: '操作' },
+    'admin/faq-category.php': { en: 'Actions', zh: '操作' },
+    'admin/faq.php': { en: 'Actions', zh: '操作' },
+    'admin/trains.php': { en: 'Actions', zh: '操作' },
+    'admin/transfers.php': { en: 'Actions', zh: '操作' },
+    'admin/hotels.php': { en: 'Actions', zh: '操作' },
+    'admin/flights.php': { en: 'Actions', zh: '操作' },
+    'admin/ferries.php': { en: 'Actions', zh: '操作' },
+    'admin/hero-slides.php': { en: 'Actions', zh: '操作' },
+    'admin/posts.php': { en: 'Actions', zh: '操作' },
+    'admin/rental-cars.php': { en: 'Actions', zh: '操作' },
+    'admin/promo-codes.php': { en: 'Actions', zh: '操作' },
+    'admin/hotel-rooms.php': { en: 'Name', zh: '姓名' },
+    'admin/resellers.php': { en: 'Name', zh: '姓名' },
+  };
   test('header tabel daftar admin mengikuti bahasa', async ({ page }) => {
     await adminLogin(page);
-    const expected: Record<string, string> = { en: 'Actions', zh: '操作' };
-    for (const [lang, label] of Object.entries(expected)) {
-      for (const path of PAGES) {
+    for (const [path, expected] of Object.entries(PAGES)) {
+      for (const [lang, label] of Object.entries(expected)) {
         await page.goto(`${BASE}/${path}?lang=${lang}`);
         await page.waitForLoadState('domcontentloaded');
         await expect(page.locator('table thead').first()).toContainText(label);
