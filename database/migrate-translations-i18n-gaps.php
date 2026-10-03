@@ -1391,3 +1391,33 @@ $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, 
 $c18 = 0;
 foreach ($adminWa as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c18++; } }
 echo "Upserted $c18 admin wa-settings rows.\n";
+
+// ---- Admin nav menus ----
+$adminNavMenus = [
+    'en' => [
+        'Status diubah' => 'Status changed',
+        'Label dan URL wajib diisi' => 'Label and URL are required',
+        'Atur menu yang muncul di SELURUH header website (tab + menu mobile).' => 'Manage menus shown across the whole website header (tabs + mobile menu).',
+        'Tambah Menu' => 'Add Menu',
+        'Ikon' => 'Icon',
+        'Match key' => 'Match key',
+        'Tab' => 'Tab',
+    ],
+    'zh' => [
+        'Status diubah' => '状态已更改',
+        'Label dan URL wajib diisi' => '标签和 URL 为必填',
+        'Atur menu yang muncul di SELURUH header website (tab + menu mobile).' => '管理在网站页眉中显示的菜单（标签页 + 移动端菜单）。',
+        'Tambah Menu' => '添加菜单',
+        'Edit' => '编辑',
+        'Menu' => '菜单',
+        'Label' => '标签',
+        'Ikon' => '图标',
+        'Match key' => '匹配键',
+        'Tab' => '标签页',
+        'Status' => '状态',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$c19 = 0;
+foreach ($adminNavMenus as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c19++; } }
+echo "Upserted $c19 admin nav-menus rows.\n";

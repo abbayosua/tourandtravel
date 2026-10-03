@@ -488,3 +488,15 @@ test.describe('i18n admin WA settings', () => {
     }
   });
 });
+
+test.describe('i18n admin nav menus', () => {
+  test('label menu navigasi mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    const expected: Record<string, string> = { id: 'Tambah Menu', en: 'Add Menu', zh: '添加菜单' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/admin/nav-menus.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('body')).toContainText(label);
+    }
+  });
+});
