@@ -181,7 +181,7 @@ $faqCategories = [
     ['name' => 'Umum', 'sort_order' => 1],
     ['name' => 'Pembayaran', 'sort_order' => 2],
     ['name' => 'Pembatalan & Refund', 'sort_order' => 3],
-    ['name' => 'KlookCash', 'sort_order' => 4],
+    ['name' => 'TravelPoints', 'sort_order' => 4],
 ];
 $catIds = [];
 foreach ($faqCategories as $fc) {
@@ -200,13 +200,13 @@ foreach ($faqCategories as $fc) {
 }
 $faqItems = [
     ['cat' => 'Umum', 'q' => 'Bagaimana cara memesan tour?', 'a' => 'Pilih tour yang diinginkan, tentukan tanggal dan jumlah peserta, lalu isi form pemesanan. Setelah pembayaran, Anda akan menerima konfirmasi via email dan WhatsApp.'],
-    ['cat' => 'Umum', 'q' => 'Apakah perlu akun untuk booking?', 'a' => 'Tidak wajib. Anda dapat melakukan pemesanan sebagai tamu, namun kami sarankan membuat akun agar dapat melacak booking dan mendapatkan KlookCash.'],
+    ['cat' => 'Umum', 'q' => 'Apakah perlu akun untuk booking?', 'a' => 'Tidak wajib. Anda dapat melakukan pemesanan sebagai tamu, namun kami sarankan membuat akun agar dapat melacak booking dan mendapatkan TravelPoints.'],
     ['cat' => 'Pembayaran', 'q' => 'Metode pembayaran apa saja yang tersedia?', 'a' => 'Kami menerima transfer bank, virtual account, QRIS, dan pembayaran langsung di lokasi untuk beberapa produk.'],
     ['cat' => 'Pembayaran', 'q' => 'Apakah bisa membayar di tempat?', 'a' => 'Untuk sebagian produk dengan label "Bayar di Lokasi", Anda dapat membayar langsung di venue.'],
     ['cat' => 'Pembatalan & Refund', 'q' => 'Bagaimana kebijakan pembatalan?', 'a' => 'Produk dengan label "Batal Gratis" dapat dibatalkan tanpa biaya sebelum H-1. Produk lain mengikuti kebijakan penyedia.'],
     ['cat' => 'Pembatalan & Refund', 'q' => 'Berapa lama proses refund?', 'a' => 'Refund diproses dalam 3-7 hari kerja setelah pembatalan disetujui, dikembalikan ke metode pembayaran awal.'],
-    ['cat' => 'KlookCash', 'q' => 'Apa itu KlookCash?', 'a' => 'KlookCash adalah saldo reward yang Anda dapatkan sebesar 5% dari setiap booking. Dapat digunakan sebagai pengurang pembayaran transaksi berikutnya.'],
-    ['cat' => 'KlookCash', 'q' => 'Bagaimana cara menggunakan KlookCash?', 'a' => 'Centang opsi "Gunakan KlookCash" pada form pemesanan dan saldo Anda otomatis mengurangi total pembayaran.'],
+    ['cat' => 'TravelPoints', 'q' => 'Apa itu TravelPoints?', 'a' => 'TravelPoints adalah saldo reward yang Anda dapatkan sebesar 5% dari setiap booking. Dapat digunakan sebagai pengurang pembayaran transaksi berikutnya.'],
+    ['cat' => 'TravelPoints', 'q' => 'Bagaimana cara menggunakan TravelPoints?', 'a' => 'Centang opsi "Gunakan TravelPoints" pada form pemesanan dan saldo Anda otomatis mengurangi total pembayaran.'],
 ];
 foreach ($faqItems as $fi) {
     $stmt = db()->prepare("SELECT COUNT(*) FROM faq_items WHERE question = ?");

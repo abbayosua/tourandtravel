@@ -14,7 +14,7 @@ import { execFileSync } from 'child_process';
 const BASE = process.env.E2E_BASE_URL || 'http://localhost/tourandtravel';
 const AUTH_EMAIL = 'e2e-redeem@t.local';
 const AUTH_PASS = 'e2epass123';
-const CONFIRM_TEXT = 'Tukar points menjadi KlookCash? Penukaran tidak dapat dibatalkan.';
+const CONFIRM_TEXT = 'Tukar points menjadi TravelPoints? Penukaran tidak dapat dibatalkan.';
 
 function mysql(sql: string): string {
   return execFileSync('mysql', ['-uroot', 'tourandtravel', '-N', '-B', '-e', sql], { encoding: 'utf8' }).trim();

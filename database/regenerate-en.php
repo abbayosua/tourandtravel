@@ -65,7 +65,7 @@ $manual = [
     // halaman akun
     'Profil Saya' => 'My Profile', 'Profil' => 'Profile', 'Booking Saya' => 'My Bookings',
     'Riwayat Booking' => 'Booking History', 'Wishlist Saya' => 'My Wishlist',
-    'KlookCash Saya' => 'My KlookCash', 'Referral Saya' => 'My Referrals',
+    'TravelPoints Saya' => 'My TravelPoints', 'Referral Saya' => 'My Referrals',
     'Ganti Password' => 'Change Password', 'Simpan Perubahan' => 'Save Changes',
     // status
     'Pending' => 'Pending', 'Dikonfirmasi' => 'Confirmed', 'Dibatalkan' => 'Cancelled',
@@ -306,7 +306,7 @@ $manual = [
     'Data pembayaran diproses langsung oleh payment gateway bersertifikat; kami tidak menyimpan nomor kartu. Akses data internal dibatasi dan dilindungi. Anda dapat meminta perbaikan atau penghapusan data melalui kontak di bawah.' => 'Payments are processed directly by certified gateways; we never store card numbers. Internal access is restricted and protected. You may request correction or deletion via the contact below.',
     'Kontak Privasi' => 'Privacy Contact',
     'Ketentuan Umum Refund' => 'General Refund Terms',
-    'Pengajuan refund hanya berlaku untuk booking berstatus confirmed yang belum digunakan. Dana refund yang disetujui dikreditkan ke saldo wallet (KlookCash) akun Anda.' => 'Refunds apply only to confirmed, unused bookings. Approved refunds are credited to your wallet balance (KlookCash).',
+    'Pengajuan refund hanya berlaku untuk booking berstatus confirmed yang belum digunakan. Dana refund yang disetujui dikreditkan ke saldo wallet (TravelPoints) akun Anda.' => 'Refunds apply only to confirmed, unused bookings. Approved refunds are credited to your wallet balance (TravelPoints).',
     'Besaran Refund Paket Tour' => 'Tour Package Refund Amounts',
     'Waktu Pengajuan' => 'Request Time',
     'H-8 atau lebih sebelum keberangkatan' => '8+ days before departure',

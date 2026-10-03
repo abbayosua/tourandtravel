@@ -13,10 +13,10 @@ require_once __DIR__ . '/../includes/db.php';
 
 $dict = [
     'en' => [
-        'Tukar points menjadi KlookCash? Penukaran tidak dapat dibatalkan.' => 'Convert points to KlookCash? This cannot be undone.',
+        'Tukar points menjadi TravelPoints? Penukaran tidak dapat dibatalkan.' => 'Convert points to TravelPoints? This cannot be undone.',
     ],
     'zh' => [
-        'Tukar points menjadi KlookCash? Penukaran tidak dapat dibatalkan.' => '将积分兑换为 KlookCash？此操作无法撤销。',
+        'Tukar points menjadi TravelPoints? Penukaran tidak dapat dibatalkan.' => '将积分兑换为 TravelPoints？此操作无法撤销。',
     ],
 ];
 

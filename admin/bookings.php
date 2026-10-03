@@ -437,7 +437,7 @@ require_once 'includes/admin-header.php';
                                     <li><a class="dropdown-item text-danger" href="bookings.php?update_status=<?= $b['id'] ?>&status=cancelled&type=<?= $btype ?>"><?= t('Cancelled') ?></a></li>
                                     <?php if ($btype === 'tour' && ($b['refund_status'] ?? 'none') === 'requested'): ?>
                                     <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item text-success fw-bold" href="bookings.php?refund_action=approve&id=<?= $b['id'] ?>&type=tour" data-testid="refund-approve-<?= $b['id'] ?>" onclick="return confirm('<?= t('Setujui refund booking ini? Dana akan dikredit ke KlookCash user.') ?>')"><i class="bi bi-check-circle"></i> <?= t('Setujui Refund') ?></a></li>
+                                    <li><a class="dropdown-item text-success fw-bold" href="bookings.php?refund_action=approve&id=<?= $b['id'] ?>&type=tour" data-testid="refund-approve-<?= $b['id'] ?>" onclick="return confirm('<?= t('Setujui refund booking ini? Dana akan dikredit ke TravelPoints user.') ?>')"><i class="bi bi-check-circle"></i> <?= t('Setujui Refund') ?></a></li>
                                     <li><a class="dropdown-item text-danger" href="bookings.php?refund_action=reject&id=<?= $b['id'] ?>&type=tour" data-testid="refund-reject-<?= $b['id'] ?>" onclick="return confirm('<?= t('Tolak pengajuan refund ini?') ?>')"><i class="bi bi-x-circle"></i> <?= t('Tolak Refund') ?></a></li>
                                     <?php endif; ?>
                                 </ul>

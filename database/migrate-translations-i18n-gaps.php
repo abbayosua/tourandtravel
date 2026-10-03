@@ -258,8 +258,8 @@ $zh = [
         '数据仅在完成订单所必需的范围内有限共享给相关方：服务提供商（航空公司、酒店、旅游运营商）、支付网关和通知发送服务商。',
     'Data pembayaran diproses langsung oleh payment gateway bersertifikat; kami tidak menyimpan nomor kartu. Akses data internal dibatasi dan dilindungi. Anda dapat meminta perbaikan atau penghapusan data melalui kontak di bawah.' =>
         '支付数据由持牌支付网关直接处理；我们不存储卡号。内部数据访问受到限制和保护。您可通过下方联系方式请求更正或删除数据。',
-    'Pengajuan refund hanya berlaku untuk booking berstatus confirmed yang belum digunakan. Dana refund yang disetujui dikreditkan ke saldo wallet (KlookCash) akun Anda.' =>
-        '退款申请仅适用于尚未使用且状态为已确认的订单。获批的退款将存入您账户的钱包余额（KlookCash）。',
+    'Pengajuan refund hanya berlaku untuk booking berstatus confirmed yang belum digunakan. Dana refund yang disetujui dikreditkan ke saldo wallet (TravelPoints) akun Anda.' =>
+        '退款申请仅适用于尚未使用且状态为已确认的订单。获批的退款将存入您账户的钱包余额（TravelPoints）。',
     'Sebagian produk memiliki kebijakan khusus: full_refund (selalu 100%) atau non_refundable (selalu 0%), tercantum di halaman detail produk. Tiket pesawat, hotel, ferry, dan kereta mengikuti kebijakan maskapai/penyedia masing-masing.' =>
         '部分产品有特殊政策：full_refund（始终 100%）或 non_refundable（始终 0%），已标注在产品详情页。机票、酒店、渡轮和火车遵循各航空公司/提供商的政策。',
     'Buka halaman Booking Saya, pilih booking confirmed, klik Minta Refund, dan isi alasan. Tim kami akan meninjau pengajuan maksimal 3x24 jam hari kerja. Status pengajuan (requested / approved / rejected) dapat dipantau di halaman yang sama.' =>
@@ -288,23 +288,23 @@ foreach (['question_en', 'question_zh', 'answer_en', 'answer_zh'] as $col) {
 
 $faqEn = [
     1 => ['How do I book a tour?', 'Choose the tour you want, set the date and number of participants, then fill in the booking form. After payment, you will receive confirmation via email and WhatsApp.'],
-    2 => ['Do I need an account to book?', 'Not required. You can book as a guest, but we recommend creating an account so you can track bookings and earn KlookCash.'],
+    2 => ['Do I need an account to book?', 'Not required. You can book as a guest, but we recommend creating an account so you can track bookings and earn TravelPoints.'],
     3 => ['What payment methods are available?', 'We accept bank transfer, virtual account, QRIS, and on-site payment for selected products.'],
     4 => ['Can I pay on site?', 'For selected products labeled "Pay on Site", you can pay directly at the venue.'],
     5 => ['What is the cancellation policy?', 'Products labeled "Free Cancellation" can be cancelled free of charge before D-1. Other products follow the provider policy.'],
     6 => ['How long does a refund take?', 'Refunds are processed within 3-7 business days after the cancellation is approved, back to the original payment method.'],
-    7 => ['What is KlookCash?', 'KlookCash is reward balance you earn at 5% of every booking. It can be used to offset your next transaction.'],
-    8 => ['How do I use KlookCash?', 'Tick the "Use KlookCash" option on the booking form and your balance will automatically reduce the total payment.'],
+    7 => ['What is TravelPoints?', 'TravelPoints is reward balance you earn at 5% of every booking. It can be used to offset your next transaction.'],
+    8 => ['How do I use TravelPoints?', 'Tick the "Use TravelPoints" option on the booking form and your balance will automatically reduce the total payment.'],
 ];
 $faqZh = [
     1 => ['如何预订旅游？', '选择您想要的旅游线路，确定日期和参加人数，然后填写预订表单。付款后，您将通过电子邮件和 WhatsApp 收到确认。'],
-    2 => ['预订需要账户吗？', '不强制。您可以以访客身份预订，但我们建议创建账户，以便跟踪订单并获得 KlookCash。'],
+    2 => ['预订需要账户吗？', '不强制。您可以以访客身份预订，但我们建议创建账户，以便跟踪订单并获得 TravelPoints。'],
     3 => ['有哪些付款方式？', '我们接受银行转账、虚拟账户、QRIS，部分产品支持现场付款。'],
     4 => ['可以现场付款吗？', '对于标注“现场付款”的部分产品，您可以直接在场地付款。'],
     5 => ['取消政策是怎样的？', '标注“免费取消”的产品可在出发前一天（D-1）前免费取消。其他产品遵循提供商政策。'],
     6 => ['退款需要多长时间？', '取消申请获批后，退款将在 3-7 个工作日内按原支付方式退回。'],
-    7 => ['什么是 KlookCash？', 'KlookCash 是您每笔订单可获得 5% 的奖励余额，可用于抵扣下一笔交易的付款。'],
-    8 => ['如何使用 KlookCash？', '在预订表单中勾选“使用 KlookCash”，您的余额将自动抵扣总付款额。'],
+    7 => ['什么是 TravelPoints？', 'TravelPoints 是您每笔订单可获得 5% 的奖励余额，可用于抵扣下一笔交易的付款。'],
+    8 => ['如何使用 TravelPoints？', '在预订表单中勾选“使用 TravelPoints”，您的余额将自动抵扣总付款额。'],
 ];
 
 $faqStmt = db()->prepare("UPDATE faq_items SET question_en = ?, answer_en = ?, question_zh = ?, answer_zh = ? WHERE id = ?");
@@ -496,7 +496,7 @@ $authExtra = [
         'Scan voucher' => 'Scan voucher',
         'Tracking' => 'Tracking',
         'Buka halaman Booking Saya, pilih booking confirmed, klik Minta Refund, dan isi alasan. Tim kami akan meninjau pengajuan maksimal 3x24 jam hari kerja. Status pengajuan (requested / approved / rejected) dapat dipantau di halaman yang sama.' => 'Open My Bookings, pick a confirmed booking, click Request Refund, and fill in the reason. Our team reviews within 3x24 business hours. Track the status (requested / approved / rejected) on the same page.',
-        'Pengajuan refund hanya berlaku untuk booking berstatus confirmed yang belum digunakan. Dana refund yang disetujui dikreditkan ke saldo wallet (KlookCash) akun Anda.' => 'Refund requests apply only to confirmed, unused bookings. Approved refunds are credited to your account wallet balance (KlookCash).',
+        'Pengajuan refund hanya berlaku untuk booking berstatus confirmed yang belum digunakan. Dana refund yang disetujui dikreditkan ke saldo wallet (TravelPoints) akun Anda.' => 'Refund requests apply only to confirmed, unused bookings. Approved refunds are credited to your account wallet balance (TravelPoints).',
     ],
     'zh' => [
         'Poin Saya' => '我的积分',
@@ -565,7 +565,7 @@ $authExtra = [
         'Scan voucher' => '扫描凭证',
         'Tracking' => '追踪',
         'Buka halaman Booking Saya, pilih booking confirmed, klik Minta Refund, dan isi alasan. Tim kami akan meninjau pengajuan maksimal 3x24 jam hari kerja. Status pengajuan (requested / approved / rejected) dapat dipantau di halaman yang sama.' => '打开“我的订单”，选择已确认的订单，点击“申请退款”并填写原因。我们将在最多 3×24 个工作小时内审核。申请状态（requested / approved / rejected）可在同一页面查看。',
-        'Pengajuan refund hanya berlaku untuk booking berstatus confirmed yang belum digunakan. Dana refund yang disetujui dikreditkan ke saldo wallet (KlookCash) akun Anda.' => '退款申请仅适用于尚未使用且状态为已确认的订单。获批的退款将存入您账户的钱包余额（KlookCash）。',
+        'Pengajuan refund hanya berlaku untuk booking berstatus confirmed yang belum digunakan. Dana refund yang disetujui dikreditkan ke saldo wallet (TravelPoints) akun Anda.' => '退款申请仅适用于尚未使用且状态为已确认的订单。获批的退款将存入您账户的钱包余额（TravelPoints）。',
     ],
 ];
 $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
@@ -715,9 +715,9 @@ $errExtra = [
         'Minimal 2 leg untuk perjalanan multi-kota.' => 'At least 2 legs are required for a multi-city trip.',
         'Silakan isi kota asal dan tujuan.' => 'Please enter the origin and destination cities.',
         'Jumlah tidak valid' => 'Invalid amount',
-        'Saldo KlookCash tidak mencukupi' => 'Insufficient KlookCash balance',
-        'Pembayaran menggunakan KlookCash' => 'Payment using KlookCash',
-        'Pembayaran KlookCash berhasil' => 'KlookCash payment successful',
+        'Saldo TravelPoints tidak mencukupi' => 'Insufficient TravelPoints balance',
+        'Pembayaran menggunakan TravelPoints' => 'Payment using TravelPoints',
+        'Pembayaran TravelPoints berhasil' => 'TravelPoints payment successful',
         'Booking tidak ditemukan' => 'Booking not found',
         'Bukan booking Anda' => 'Not your booking',
         'Tidak ada pengajuan refund pending' => 'No pending refund request',
@@ -731,9 +731,9 @@ $errExtra = [
         'Minimal 2 leg untuk perjalanan multi-kota.' => '多城市行程至少需要 2 段。',
         'Silakan isi kota asal dan tujuan.' => '请填写出发城市和目的城市。',
         'Jumlah tidak valid' => '金额无效',
-        'Saldo KlookCash tidak mencukupi' => 'KlookCash 余额不足',
-        'Pembayaran menggunakan KlookCash' => '使用 KlookCash 付款',
-        'Pembayaran KlookCash berhasil' => 'KlookCash 支付成功',
+        'Saldo TravelPoints tidak mencukupi' => 'TravelPoints 余额不足',
+        'Pembayaran menggunakan TravelPoints' => '使用 TravelPoints 付款',
+        'Pembayaran TravelPoints berhasil' => 'TravelPoints 支付成功',
         'Booking tidak ditemukan' => '未找到预订',
         'Bukan booking Anda' => '不是您的预订',
         'Tidak ada pengajuan refund pending' => '没有待处理的退款申请',
@@ -798,7 +798,7 @@ $err3 = [
         'Stasiun tidak ditemukan. Coba: Jakarta Kota, Bandung, Yogyakarta.' => 'Station not found. Try: Jakarta Kota, Bandung, Yogyakarta.',
         'Menunggu persetujuan admin' => 'Awaiting admin approval',
         'Disetujui' => 'Approved',
-        'ke KlookCash' => 'to KlookCash',
+        'ke TravelPoints' => 'to TravelPoints',
         'Ditolak admin' => 'Rejected by admin',
         'Nama wajib diisi' => 'Name is required',
         'Gagal upload file' => 'File upload failed',
@@ -812,7 +812,7 @@ $err3 = [
         'Stasiun tidak ditemukan. Coba: Jakarta Kota, Bandung, Yogyakarta.' => '未找到车站。请尝试：雅加达城区、万隆、日惹。',
         'Menunggu persetujuan admin' => '等待管理员批准',
         'Disetujui' => '已批准',
-        'ke KlookCash' => '至 KlookCash',
+        'ke TravelPoints' => '至 TravelPoints',
         'Ditolak admin' => '管理员已拒绝',
         'Nama wajib diisi' => '请填写姓名',
         'Gagal upload file' => '文件上传失败',
@@ -1023,7 +1023,7 @@ $adminBookings = [
         'Catatan untuk tim (tidak dikirim ke pelanggan email)' => 'Note for the team (not sent to the customer email)',
         'Peserta' => 'Participants',
         'ditolak' => 'Rejected',
-        'Setujui refund booking ini? Dana akan dikredit ke KlookCash user.' => "Approve this booking refund? Funds will be credited to the user's KlookCash.",
+        'Setujui refund booking ini? Dana akan dikredit ke TravelPoints user.' => "Approve this booking refund? Funds will be credited to the user's TravelPoints.",
         'Setujui Refund' => 'Approve Refund',
         'Tolak pengajuan refund ini?' => 'Reject this refund request?',
         'Tolak Refund' => 'Reject Refund',
@@ -1036,7 +1036,7 @@ $adminBookings = [
         'Ubah Status' => '更改状态',
         'Peserta' => '参与者',
         'ditolak' => '已拒绝',
-        'Setujui refund booking ini? Dana akan dikredit ke KlookCash user.' => '批准此订单退款？款项将存入用户的 KlookCash。',
+        'Setujui refund booking ini? Dana akan dikredit ke TravelPoints user.' => '批准此订单退款？款项将存入用户的 TravelPoints。',
         'Setujui Refund' => '批准退款',
         'Tolak pengajuan refund ini?' => '拒绝此退款申请？',
         'Tolak Refund' => '拒绝退款',
@@ -1322,3 +1322,36 @@ $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, 
 $c16 = 0;
 foreach ($adminFlash as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c16++; } }
 echo "Upserted $c16 admin flash-sale rows.\n";
+
+// ---- Admin email log ----
+$adminEmailLog = [
+    'en' => [
+        'Log Email' => 'Email Log',
+        'Resend dari log oleh admin.' => 'Resend from log by admin.',
+        'Email berhasil dikirim ulang.' => 'Email resent successfully.',
+        'Resend gagal — lihat log terbaru.' => 'Resend failed — see the latest log.',
+        'Kepada' => 'To',
+        'Subjek' => 'Subject',
+        'Belum ada log email.' => 'No email logs yet.',
+        'Resend' => 'Resend',
+    ],
+    'zh' => [
+        'Log Email' => '邮件日志',
+        'Resend dari log oleh admin.' => '由管理员从日志重发。',
+        'Email berhasil dikirim ulang.' => '邮件重发成功。',
+        'Resend gagal — lihat log terbaru.' => '重发失败 — 请查看最新日志。',
+        'Status' => '状态',
+        'Event' => '事件',
+        'Filter' => '筛选',
+        'Reset' => '重置',
+        'Kepada' => '收件人',
+        'Subjek' => '主题',
+        'Driver' => '驱动',
+        'Belum ada log email.' => '暂无邮件日志。',
+        'Resend' => '重发',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$c17 = 0;
+foreach ($adminEmailLog as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c17++; } }
+echo "Upserted $c17 admin email-log rows.\n";

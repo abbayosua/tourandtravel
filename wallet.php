@@ -13,7 +13,7 @@ $userId = $_SESSION['user_id'];
 $balance = getWalletBalance($userId);
 require_once 'includes/points.php';
 
-// Redeem points → KlookCash (1 point = Rp 100)
+// Redeem points → TravelPoints (1 point = Rp 100)
 $redeemMsg = '';
 $redeemErr = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['redeem_points'] ?? '') === '1') {
@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['redeem_points'] ?? '') ===
     } elseif (getPointsBalance($userId) < $pts) {
         $redeemErr = t('Saldo points tidak cukup');
     } else {
-        $newBal = redeemPoints($userId, $pts, 'wallet', null, 'Redeem ke KlookCash');
+        $newBal = redeemPoints($userId, $pts, 'wallet', null, 'Redeem ke TravelPoints');
         if ($newBal !== null) {
             addWalletTransaction($userId, $pts * $rate, 'earn', 'Penukaran ' . $pts . ' points');
             $balance = getWalletBalance($userId);
@@ -58,19 +58,19 @@ foreach (getWalletTransactions($userId, 1000) as $t) {
     if (isset($summary[$t['type']])) $summary[$t['type']] += (float)$t['amount'];
 }
 
-$pageTitle = t('KlookCash Saya');
+$pageTitle = t('TravelPoints Saya');
 require_once 'includes/header-shared.php';
 ?>
 <section class="py-4">
     <div class="container">
-        <h4 class="fw-bold mb-3"><i class="bi bi-wallet2 text-primary me-2"></i><?= t('KlookCash Saya') ?></h4>
+        <h4 class="fw-bold mb-3"><i class="bi bi-wallet2 text-primary me-2"></i><?= t('TravelPoints Saya') ?></h4>
 
         <!-- Balance card -->
         <div class="card border-0 shadow-sm mb-4 overflow-hidden" style="background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);">
             <div class="card-body p-4">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <small class="text-white-50"><?= t('Saldo KlookCash') ?></small>
+                        <small class="text-white-50"><?= t('Saldo TravelPoints') ?></small>
                         <div class="text-white fs-2 fw-bold"><?= formatRupiah($balance) ?></div>
                         <small class="text-white-50"><?= t('Gunakan untuk potongan booking berikutnya') ?></small>
                     </div>
@@ -81,9 +81,9 @@ require_once 'includes/header-shared.php';
             </div>
         </div>
 
-        <!-- Tab utama: KlookCash / Points -->
+        <!-- Tab utama: TravelPoints / Points -->
         <ul class="nav nav-pills mb-3" data-testid="wallet-tabs">
-            <li class="nav-item"><a class="nav-link <?= !$showPoints ? 'active' : '' ?>" href="wallet.php" data-testid="tab-cash"><?= t('KlookCash') ?></a></li>
+            <li class="nav-item"><a class="nav-link <?= !$showPoints ? 'active' : '' ?>" href="wallet.php" data-testid="tab-cash"><?= t('TravelPoints') ?></a></li>
             <li class="nav-item"><a class="nav-link <?= $showPoints ? 'active' : '' ?>" href="wallet.php?tab=points" data-testid="tab-points"><?= t('Points') ?> <span class="badge bg-danger ms-1"><?= $pointsBalance ?></span></a></li>
         </ul>
 
@@ -97,7 +97,7 @@ require_once 'includes/header-shared.php';
                         <div class="text-white fs-2 fw-bold" data-testid="points-balance"><?= number_format($pointsBalance) ?></div>
                         <small class="text-white-50"><?= t('1 point = Rp 100 · diperoleh dari booking yang dibayar') ?></small>
                     </div>
-                    <form method="POST" action="?tab=points" class="d-flex gap-2 align-items-end" data-testid="redeem-form" onsubmit="return confirm('<?= t('Tukar points menjadi KlookCash? Penukaran tidak dapat dibatalkan.') ?>')">
+                    <form method="POST" action="?tab=points" class="d-flex gap-2 align-items-end" data-testid="redeem-form" onsubmit="return confirm('<?= t('Tukar points menjadi TravelPoints? Penukaran tidak dapat dibatalkan.') ?>')">
                         <input type="hidden" name="redeem_points" value="1">
                         <div>
                             <label class="form-label small text-white-50 mb-0"><?= t('Tukar points') ?></label>
@@ -202,7 +202,7 @@ require_once 'includes/header-shared.php';
                 <div class="text-center py-5">
                     <i class="bi bi-wallet fs-1 text-muted"></i>
                     <p class="mt-2 text-muted"><?= t('Belum ada transaksi.') ?></p>
-                    <a href="tours.php" class="btn btn-primary rounded-pill px-4"><?= t('Booking untuk dapat KlookCash') ?></a>
+                    <a href="tours.php" class="btn btn-primary rounded-pill px-4"><?= t('Booking untuk dapat TravelPoints') ?></a>
                 </div>
                 <?php endif; ?>
             </div>

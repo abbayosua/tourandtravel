@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     db()->prepare("UPDATE users SET referred_by = ? WHERE id = ?")->execute([$referrerId, $userId]);
                     $ins = db()->prepare("INSERT INTO referrals (referrer_id, referred_email, referred_user_id, status) VALUES (?, ?, ?, 'completed')");
                     $ins->execute([$referrerId, $email, $userId]);
-                    // Reward referrer (bonus KlookCash)
+                    // Reward referrer (bonus TravelPoints)
                     require_once 'includes/wallet.php';
                     addWalletTransaction($referrerId, 50000, 'bonus', 'Reward referral ' . $email, 'referral', (int)db()->lastInsertId());
                 }

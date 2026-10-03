@@ -94,7 +94,7 @@ if (isset($_GET['cancel']) && (int)$_GET['cancel'] > 0) {
     ];
     if (isset($tableMap[$type])) {
         $table = $tableMap[$type];
-        // Refund wallet if paid with KlookCash (only refund the portion covered by wallet)
+        // Refund wallet if paid with TravelPoints (only refund the portion covered by wallet)
         $ref = db()->prepare("SELECT id, total_price, payment_status FROM `$table` WHERE id = ? AND user_id = ? AND status IN ('pending','confirmed')");
         $ref->execute([$cancelId, $userId]);
         if ($brow = $ref->fetch()) {
@@ -208,7 +208,7 @@ require_once 'includes/header-shared.php';
         <h4 class="fw-bold mb-3"><i class="bi bi-ticket-perforated me-2"></i><?= t('Riwayat Booking') ?></h4>
 
         <?php if (isset($_GET['msg']) && $_GET['msg'] === 'cancelled'): ?>
-            <div class="alert alert-success py-2 small"><?= t('Booking berhasil dibatalkan. KlookCash yang digunakan telah dikembalikan.') ?></div>
+            <div class="alert alert-success py-2 small"><?= t('Booking berhasil dibatalkan. TravelPoints yang digunakan telah dikembalikan.') ?></div>
         <?php endif; ?>
         <?php if (isset($_GET['msg']) && $_GET['msg'] === 'modified'): ?>
             <div class="alert alert-success py-2 small"><?= t('Booking berhasil diubah.') ?></div>
@@ -294,7 +294,7 @@ require_once 'includes/header-shared.php';
                                     $rs = $b['refund_status'];
                                     $timeline = [
                                         'requested' => ['bg-warning text-dark', t('Menunggu persetujuan admin')],
-                                        'approved'  => ['bg-success', t('Disetujui') . ' — refund ' . formatRupiah((float)($b['refund_amount'] ?? 0)) . ' ' . t('ke KlookCash')],
+                                        'approved'  => ['bg-success', t('Disetujui') . ' — refund ' . formatRupiah((float)($b['refund_amount'] ?? 0)) . ' ' . t('ke TravelPoints')],
                                         'rejected'  => ['bg-danger', t('Ditolak admin')],
                                     ];
                                 ?>

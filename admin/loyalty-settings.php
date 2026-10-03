@@ -15,7 +15,7 @@ $defaults = [
     'loyalty_silver_threshold' => 2,
     'loyalty_gold_threshold' => 5,
     'loyalty_joyplus_threshold' => 10,
-    'loyalty_earning_rate' => 5, // persen KlookCash dari total booking
+    'loyalty_earning_rate' => 5, // persen TravelPoints dari total booking
     'loyalty_silver_rate' => 6,
     'loyalty_gold_rate' => 7,
     'loyalty_joyplus_rate' => 10,
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_loyalty'])) {
 ?>
 <?php require_once __DIR__ . '/includes/admin-header.php'; ?>
 
-<h4 class="fw-bold mb-3"><i class="bi bi-gem me-2 text-warning"></i><?= t('Pengaturan Loyalty & KlookCash') ?></h4>
+<h4 class="fw-bold mb-3"><i class="bi bi-gem me-2 text-warning"></i><?= t('Pengaturan Loyalty & TravelPoints') ?></h4>
 
 <?php if ($message): ?>
     <div class="alert alert-success alert-dismissible py-2"><?= $message ?>
@@ -99,10 +99,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_loyalty'])) {
     <div class="col-md-6">
         <div class="card border-0 shadow-sm mb-3">
             <div class="card-header bg-white">
-                <h6 class="fw-bold mb-0"><i class="bi bi-percent me-2"></i><?= t('Earning Rate KlookCash') ?></h6>
+                <h6 class="fw-bold mb-0"><i class="bi bi-percent me-2"></i><?= t('Earning Rate TravelPoints') ?></h6>
             </div>
             <div class="card-body">
-                <p class="text-muted small mb-3"><?= t('Persentase dari total booking yang menjadi KlookCash reward.') ?></p>
+                <p class="text-muted small mb-3"><?= t('Persentase dari total booking yang menjadi TravelPoints reward.') ?></p>
                 <div class="mb-3">
                     <label class="form-label small fw-semibold"><?= t('Explorer (%)') ?></label>
                     <input type="number" name="loyalty_earning_rate" class="form-control" value="<?= (float)$values['loyalty_earning_rate'] ?>" min="0" step="0.5">

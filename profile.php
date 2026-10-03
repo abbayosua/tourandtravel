@@ -50,7 +50,7 @@ $statWishlist = db()->prepare("SELECT COUNT(*) FROM wishlists WHERE user_id = ?"
 $statWishlist->execute([$userId]);
 $totalWishlist = (int)$statWishlist->fetchColumn();
 
-// Wallet balance (KlookCash) via helper
+// Wallet balance (TravelPoints) via helper
 require_once 'includes/wallet.php';
 $walletBalance = getWalletBalance($userId);
 
@@ -119,7 +119,7 @@ require_once 'includes/header-shared.php';
                             <div class="col-3">
                                 <a href="wallet.php" class="text-decoration-none">
                                     <div class="fw-bold text-success fs-4"><?= formatRupiah($walletBalance) ?></div>
-                                    <small class="text-muted"><?= t('KlookCash') ?></small>
+                                    <small class="text-muted"><?= t('TravelPoints') ?></small>
                                 </a>
                             </div>
                             <div class="col-3">

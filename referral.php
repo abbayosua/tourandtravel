@@ -56,7 +56,7 @@ require_once 'includes/header-shared.php';
             <div class="card-body p-4">
                 <div class="row align-items-center">
                     <div class="col-md-8">
-                        <h5 class="fw-bold text-white mb-1"><?= t('Ajak Teman, Dapatkan KlookCash!') ?></h5>
+                        <h5 class="fw-bold text-white mb-1"><?= t('Ajak Teman, Dapatkan TravelPoints!') ?></h5>
                         <p class="text-white-50 small mb-2"><?= t('Bagikan link di bawah — Anda & teman dapat reward Rp50.000 saat teman berhasil daftar.') ?></p>
                         <div class="input-group">
                             <input type="text" class="form-control" id="refLinkInput" value="<?= e($refLink) ?>" readonly>

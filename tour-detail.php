@@ -155,7 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
             }
         }
 
-        // KlookCash: kurangi total jika user memakai saldo
+        // TravelPoints: kurangi total jika user memakai saldo
         $walletDeduct = 0;
         if (!empty($_SESSION['user_id']) && !empty($_POST['use_wallet'])) {
             require_once 'includes/wallet.php';
@@ -883,7 +883,7 @@ require_once 'includes/header-shared.php';
                                     ptsDeduct = Math.min(pointsValue, sub);
                                     sub -= ptsDeduct;
                                 }
-                                // Wallet (KlookCash)
+                                // Wallet (TravelPoints)
                                 var walletDeduct = 0;
                                 if (walletEl && walletEl.checked) {
                                     walletDeduct = Math.min(walletBal, sub);
@@ -967,7 +967,7 @@ require_once 'includes/header-shared.php';
                             <div class="form-check mb-3">
                                 <input class="form-check-input" type="checkbox" name="use_wallet" value="1" id="useWalletTour">
                                 <label class="form-check-label small" for="useWalletTour">
-                                    <?= t('Gunakan KlookCash') ?> <strong><?= formatRupiah($walletBal) ?></strong>
+                                    <?= t('Gunakan TravelPoints') ?> <strong><?= formatRupiah($walletBal) ?></strong>
                                 </label>
                             </div>
                             <?php endif; ?>

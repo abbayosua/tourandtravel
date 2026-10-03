@@ -23,7 +23,7 @@ require_once 'includes/header-shared.php';
             <div class="col-lg-8">
                 <div class="card border-0 shadow-sm rounded-4 p-4">
                     <h5 class="fw-bold mb-2">1. <?= t('Ketentuan Umum Refund') ?></h5>
-                    <p class="text-muted small"><?= e(str_replace(':brand', $brand, t('Pengajuan refund hanya berlaku untuk booking berstatus confirmed yang belum digunakan. Dana refund yang disetujui dikreditkan ke saldo wallet (KlookCash) akun Anda.'))) ?></p>
+                    <p class="text-muted small"><?= e(str_replace(':brand', $brand, t('Pengajuan refund hanya berlaku untuk booking berstatus confirmed yang belum digunakan. Dana refund yang disetujui dikreditkan ke saldo wallet (TravelPoints) akun Anda.'))) ?></p>
                     <h5 class="fw-bold mb-2 mt-4">2. <?= t('Besaran Refund Paket Tour') ?></h5>
                     <div class="table-responsive">
                         <table class="table table-sm table-bordered small mb-2">

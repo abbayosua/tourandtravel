@@ -136,7 +136,7 @@ if (!$booking) {
     exit;
 }
 
-// Earn KlookCash (5% dari total) untuk user yang login — sekali per booking
+// Earn TravelPoints (5% dari total) untuk user yang login — sekali per booking
 $earnedPoints = 0;
 if (!empty($booking['user_id'])) {
     require_once 'includes/wallet.php';
@@ -241,12 +241,12 @@ require_once 'includes/header-shared.php';
                         </div>
                     </div>
 
-                    <!-- KlookCash earned -->
+                    <!-- TravelPoints earned -->
                     <?php if ($earnedPoints > 0): ?>
                     <div class="bg-success bg-opacity-10 text-success rounded-4 p-3 mb-4 d-flex align-items-center justify-content-center gap-2">
                         <i class="bi bi-coin fs-4"></i>
                         <div>
-                            <div class="fw-bold">+ <?= number_format($earnedPoints, 0, ',', '.') ?> KlookCash</div>
+                            <div class="fw-bold">+ <?= number_format($earnedPoints, 0, ',', '.') ?> TravelPoints</div>
                             <small class="d-block" style="font-size: 11px;"><?= t('Reward 5% dari total booking — bisa dipakai untuk booking berikutnya') ?></small>
                         </div>
                     </div>

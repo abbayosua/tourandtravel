@@ -1,6 +1,6 @@
 <?php
 /**
- * Wallet / KlookCash system
+ * Wallet / TravelPoints system
  * Tabel: wallet_transactions (user_id, amount, type, description, reference_type, reference_id)
  * Balance = SUM(amount) WHERE user_id = ?
  */
@@ -8,7 +8,7 @@
 require_once __DIR__ . '/db.php';
 
 /**
- * Get user wallet balance (total KlookCash)
+ * Get user wallet balance (total TravelPoints)
  */
 function getWalletBalance($userId) {
     $userId = (int)$userId;
@@ -40,7 +40,7 @@ function addWalletTransaction($userId, $amount, $type, $description = '', $refer
 }
 
 /**
- * Spend wallet balance (pembayaran dengan KlookCash)
+ * Spend wallet balance (pembayaran dengan TravelPoints)
  * Returns [success => bool, message => string, new_balance => float]
  */
 function spendWallet($userId, $amount, $referenceType = null, $referenceId = null) {
@@ -52,11 +52,11 @@ function spendWallet($userId, $amount, $referenceType = null, $referenceId = nul
         return ['success' => false, 'message' => t('Jumlah tidak valid')];
     }
     if ($balance < $amount) {
-        return ['success' => false, 'message' => t('Saldo KlookCash tidak mencukupi')];
+        return ['success' => false, 'message' => t('Saldo TravelPoints tidak mencukupi')];
     }
 
-    addWalletTransaction($userId, -$amount, 'spend', t('Pembayaran menggunakan KlookCash'), $referenceType, $referenceId);
-    return ['success' => true, 'message' => t('Pembayaran KlookCash berhasil'), 'new_balance' => getWalletBalance($userId)];
+    addWalletTransaction($userId, -$amount, 'spend', t('Pembayaran menggunakan TravelPoints'), $referenceType, $referenceId);
+    return ['success' => true, 'message' => t('Pembayaran TravelPoints berhasil'), 'new_balance' => getWalletBalance($userId)];
 }
 
 /**
