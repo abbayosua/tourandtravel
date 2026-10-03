@@ -16,7 +16,7 @@ $bottomNavItems = [
     ['icon' => 'bi-search', 'label' => 'Cari', 'url' => 'tours.php', 'pages' => ['tours.php', 'hotels.php', 'flights.php', 'ferries.php', 'rental-cars.php', 'transfers.php', 'trains.php', 'esim.php', 'attractions.php', 'destinasi.php', 'collection.php', 'tour-detail.php', 'hotel-detail.php', 'flight-detail.php', 'attraction-detail.php', 'esim-detail.php', 'transfer-detail.php', 'train-detail.php', 'rental-car-detail.php', 'blog.php', 'blog-detail.php', 'faq.php']],
     ['icon' => 'bi-heart', 'label' => 'Wishlist', 'url' => 'wishlist.php', 'pages' => ['wishlist.php'], 'badge' => $wishCount],
     ['icon' => 'bi-ticket-perforated', 'label' => 'Booking', 'url' => 'my-bookings.php', 'pages' => ['my-bookings.php', 'track.php', 'booking-success.php']],
-    ['icon' => 'bi-person', 'label' => 'Akun', 'url' => isLoggedIn() ? 'profile.php' : 'login.php', 'pages' => ['profile.php', 'login.php', 'register.php', 'forgot-password.php', 'reset-password.php', 'my-points.php', 'my-coupons.php', 'my-alerts.php', 'my-profiles.php', 'notifications.php', 'referral.php']],
+    ['icon' => 'bi-person', 'label' => 'Akun', 'url' => isLoggedIn() ? 'profile.php' : 'login.php', 'pages' => ['profile.php', 'login.php', 'register.php', 'forgot-password.php', 'reset-password.php', 'my-points.php', 'my-coupons.php', 'my-alerts.php', 'my-profiles.php', 'notifications.php', 'referral.php', 'wallet.php', 'my-itinerary.php']],
 ];
 ?>
 <nav class="bottom-nav" aria-label="<?= e(t('Navigasi Bawah')) ?>">
