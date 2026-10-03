@@ -985,3 +985,32 @@ foreach ([
     ['Ulasan', 'en', 'Reviews'],
 ] as [$k, $l, $v]) { $stmt->execute([$k, $l, $v]); }
 echo "Fixed admin identity-EN labels.\n";
+
+// ---- Admin dashboard labels ----
+$adminDash = [
+    'en' => [
+        'Laba bersih' => 'Net Profit',
+        'Rata-rata per transaksi' => 'Average per transaction',
+        'Tingkat konversi' => 'Conversion rate',
+        'Belum ada aktivitas' => 'No activity yet',
+    ],
+    'zh' => [
+        'Booking baru' => '新订单',
+        'Net Profit' => '净利润',
+        'Laba bersih' => '净利润',
+        'Avg Order Value' => '平均订单价值',
+        'Rata-rata per transaksi' => '每笔交易平均',
+        'Conversion Rate' => '转化率',
+        'Tingkat konversi' => '转化率',
+        'Tren Pendapatan' => '收入趋势',
+        '30 hari terakhir' => '最近 30 天',
+        'Booking per Vertikal' => '各业务订单',
+        'Aksi Cepat' => '快捷操作',
+        'Aktivitas Terakhir' => '最近活动',
+        'Belum ada aktivitas' => '暂无活动',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$c8 = 0;
+foreach ($adminDash as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c8++; } }
+echo "Upserted $c8 admin dashboard rows.\n";
