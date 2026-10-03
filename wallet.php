@@ -28,11 +28,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['redeem_points'] ?? '') ===
         if ($newBal !== null) {
             addWalletTransaction($userId, $pts * $rate, 'earn', 'Penukaran ' . $pts . ' points');
             $balance = getWalletBalance($userId);
-            $redeemMsg = str_replace([':p', ':a'], [$pts, formatRupiah($pts * $rate)], t('Berhasil menukar :p points menjadi :a'));
+            // PRG: hindari re-submit (double redeem) saat refresh.
+            $_SESSION['redeem_flash'] = str_replace([':p', ':a'], [$pts, formatRupiah($pts * $rate)], t('Berhasil menukar :p points menjadi :a'));
+            header('Location: wallet.php?tab=points&redeem=success');
+            exit;
         } else {
             $redeemErr = t('Saldo points tidak cukup');
         }
     }
+}
+// PRG: tampilkan pesan sukses sekali dari session setelah redirect.
+if (($_GET['redeem'] ?? '') === 'success' && !empty($_SESSION['redeem_flash'])) {
+    $redeemMsg = $_SESSION['redeem_flash'];
+    unset($_SESSION['redeem_flash']);
 }
 $pointsBalance = getPointsBalance($userId);
 $pointsLedger = getPointsLedger($userId, 50);
