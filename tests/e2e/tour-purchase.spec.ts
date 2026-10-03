@@ -257,6 +257,9 @@ test('redeem points + wallet (TravelPoints) memotong total', async ({ page }) =>
   expect(row).toContain('990000');
   expect(row).toContain(String(redeemUserId));
 
+  // Total terpotong tampil di halaman konfirmasi.
+  await expect(page.locator('body')).toContainText('Rp 990.000');
+
   // Wallet terpotong 500.000 (spend) dan points terpotong 100 (redeem).
   expect(
     mysql(`SELECT COUNT(*) FROM wallet_transactions WHERE user_id = ${redeemUserId} AND type = 'spend' AND amount = -500000`)
