@@ -23,7 +23,7 @@ $id = (int)($_GET['id'] ?? 0);
 
 if (!$id) {
     http_response_code(404);
-    die('Itinerary ID required.');
+    die(t('ID itinerary wajib diisi.'));
 }
 
 $stmt = db()->prepare("SELECT * FROM user_itineraries WHERE id = ? AND user_id = ?");
@@ -32,7 +32,7 @@ $itinerary = $stmt->fetch();
 
 if (!$itinerary) {
     http_response_code(404);
-    die('Itinerary not found.');
+    die(t('Itinerary tidak ditemukan.'));
 }
 
 $stmt = db()->prepare(

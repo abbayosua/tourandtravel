@@ -12,7 +12,7 @@ require_once 'includes/pdf-dompdf.php';
 require_once 'includes/pdf-brochure.php';
 
 $slug = trim($_GET['slug'] ?? '');
-if (!$slug) { http_response_code(404); die('Slug required.'); }
+if (!$slug) { http_response_code(404); die(t('Slug wajib diisi.')); }
 
 $pdfLang = strtolower(trim($_GET['pdf_lang'] ?? $_GET['lang'] ?? ''));
 if ($pdfLang !== 'all' && !in_array($pdfLang, ['id', 'en', 'zh'], true)) $pdfLang = getCurrentLang();
@@ -20,7 +20,7 @@ if ($pdfLang !== 'all' && !in_array($pdfLang, ['id', 'en', 'zh'], true)) $pdfLan
 $stmt = db()->prepare("SELECT * FROM tours WHERE slug = ? AND is_active = 1 LIMIT 1");
 $stmt->execute([$slug]);
 $tour = $stmt->fetch();
-if (!$tour) { http_response_code(404); die('Tour not found.'); }
+if (!$tour) { http_response_code(404); die(t('Tour tidak ditemukan.')); }
 
 $itineraries = getItineraries($tour['id']);
 $coverImg = pdfLocalImg(getTourImage($tour, 'large'), 'class="coverimg"', 800);

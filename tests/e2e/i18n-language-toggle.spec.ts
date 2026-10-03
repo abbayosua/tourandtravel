@@ -1246,6 +1246,18 @@ test.describe('i18n label aksesibilitas breadcrumb', () => {
   });
 });
 
+test.describe('i18n pesan error endpoint PDF', () => {
+  // Pesan die() endpoint PDF dulu hardcoded.
+  test('pesan error PDF mengikuti bahasa', async ({ page }) => {
+    const expected: Record<string, string> = { id: 'Slug wajib diisi.', en: 'Slug required.', zh: '需要 Slug。' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/tour-itinerary-pdf.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('body')).toContainText(label);
+    }
+  });
+});
+
 test.describe('i18n email templates', () => {
   // Render each transactional email in id/en/zh and assert no Indonesian leaks.
   test('template email tidak menyisakan teks Indonesia', async () => {
