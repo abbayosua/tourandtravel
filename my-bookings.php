@@ -103,7 +103,7 @@ if (isset($_GET['cancel']) && (int)$_GET['cancel'] > 0) {
                 header('Location: my-bookings.php?msg=cancel_paid');
                 exit;
             }
-            $walletPaid = db()->prepare("SELECT COALESCE(SUM(amount),0) FROM wallet_transactions WHERE user_id = ? AND reference_type = ? AND reference_id = ? AND amount < 0");
+            $walletPaid = db()->prepare("SELECT COALESCE(SUM(-amount),0) FROM wallet_transactions WHERE user_id = ? AND reference_type = ? AND reference_id = ? AND amount < 0");
             $walletPaid->execute([$userId, $type . '_booking', $cancelId]);
             $paid = (float)$walletPaid->fetchColumn();
             if ($paid > 0) {

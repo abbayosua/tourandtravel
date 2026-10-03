@@ -38,6 +38,7 @@ function passportFixture(): string {
 
 let userId = 0;
 let redeemUserId = 0;
+let cancelUserId = 0;
 let tourId = 0;
 
 function createUser(email: string): number {
@@ -63,7 +64,7 @@ function cleanup() {
   }
   tourId = 0;
   mysql(`DELETE FROM promo_codes WHERE code = 'E2E50'`);
-  for (const uid of [userId, redeemUserId]) {
+  for (const uid of [userId, redeemUserId, cancelUserId]) {
     if (!uid) continue;
     mysql(`DELETE FROM wallet_transactions WHERE user_id = ${uid}`);
     mysql(`DELETE FROM points_ledger WHERE user_id = ${uid}`);
@@ -75,6 +76,7 @@ function cleanup() {
   }
   userId = 0;
   redeemUserId = 0;
+  cancelUserId = 0;
 }
 
 test.beforeAll(() => {
@@ -248,4 +250,30 @@ test('diskon grup + promo + asuransi diterapkan pada total', async ({ page }) =>
 
   await page.goto(`${BASE}/my-bookings.php`);
   await expect(page.locator(`text=${code}`).first()).toBeVisible();
+});
+
+test('pembatalan booking tour mengembalikan wallet (TravelPoints)', async ({ page }) => {
+  const cancelEmail = 'e2e-tourbuy-cancel@t.local';
+  cancelUserId = createUser(cancelEmail);
+  mysql(`INSERT INTO wallet_transactions (user_id, amount, type, description) VALUES (${cancelUserId}, 500000, 'earn', 'e2e seed')`);
+
+  await login(page, cancelEmail);
+  const code = await bookTour(page, { participants: 1, useWallet: true });
+  const bookingId = Number(mysql(`SELECT id FROM bookings WHERE booking_code = '${code}'`));
+
+  // Wallet terpotong 500.000 saat booking (reference_type='tour_booking').
+  expect(
+    mysql(`SELECT COUNT(*) FROM wallet_transactions WHERE user_id = ${cancelUserId} AND type = 'spend' AND reference_type = 'tour_booking' AND amount = -500000`)
+  ).toBe('1');
+
+  // Batalkan lewat "Batalkan" di my-bookings.
+  page.once('dialog', (d) => d.accept());
+  await page.goto(`${BASE}/my-bookings.php?cancel=${bookingId}&type=tour`);
+  await page.waitForLoadState('domcontentloaded');
+
+  expect(mysql(`SELECT status FROM bookings WHERE id = ${bookingId}`)).toBe('cancelled');
+  // Wallet dikembalikan penuh (refund +500.000).
+  expect(
+    mysql(`SELECT COUNT(*) FROM wallet_transactions WHERE user_id = ${cancelUserId} AND type = 'refund' AND reference_type = 'tour_booking' AND amount = 500000`)
+  ).toBe('1');
 });

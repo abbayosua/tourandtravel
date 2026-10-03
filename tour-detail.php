@@ -201,7 +201,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
         // Process wallet spend
         if ($walletDeduct > 0 && !empty($_SESSION['user_id'])) {
             require_once 'includes/wallet.php';
-            spendWallet($_SESSION['user_id'], $walletDeduct, 'booking', $bookingId);
+            spendWallet($_SESSION['user_id'], $walletDeduct, 'tour_booking', $bookingId);
         }
 
         require_once 'includes/send-wa.php';
