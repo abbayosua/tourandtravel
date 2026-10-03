@@ -224,6 +224,8 @@ function testDataDrivenLabelsLocalized(): void {
         'tours.category' => "SELECT DISTINCT category FROM tours WHERE is_active = 1 AND category <> ''",
         'transfers.from_city' => "SELECT DISTINCT from_city FROM transfers WHERE is_active = 1 AND from_city <> ''",
         'transfers.to_city' => "SELECT DISTINCT to_city FROM transfers WHERE is_active = 1 AND to_city <> ''",
+        'attractions.city' => "SELECT DISTINCT city FROM attractions WHERE is_active = 1 AND city <> ''",
+        'attractions.category' => "SELECT DISTINCT category FROM attractions WHERE is_active = 1 AND category <> ''",
     ];
     foreach ($sources as $name => $sql) {
         foreach (db()->query($sql)->fetchAll(PDO::FETCH_COLUMN) as $v) {

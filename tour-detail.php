@@ -1252,7 +1252,7 @@ document.addEventListener('DOMContentLoaded', function() {
             opt.textContent = p.full_name + (p.passport_no ? ' ('+p.passport_no+')' : '');
             sel.appendChild(opt);
         });
-    });
+    }).catch(function(e){ console.warn('profile fetch error', e); });
 })();
 function fillPassenger(sel) {
     if (!sel.value) return;
