@@ -167,6 +167,9 @@
             return;
         }
 
+        result.textContent = I18N.t('Memeriksa kode promo...');
+        result.className = 'klook-promo-result small mt-1 text-muted';
+
         fetch('apply-promo-ajax.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -234,5 +237,8 @@
         initFlightSticky();
         initFlightCardHover();
     });
+
+    // Dipakai via atribut onclick di hotel-detail/rental-car-detail.
+    window.applyPromo = applyPromo;
 
 })();

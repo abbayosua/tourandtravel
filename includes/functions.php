@@ -470,6 +470,7 @@ function getJsI18nKeys() {
         'Mencari...',
         'Tidak ada hasil ditemukan',
         'Gagal memuat hasil. Coba lagi.',
+        'Memeriksa kode promo...',
     ];
 }
 
