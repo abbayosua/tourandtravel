@@ -63,7 +63,7 @@ $userName = $userStmt->fetchColumn() ?: 'User';
 
 $sub = '';
 if (!empty($itinerary['start_date'])) {
-    $sub = 'Start: ' . date('d M Y', strtotime($itinerary['start_date']));
+    $sub = t('Mulai') . ': ' . formatDate($itinerary['start_date']);
 }
 
 $html = pdfUserHtml($itinerary['title'], $sub, $userName, $days);

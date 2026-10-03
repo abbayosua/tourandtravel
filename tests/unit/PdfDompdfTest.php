@@ -30,10 +30,13 @@ function testPdfUserHtmlStructure() {
     $days = [1 => ['items' => [
         ['item_type' => 'tour', 'tour_id' => 0, 'hotel_id' => 0, 'title' => 'Tour Kota Tua', 'time_label' => '09:00', 'note' => 'Bawa kamera'],
     ]], 2 => ['items' => []]];
+    $prev = $_SESSION['lang'] ?? null;
+    $_SESSION['lang'] = 'en';
     $h = pdfUserHtml('Trip Bali', 'Start: 20 Sep 2026', 'Budi', $days);
     assertContains('Budi', $h, 'ada nama user');
     assertContains('Tour Kota Tua', $h, 'ada judul item');
     assertContains('Free day', $h, 'hari kosong ada fallback');
+    if ($prev === null) { unset($_SESSION['lang']); } else { $_SESSION['lang'] = $prev; }
 }
 
 function testPdfLocalImgMissingReturnsEmpty() {
@@ -51,4 +54,33 @@ function testPdfRendersValidPdf() {
     $out = $pdf->output();
     assertSame('%PDF-', substr($out, 0, 5), 'magic bytes PDF');
     assertTrue(strlen($out) > 500, 'PDF tidak kosong');
+}
+
+function testPdfDayTitleLocalized() {
+    assertSame('Day 3 — Kuta', pdfDayTitle(3, 'Kuta', 'en'));
+    assertSame('Hari 3 — Kuta', pdfDayTitle(3, 'Kuta', 'id'));
+    assertSame('第3天 — Kuta', pdfDayTitle(3, 'Kuta', 'zh'));
+    assertSame('Day 1 — Guilin', pdfDayTitle(1, 'Day 1 — Guilin', 'id'), 'judul berprefix Day dibiarkan apa adanya');
+    assertSame('Day 4', pdfDayTitle(4, '', 'en'));
+}
+
+function testPdfUserHtmlLocalized() {
+    $days = [
+        1 => ['items' => []],
+        2 => ['items' => [['item_type' => 'tour', 'tour_id' => 0, 'hotel_id' => 0, 'title' => 'X', 'time_label' => '', 'note' => '']]],
+    ];
+    $prev = $_SESSION['lang'] ?? null;
+
+    $_SESSION['lang'] = 'id';
+    $id = pdfUserHtml('Trip', '', 'Budi', $days);
+    assertContains('Hari 1', $id, 'hari bahasa id');
+    assertContains('Hari bebas', $id, 'empty day bahasa id');
+
+    $_SESSION['lang'] = 'zh';
+    $zh = pdfUserHtml('Trip', '', 'Budi', $days);
+    assertContains('第1天', $zh, 'hari bahasa zh');
+    assertContains('自由活动', $zh, 'empty day bahasa zh');
+    assertContains('旅行团', $zh, 'badge tipe bahasa zh');
+
+    if ($prev === null) { unset($_SESSION['lang']); } else { $_SESSION['lang'] = $prev; }
 }
