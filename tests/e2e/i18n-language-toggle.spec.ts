@@ -540,3 +540,15 @@ test.describe('i18n admin reseller pricing', () => {
     }
   });
 });
+
+test.describe('i18n admin price alerts', () => {
+  test('label price alerts mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    const expected: Record<string, string> = { id: 'Jalankan Pengecekan', en: 'Run Check', zh: '运行检查' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/admin/price-alerts.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('body')).toContainText(label);
+    }
+  });
+});

@@ -1510,3 +1510,28 @@ $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, 
 $c22 = 0;
 foreach ($adminResellerPricing as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c22++; } }
 echo "Upserted $c22 admin reseller-pricing rows.\n";
+
+// ---- Admin price alerts ----
+$adminPriceAlerts = [
+    'en' => [
+        'Pengecekan selesai' => 'Check completed',
+        'alert dinotifikasi' => 'alerts notified',
+        'Jalankan Pengecekan' => 'Run Check',
+        'total alert' => 'total alerts',
+        'Target:' => 'Target:',
+        'Notif:' => 'Notif:',
+    ],
+    'zh' => [
+        'Price Alerts' => '降价提醒',
+        'Pengecekan selesai' => '检查完成',
+        'alert dinotifikasi' => '个提醒已通知',
+        'Jalankan Pengecekan' => '运行检查',
+        'total alert' => '个提醒',
+        'Target:' => '目标：',
+        'Notif:' => '通知：',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$c23 = 0;
+foreach ($adminPriceAlerts as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c23++; } }
+echo "Upserted $c23 admin price-alert rows.\n";
