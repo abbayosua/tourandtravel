@@ -1178,6 +1178,24 @@ test.describe('i18n admin edit forms', () => {
   });
 });
 
+test.describe('i18n bottom nav (mobile)', () => {
+  // Bottom nav mobile (komponen terpisah) harus ikut bahasa.
+  test('label bottom nav mengikuti bahasa', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    const expected: Record<string, string[]> = {
+      id: ['Beranda', 'Cari', 'Akun'],
+      en: ['Home', 'Search', 'Account'],
+      zh: ['首页', '搜索', '账户'],
+    };
+    for (const [lang, labels] of Object.entries(expected)) {
+      await page.goto(`${BASE}/index.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      const nav = page.locator('.bottom-nav');
+      for (const l of labels) await expect(nav).toContainText(l);
+    }
+  });
+});
+
 test.describe('i18n email templates', () => {
   // Render each transactional email in id/en/zh and assert no Indonesian leaks.
   test('template email tidak menyisakan teks Indonesia', async () => {
