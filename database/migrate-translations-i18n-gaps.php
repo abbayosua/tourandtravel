@@ -1048,3 +1048,49 @@ $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, 
 $c9 = 0;
 foreach ($adminBookings as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c9++; } }
 echo "Upserted $c9 admin bookings rows.\n";
+
+// ---- Admin tour editor ----
+$adminTourEdit = [
+    'en' => [
+        'Itinerary berhasil ditambahkan' => 'Itinerary added successfully',
+        'Itinerary berhasil dihapus' => 'Itinerary deleted successfully',
+        'Tanggal keberangkatan berhasil ditambahkan' => 'Departure date added successfully',
+        'Tanggal keberangkatan berhasil dihapus' => 'Departure date deleted successfully',
+        'Belum ada jadwal keberangkatan.' => 'No departure schedules yet.',
+        'Upload beberapa gambar (JPG/PNG/WebP, max 2MB)' => 'Upload multiple images (JPG/PNG/WebP, max 2MB)',
+        'Upload Galeri' => 'Upload Gallery',
+        'Belum ada foto galeri. Upload untuk mengganti galeri auto (loremflickr).' => 'No gallery photos yet. Upload to replace the auto gallery (loremflickr).',
+        'asli' => 'original',
+        '+ Tambah' => '+ Add',
+        'Edit Tour' => 'Edit Tour',
+        'Edit Tour:' => 'Edit Tour:',
+        'Update Tour' => 'Update Tour',
+        'Itinerary' => 'Itinerary',
+        'Low Season' => 'Low Season',
+        'Single' => 'Single',
+        'Slot' => 'Slot',
+    ],
+    'zh' => [
+        'Itinerary berhasil ditambahkan' => '行程添加成功',
+        'Itinerary berhasil dihapus' => '行程删除成功',
+        'Tanggal keberangkatan berhasil ditambahkan' => '出发日期添加成功',
+        'Tanggal keberangkatan berhasil dihapus' => '出发日期删除成功',
+        'Belum ada jadwal keberangkatan.' => '暂无出发日期。',
+        'Upload beberapa gambar (JPG/PNG/WebP, max 2MB)' => '上传多张图片（JPG/PNG/WebP，最大 2MB）',
+        'Upload Galeri' => '上传相册',
+        'Belum ada foto galeri. Upload untuk mengganti galeri auto (loremflickr).' => '暂无相册照片。上传以替换自动相册（loremflickr）。',
+        'asli' => '原图',
+        '+ Tambah' => '+ 添加',
+        'Edit Tour' => '编辑旅游',
+        'Edit Tour:' => '编辑旅游：',
+        'Update Tour' => '更新旅游',
+        'Itinerary' => '行程',
+        'Low Season' => '淡季',
+        'Single' => '单人间',
+        'Slot' => '名额',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$c10 = 0;
+foreach ($adminTourEdit as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c10++; } }
+echo "Upserted $c10 admin tour-edit rows.\n";

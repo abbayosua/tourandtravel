@@ -358,3 +358,15 @@ test.describe('i18n admin bookings', () => {
     }
   });
 });
+
+test.describe('i18n admin editor tour', () => {
+  test('label editor tour mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    const expected: Record<string, string> = { id: 'Upload Galeri', en: 'Upload Gallery', zh: '上传相册' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/admin/tour-edit.php?id=63&lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('body')).toContainText(label);
+    }
+  });
+});
