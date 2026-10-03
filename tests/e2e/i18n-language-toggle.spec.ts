@@ -466,6 +466,16 @@ test.describe('i18n admin hotel api settings', () => {
       await expect(page.locator('body')).toContainText(label);
     }
   });
+
+  // Opsi sumber 'Auto' dulu hardcoded.
+  test('opsi sumber hotel mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    await page.goto(`${BASE}/admin/hotel-api-settings.php?lang=zh`);
+    await page.waitForLoadState('domcontentloaded');
+    const select = page.locator('select[name="src"]');
+    await expect(select).toContainText('自动');
+    await expect(select).not.toContainText('Auto');
+  });
 });
 
 test.describe('i18n admin push notifications', () => {
@@ -537,6 +547,17 @@ test.describe('i18n admin nav menus', () => {
       await page.waitForLoadState('domcontentloaded');
       await expect(page.locator('body')).toContainText(label);
     }
+  });
+
+  // Header tabel (URL/Tab/Menu) dulu hardcoded.
+  test('header tabel menu navigasi mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    await page.goto(`${BASE}/admin/nav-menus.php?lang=zh`);
+    await page.waitForLoadState('domcontentloaded');
+    const thead = page.locator('table thead').first();
+    await expect(thead).toContainText('标签页');
+    await expect(thead).toContainText('菜单');
+    await expect(thead).not.toContainText('Tab');
   });
 });
 

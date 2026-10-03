@@ -70,3 +70,32 @@ test('tampilan hasil lokal stabil (screenshot)', async ({ page }) => {
   await expect(page.locator('#flightGrid .flight-card')).toHaveCount(10);
   await expect(page.locator('#flightGrid')).toHaveScreenshot('flights-local-results.png', { maxDiffPixelRatio: 0.05 });
 });
+
+test('kegagalan memuat halaman berikut menampilkan pesan + tombol coba lagi', async ({ page }) => {
+  await page.route('**/flights-ajax.php*', (route) => route.abort('failed'));
+  await openResults(page);
+  await expect(page.locator('#flightGrid .flight-card')).toHaveCount(10);
+
+  await page.locator('.load-more-trigger').scrollIntoViewIfNeeded();
+
+  const errorBox = page.locator('[data-load-error="true"]');
+  await expect(errorBox).toBeVisible();
+  await expect(errorBox).toContainText('Gagal memuat penerbangan');
+  await expect(page.locator('.load-more-spinner')).toBeHidden();
+  await expect(page.locator('[data-load-retry]')).toBeVisible();
+
+  await expect(page.locator('.load-more-trigger')).toHaveScreenshot('flights-load-more-error.png', { maxDiffPixelRatio: 0.1 });
+});
+
+test('tombol coba lagi memuat halaman berikut setelah koneksi pulih', async ({ page }) => {
+  await page.route('**/flights-ajax.php*', (route) => route.abort('failed'));
+  await openResults(page);
+  await page.locator('.load-more-trigger').scrollIntoViewIfNeeded();
+  await expect(page.locator('[data-load-error="true"]')).toBeVisible();
+
+  await page.unroute('**/flights-ajax.php*');
+  await page.locator('[data-load-retry]').click();
+
+  await expect(page.locator('#flightGrid .flight-card')).toHaveCount(12);
+  await expect(page.locator('.load-more-trigger')).toHaveCount(0);
+});
