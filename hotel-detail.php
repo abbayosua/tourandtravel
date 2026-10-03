@@ -243,7 +243,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 require_once 'includes/wallet.php';
                 spendWallet($_SESSION['user_id'], $walletDeduct, 'hotel_booking', $bookingId);
             }
-            $bookingSuccess = t('Booking berhasil! Total:') . ' ' . formatRupiah($total);
+            // PRG: hindari re-submit saat refresh — simpan pesan lalu redirect ke GET.
+            $_SESSION['hotel_booking_flash'] = t('Booking berhasil! Total:') . ' ' . formatRupiah($total);
 
             // Save passenger profile if checkbox checked
             if (!empty($_SESSION['user_id']) && !empty($_POST['save_passenger'])) {
@@ -254,8 +255,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         ->execute([(int)$_SESSION['user_id'], $name, $phone ?: null]);
                 }
             }
+
+            header('Location: hotel-detail.php?' . http_build_query([
+                'slug' => $hotel['slug'],
+                'checkin' => $ci,
+                'checkout' => $co,
+                'booking' => 'success',
+            ]));
+            exit;
         }
     }
+}
+
+// PRG: tampilkan pesan sukses sekali dari session setelah redirect.
+if (($_GET['booking'] ?? '') === 'success' && !empty($_SESSION['hotel_booking_flash'])) {
+    $bookingSuccess = $_SESSION['hotel_booking_flash'];
+    unset($_SESSION['hotel_booking_flash']);
 }
 
 // Similar hotels
@@ -658,7 +673,7 @@ require_once 'includes/header-shared.php';
                                 <?php if ($walletBal > 0): ?>
                                 <div class="form-check mb-3">
                                     <input class="form-check-input" type="checkbox" name="use_wallet" value="1" id="useWalletHotel">
-                                    <label class="form-check-label small" for="useWalletHotel"><?= t('Gunakan KlookCash') ?> <strong><?= formatRupiah($walletBal) ?></strong></label>
+                                    <label class="form-check-label small" for="useWalletHotel"><?= t('Gunakan TravelPoints') ?> <strong><?= formatRupiah($walletBal) ?></strong></label>
                                 </div>
                                 <?php endif; ?>
                             <?php endif; ?>
