@@ -33,7 +33,7 @@ const ID_MARKERS = new RegExp(
       'profil', 'notifikasi', 'tentang', 'ketentuan', 'kebijakan', 'hubungi', 'beranda',
       'reseller', 'favorit', 'mitra', 'terpercaya', 'diskon', 'segera', 'segala',
       'kuota', 'seluruh', 'khusus', 'pengiriman', 'selama', 'dimuat', 'peta', 'ulasan', 'penumpang',
-      'kembali', 'lanjut', 'simpan', 'kirim', 'jadwal', 'stasiun', 'pelabuhan',
+      'kembali', 'lanjut', 'simpan', 'kirim', 'jadwal', 'stasiun', 'pelabuhan', 'tukar', 'rute', 'bandara', 'penumpang', 'penerbangan', 'keberangkatan', 'kelas', 'gerbong', 'dewasa', 'bayi', 'pulang', 'pergi', 'sekali', 'transit', 'kursi', 'maskapai', 'bagasi', 'tiba', 'berangkat', 'nomor', 'telepon', 'sandi',
       'penting', 'catatan', 'kupon', 'diterjemahkan', 'bayar', 'kartu', 'tersisa', 'menyetujui', 'syarat', 'afiliasi',
     ].join('|') +
     ')\\b',

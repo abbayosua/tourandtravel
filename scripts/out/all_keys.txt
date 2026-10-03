@@ -209,6 +209,7 @@ Booking Berhasil
 Booking Berhasil!
 Booking Code:
 Booking Hotel
+Booking Hotel NusaTrip
 Booking Reseller
 Booking Saya
 Booking Sekarang
@@ -743,6 +744,7 @@ Kode Promo (opsional)
 Kode bandara tidak valid. Contoh: CGK, DPS, atau pilih dari daftar.
 Kode bayar Tripay
 Kode booking Anda:
+Kode booking tidak ditemukan. Periksa kembali kode Anda.
 Kode promo berlaku!
 Kode promo sudah ada
 Kode promo tidak berlaku
@@ -848,6 +850,9 @@ Loyalty Settings
 Lunas
 Lupa Password
 Lupa password?
+MR
+MRS
+MS
 Maaf, sisa slot hanya
 Makan
 Makan Sesuai Itinerary
@@ -944,9 +949,11 @@ Nama Produk
 Nama Tiket
 Nama Tour
 Nama Transfer
+Nama belakang
 Nama collection wajib diisi
 Nama dan kota wajib diisi
 Nama dan telepon wajib diisi.
+Nama depan
 Nama harus diisi
 Nama itinerary, mis: Trip Bali 3 Hari
 Nama kategori wajib diisi
@@ -989,6 +996,7 @@ Nomor WA admin harus diisi
 Nomor WA harus diawali 62 (contoh: 6285174488415)
 Nomor WA harus diisi
 Nomor WhatsApp yang digunakan untuk mengirim notifikasi ke supplier.
+Nomor kartu
 Nomor telepon tidak valid.
 Nomor tujuan notifikasi booking baru. Diawali 62, tanpa + atau spasi.
 Non-refundable
@@ -1053,6 +1061,7 @@ Pembayaran TravelPoints berhasil
 Pembayaran aman & terenkripsi
 Pembayaran diterima
 Pembayaran diterima. Terima kasih!
+Pembayaran gagal. Coba lagi.
 Pembayaran menggunakan TravelPoints
 Pemesan
 Pemesanan & Pembayaran
@@ -1264,6 +1273,7 @@ Salin
 Sampai
 Sandbox
 Sarapan
+Sarapan, makan siang
 Sari Dewi
 Saya ikut tour ini
 Scan QR code dengan WhatsApp Anda.
@@ -1459,6 +1469,7 @@ Tautkan
 Tautkan User
 Teks CTA
 Telepon
+Tema
 Temukan
 Temukan jawaban atas pertanyaan yang sering diajukan
 Temukan paket tour impian Anda dari ratusan destinasi
@@ -1600,6 +1611,7 @@ Tren Pendapatan
 Trip
 Triple (1 kamar 3 org)
 Tukar
+Tukar asal dan tujuan
 Tukar points
 Tukar points menjadi TravelPoints? Penukaran tidak dapat dibatalkan.
 Tulis Ulasan
@@ -1692,6 +1704,7 @@ ditolak
 e-ticket
 eSIM
 eSIM & Connectivity
+email@contoh.com
 ferries
 flights
 gagal

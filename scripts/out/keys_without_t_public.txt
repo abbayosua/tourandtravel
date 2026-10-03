@@ -1,5 +1,4 @@
 Booking.com    [/hotel-detail.php]
-MRS    [/nusatrip-book.php]
 PELNI    [/pelni.php]
 Rp 0    [/tour-detail.php]
 TravelPoints    [/booking-success.php]
