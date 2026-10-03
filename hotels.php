@@ -295,8 +295,13 @@ require __DIR__ . '/includes/homepage/hotel-hero.php';
                 </div>
                 <?php if (!$usingLive && $lastPage > $currentPage): ?>
                 <div class="load-more-trigger text-center py-4" data-page="<?= $currentPage ?>" data-last-page="<?= $lastPage ?>" data-testid="hotel-load-more">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
+                    <div class="load-more-spinner spinner-border text-primary" role="status">
+                        <span class="visually-hidden"><?= t('Loading...') ?></span>
+                    </div>
+                    <div class="load-more-error d-none" data-load-error="true">
+                        <i class="bi bi-wifi-off fs-3 text-muted"></i>
+                        <p class="mt-2 mb-2 text-muted small"><?= t('Gagal memuat hotel. Periksa koneksi Anda.') ?></p>
+                        <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3" data-load-retry><?= t('Coba Lagi') ?></button>
                     </div>
                 </div>
                 <?php endif; ?>
@@ -374,42 +379,65 @@ document.addEventListener('DOMContentLoaded', function() {
     if (loadMoreTrigger) {
         var currentPage = parseInt(loadMoreTrigger.dataset.page);
         var lastPage = parseInt(loadMoreTrigger.dataset.lastPage);
+        var spinner = loadMoreTrigger.querySelector('.load-more-spinner');
+        var errorBox = loadMoreTrigger.querySelector('.load-more-error');
+        var retryBtn = loadMoreTrigger.querySelector('[data-load-retry]');
         var loading = false;
+        var failed = false;
+
+        function loadNextPage() {
+            if (loading || failed || currentPage >= lastPage) return;
+            loading = true;
+            if (spinner) spinner.classList.remove('d-none');
+            if (errorBox) errorBox.classList.add('d-none');
+            currentPage++;
+
+            var params = new URLSearchParams(window.location.search);
+            params.set('page', currentPage);
+            var ajaxUrl = 'hotels-ajax.php?' + params.toString();
+
+            fetch(ajaxUrl)
+                .then(function(response) {
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
+                    return response.text();
+                })
+                .then(function(html) {
+                    var temp = document.createElement('div');
+                    temp.innerHTML = html;
+                    if (temp.querySelector('[data-empty]')) {
+                        loadMoreTrigger.remove();
+                        loading = false;
+                        return;
+                    }
+                    var grid = document.getElementById('hotelContent');
+                    if (grid) {
+                        grid.insertAdjacentHTML('beforeend', temp.innerHTML);
+                    }
+                    loadMoreTrigger.dataset.page = currentPage;
+                    if (currentPage >= lastPage) {
+                        loadMoreTrigger.remove();
+                    }
+                    loading = false;
+                })
+                .catch(function() {
+                    currentPage--;
+                    loading = false;
+                    failed = true;
+                    if (spinner) spinner.classList.add('d-none');
+                    if (errorBox) errorBox.classList.remove('d-none');
+                });
+        }
+
+        if (retryBtn) {
+            retryBtn.addEventListener('click', function() {
+                failed = false;
+                loadNextPage();
+            });
+        }
 
         var observer = new IntersectionObserver(function(entries) {
             entries.forEach(function(entry) {
-                if (entry.isIntersecting && !loading && currentPage < lastPage) {
-                    loading = true;
-                    currentPage++;
-
-                    var params = new URLSearchParams(window.location.search);
-                    params.set('page', currentPage);
-                    var ajaxUrl = 'hotels-ajax.php?' + params.toString();
-
-                    fetch(ajaxUrl)
-                        .then(function(response) { return response.text(); })
-                        .then(function(html) {
-                            var temp = document.createElement('div');
-                            temp.innerHTML = html;
-                            if (temp.querySelector('[data-empty]')) {
-                                loadMoreTrigger.remove();
-                                loading = false;
-                                return;
-                            }
-                            var grid = document.getElementById('hotelContent');
-                            if (grid) {
-                                grid.insertAdjacentHTML('beforeend', temp.innerHTML);
-                            }
-                            loadMoreTrigger.dataset.page = currentPage;
-                            if (currentPage >= lastPage) {
-                                loadMoreTrigger.remove();
-                            }
-                            loading = false;
-                        })
-                        .catch(function() {
-                            loading = false;
-                        });
-                }
+                if (entry.isIntersecting) loadNextPage();
             });
         }, { rootMargin: '200px' });
 
