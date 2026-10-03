@@ -1046,6 +1046,7 @@ test.describe('i18n admin settings sweep', () => {
     'admin/loyalty-settings.php',
     'admin/analytics.php',
     'admin/ab-tests.php',
+    'admin/tour-add.php',
   ];
   for (const lang of ['en', 'zh']) {
     test(`admin settings bersih dari teks Indonesia saat bahasa=${lang}`, async ({ page }) => {
