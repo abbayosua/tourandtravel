@@ -92,7 +92,7 @@ function hotelApiCached(string $source, string $cacheKey, callable $fetch, calla
         $count = $counter ? (int)$counter($data) : 0;
         hotelCacheSet($cacheKey, $source, $data, $count);
     }
-    return is_array($data) ? $data : ['error' => 'Respons tidak valid'];
+    return is_array($data) ? $data : ['error' => t('Respons tidak valid')];
 }
 
 // ============================================================
@@ -106,7 +106,7 @@ function hotelApiAutocomplete(string $q): array {
             'query' => $q, 'pageview_id' => '', 'aid' => 800210, 'language' => 'en-us', 'size' => 8,
         ], ['Origin: https://www.booking.com', 'Referer: https://www.booking.com/']);
         $d = json_decode($raw, true);
-        if (!isset($d['results']) || !is_array($d['results'])) return ['error' => 'autocomplete kosong'];
+        if (!isset($d['results']) || !is_array($d['results'])) return ['error' => t('autocomplete kosong')];
         $out = [];
         foreach ($d['results'] as $r) {
             $out[] = [
@@ -156,7 +156,7 @@ function hotelApiBookingDetail(int $hotelId): string {
  */
 function hotelApiBookingHotel(string $cc, string $pg, string $start, int $days = 7, int $adults = 2, int $rooms = 1, int $hotelId = 0): array {
     $cc = trim($cc); $pg = trim($pg);
-    if ($cc === '' || $pg === '') return ['error' => 'pagename/cc Booking.com tidak valid'];
+    if ($cc === '' || $pg === '') return ['error' => t('pagename/cc Booking.com tidak valid')];
     return hotelApiCached('booking', hotelCacheKey('booking', ['hotel', $cc, $pg, $start, $days, $adults, $rooms, $hotelId]), function () use ($cc, $pg, $start, $days, $adults, $rooms, $hotelId) {
         $prices = json_decode(hotelApiBookingPrices($cc, $pg, $start, $days, $adults, $rooms), true);
         $cal = $prices['data']['availabilityCalendar'] ?? null;
@@ -164,7 +164,7 @@ function hotelApiBookingHotel(string $cc, string $pg, string $start, int $days =
         $hid = $hotelId ?: (int)($cal['hotelId'] ?? 0);
         $detail = $hid ? json_decode(hotelApiBookingDetail($hid), true) : null;
         $prop = $detail['data']['propertyDetails'] ?? null;
-        if (!$prop && !$cal) return ['error' => 'Booking.com tidak mengembalikan data hotel'];
+        if (!$prop && !$cal) return ['error' => t('Booking.com tidak mengembalikan data hotel')];
 
         $photoIds = array_column($prop['photos']['all'] ?? [], 'id');
         return [
@@ -212,16 +212,16 @@ function oyoModuleEnabled(): bool {
 }
 
 function hotelApiOyo(string $city): array {
-    if (!oyoModuleEnabled()) return ['error' => 'Modul OYO nonaktif', 'source' => 'oyorooms', 'hotels' => []];
+    if (!oyoModuleEnabled()) return ['error' => t('Modul OYO nonaktif'), 'source' => 'oyorooms', 'hotels' => []];
     $city = trim($city);
-    if ($city === '') return ['error' => 'Kota kosong', 'hotels' => []];
+    if ($city === '') return ['error' => t('Kota kosong'), 'hotels' => []];
     return hotelApiCached('oyo', hotelCacheKey('oyo', ['list', $city]), function () use ($city) {
         $slug = preg_replace('/[^a-z0-9]+/', '-', strtolower(trim($city)));
         $slug = trim($slug, '-');
-        if ($slug === '') return ['error' => 'Kota tidak valid', 'source' => 'oyorooms', 'hotels' => []];
+        if ($slug === '') return ['error' => t('Kota tidak valid'), 'source' => 'oyorooms', 'hotels' => []];
         $html = hotelApiHttpGet('https://www.oyorooms.com/id/hotels-in-' . $slug . '/', null, [], false);
         if (!$html || strpos($html, 'hotelCardListing') === false) {
-            return ['error' => 'OYO: tidak ada hasil / diblokir', 'source' => 'oyorooms', 'hotels' => []];
+            return ['error' => t('OYO: tidak ada hasil / diblokir'), 'source' => 'oyorooms', 'hotels' => []];
         }
         preg_match_all('/listingHotelDescription__hotelName[^>]*>([^<]+)/', $html, $mn);
         preg_match_all('/listingPrice__finalPrice[^>]*>([^<]+)/', $html, $mp);
@@ -261,11 +261,11 @@ function hotelApiOyo(string $city): array {
 // ============================================================
 
 function hotelApiNusaAuto(string $q): array {
-    if (function_exists('nusaModuleEnabled') && !nusaModuleEnabled()) return ['error' => 'Modul NusaTrip nonaktif', 'results' => []];
+    if (function_exists('nusaModuleEnabled') && !nusaModuleEnabled()) return ['error' => t('Modul NusaTrip nonaktif'), 'results' => []];
     return hotelApiCached('nusatrip', hotelCacheKey('nusatrip', ['auto', strtolower(trim($q))]), function () use ($q) {
         $raw = hotelApiHttpGet('https://www.nusatrip.com/location/search?name=' . urlencode($q));
         $d = json_decode($raw, true);
-        if (!is_array($d)) return ['error' => 'NusaTrip autocomplete kosong', 'results' => []];
+        if (!is_array($d)) return ['error' => t('NusaTrip autocomplete kosong'), 'results' => []];
         $out = [];
         foreach ($d as $x) {
             if (!is_array($x)) continue;
@@ -276,15 +276,15 @@ function hotelApiNusaAuto(string $q): array {
 }
 
 function hotelApiNusatrip(string $token): array {
-    if (function_exists('nusaModuleEnabled') && !nusaModuleEnabled()) return ['error' => 'Modul NusaTrip nonaktif', 'hotels' => []];
+    if (function_exists('nusaModuleEnabled') && !nusaModuleEnabled()) return ['error' => t('Modul NusaTrip nonaktif'), 'hotels' => []];
     $token = trim($token);
-    if ($token === '') return ['error' => 'Token NusaTrip kosong', 'hotels' => []];
+    if ($token === '') return ['error' => t('Token NusaTrip kosong'), 'hotels' => []];
     if (ctype_digit($token)) {
         $param = 'key';
     } elseif (preg_match('/^[a-f0-9]{32,160}$/i', $token)) {
         $param = 'rkey';
     } else {
-        return ['error' => 'Token tidak valid (key angka atau rkey hex dari /hotels/result?...)', 'hotels' => []];
+        return ['error' => t('Token tidak valid (key angka atau rkey hex dari /hotels/result?...)'), 'hotels' => []];
     }
     return hotelApiCached('nusatrip', hotelCacheKey('nusatrip', ['list', $token]), function () use ($param, $token) {
         $url = "https://www.nusatrip.com/hotels/result?$param=$token";
@@ -298,7 +298,7 @@ function hotelApiNusatrip(string $token): array {
         }
         $d = json_decode($raw, true);
         if (!isset($d['hotel_list']) || !$d['hotel_list']) {
-            return ['error' => 'NusaTrip: key tidak valid / kosong', 'hotels' => []];
+            return ['error' => t('NusaTrip: key tidak valid / kosong'), 'hotels' => []];
         }
         $hotels = [];
         foreach ($d['hotel_list'] as $h) {
@@ -349,12 +349,12 @@ function hotelApiResolveSource(?string $source = null): string {
  * @return array ['source'=>, 'count'=>, 'hotels'=>[], 'error'=>?]
  */
 function hotelApiSearch(string $city, array $opts = []): array {
-    if (!hotelApiEnabled()) return ['error' => 'Live hotel API dimatikan', 'hotels' => [], 'count' => 0];
+    if (!hotelApiEnabled()) return ['error' => t('Live hotel API dimatikan'), 'hotels' => [], 'count' => 0];
     $city = trim($city);
-    if ($city === '') return ['error' => 'Kota kosong', 'hotels' => [], 'count' => 0];
+    if ($city === '') return ['error' => t('Kota kosong'), 'hotels' => [], 'count' => 0];
 
     $source = hotelApiResolveSource($opts['source'] ?? null);
-    if ($source === '') return ['source' => '', 'count' => 0, 'hotels' => [], 'error' => 'Semua modul live nonaktif'];
+    if ($source === '') return ['source' => '', 'count' => 0, 'hotels' => [], 'error' => t('Semua modul live nonaktif')];
     if ($source === 'nusatrip') {
         // Native API: butuh tanggal valid utk hotel_search (default +7/+8).
         $ci = (string)($opts['checkin'] ?? '');
@@ -412,5 +412,5 @@ function hotelApiFind(string $source, string $city, string $externalId, array $o
     foreach ($res['hotels'] ?? [] as $h) {
         if ((string)$h['external_id'] === (string)$externalId) return $h;
     }
-    return ['error' => 'Hotel tidak ditemukan'];
+    return ['error' => t('Hotel tidak ditemukan')];
 }

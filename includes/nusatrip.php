@@ -323,10 +323,10 @@ function nusaSearchCity(string $q, string $checkin, string $checkout, int $guest
     $loc = nusaLocationSearch($q);
     $list = $loc['data'] ?? null;
     if (($loc['http'] ?? 0) !== 200 || !is_array($list) || !$list)
-        return ['error' => 'Kota tidak ditemukan di NusaTrip', 'hotels' => []];
+        return ['error' => t('Kota tidak ditemukan di NusaTrip'), 'hotels' => []];
     $first = $list[0];
     $locationId = (string)($first['val'] ?? '');
-    if ($locationId === '') return ['error' => 'locationId kosong', 'hotels' => []];
+    if ($locationId === '') return ['error' => t('locationId kosong'), 'hotels' => []];
     $s = nusaHotelSearch($locationId, $checkin, $checkout, $guests);
     $hotels = $s['data']['hotels'] ?? null;
     if (($s['http'] ?? 0) !== 200 || !is_array($hotels))

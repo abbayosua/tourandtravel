@@ -1,7 +1,6 @@
 Booking.com    [/hotel-detail.php]
 Fee    [/booking-success.php]
 Ferry    [/ferries.php]
-JPG/PNG/WebP, maks 5MB    [/reseller-topup.php]
 KlookCash    [/booking-success.php]
 Loading...    [/hotels.php]
 MRS    [/nusatrip-book.php]

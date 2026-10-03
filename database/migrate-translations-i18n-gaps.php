@@ -826,3 +826,63 @@ $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, 
 $c3 = 0;
 foreach ($err3 as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c3++; } }
 echo "Upserted $c3 train/status/upload rows.\n";
+
+// ---- Live hotel API error messages ----
+$apiExtra = [
+    'en' => [
+        'unknown action' => 'Unknown action',
+        'cc/pagename tidak valid' => 'Invalid cc/pagename',
+        'hotel_id tidak valid' => 'Invalid hotel_id',
+        'Modul OYO nonaktif' => 'OYO module is disabled',
+        'Modul NusaTrip nonaktif' => 'NusaTrip module is disabled',
+        'rates gagal' => 'Failed to load rates',
+        'detail gagal' => 'Failed to load details',
+        'policy gagal' => 'Failed to load policy',
+        'Respons tidak valid' => 'Invalid response',
+        'autocomplete kosong' => 'Empty autocomplete',
+        'pagename/cc Booking.com tidak valid' => 'Invalid Booking.com pagename/cc',
+        'Booking.com tidak mengembalikan data hotel' => 'Booking.com returned no hotel data',
+        'Kota kosong' => 'City is empty',
+        'Kota tidak valid' => 'Invalid city',
+        'OYO: tidak ada hasil / diblokir' => 'OYO: no results / blocked',
+        'NusaTrip autocomplete kosong' => 'NusaTrip autocomplete is empty',
+        'Token NusaTrip kosong' => 'NusaTrip token is empty',
+        'Token tidak valid (key angka atau rkey hex dari /hotels/result?...)' => 'Invalid token (numeric key or rkey hex from /hotels/result?...).',
+        'NusaTrip: key tidak valid / kosong' => 'NusaTrip: invalid / empty key',
+        'Live hotel API dimatikan' => 'Live hotel API is disabled',
+        'Semua modul live nonaktif' => 'All live modules are disabled',
+        'Hotel tidak ditemukan' => 'Hotel not found',
+        'Kota tidak ditemukan di NusaTrip' => 'City not found on NusaTrip',
+        'locationId kosong' => 'locationId is empty',
+    ],
+    'zh' => [
+        'unknown action' => '未知操作',
+        'cc/pagename tidak valid' => 'cc/pagename 无效',
+        'hotel_id tidak valid' => 'hotel_id 无效',
+        'Modul OYO nonaktif' => 'OYO 模块已禁用',
+        'Modul NusaTrip nonaktif' => 'NusaTrip 模块已禁用',
+        'rates gagal' => '房价加载失败',
+        'detail gagal' => '详情加载失败',
+        'policy gagal' => '政策加载失败',
+        'Respons tidak valid' => '响应无效',
+        'autocomplete kosong' => '自动补全为空',
+        'pagename/cc Booking.com tidak valid' => 'Booking.com pagename/cc 无效',
+        'Booking.com tidak mengembalikan data hotel' => 'Booking.com 未返回酒店数据',
+        'Kota kosong' => '城市为空',
+        'Kota tidak valid' => '城市无效',
+        'OYO: tidak ada hasil / diblokir' => 'OYO：无结果 / 被拦截',
+        'NusaTrip autocomplete kosong' => 'NusaTrip 自动补全为空',
+        'Token NusaTrip kosong' => 'NusaTrip 令牌为空',
+        'Token tidak valid (key angka atau rkey hex dari /hotels/result?...)' => '令牌无效（数字 key 或来自 /hotels/result?... 的 rkey 十六进制）。',
+        'NusaTrip: key tidak valid / kosong' => 'NusaTrip：密钥无效/为空',
+        'Live hotel API dimatikan' => '实时酒店 API 已关闭',
+        'Semua modul live nonaktif' => '所有实时模块均已禁用',
+        'Hotel tidak ditemukan' => '未找到酒店',
+        'Kota tidak ditemukan di NusaTrip' => '在 NusaTrip 上未找到城市',
+        'locationId kosong' => 'locationId 为空',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$c4 = 0;
+foreach ($apiExtra as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c4++; } }
+echo "Upserted $c4 hotel API error rows.\n";
