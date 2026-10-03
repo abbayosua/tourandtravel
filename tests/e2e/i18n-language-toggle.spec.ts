@@ -75,6 +75,7 @@ const PAGES = [
   'tour-detail.php?slug=8d7n-shanghai-jiangnan-highlights-ink-wash-jiangnan-wuzhen-water-town',
   'tour-detail.php?slug=beijing-qushui-lanting-cabang-sihui',
   'hotel-detail.php?slug=grand-hyatt-bali',
+  'hotel-detail.php?slug=four-seasons-resort-ubud',
   'attraction-detail.php?slug=tiket-masuk-taman-mini-indonesia-indah',
   'transfer-detail.php?slug=bandara-juanda-ke-pusat-kota-surabaya',
   'rental-car-detail.php?slug=toyota-avanza-jakarta',
