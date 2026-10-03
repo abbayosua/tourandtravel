@@ -11,7 +11,7 @@ $footMenus = getNavMenus();
 <footer id="kontak" class="bg-dark text-light pt-5 pb-3 mt-5 voyage-footer">
     <div class="container">
         <div class="row justify-content-center mb-5">
-            <div class="col-lg-7 text-center">
+            <div class="col-lg-7 text-center" data-testid="newsletter-block">
                 <h5 class="fw-bold mb-2"><?= t('Dapatkan Penawaran Terbaik') ?></h5>
                 <p class="text-secondary small mb-3"><?= t('Berlangganan newsletter kami untuk promo eksklusif & tips perjalanan.') ?></p>
                 <form class="d-flex gap-2 klook-newsletter-form" id="newsletterForm" style="max-width: 460px; margin: 0 auto;">
@@ -185,33 +185,6 @@ function toggleWishlist(btn, tourId, itemType) {
             btn.classList.remove('opacity-50');
         });
 }
-</script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    var form = document.getElementById('newsletterForm');
-    if (!form) return;
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        var email = document.getElementById('newsletterEmail').value.trim();
-        var msg = document.querySelector('.klook-newsletter-msg');
-        if (!msg) return;
-        fetch('newsletter-ajax.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: 'email=' + encodeURIComponent(email)
-        })
-        .then(function(r) { return r.json(); })
-        .then(function(d) {
-            msg.textContent = d.message || (d.success ? 'OK' : I18N.t('Gagal'));
-            msg.className = 'klook-newsletter-msg small mt-2 ' + (d.success ? 'text-success' : 'text-danger');
-            if (d.success) form.reset();
-        })
-        .catch(function() {
-            msg.textContent = I18N.t('Terjadi kesalahan. Coba lagi.');
-            msg.className = 'klook-newsletter-msg small mt-2 text-danger';
-        });
-    });
-});
 </script>
 <?php require_once __DIR__ . '/components/social-proof.php'; ?>
 <?php require_once __DIR__ . '/components/live-chat.php'; ?>

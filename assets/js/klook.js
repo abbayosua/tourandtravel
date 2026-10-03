@@ -47,12 +47,18 @@
     function initNewsletter() {
         var form = document.getElementById('newsletterForm');
         if (!form) return;
+        var busy = false;
         form.addEventListener('submit', function (e) {
             e.preventDefault();
+            if (busy) return;
             var email = document.getElementById('newsletterEmail');
             if (!email || !email.value.trim()) return;
             var msg = document.querySelector('.klook-newsletter-msg');
             if (!msg) return;
+
+            busy = true;
+            var btn = form.querySelector('button[type="submit"]');
+            if (btn) btn.disabled = true;
 
             fetch('newsletter-ajax.php', {
                 method: 'POST',
@@ -68,6 +74,10 @@
             .catch(function () {
                 msg.textContent = I18N.t('Terjadi kesalahan. Coba lagi nanti.');
                 msg.className = 'klook-newsletter-msg small mt-2 text-danger';
+            })
+            .finally(function () {
+                busy = false;
+                if (btn) btn.disabled = false;
             });
         });
     }
