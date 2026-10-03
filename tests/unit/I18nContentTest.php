@@ -18,6 +18,8 @@ function i18nContentConfigs(): array {
         ['attractions', 'is_active = 1', ['name', 'description']],
         ['connectivity_products', 'is_active = 1', ['name', 'description']],
         ['transfers', 'is_active = 1', ['name', 'description']],
+        ['collections', 'is_active = 1', ['name', 'description']],
+        ['faq_items', 'is_active = 1', ['question', 'answer']],
         ['posts', "status = 'published'", ['title', 'excerpt', 'body']],
     ];
 }
