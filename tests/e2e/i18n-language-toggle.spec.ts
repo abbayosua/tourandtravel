@@ -78,6 +78,7 @@ const PAGES = [
   'rental-car-detail.php?slug=toyota-avanza-jakarta',
   'esim-detail.php?slug=esim-bali-10gb',
   'train-detail.php?slug=argo-bromo-anggrek',
+  'flight-detail.php?schedule_id=1',
   'blog-detail.php?slug=tips-memilih-paket-tour-keluarga',
 ];
 
