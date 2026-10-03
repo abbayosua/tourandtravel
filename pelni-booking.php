@@ -368,16 +368,24 @@ document.getElementById('passengers').addEventListener('change', function() {
 
     function pollStatus(orderId) {
         if (!orderId) return;
+        var retries = 0;
         var timer = setInterval(function () {
             fetch('<?= BASE_URL ?>/ajax/payment-status.php?order_id=' + encodeURIComponent(orderId))
                 .then(function (r) { return r.json(); })
                 .then(function (d) {
+                    retries = 0;
                     if (d.status === 'paid') {
                         clearInterval(timer);
                         if (statusArea) statusArea.innerHTML = '<span class="text-success fw-bold"><?= t('Pembayaran diterima. Terima kasih!') ?></span>';
                         btn.remove();
                     }
-                }).catch(function () {});
+                }).catch(function () {
+                    retries++;
+                    if (retries >= 5) {
+                        clearInterval(timer);
+                        if (statusArea) statusArea.innerHTML = '<span class="text-warning small"><?= t('Gagal memuat hasil. Coba lagi.') ?></span>';
+                    }
+                });
         }, 3000);
     }
 
