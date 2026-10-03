@@ -60,8 +60,8 @@ function duffelSearchOffers($origin, $dest, $date, $cabinClass = 'economy', $pas
         $ts = strtotime($s['departure_date'] ?? '');
         if (!$ts) return ['error' => t('Tanggal tidak valid') . ' (leg ' . ($i + 1) . ').'];
         $dateStr = date('Y-m-d', $ts);
-        if ($dateStr < date('Y-m-d')) return ['error' => 'Tanggal leg ' . ($i + 1) . ' tidak boleh di masa lalu.'];
-        if ($dateStr > date('Y-m-d', strtotime('+360 days'))) return ['error' => 'Tanggal leg ' . ($i + 1) . ' terlalu jauh (maks 360 hari).'];
+        if ($dateStr < date('Y-m-d')) return ['error' => t('Tanggal tidak boleh di masa lalu') . ' (leg ' . ($i + 1) . ').'];
+        if ($dateStr > date('Y-m-d', strtotime('+360 days'))) return ['error' => t('Tanggal terlalu jauh (maks 360 hari)') . ' (leg ' . ($i + 1) . ').'];
         $parsedSlices[] = ['origin' => $o, 'destination' => $d, 'departure_date' => $dateStr];
     }
     $allowed = ['economy','premium_economy','business','first'];

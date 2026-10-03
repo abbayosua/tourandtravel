@@ -22,7 +22,7 @@ function flightlistSearchOffers($origin, $dest, $date, $cabinClass = 'economy', 
     if (!$ts) return ['error' => t('Tanggal tidak valid.')];
     $dateStr = date('Y-m-d', $ts);
     if ($dateStr < date('Y-m-d')) return ['error' => t('Tanggal keberangkatan tidak boleh di masa lalu.')];
-    if ($dateStr > date('Y-m-d', strtotime('+360 days'))) return ['error' => 'Tanggal terlalu jauh (maks 360 hari).'];
+    if ($dateStr > date('Y-m-d', strtotime('+360 days'))) return ['error' => t('Tanggal terlalu jauh (maks 360 hari).')];
     $passengers = max(1, min(9, (int)$passengers));
     $cabin = flightlistCabin($cabinClass);
     // Check cache first
@@ -70,7 +70,7 @@ function flightlistSearchOffers($origin, $dest, $date, $cabinClass = 'economy', 
     if (!is_array($data) || !isset($data['data']) || !is_array($data['data'])) {
         // Check if response is HTML (blocked)
         if (strpos($resp, '<html') !== false) return ['error' => 'FlightList dibatasi (HTML)', 'unreachable' => true];
-        return ['error' => 'Format FlightList tidak valid', 'unreachable' => true];
+        return ['error' => t('Format FlightList tidak valid'), 'unreachable' => true];
     }
     $offers = $data['data'];
     // Store in cache

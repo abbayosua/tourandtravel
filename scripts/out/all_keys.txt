@@ -432,6 +432,7 @@ Fokus
 Fokus Website
 Fokus tidak valid
 Fokus website berhasil disimpan.
+Format FlightList tidak valid
 Format JPG/PNG/WebP, max 2MB
 Foto
 Foto Paspor
@@ -445,6 +446,7 @@ Gagal membuat sesi booking. Silakan coba lagi atau pilih kamar lain.
 Gagal memesan: 
 Gagal memotong saldo. Silakan coba lagi.
 Gagal memproses refund
+Gagal memuat hotel. Periksa koneksi Anda.
 Gagal memuat status: 
 Gagal memuat tour. Periksa koneksi Anda.
 Gagal memulai pembayaran. Coba lagi.
@@ -1418,6 +1420,9 @@ Tanggal keberangkatan tidak valid.
 Tanggal kunjungan harus diisi
 Tanggal penjemputan harus diisi
 Tanggal perjalanan harus diisi
+Tanggal terlalu jauh (maks 360 hari)
+Tanggal terlalu jauh (maks 360 hari).
+Tanggal tidak boleh di masa lalu
 Tanggal tidak valid
 Tanggal tidak valid.
 Tanggung Jawab Pelanggan

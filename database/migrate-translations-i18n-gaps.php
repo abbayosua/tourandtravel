@@ -886,3 +886,23 @@ $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, 
 $c4 = 0;
 foreach ($apiExtra as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c4++; } }
 echo "Upserted $c4 hotel API error rows.\n";
+
+// ---- Flight search date/format errors (duffel/flightlist) ----
+$err4 = [
+    'en' => [
+        'Tanggal tidak boleh di masa lalu' => 'Date cannot be in the past',
+        'Tanggal terlalu jauh (maks 360 hari).' => 'Date is too far ahead (max 360 days).',
+        'Tanggal terlalu jauh (maks 360 hari)' => 'Date is too far ahead (max 360 days)',
+        'Format FlightList tidak valid' => 'Invalid FlightList format',
+    ],
+    'zh' => [
+        'Tanggal tidak boleh di masa lalu' => '日期不能是过去',
+        'Tanggal terlalu jauh (maks 360 hari).' => '日期过于遥远（最多 360 天）。',
+        'Tanggal terlalu jauh (maks 360 hari)' => '日期过于遥远（最多 360 天）',
+        'Format FlightList tidak valid' => 'FlightList 格式无效',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$c5 = 0;
+foreach ($err4 as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c5++; } }
+echo "Upserted $c5 flight date error rows.\n";
