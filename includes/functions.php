@@ -458,6 +458,8 @@ function getJsI18nKeys() {
     return [
         'Berhasil! Cek email Anda.',
         'Gagal. Coba lagi.',
+        'Gagal',
+        'Terjadi kesalahan. Coba lagi.',
         'Terjadi kesalahan. Coba lagi nanti.',
         'malam',
         'kamar',

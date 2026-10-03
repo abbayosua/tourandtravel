@@ -919,6 +919,25 @@ test.describe('i18n halaman booking ferry', () => {
   });
 });
 
+test.describe('i18n newsletter footer', () => {
+  // Pesan error newsletter (footer, semua halaman) dulu pakai I18N.t() yang tidak
+  // terdaftar, sehingga selalu tampil Indonesia di semua bahasa.
+  test('pesan error newsletter mengikuti bahasa', async ({ page }) => {
+    const expected: Record<string, string> = { en: 'Something went wrong', zh: '发生错误' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/index.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await page.route('**/newsletter-ajax.php', (route) => route.abort());
+      await page.fill('#newsletterEmail', 'e2e-newsletter@t.local');
+      await page.click('#newsletterForm button[type="submit"]');
+      const msg = page.locator('.klook-newsletter-msg');
+      await expect(msg).toContainText(label);
+      await expect(msg).not.toContainText('Terjadi kesalahan');
+      await expect(msg).not.toContainText('Gagal');
+    }
+  });
+});
+
 test.describe('i18n email templates', () => {
   // Render each transactional email in id/en/zh and assert no Indonesian leaks.
   test('template email tidak menyisakan teks Indonesia', async () => {

@@ -73,6 +73,37 @@ function i18nScanCodeKeys(): array {
     return array_keys($keys);
 }
 
+/**
+ * Kumpulkan semua key I18N.t() literal dari file PHP + assets/js.
+ * Key ini harus terdaftar di getJsI18nKeys() agar masuk window.I18N.strings;
+ * jika tidak, I18N.t() jatuh ke key (Indonesia) di semua bahasa.
+ */
+function i18nScanJsCallKeys(): array {
+    $root = dirname(__DIR__, 2);
+    $skip = ['.git', 'node_modules', 'test-results', 'scripts', 'vendor', 'uploads', '.serena'];
+    $it = new RecursiveIteratorIterator(
+        new RecursiveCallbackFilterIterator(
+            new RecursiveDirectoryIterator($root, FilesystemIterator::SKIP_DOTS),
+            function ($f) use ($skip) {
+                if ($f->isDir()) return !in_array($f->getFilename(), $skip);
+                return preg_match('/\.(php|js)$/', $f->getFilename()) === 1;
+            }
+        )
+    );
+    $keys = [];
+    foreach ($it as $f) {
+        $src = @file_get_contents($f->getPathname());
+        if ($src === false) continue;
+        if (preg_match_all("/I18N\.t\(\s*'((?:[^'\\\\]|\\\\.)*)'\s*[,)]/", $src, $m)) {
+            foreach ($m[1] as $k) { $k = stripslashes($k); if (trim($k) !== '') $keys[$k] = true; }
+        }
+        if (preg_match_all('/I18N\.t\(\s*"((?:[^"\\\\]|\\\\.)*)"\s*[,)]/', $src, $m)) {
+            foreach ($m[1] as $k) { $k = stripslashes($k); if (trim($k) !== '') $keys[$k] = true; }
+        }
+    }
+    return array_keys($keys);
+}
+
 /** Map case-insensitive: lower(key) => lang => [nilai non-kosong...]. */
 function i18nDbValueMap(): array {
     $map = [];
@@ -117,6 +148,22 @@ function testNoIdentityEnIndonesianKey(): void {
     }
     sort($bad);
     assertSame([], $bad, 'Key t() dengan en identity berbahasa Indonesia');
+}
+
+/**
+ * Semua key I18N.t() yang dipakai di JS/PHP harus terdaftar di getJsI18nKeys()
+ * (kalau tidak, I18N.t() selalu mengembalikan key = teks Indonesia).
+ */
+function testJsI18nKeysAreRegistered(): void {
+    $registered = array_flip(getJsI18nKeys());
+    $allow = ['ada :n paket']; // contoh placeholder di komentar assets/js/i18n.js
+    $missing = [];
+    foreach (i18nScanJsCallKeys() as $k) {
+        if (isset($registered[$k]) || in_array($k, $allow, true)) continue;
+        $missing[] = $k;
+    }
+    sort($missing);
+    assertSame([], $missing, 'Key I18N.t() yang belum terdaftar di getJsI18nKeys()');
 }
 
 function testPaymentLabelsLocalized(): void {

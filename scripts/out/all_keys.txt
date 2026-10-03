@@ -452,6 +452,7 @@ Gagal membuat session
 Gagal memesan: 
 Gagal memotong saldo. Silakan coba lagi.
 Gagal memproses refund
+Gagal memuat hasil. Coba lagi.
 Gagal memuat hotel. Periksa koneksi Anda.
 Gagal memuat status: 
 Gagal memuat tour. Periksa koneksi Anda.
