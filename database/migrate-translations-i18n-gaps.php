@@ -577,3 +577,24 @@ foreach ($authExtra as $lang => $dict) {
     }
 }
 echo "Upserted $authCount authenticated-page translation rows.\n";
+
+// ---- Notifikasi harga turun (in-app + email fallback) ----
+$priceAlertExtra = [
+    'en' => [
+        'Harga Turun! 🎉' => 'Price Dropped! 🎉',
+        '%s sekarang %s (target: %s)' => '%s is now %s (target: %s)',
+    ],
+    'zh' => [
+        'Harga Turun! 🎉' => '价格下降！🎉',
+        '%s sekarang %s (target: %s)' => '%s 现为 %s（目标价：%s）',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$paCount = 0;
+foreach ($priceAlertExtra as $lang => $dict) {
+    foreach ($dict as $key => $value) {
+        $stmt->execute([$key, $lang, $value]);
+        $paCount++;
+    }
+}
+echo "Upserted $paCount price-alert notification rows.\n";

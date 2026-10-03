@@ -71,8 +71,8 @@ function checkPriceAlerts(): array {
 
         // Send in-app notification
         $userId = (int)$alert['user_id'];
-        $notifTitle = 'Harga Turun! 🎉';
-        $notifBody = sprintf('%s sekarang %s (target: %s)', $title, formatRupiah($currentPrice, $currency), formatRupiah($targetPrice, $currency));
+        $notifTitle = t('Harga Turun! 🎉');
+        $notifBody = sprintf(t('%s sekarang %s (target: %s)'), $title, formatRupiah($currentPrice, $currency), formatRupiah($targetPrice, $currency));
         addNotification($userId, 'price_alert', $notifTitle, $notifBody, $link);
 
         // Send email notification

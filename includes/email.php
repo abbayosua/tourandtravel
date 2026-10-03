@@ -104,7 +104,19 @@ function renderEmailTemplate(string $event, array $data = [], ?string $lang = nu
 
     $subject = $data['subject'] ?? null;
     if ($subject === null) {
-        $subject = ucfirst(str_replace('-', ' ', $event));
+        $defaultSubjects = [
+            'booking-created' => ['id' => 'Pemesanan Diterima', 'en' => 'Booking Received', 'zh' => '预订已收到'],
+            'booking-status' => ['id' => 'Status Booking', 'en' => 'Booking Status', 'zh' => '预订状态'],
+            'invoice' => ['id' => 'Pembayaran Diterima', 'en' => 'Payment Received', 'zh' => '已收到付款'],
+            'reset-password' => ['id' => 'Atur Ulang Password', 'en' => 'Reset Password', 'zh' => '重置密码'],
+            'topup-approved' => ['id' => 'Topup Disetujui', 'en' => 'Topup Approved', 'zh' => '充值已批准'],
+            'topup-rejected' => ['id' => 'Topup Ditolak', 'en' => 'Topup Rejected', 'zh' => '充值被拒绝'],
+            'welcome' => ['id' => 'Selamat Datang', 'en' => 'Welcome', 'zh' => '欢迎'],
+            'price-alert' => ['id' => 'Harga Turun', 'en' => 'Price Dropped', 'zh' => '价格下降'],
+        ];
+        $subject = $defaultSubjects[$event][$lang]
+            ?? $defaultSubjects[$event]['en']
+            ?? ucfirst(str_replace('-', ' ', $event));
         if (!empty($data['booking_code'])) $subject .= ' - ' . $data['booking_code'];
     }
 
