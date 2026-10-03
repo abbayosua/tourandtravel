@@ -751,6 +751,24 @@ test.describe('i18n admin Singapay settings', () => {
       expect(await page.content()).toContain(label);
     }
   });
+
+  // Label field Singapay dulu hardcoded (bukan t()).
+  test('label field Singapay mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    const expected: Record<string, string[]> = {
+      en: ['API Key', 'Client ID', 'Client Secret', 'Account ID'],
+      zh: ['API 密钥', '客户端 ID', '客户端密钥', '账户 ID'],
+    };
+    for (const [lang, labels] of Object.entries(expected)) {
+      await page.goto(`${BASE}/admin/payments.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      const html = await page.content();
+      for (const l of labels) expect(html).toContain(l);
+    }
+    await page.goto(`${BASE}/admin/payments.php?lang=zh`);
+    await page.waitForLoadState('domcontentloaded');
+    expect(await page.content()).not.toContain('>API Key<');
+  });
 });
 
 test.describe('i18n hotel content zh', () => {
