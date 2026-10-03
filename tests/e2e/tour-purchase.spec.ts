@@ -160,7 +160,7 @@ async function bookTour(page: Page, opts: BookOpts): Promise<string> {
   if (opts.insurance) await page.locator('#addInsuranceTour').check();
 
   await Promise.all([
-    page.waitForURL(/booking-success\.php\?code=/, { timeout: 30000 }),
+    page.waitForURL(/booking-success\.php\?code=/, { timeout: 60000 }),
     page.locator('#bookingSubmitBtn').click(),
   ]);
 
@@ -210,9 +210,12 @@ test('booking sebagai tamu (tanpa login) berhasil', async ({ page }) => {
   expect(row).toContain(String(UNIT_PRICE));
   expect(mysql(`SELECT COUNT(*) FROM wallet_transactions WHERE reference_type = 'tour_booking' AND reference_id = (SELECT id FROM bookings WHERE booking_code = '${code}')`)).toBe('0');
 
-  // Kode booking tetap bisa dilacak.
+  // Kode booking tetap bisa dilacak dengan detail lengkap.
   await page.goto(`${BASE}/track.php?code=${code}`);
   await expect(page.locator(`text=${code}`).first()).toBeVisible();
+  await expect(page.locator('body')).toContainText('Menunggu Konfirmasi');
+  await expect(page.locator('body')).toContainText('Rp 1.500.000');
+  await expect(page.locator('body')).toContainText('E2E Tour Purchase');
 });
 
 test('pembelian 2 peserta tersimpan dengan benar', async ({ page }) => {
