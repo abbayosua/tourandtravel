@@ -10,6 +10,8 @@ if (isset($_GET['msg'])) $msg = match($_GET['msg']) { 'added' => t('Berhasil dit
 if (isset($_GET['delete'])) { $id=(int)$_GET['delete']; db()->prepare("DELETE FROM faq_categories WHERE id=?")->execute([$id]); header('Location: faq-category.php?msg=deleted'); exit; }
 
 $items = db()->query("SELECT c.*, (SELECT COUNT(*) FROM faq_items fi WHERE fi.category_id = c.id) AS item_count FROM faq_categories c ORDER BY c.sort_order ASC, c.name ASC")->fetchAll();
+$q = trim($_GET['q'] ?? '');
+if ($q !== '') $items = array_values(array_filter($items, fn($r) => stripos(json_encode($r), $q) !== false));
 
 $pageTitle = t('Kategori FAQ');
 require_once 'includes/admin-header.php';
@@ -18,6 +20,7 @@ require_once 'includes/admin-header.php';
     <h4 class="fw-bold mb-0"><?= t('Kategori FAQ') ?></h4>
     <a href="faq-category-edit.php" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> <?= t('Tambah') ?></a>
 </div>
+<form method="GET" class="mb-3" style="max-width:340px;"><div class="input-group input-group-sm"><input type="text" name="q" class="form-control" placeholder="<?= t('Cari') ?>" value="<?= e($q) ?>" data-testid="admin-list-search"><button type="submit" class="btn btn-outline-primary"><?= t('Cari') ?></button></div></form>
 <?php if ($msg): ?><div class="alert alert-success py-2"><?= $msg ?></div><?php endif; ?>
 <div class="card border-0 shadow-sm"><div class="card-body p-0 table-responsive">
 <table class="table table-hover mb-0 admin-table">

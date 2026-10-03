@@ -3,9 +3,12 @@ require_once '../includes/config.php'; require_once '../includes/db.php'; requir
 $msg=''; if(isset($_GET['msg'])) $msg=match($_GET['msg']){'deleted'=>'OK',default=>''};
 if(isset($_GET['delete'])){$id=(int)$_GET['delete'];db()->prepare("DELETE FROM ferries WHERE id=?")->execute([$id]);header('Location: ferries.php?msg=deleted');exit;}
 $items=db()->query("SELECT * FROM ferries ORDER BY company,route_from")->fetchAll();
+$q = trim($_GET['q'] ?? '');
+if ($q !== '') $items = array_values(array_filter($items, fn($r) => stripos(json_encode($r), $q) !== false));
 $pageTitle=t('Kelola Ferry'); require_once 'includes/admin-header.php';
 ?>
 <div class="d-flex justify-content-between align-items-center mb-3"><h4 class="fw-bold mb-0"><?= t('Ferry') ?></h4></div>
+<form method="GET" class="mb-3" style="max-width:340px;"><div class="input-group input-group-sm"><input type="text" name="q" class="form-control" placeholder="<?= t('Cari') ?>" value="<?= e($q) ?>" data-testid="admin-list-search"><button type="submit" class="btn btn-outline-primary"><?= t('Cari') ?></button></div></form>
 <div class="card border-0 shadow-sm"><div class="card-body p-0 table-responsive">
 <table class="table table-hover mb-0 admin-table"><thead class="table-light"><tr><th>#</th><th><?= t('Perusahaan') ?></th><th><?= t('Rute') ?></th><th><?= t('Berangkat') ?></th><th><?= t('Tiba') ?></th><th><?= t('Harga') ?></th><th><?= t('Aksi') ?></th></tr></thead>
 <tbody><?php if (empty($items)): ?><tr><td colspan="10" class="text-center text-muted py-4"><?= t('Belum ada data.') ?></td></tr><?php endif; ?><?php foreach($items as $i):?><tr>

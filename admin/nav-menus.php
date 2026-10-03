@@ -60,6 +60,8 @@ if ($editId > 0) {
 }
 
 $items = db()->query("SELECT * FROM nav_menus ORDER BY sort_order ASC, id ASC")->fetchAll();
+$q = trim($_GET['q'] ?? '');
+if ($q !== '') $items = array_values(array_filter($items, fn($r) => stripos(json_encode($r), $q) !== false));
 
 require_once 'includes/admin-header.php';
 ?>
@@ -70,6 +72,7 @@ require_once 'includes/admin-header.php';
     </div>
     <a href="?edit=new" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> <?= t('Tambah Menu') ?></a>
 </div>
+<form method="GET" class="mb-3" style="max-width:340px;"><div class="input-group input-group-sm"><input type="text" name="q" class="form-control" placeholder="<?= t('Cari') ?>" value="<?= e($q) ?>" data-testid="admin-list-search"><button type="submit" class="btn btn-outline-primary"><?= t('Cari') ?></button></div></form>
 
 <?php if ($msg): ?><div class="alert alert-success py-2"><?= e($msg) ?></div><?php endif; ?>
 <?php if ($error): ?><div class="alert alert-danger py-2"><?= e($error) ?></div><?php endif; ?>

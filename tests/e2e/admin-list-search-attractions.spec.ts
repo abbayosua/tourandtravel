@@ -34,3 +34,16 @@ test('pencarian daftar atraksi memfilter dan menampilkan empty state', async ({ 
   await expect(page.locator('tbody td.text-center')).toContainText('Belum ada data.');
   await expect(page.locator('tbody')).toHaveScreenshot('admin-attractions-empty.png', { maxDiffPixelRatio: 0.15 });
 });
+
+test('semua daftar admin punya kotak pencarian', async ({ page }) => {
+  await adminLogin(page);
+  const pages = [
+    'attractions.php', 'trains.php', 'transfers.php', 'ferries.php', 'flights.php',
+    'rental-cars.php', 'promo-codes.php', 'faq.php', 'faq-category.php', 'esim.php',
+    'collections.php', 'nav-menus.php', 'hotels.php',
+  ];
+  for (const p of pages) {
+    await page.goto(`${BASE}/admin/${p}`);
+    await expect(page.locator('input[name="q"]').first()).toBeVisible();
+  }
+});

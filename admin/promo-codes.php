@@ -62,6 +62,8 @@ if ($editId > 0) {
 }
 
 $items = db()->query("SELECT * FROM promo_codes ORDER BY created_at DESC")->fetchAll();
+$q = trim($_GET['q'] ?? '');
+if ($q !== '') $items = array_values(array_filter($items, fn($r) => stripos(json_encode($r), $q) !== false));
 
 $pageTitle = t('Kode Promo');
 require_once 'includes/admin-header.php';
@@ -70,6 +72,7 @@ require_once 'includes/admin-header.php';
     <h4 class="fw-bold mb-0"><?= t('Kode Promo') ?></h4>
     <a href="?edit=0" class="btn btn-primary btn-sm <?= $editId === 0 && !isset($_POST['save']) ? 'd-none' : '' ?>"><i class="bi bi-plus-lg"></i> <?= t('Tambah') ?></a>
 </div>
+<form method="GET" class="mb-3" style="max-width:340px;"><div class="input-group input-group-sm"><input type="text" name="q" class="form-control" placeholder="<?= t('Cari') ?>" value="<?= e($q) ?>" data-testid="admin-list-search"><button type="submit" class="btn btn-outline-primary"><?= t('Cari') ?></button></div></form>
 
 <?php if ($msg): ?><div class="alert alert-success py-2"><?= $msg ?></div><?php endif; ?>
 <?php if (!empty($error)): ?><div class="alert alert-danger py-2"><?= $error ?></div><?php endif; ?>

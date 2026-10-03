@@ -11,6 +11,8 @@ if (isset($_GET['delete'])) { $id=(int)$_GET['delete']; db()->prepare("DELETE FR
 
 $categories = db()->query("SELECT * FROM faq_categories ORDER BY sort_order ASC, name ASC")->fetchAll();
 $items = db()->query("SELECT fi.*, fc.name AS category_name FROM faq_items fi JOIN faq_categories fc ON fc.id = fi.category_id ORDER BY fc.sort_order ASC, fi.id ASC")->fetchAll();
+$q = trim($_GET['q'] ?? '');
+if ($q !== '') $items = array_values(array_filter($items, fn($r) => stripos(json_encode($r), $q) !== false));
 
 $pageTitle = t('Kelola FAQ');
 require_once 'includes/admin-header.php';
@@ -22,6 +24,7 @@ require_once 'includes/admin-header.php';
         <a href="faq-edit.php" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> <?= t('Tambah') ?></a>
     </div>
 </div>
+<form method="GET" class="mb-3" style="max-width:340px;"><div class="input-group input-group-sm"><input type="text" name="q" class="form-control" placeholder="<?= t('Cari') ?>" value="<?= e($q) ?>" data-testid="admin-list-search"><button type="submit" class="btn btn-outline-primary"><?= t('Cari') ?></button></div></form>
 <?php if ($msg): ?><div class="alert alert-success py-2"><?= $msg ?></div><?php endif; ?>
 <div class="card border-0 shadow-sm"><div class="card-body p-0 table-responsive">
 <table class="table table-hover mb-0 admin-table">
