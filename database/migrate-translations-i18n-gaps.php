@@ -1094,3 +1094,37 @@ $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, 
 $c10 = 0;
 foreach ($adminTourEdit as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c10++; } }
 echo "Upserted $c10 admin tour-edit rows.\n";
+
+// ---- Admin accounting / sales report labels ----
+$adminAccounting = [
+    'en' => [
+        'Pengeluaran berhasil diperbarui' => 'Expense updated successfully',
+        'Pengeluaran berhasil ditambahkan' => 'Expense added successfully',
+        'Deskripsi dan jumlah wajib diisi (jumlah > 0)' => 'Description and amount are required (amount > 0)',
+        'Pengeluaran berhasil dihapus' => 'Expense deleted successfully',
+    ],
+    'zh' => [
+        'Pengeluaran berhasil diperbarui' => '支出更新成功',
+        'Pengeluaran berhasil ditambahkan' => '支出添加成功',
+        'Deskripsi dan jumlah wajib diisi (jumlah > 0)' => '描述和金额为必填（金额 > 0）',
+        'Pengeluaran berhasil dihapus' => '支出删除成功',
+        'REVENUE' => '收入',
+        'EXPENSES' => '支出',
+        'Laba Rugi' => '损益',
+        'dari pendapatan' => '占收入',
+        'Harga Pokok Penjualan' => '销售成本',
+        'Pengeluaran' => '支出',
+        'Perbandingan Bulanan' => '月度对比',
+        'bulan' => '月',
+        'Breakdown Pengeluaran' => '支出明细',
+        'Daftar Pengeluaran' => '支出列表',
+        'Belum ada pengeluaran pada periode ini' => '本期暂无支出',
+        'Edit Pengeluaran' => '编辑支出',
+        'Biaya' => '费用',
+        'Profit & Loss' => '损益表',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$c11 = 0;
+foreach ($adminAccounting as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c11++; } }
+echo "Upserted $c11 admin accounting rows.\n";

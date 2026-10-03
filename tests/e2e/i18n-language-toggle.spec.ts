@@ -370,3 +370,15 @@ test.describe('i18n admin editor tour', () => {
     }
   });
 });
+
+test.describe('i18n admin pengeluaran', () => {
+  test('label pengeluaran akuntansi mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    const expected: Record<string, string> = { id: 'Daftar Pengeluaran', en: 'Expense List', zh: '支出列表' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/admin/accounting.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('body')).toContainText(label);
+    }
+  });
+});
