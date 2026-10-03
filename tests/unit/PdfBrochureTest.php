@@ -77,3 +77,20 @@ function testBrochureHtmlLocalized() {
     assertTrue(strpos($en, 'INFORMASI TOUR') === false, 'versi en tidak boleh ada label ID');
     assertTrue(strpos($zh, 'INFORMASI TOUR') === false, 'versi zh tidak boleh ada label ID');
 }
+
+function testBrochureDateNoteLocalized() {
+    // tour_dates.note (mis. "Liburan Natal") harus ikut bahasa brosur, bukan tetap ID.
+    $tour = ['title' => 'Tour Test 8D', 'category' => 'China', 'location_city' => null, 'description' => 'Intro.',
+        'price' => 1000000, 'price_currency' => 'IDR', 'max_participants' => 20, 'duration_days' => null, 'duration_nights' => null];
+    $days = [['day_number' => 1, 'title' => 'Day 1', 'description' => 'x', 'meals' => 'Dinner', 'accommodation' => 'Hotel X']];
+    $deps = [['departure_date' => '2026-12-25', 'price_adult' => 8990000, 'price_child' => 8000000, 'price_single' => 12000000, 'currency' => 'IDR', 'slots' => null, 'slots_booked' => null,
+        'note' => 'Liburan Natal', 'note_en' => 'Christmas Holiday', 'note_zh' => '圣诞假期']];
+
+    $en = pdfTourBrochureHtml($tour, $days, '', $deps, 'en');
+    $zh = pdfTourBrochureHtml($tour, $days, '', $deps, 'zh');
+
+    assertContains('Christmas Holiday', $en, 'note EN tampil');
+    assertContains('圣诞假期', $zh, 'note ZH tampil');
+    assertTrue(strpos($en, 'Liburan Natal') === false, 'note ID tidak bocor di EN');
+    assertTrue(strpos($zh, 'Liburan Natal') === false, 'note ID tidak bocor di ZH');
+}
