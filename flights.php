@@ -54,6 +54,23 @@ if (!$doSearch && (!strtotime($date) || $date < date('Y-m-d'))) $date = date('Y-
 $duffelOffers = [];
 $duffelError = null;
 $localSchedules = [];
+$localTotal = 0;
+$localPage = max(1, (int)($_GET['page'] ?? 1));
+$localPerPage = 10;
+
+$loadLocalFlights = function (string $from, string $to, string $date, string $class, int $page) use ($localPerPage): array {
+    $sql = "SELECT SQL_CALC_FOUND_ROWS fs.*, f.airline, f.flight_number, f.from_city, f.to_city, f.departure_time, f.arrival_time, f.duration, f.class FROM flight_schedules fs JOIN flights f ON fs.flight_id=f.id WHERE fs.is_active=1 AND fs.departure_date=?";
+    $params = [$date];
+    if ($from) { $sql .= " AND f.from_city LIKE ?"; $params[] = "%$from%"; }
+    if ($to) { $sql .= " AND f.to_city LIKE ?"; $params[] = "%$to%"; }
+    if ($class) { $sql .= " AND f.class=?"; $params[] = $class; }
+    $sql .= " ORDER BY fs.price ASC LIMIT $localPerPage OFFSET " . (($page - 1) * $localPerPage);
+    $st = db()->prepare($sql);
+    $st->execute($params);
+    $rows = $st->fetchAll();
+    $total = (int)db()->query("SELECT FOUND_ROWS()")->fetchColumn();
+    return [$rows, $total];
+};
 
 if ($doSearch && $tripType === 'multicity' && count($legs) >= 2) {
     // Multi-city: langsung Duffel multi-slice (FlightList tak dukung multi-leg)
@@ -103,15 +120,7 @@ if ($doSearch && $tripType === 'multicity' && count($legs) >= 2) {
         }
         if (!empty($result['error']) || empty($duffelOffers)) {
             // Final fallback: DB seed
-            $sql = "SELECT fs.*, f.airline, f.flight_number, f.from_city, f.to_city, f.departure_time, f.arrival_time, f.duration, f.class FROM flight_schedules fs JOIN flights f ON fs.flight_id=f.id WHERE fs.is_active=1 AND fs.departure_date=?";
-            $params=[$date];
-            if ($from) {$sql.=" AND f.from_city LIKE ?";$params[]="%$from%";}
-            if ($to) {$sql.=" AND f.to_city LIKE ?";$params[]="%$to%";}
-            if ($class) {$sql.=" AND f.class=?";$params[]=$class;}
-            $sql.=" ORDER BY fs.price ASC LIMIT 20";
-            $st=db()->prepare($sql);
-            $st->execute($params);
-            $localSchedules=$st->fetchAll();
+            [$localSchedules, $localTotal] = $loadLocalFlights($from, $to, $date, $class, $localPage);
             if (empty($localSchedules) && empty($duffelOffers)) {
                 $duffelError = $flightlistResult['error'] ?? ($result['error'] ?? t('Tidak ada penerbangan untuk rute/tanggal ini.'));
             }
@@ -121,15 +130,7 @@ if ($doSearch && $tripType === 'multicity' && count($legs) >= 2) {
         $offerSource = 'flightlist';
         if (empty($flightlistResult['offers'])) {
             // Fallback to DB so demo not empty
-            $sql = "SELECT fs.*, f.airline, f.flight_number, f.from_city, f.to_city, f.departure_time, f.arrival_time, f.duration, f.class FROM flight_schedules fs JOIN flights f ON fs.flight_id=f.id WHERE fs.is_active=1 AND fs.departure_date=?";
-            $params=[$date];
-            if ($from) {$sql.=" AND f.from_city LIKE ?";$params[]="%$from%";}
-            if ($to) {$sql.=" AND f.to_city LIKE ?";$params[]="%$to%";}
-            if ($class) {$sql.=" AND f.class=?";$params[]=$class;}
-            $sql.=" ORDER BY fs.price ASC LIMIT 20";
-            $st=db()->prepare($sql);
-            $st->execute($params);
-            $localSchedules=$st->fetchAll();
+            [$localSchedules, $localTotal] = $loadLocalFlights($from, $to, $date, $class, $localPage);
         }
     }
 } elseif ($doSearch && (!$from || !$to)) {
@@ -141,6 +142,10 @@ if ($doSearch && $tripType === 'multicity' && count($legs) >= 2) {
     $totalSchedules = (int)db()->query("SELECT FOUND_ROWS()")->fetchColumn();
     $lastPage = max(1, (int)ceil($totalSchedules / 10));
     $currentPage = max(1, (int)($_GET['page'] ?? 1));
+}
+if ($doSearch && !empty($localSchedules)) {
+    $currentPage = $localPage;
+    $lastPage = max(1, (int)ceil($localTotal / $localPerPage));
 }
 $allDates = db()->query("SELECT DISTINCT departure_date FROM flight_schedules WHERE is_active=1 AND departure_date>=CURDATE() ORDER BY departure_date LIMIT 14")->fetchAll(PDO::FETCH_COLUMN);
 // Extract airlines from actual search results (not hardcoded from DB)
@@ -444,7 +449,7 @@ if ($isFL) {
             </div>
             <?php elseif (!empty($localSchedules)): ?>
             <div class="alert alert-info py-2 small"><?= t('Hasil live tidak tersedia, menampilkan jadwal lokal.') ?></div>
-            <div class="row g-3">
+            <div class="row g-3" id="flightGrid">
                 <?php foreach ($localSchedules as $s): $dep = date('H:i', strtotime($s['departure_time'])); $arr = date('H:i', strtotime($s['arrival_time'])); $airlineCode = substr($s['airline'], 0, 2); $fromShort = explode('(', $s['from_city'])[0]; $toShort = explode('(', $s['to_city'])[0]; ?>
                 <div class="col-12"><div class="card border-0 shadow-sm flight-card"><div class="card-body p-3 p-md-4"><div class="row align-items-center g-3">
                     <div class="col-md-2 d-flex align-items-center gap-2"><img src="https://images.kiwi.com/airlines/64/<?= $airlineCode ?>.png" alt="<?= e($s['airline']) ?>" style="width:44px;height:44px;object-fit:contain" class="bg-white rounded-2 border" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="flight-logo d-flex align-items-center justify-content-center bg-secondary bg-opacity-10 text-secondary fw-bold rounded-2" style="width:44px;height:44px;display:none;"><?= $airlineCode ?></div><div><div class="fw-semibold small"><?= e($s['airline']) ?></div><small class="text-muted" style="font-size:11px;"><?= e($s['flight_number']) ?></small></div></div>
@@ -455,23 +460,16 @@ if ($isFL) {
                 </div></div></div></div>
                 <?php endforeach; ?>
             </div>
-            <?php else: ?>
-            <div class="text-center py-5" id="noResults"><i class="bi bi-airplane fs-1 text-muted"></i><p class="mt-2 text-muted"><?= t('Tidak ada penerbangan untuk rute/tanggal tersebut.') ?></p><p class="small text-muted"><?= t('Coba: CGK → DPS, SIN → CGK, atau ubah tanggal.') ?></p><a href="flights.php" class="btn btn-primary rounded-pill px-4"><?= t('Reset') ?></a></div>
-            <?php endif; ?>
-        <?php else: ?>
-            <?php if (count($localSchedules) > 0): ?><p class="small text-muted mb-2"></p><div class="row g-3" id="flightGrid"><?php foreach ($localSchedules as $s): $dep = date('H:i', strtotime($s['departure_time'])); $arr = date('H:i', strtotime($s['arrival_time'])); $airlineCode = substr($s['airline'], 0, 2); ?>
-                <div class="col-12"><div class="card border-0 shadow-sm flight-card"><div class="card-body p-3 d-flex justify-content-between align-items-center"><div class="d-flex align-items-center gap-2"><img src="https://images.kiwi.com/airlines/64/<?= $airlineCode ?>.png" alt="<?= e($s['airline']) ?>" style="width:36px;height:36px;object-fit:contain" class="bg-white rounded-2 border" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="flight-logo bg-light border rounded-2 d-flex align-items-center justify-content-center fw-bold" style="width:36px;height:36px;font-size:12px;display:none;"><?= $airlineCode ?></div><div><div class="fw-semibold small"><?= e($s['airline']) ?> <?= e($s['flight_number']) ?></div><small class="text-muted"><?= e($s['from_city']) ?> → <?= e($s['to_city']) ?> · <?= e($s['duration']) ?></small></div></div><div class="text-end"><div class="fw-bold text-primary small"><?= formatCurrencySpan($s['price']) ?></div><a href="flight-detail.php?schedule_id=<?= $s['id'] ?>" class="btn btn-sm btn-outline-primary rounded-pill mt-1"><?= t('Lihat') ?></a></div></div></div></div>
-                <?php endforeach; ?></div>
-            <?php else: ?>
-                <div class="text-center py-5" id="noLocalResults"><i class="bi bi-airplane fs-1 text-muted"></i><p class="mt-2 text-muted"><?= t('Tidak ada jadwal lokal yang cocok dengan filter.') ?></p><a href="flights.php" class="btn btn-primary rounded-pill px-4"><?= t('Reset') ?></a></div>
-            <?php endif; ?>
-        <?php endif; ?>
-        <?php if (!$doSearch && isset($lastPage) && $lastPage > $currentPage): ?>
+            <?php if (isset($lastPage) && $lastPage > $currentPage): ?>
             <div class="load-more-trigger text-center py-4" data-page="<?= $currentPage ?>" data-last-page="<?= $lastPage ?>" data-testid="flight-load-more">
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden"><?= t('Loading...') ?></span>
                 </div>
             </div>
+            <?php endif; ?>
+            <?php else: ?>
+            <div class="text-center py-5" id="noResults"><i class="bi bi-airplane fs-1 text-muted"></i><p class="mt-2 text-muted"><?= t('Tidak ada penerbangan untuk rute/tanggal tersebut.') ?></p><p class="small text-muted"><?= t('Coba: CGK → DPS, SIN → CGK, atau ubah tanggal.') ?></p><a href="flights.php" class="btn btn-primary rounded-pill px-4"><?= t('Reset') ?></a></div>
+            <?php endif; ?>
         <?php endif; ?>
         </div><!-- /.col-lg-9 -->
         </div><!-- /.row -->

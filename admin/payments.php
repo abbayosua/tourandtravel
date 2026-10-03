@@ -152,7 +152,7 @@ require_once __DIR__ . '/includes/admin-header.php';
                 </select>
             </div>
             <div class="col-md-3">
-                <label class="form-label small fw-semibold">API Key</label>
+                <label class="form-label small fw-semibold"><?= t('API Key') ?></label>
                 <input type="text" name="tripay_api_key" class="form-control" data-testid="tripay-api-key" autocomplete="off" readonly onfocus="this.removeAttribute('readonly')" value="<?= e(getSetting('tripay_api_key')) ?>">
             </div>
             <div class="col-md-3">
@@ -167,26 +167,26 @@ require_once __DIR__ . '/includes/admin-header.php';
                 <h6 class="fw-semibold mb-3 mt-2"><?= t('Pengaturan Singapay (Virtual Account)') ?></h6>
             </div>
             <div class="col-md-2">
-                <label class="form-label small fw-semibold">Environment</label>
+                <label class="form-label small fw-semibold"><?= t('Environment') ?></label>
                 <select name="singapay_env" class="form-select" autocomplete="off">
-                    <option value="sandbox" <?= getSetting('singapay_env','sandbox') === 'sandbox' ? 'selected' : '' ?>>Sandbox</option>
-                    <option value="production" <?= getSetting('singapay_env') === 'production' ? 'selected' : '' ?>>Production</option>
+                    <option value="sandbox" <?= getSetting('singapay_env','sandbox') === 'sandbox' ? 'selected' : '' ?>><?= t('Sandbox') ?></option>
+                    <option value="production" <?= getSetting('singapay_env') === 'production' ? 'selected' : '' ?>><?= t('Production') ?></option>
                 </select>
             </div>
             <div class="col-md-2">
-                <label class="form-label small fw-semibold">Client ID</label>
+                <label class="form-label small fw-semibold"><?= t('Client ID') ?></label>
                 <input type="text" name="singapay_client_id" class="form-control" data-testid="singapay-client-id" autocomplete="off" readonly onfocus="this.removeAttribute('readonly')" value="<?= e(getSetting('singapay_client_id')) ?>">
             </div>
             <div class="col-md-2">
-                <label class="form-label small fw-semibold">Client Secret</label>
+                <label class="form-label small fw-semibold"><?= t('Client Secret') ?></label>
                 <input type="password" name="singapay_client_secret" class="form-control" data-testid="singapay-client-secret" autocomplete="new-password" value="<?= e(getSetting('singapay_client_secret')) ?>">
             </div>
             <div class="col-md-2">
-                <label class="form-label small fw-semibold">API Key</label>
+                <label class="form-label small fw-semibold"><?= t('API Key') ?></label>
                 <input type="text" name="singapay_api_key" class="form-control" data-testid="singapay-api-key" autocomplete="off" readonly onfocus="this.removeAttribute('readonly')" value="<?= e(getSetting('singapay_api_key')) ?>">
             </div>
             <div class="col-md-2">
-                <label class="form-label small fw-semibold">Account ID</label>
+                <label class="form-label small fw-semibold"><?= t('Account ID') ?></label>
                 <input type="text" name="singapay_account_id" class="form-control" data-testid="singapay-account-id" value="<?= e(getSetting('singapay_account_id')) ?>">
             </div>
             <div class="col-12 mt-3">
