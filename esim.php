@@ -67,7 +67,7 @@ require_once 'includes/header-shared.php';
                     <div class="col-md-6 col-lg-4">
                         <div class="card tour-card-klook border-0 shadow-sm h-100">
                             <div class="position-relative overflow-hidden rounded-top" style="height: 160px;">
-                                <img src="https://placehold.co/640x400?text=<?= urlencode($p['type'])?>" class="w-100 h-100" style="object-fit: cover;" alt="<?= e($p['name']) ?>">
+                                <img src="https://placehold.co/640x400?text=<?= urlencode($p['type'])?>" class="w-100 h-100" style="object-fit: cover;" alt="<?= e(tContent($p, 'name')) ?>">
                                 <button class="btn btn-sm position-absolute top-0 end-0 m-1 like-btn wishlist-btn klook-wishlist-btn text-white <?= in_array((int)$p['id'], $esimWishlistIds) ? 'text-danger' : '' ?>" style="z-index:5;"
                                     onclick="toggleWishlist(this, <?= (int)$p['id'] ?>, 'esim')" title="<?= t('Simpan ke wishlist') ?>">
                                     <i class="bi bi-heart<?= in_array((int)$p['id'], $esimWishlistIds) ? '-fill' : '' ?>"></i>
@@ -75,7 +75,7 @@ require_once 'includes/header-shared.php';
                                 <span class="badge bg-primary position-absolute top-0 start-0 m-2 shadow-sm"><?= strtoupper(e($p['type'])) ?></span>
                             </div>
                             <div class="card-body p-3 d-flex flex-column">
-                                <h6 class="fw-semibold mb-1"><?= e($p['name']) ?></h6>
+                                <h6 class="fw-semibold mb-1"><?= e(tContent($p, 'name')) ?></h6>
                                 <p class="small text-muted flex-grow-1 mb-2">
                                     <i class="bi bi-globe me-1"></i><?= e($p['country']) ?> · <?= e($p['coverage'] ?? $p['country']) ?>
                                     <br><i class="bi bi-wifi me-1"></i><?= e($p['data_quota']) ?> · <?= $p['duration_days'] ?> <?= t('hari') ?>

@@ -655,3 +655,18 @@ foreach ($pelniExtra as $lang => $dict) {
     foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $pelniCount++; }
 }
 echo "Upserted $pelniCount PELNI translation rows.\n";
+
+// ---- Konten: connectivity_products (eSIM/SIM/WiFi) zh + en ----
+foreach (['name_zh', 'description_zh'] as $col) {
+    try { db()->exec("ALTER TABLE connectivity_products ADD COLUMN `$col` TEXT NULL"); echo "Added connectivity_products.$col\n"; } catch (Throwable $e) {}
+}
+$connectivity = [
+    1 => ['name_en' => 'Indonesia eSIM 5GB', 'name_zh' => '印度尼西亚 eSIM 5GB', 'description_en' => 'Instant eSIM for Indonesia with 5GB data, valid 7 days.', 'description_zh' => '印度尼西亚即时 eSIM，5GB 流量，有效期 7 天。'],
+    2 => ['name_en' => 'Bali eSIM 10GB', 'name_zh' => '巴厘岛 eSIM 10GB', 'description_en' => 'High-data eSIM for the Bali area, active for 14 days.', 'description_zh' => '巴厘岛地区大流量 eSIM，有效期 14 天。'],
+    3 => ['name_en' => 'Traveloka SIM Card 5GB', 'name_zh' => 'Traveloka SIM 卡 5GB', 'description_en' => 'Physical SIM with 5GB data, delivered nationwide.', 'description_zh' => '实体 SIM 卡，5GB 流量，全国配送。'],
+    4 => ['name_en' => 'Pocket WiFi 4G Unlimited', 'name_zh' => '随身 WiFi 4G 无限量', 'description_en' => 'Unlimited Pocket WiFi for all of Indonesia.', 'description_zh' => '印度尼西亚全境无限量随身 WiFi。'],
+    5 => ['name_en' => 'Southeast Asia eSIM 20GB', 'name_zh' => '东南亚 eSIM 20GB', 'description_en' => 'Regional eSIM for 10 Southeast Asian countries.', 'description_zh' => '适用于 10 个东南亚国家的区域 eSIM。'],
+];
+$coStmt = db()->prepare("UPDATE connectivity_products SET name_en = ?, name_zh = ?, description_en = ?, description_zh = ? WHERE id = ?");
+foreach ($connectivity as $id => $c) { $coStmt->execute([$c['name_en'], $c['name_zh'], $c['description_en'], $c['description_zh'], $id]); }
+echo "Updated " . count($connectivity) . " connectivity products (en/zh).\n";

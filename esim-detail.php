@@ -17,7 +17,7 @@ if (!$product) {
     exit;
 }
 
-$pageTitle = $product['name'];
+$pageTitle = tContent($product, 'name');
 
 $bookingError = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
@@ -63,21 +63,21 @@ require_once 'includes/header-shared.php';
 <div class="container py-4">
     <?php renderBreadcrumb([
         ['label' => t('eSIM & Connectivity'), 'url' => 'esim.php'],
-        ['label' => $product['name'], 'url' => null],
+        ['label' => tContent($product, 'name'), 'url' => null],
     ]); ?>
 
     <div class="row">
         <div class="col-lg-8">
             <img src="https://placehold.co/800x450?text=<?= urlencode($product['type'])?>" class="w-100 rounded-4 shadow-sm mb-3" style="max-height: 350px; object-fit: cover;" alt="">
 
-            <h2 class="fw-bold"><?= e($product['name']) ?></h2>
+            <h2 class="fw-bold"><?= e(tContent($product, 'name')) ?></h2>
             <div class="d-flex flex-wrap gap-3 mb-3">
                 <span class="badge bg-primary"><?= strtoupper(e($product['type'])) ?></span>
                 <span class="text-muted"><i class="bi bi-globe me-1"></i><?= e($product['country']) ?></span>
                 <span class="text-muted"><i class="bi bi-wifi me-1"></i><?= e($product['data_quota']) ?></span>
                 <span class="text-muted"><i class="bi bi-clock me-1"></i><?= $product['duration_days'] ?> <?= t('hari') ?></span>
             </div>
-            <p class="lead"><?= nl2br(e($product['description'] ?? '')) ?></p>
+            <p class="lead"><?= nl2br(e(tContent($product, 'description'))) ?></p>
 
             <h6 class="fw-semibold"><?= t('Detail Produk') ?></h6>
             <div class="row g-2 mb-4">

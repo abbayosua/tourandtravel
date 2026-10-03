@@ -32,6 +32,7 @@ const ID_MARKERS = new RegExp(
       'keberangkatan', 'jadwal', 'stasiun', 'pelabuhan', 'rute', 'bantuan', 'lacak',
       'profil', 'notifikasi', 'tentang', 'ketentuan', 'kebijakan', 'hubungi', 'beranda',
       'reseller', 'favorit', 'mitra', 'terpercaya', 'diskon', 'segera', 'segala',
+      'kuota', 'seluruh', 'khusus', 'pengiriman', 'selama',
     ].join('|') +
     ')\\b',
   'i'
