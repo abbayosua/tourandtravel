@@ -1589,3 +1589,49 @@ $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, 
 $c25 = 0;
 foreach ($adminFormMsgs as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c25++; } }
 echo "Upserted $c25 admin form-message rows.\n";
+
+// ---- Reseller pages ----
+$reseller = [
+    'en' => [
+        'Dashboard Reseller' => 'Reseller Dashboard',
+        'Kelola saldo dan booking Anda sebagai reseller.' => 'Manage your balance and bookings as a reseller.',
+        'Saldo Reseller' => 'Reseller Balance',
+        'Booking Baru' => 'New Booking',
+        'Lihat Booking' => 'View Booking',
+        'Belum ada booking reseller.' => 'No reseller bookings yet.',
+        'Riwayat Topup' => 'Topup History',
+        'Belum ada riwayat topup.' => 'No topup history yet.',
+        'Minimal topup Rp 50.000' => 'Minimum topup Rp 50,000',
+        'File harus format JPG/PNG/WebP' => 'File must be JPG/PNG/WebP',
+        'Permintaan topup berhasil dikirim! Menunggu persetujuan admin.' => 'Topup request sent! Awaiting admin approval.',
+        'Topup Saldo Reseller' => 'Reseller Balance Topup',
+        'Isi saldo untuk booking paket wisata dengan harga reseller.' => 'Top up your balance to book tour packages at reseller prices.',
+        'Saldo Saat Ini' => 'Current Balance',
+        'Permintaan Topup Baru' => 'New Topup Request',
+        'Jumlah Topup' => 'Topup Amount',
+    ],
+    'zh' => [
+        'Dashboard Reseller' => '分销商仪表板',
+        'Kelola saldo dan booking Anda sebagai reseller.' => '以分销商身份管理您的余额和订单。',
+        'Saldo Reseller' => '分销商余额',
+        'Topup' => '充值',
+        'Booking Baru' => '新订单',
+        'Lihat Booking' => '查看订单',
+        'Belum ada booking reseller.' => '暂无分销商订单。',
+        'Riwayat Topup' => '充值历史',
+        'Belum ada riwayat topup.' => '暂无充值记录。',
+        'Minimal topup Rp 50.000' => '最低充值 Rp 50,000',
+        'Minimal Rp 50.000' => '最低 Rp 50,000',
+        'File harus format JPG/PNG/WebP' => '文件格式必须为 JPG/PNG/WebP',
+        'Permintaan topup berhasil dikirim! Menunggu persetujuan admin.' => '充值申请已发送！等待管理员批准。',
+        'Topup Saldo Reseller' => '分销商余额充值',
+        'Isi saldo untuk booking paket wisata dengan harga reseller.' => '充值余额，以分销价预订旅游套餐。',
+        'Saldo Saat Ini' => '当前余额',
+        'Permintaan Topup Baru' => '新充值申请',
+        'Jumlah Topup' => '充值金额',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$c26 = 0;
+foreach ($reseller as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c26++; } }
+echo "Upserted $c26 reseller rows.\n";

@@ -576,3 +576,32 @@ test.describe('i18n admin corporate rates', () => {
     }
   });
 });
+
+test.describe('i18n reseller pages', () => {
+  const EMAIL = 'i18nreseller@t.local';
+  const PASS = 'tmpcheck123';
+
+  test.beforeAll(() => {
+    const hash = execFileSync('php', ['-r', `echo password_hash(${JSON.stringify(PASS)}, PASSWORD_DEFAULT);`], { encoding: 'utf8' }).trim();
+    mysql(
+      `INSERT INTO users (name, email, password_hash, role) VALUES ('I18N Reseller', '${EMAIL}', '${hash}', 'reseller') ` +
+        `ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash), role = 'reseller'`
+    );
+  });
+  test.afterAll(() => {
+    try { mysql(`DELETE FROM users WHERE email = '${EMAIL}'`); } catch { /* ignore */ }
+  });
+
+  test('label reseller mengikuti bahasa', async ({ page }) => {
+    await page.goto(`${BASE}/login.php`);
+    await page.fill('input[name="email"]', EMAIL);
+    await page.fill('input[name="password"]', PASS);
+    await Promise.all([page.waitForLoadState('domcontentloaded'), page.click('button[type="submit"]')]);
+    const expected: Record<string, string> = { id: 'Dashboard Reseller', en: 'Reseller Dashboard', zh: '分销商仪表板' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/reseller-dashboard.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('body')).toContainText(label);
+    }
+  });
+});
