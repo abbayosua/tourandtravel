@@ -32,6 +32,6 @@ test('pencarian hotel admin memfilter dan menampilkan empty state', async ({ pag
   // Tidak cocok → empty state tampil.
   await page.goto(`${BASE}/admin/hotels.php?q=zzznomatchxyz&lang=id`);
   const empty = page.locator('tbody td.text-center');
-  await expect(empty).toContainText('Belum ada data.');
+  await expect(empty).toContainText('Tidak ada hasil untuk pencarian Anda.');
   await expect(page.locator('tbody')).toHaveScreenshot('admin-list-empty.png', { maxDiffPixelRatio: 0.15 });
 });

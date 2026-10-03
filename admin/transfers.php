@@ -25,7 +25,7 @@ require_once 'includes/admin-header.php';
 <div class="card border-0 shadow-sm"><div class="card-body p-0 table-responsive">
 <table class="table table-hover mb-0 admin-table">
 <thead class="table-light"><tr><th>#</th><th><?= t('Nama') ?></th><th><?= t('Rute') ?></th><th><?= t('Kendaraan') ?></th><th><?= t('Max Pax') ?></th><th><?= t('Harga') ?></th><th><?= t('Status') ?></th><th><?= t('Aksi') ?></th></tr></thead>
-<tbody><?php if (empty($items)): ?><tr><td colspan="10" class="text-center text-muted py-4"><?= t('Belum ada data.') ?></td></tr><?php endif; ?><?php foreach ($items as $i): ?><tr>
+<tbody><?php if (empty($items)): ?><tr><td colspan="10" class="text-center text-muted py-4"><?= $q !== '' ? t('Tidak ada hasil untuk pencarian Anda.') : t('Belum ada data.') ?></td></tr><?php endif; ?><?php foreach ($items as $i): ?><tr>
 <td><?=$i['id']?></td><td><?=e($i['name'])?></td><td><?=e($i['from_city'])?> → <?=e($i['to_city'])?></td>
 <td><?=e($i['vehicle_type'] ?? '-')?></td><td><?=$i['max_passengers']?></td>
 <td><?=formatRupiah($i['price'])?></td>

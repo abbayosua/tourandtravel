@@ -31,7 +31,7 @@ test('pencarian daftar atraksi memfilter dan menampilkan empty state', async ({ 
 
   // Tidak cocok → empty state tampil.
   await page.goto(`${BASE}/admin/attractions.php?q=zzznomatchxyz&lang=id`);
-  await expect(page.locator('tbody td.text-center')).toContainText('Belum ada data.');
+  await expect(page.locator('tbody td.text-center')).toContainText('Tidak ada hasil untuk pencarian Anda.');
   await expect(page.locator('tbody')).toHaveScreenshot('admin-attractions-empty.png', { maxDiffPixelRatio: 0.15 });
 });
 

@@ -54,6 +54,6 @@ test('pencarian booking admin memfilter dan menampilkan empty state', async ({ p
 
   // Tidak cocok → empty state.
   await page.goto(`${BASE}/admin/bookings.php?q=zzznomatchxyz&lang=id`);
-  await expect(page.locator('table tbody')).toContainText('Belum ada booking');
+  await expect(page.locator('table tbody')).toContainText('Tidak ada hasil untuk pencarian Anda.');
   await expect(page.locator('table tbody')).toHaveScreenshot('admin-bookings-empty.png', { maxDiffPixelRatio: 0.15 });
 });

@@ -363,7 +363,7 @@ require_once 'includes/admin-header.php';
                     </tr>
                     <?php endforeach; ?>
                     <?php if (empty($all)): ?>
-                    <tr><td colspan="12" class="text-center py-4 text-muted"><?= t('Belum ada booking') ?></td></tr>
+                    <tr><td colspan="12" class="text-center py-4 text-muted"><?= $q !== '' ? t('Tidak ada hasil untuk pencarian Anda.') : t('Belum ada booking') ?></td></tr>
                     <?php endif; ?>
                 </tbody>
             </table>

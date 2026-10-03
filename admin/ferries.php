@@ -11,7 +11,7 @@ $pageTitle=t('Kelola Ferry'); require_once 'includes/admin-header.php';
 <form method="GET" class="mb-3" style="max-width:340px;"><div class="input-group input-group-sm"><input type="text" name="q" class="form-control" placeholder="<?= t('Cari') ?>" value="<?= e($q) ?>" data-testid="admin-list-search"><button type="submit" class="btn btn-outline-primary"><?= t('Cari') ?></button></div></form>
 <div class="card border-0 shadow-sm"><div class="card-body p-0 table-responsive">
 <table class="table table-hover mb-0 admin-table"><thead class="table-light"><tr><th>#</th><th><?= t('Perusahaan') ?></th><th><?= t('Rute') ?></th><th><?= t('Berangkat') ?></th><th><?= t('Tiba') ?></th><th><?= t('Harga') ?></th><th><?= t('Aksi') ?></th></tr></thead>
-<tbody><?php if (empty($items)): ?><tr><td colspan="10" class="text-center text-muted py-4"><?= t('Belum ada data.') ?></td></tr><?php endif; ?><?php foreach($items as $i):?><tr>
+<tbody><?php if (empty($items)): ?><tr><td colspan="10" class="text-center text-muted py-4"><?= $q !== '' ? t('Tidak ada hasil untuk pencarian Anda.') : t('Belum ada data.') ?></td></tr><?php endif; ?><?php foreach($items as $i):?><tr>
 <td><?=$i['id']?></td><td><?=e($i['company'])?></td><td><?=e($i['route_from'] .' → '. $i['route_to'])?></td>
 <td><?=date('H:i',strtotime($i['departure_time']))?></td><td><?=date('H:i',strtotime($i['arrival_time']))?></td>
 <td><?=formatRupiah($i['price'])?></td>
