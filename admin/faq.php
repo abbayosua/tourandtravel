@@ -26,7 +26,7 @@ require_once 'includes/admin-header.php';
 <div class="card border-0 shadow-sm"><div class="card-body p-0 table-responsive">
 <table class="table table-hover mb-0 admin-table">
 <thead class="table-light"><tr><th>#</th><th><?= t('Pertanyaan') ?></th><th><?= t('Kategori') ?></th><th><?= t('Status') ?></th><th><?= t('Aksi') ?></th></tr></thead>
-<tbody><?php foreach ($items as $i): ?><tr>
+<tbody><?php if (empty($items)): ?><tr><td colspan="10" class="text-center text-muted py-4"><?= t('Belum ada data.') ?></td></tr><?php endif; ?><?php foreach ($items as $i): ?><tr>
 <td><?=$i['id']?></td><td><?=e($i['question'])?></td><td><span class="badge bg-info text-dark"><?=e($i['category_name'])?></span></td>
 <td><span class="badge bg-<?=$i['is_active']?'success':'secondary'?>"><?=$i['is_active']?t('Aktif'):t('Nonaktif')?></span></td>
 <td><a href="faq-edit.php?id=<?=$i['id']?>" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></a>

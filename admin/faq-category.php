@@ -22,7 +22,7 @@ require_once 'includes/admin-header.php';
 <div class="card border-0 shadow-sm"><div class="card-body p-0 table-responsive">
 <table class="table table-hover mb-0 admin-table">
 <thead class="table-light"><tr><th>#</th><th><?= t('Nama') ?></th><th><?= t('Urutan') ?></th><th><?= t('Jumlah FAQ') ?></th><th><?= t('Aksi') ?></th></tr></thead>
-<tbody><?php foreach ($items as $i): ?><tr>
+<tbody><?php if (empty($items)): ?><tr><td colspan="10" class="text-center text-muted py-4"><?= t('Belum ada data.') ?></td></tr><?php endif; ?><?php foreach ($items as $i): ?><tr>
 <td><?=$i['id']?></td><td><?=e($i['name'])?></td><td><?=$i['sort_order']?></td><td><?=$i['item_count']?></td>
 <td><a href="faq-category-edit.php?id=<?=$i['id']?>" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></a>
 <a href="faq-category.php?delete=<?=$i['id']?>" class="btn btn-sm btn-danger" onclick="return confirm('<?= t('Hapus?') ?>')"><i class="bi bi-trash"></i></a></td>

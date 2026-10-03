@@ -123,7 +123,7 @@ require_once 'includes/admin-header.php';
 <div class="card border-0 shadow-sm"><div class="card-body p-0 table-responsive">
 <table class="table table-hover mb-0 admin-table">
 <thead class="table-light"><tr><th>#</th><th><?= t('Label') ?></th><th><?= t('URL') ?></th><th><?= t('Tab') ?></th><th><?= t('Menu') ?></th><th><?= t('Status') ?></th><th><?= t('Aksi') ?></th></tr></thead>
-<tbody><?php foreach ($items as $i): ?><tr>
+<tbody><?php if (empty($items)): ?><tr><td colspan="10" class="text-center text-muted py-4"><?= t('Belum ada data.') ?></td></tr><?php endif; ?><?php foreach ($items as $i): ?><tr>
 <td><?=$i['id']?></td>
 <td><i class="bi <?=e($i['icon'])?> me-1"></i><strong><?=e($i['label'])?></strong></td>
 <td><code><?=e($i['url'])?></code></td>

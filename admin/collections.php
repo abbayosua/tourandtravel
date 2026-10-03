@@ -142,7 +142,7 @@ require_once 'includes/admin-header.php';
 <div class="card border-0 shadow-sm"><div class="card-body p-0 table-responsive">
 <table class="table table-hover mb-0 admin-table">
 <thead class="table-light"><tr><th>#</th><th><?= t('Nama') ?></th><th><?= t('Slug') ?></th><th><?= t('Item') ?></th><th><?= t('Status') ?></th><th><?= t('Aksi') ?></th></tr></thead>
-<tbody><?php foreach ($items as $i): 
+<tbody><?php if (empty($items)): ?><tr><td colspan="10" class="text-center text-muted py-4"><?= t('Belum ada data.') ?></td></tr><?php endif; ?><?php foreach ($items as $i): 
     $cnt = db()->prepare("SELECT COUNT(*) FROM collection_items WHERE collection_id = ?");
     $cnt->execute([$i['id']]);
     $itemCount = $cnt->fetchColumn();

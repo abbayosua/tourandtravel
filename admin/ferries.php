@@ -8,7 +8,7 @@ $pageTitle=t('Kelola Ferry'); require_once 'includes/admin-header.php';
 <div class="d-flex justify-content-between align-items-center mb-3"><h4 class="fw-bold mb-0"><?= t('Ferry') ?></h4></div>
 <div class="card border-0 shadow-sm"><div class="card-body p-0 table-responsive">
 <table class="table table-hover mb-0 admin-table"><thead class="table-light"><tr><th>#</th><th><?= t('Perusahaan') ?></th><th><?= t('Rute') ?></th><th><?= t('Berangkat') ?></th><th><?= t('Tiba') ?></th><th><?= t('Harga') ?></th><th><?= t('Aksi') ?></th></tr></thead>
-<tbody><?php foreach($items as $i):?><tr>
+<tbody><?php if (empty($items)): ?><tr><td colspan="10" class="text-center text-muted py-4"><?= t('Belum ada data.') ?></td></tr><?php endif; ?><?php foreach($items as $i):?><tr>
 <td><?=$i['id']?></td><td><?=e($i['company'])?></td><td><?=e($i['route_from'] .' → '. $i['route_to'])?></td>
 <td><?=date('H:i',strtotime($i['departure_time']))?></td><td><?=date('H:i',strtotime($i['arrival_time']))?></td>
 <td><?=formatRupiah($i['price'])?></td>
