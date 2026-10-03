@@ -64,10 +64,10 @@ $easybookError = null;
 if ($search && $fromPlaceId && $toPlaceId) {
     $ferries = easybookSearchTrips($fromPlaceId, $toPlaceId, $date, $fromSubPlace, $toSubPlace);
     if (empty($ferries)) {
-        $easybookError = 'Tidak ada jadwal ferry ditemukan untuk rute/tanggal ini.';
+        $easybookError = t('Tidak ada jadwal ferry ditemukan untuk rute/tanggal ini.');
     }
 } elseif ($search && (!$fromPlaceId || !$toPlaceId)) {
-    $easybookError = 'Kota asal/tujuan tidak ditemukan. Coba: Batam, Singapore, Johor.';
+    $easybookError = t('Kota asal/tujuan tidak ditemukan. Coba: Batam, Singapore, Johor.');
 }
 
 // Also get local DB ferries as fallback

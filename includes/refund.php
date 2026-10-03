@@ -66,8 +66,8 @@ function requestRefund(int $bookingId, int $userId, string $reason): array {
     $b = db()->prepare("SELECT user_id, status, refund_status FROM bookings WHERE id = ?");
     $b->execute([$bookingId]);
     $bk = $b->fetch();
-    if (!$bk) return [false, 'Booking tidak ditemukan'];
-    if ((int)($bk['user_id'] ?? 0) !== $userId) return [false, 'Bukan booking Anda'];
+    if (!$bk) return [false, t('Booking tidak ditemukan')];
+    if ((int)($bk['user_id'] ?? 0) !== $userId) return [false, t('Bukan booking Anda')];
     if ($bk['status'] !== 'confirmed') return [false, 'Hanya booking confirmed yang bisa diajukan refund'];
     if (in_array($bk['refund_status'], ['requested', 'approved'], true)) return [false, 'Refund sudah diajukan/sebelumnya'];
     if ($bk['refund_status'] === 'rejected') return [false, 'Pengajuan refund sebelumnya sudah ditolak'];
@@ -88,8 +88,8 @@ function decideRefund(int $bookingId, bool $approve, int $adminId): array {
     $b = db()->prepare("SELECT user_id, refund_status, status, participants, tour_date_id FROM bookings WHERE id = ?");
     $b->execute([$bookingId]);
     $bk = $b->fetch();
-    if (!$bk) return [false, 'Booking tidak ditemukan'];
-    if ($bk['refund_status'] !== 'requested') return [false, 'Tidak ada pengajuan refund pending'];
+    if (!$bk) return [false, t('Booking tidak ditemukan')];
+    if ($bk['refund_status'] !== 'requested') return [false, t('Tidak ada pengajuan refund pending')];
 
     if (!$approve) {
         db()->prepare("UPDATE bookings SET refund_status = 'rejected' WHERE id = ?")->execute([$bookingId]);
@@ -120,7 +120,7 @@ function decideRefund(int $bookingId, bool $approve, int $adminId): array {
     } catch (Throwable $e) {
         if (db()->inTransaction()) db()->rollBack();
         error_log('decideRefund: ' . $e->getMessage());
-        return [false, 'Gagal memproses refund'];
+        return [false, t('Gagal memproses refund')];
     }
 
     // Kembalikan slot (idempotent via availability_ledger) — di luar transaksi

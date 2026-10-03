@@ -706,3 +706,52 @@ $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, 
 $nusaCount = 0;
 foreach ($nusaExtra as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $nusaCount++; } }
 echo "Upserted $nusaCount NusaTrip error rows.\n";
+
+// ---- Error messages: ferries/flights/wallet/refund/paypal ----
+$errExtra = [
+    'en' => [
+        'Tidak ada jadwal ferry ditemukan untuk rute/tanggal ini.' => 'No ferry schedules found for this route/date.',
+        'Kota asal/tujuan tidak ditemukan. Coba: Batam, Singapore, Johor.' => 'Origin/destination city not found. Try: Batam, Singapore, Johor.',
+        'Minimal 2 leg untuk perjalanan multi-kota.' => 'At least 2 legs are required for a multi-city trip.',
+        'Silakan isi kota asal dan tujuan.' => 'Please enter the origin and destination cities.',
+        'Jumlah tidak valid' => 'Invalid amount',
+        'Saldo KlookCash tidak mencukupi' => 'Insufficient KlookCash balance',
+        'Pembayaran menggunakan KlookCash' => 'Payment using KlookCash',
+        'Pembayaran KlookCash berhasil' => 'KlookCash payment successful',
+        'Booking tidak ditemukan' => 'Booking not found',
+        'Bukan booking Anda' => 'Not your booking',
+        'Tidak ada pengajuan refund pending' => 'No pending refund request',
+        'Gagal memproses refund' => 'Failed to process refund',
+        'Pengajuan refund gagal' => 'Refund request failed',
+        'Login diperlukan' => 'Login required',
+    ],
+    'zh' => [
+        'Tidak ada jadwal ferry ditemukan untuk rute/tanggal ini.' => '该航线/日期暂无渡轮班次。',
+        'Kota asal/tujuan tidak ditemukan. Coba: Batam, Singapore, Johor.' => '未找到出发/目的城市。请尝试：巴淡、新加坡、柔佛。',
+        'Minimal 2 leg untuk perjalanan multi-kota.' => '多城市行程至少需要 2 段。',
+        'Silakan isi kota asal dan tujuan.' => '请填写出发城市和目的城市。',
+        'Jumlah tidak valid' => '金额无效',
+        'Saldo KlookCash tidak mencukupi' => 'KlookCash 余额不足',
+        'Pembayaran menggunakan KlookCash' => '使用 KlookCash 付款',
+        'Pembayaran KlookCash berhasil' => 'KlookCash 支付成功',
+        'Booking tidak ditemukan' => '未找到预订',
+        'Bukan booking Anda' => '不是您的预订',
+        'Tidak ada pengajuan refund pending' => '没有待处理的退款申请',
+        'Gagal memproses refund' => '处理退款失败',
+        'Pengajuan refund gagal' => '退款申请失败',
+        'Login diperlukan' => '需要登录',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$errCount = 0;
+foreach ($errExtra as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $errCount++; } }
+echo "Upserted $errCount error-message rows.\n";
+
+// ---- Koreksi: key 'Pesan' dipakai sebagai tombol "Book" (bukan "message") ----
+$fixPesan = [
+    'en' => ['Pesan' => 'Book'],
+    'zh' => ['Pesan' => '预订'],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+foreach ($fixPesan as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); } }
+echo "Corrected 'Pesan' translation (en/zh).\n";

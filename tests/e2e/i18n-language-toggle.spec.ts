@@ -172,6 +172,17 @@ test.describe('i18n language toggle', () => {
     }
   });
 
+  // Tombol "Book" (key 'Pesan') harus diterjemahkan, bukan jadi "Messages".
+  test('tombol booking memakai label bahasa aktif', async ({ page }) => {
+    const expected: Record<string, string> = { en: 'Book', zh: '预订' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/attractions.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      const btn = page.locator('a[href*="attraction-detail.php"]').first();
+      await expect(btn).toContainText(label);
+    }
+  });
+
   for (const lang of ['en', 'zh']) {
     test(`tidak ada sisa teks Indonesia saat bahasa=${lang}`, async ({ page }) => {
       test.setTimeout(180_000);

@@ -49,14 +49,14 @@ function spendWallet($userId, $amount, $referenceType = null, $referenceId = nul
     $balance = getWalletBalance($userId);
 
     if ($amount <= 0) {
-        return ['success' => false, 'message' => 'Jumlah tidak valid'];
+        return ['success' => false, 'message' => t('Jumlah tidak valid')];
     }
     if ($balance < $amount) {
-        return ['success' => false, 'message' => 'Saldo KlookCash tidak mencukupi'];
+        return ['success' => false, 'message' => t('Saldo KlookCash tidak mencukupi')];
     }
 
-    addWalletTransaction($userId, -$amount, 'spend', 'Pembayaran menggunakan KlookCash', $referenceType, $referenceId);
-    return ['success' => true, 'message' => 'Pembayaran KlookCash berhasil', 'new_balance' => getWalletBalance($userId)];
+    addWalletTransaction($userId, -$amount, 'spend', t('Pembayaran menggunakan KlookCash'), $referenceType, $referenceId);
+    return ['success' => true, 'message' => t('Pembayaran KlookCash berhasil'), 'new_balance' => getWalletBalance($userId)];
 }
 
 /**

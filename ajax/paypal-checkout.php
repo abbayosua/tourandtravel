@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 if (!isLoggedIn()) {
-    echo json_encode(['success' => false, 'error' => 'unauthorized', 'message' => 'Login diperlukan']);
+    echo json_encode(['success' => false, 'error' => 'unauthorized', 'message' => t('Login diperlukan')]);
     exit;
 }
 
@@ -36,7 +36,7 @@ $stmt = db()->prepare("SELECT total_price, status FROM `$table` WHERE id = ? AND
 $stmt->execute([$bookingId, $_SESSION['user_id']]);
 $booking = $stmt->fetch();
 if (!$booking) {
-    echo json_encode(['success' => false, 'error' => 'invalid_booking', 'message' => 'Booking tidak ditemukan']);
+    echo json_encode(['success' => false, 'error' => 'invalid_booking', 'message' => t('Booking tidak ditemukan')]);
     exit;
 }
 if ($booking['status'] !== 'pending') {

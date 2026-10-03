@@ -68,7 +68,7 @@ if ($doSearch && $tripType === 'multicity' && count($legs) >= 2) {
         $flightlistCurrency = $duffelOffers[0]['total_currency'] ?? 'USD';
     }
 } elseif ($doSearch && $tripType === 'multicity') {
-    $duffelError = 'Minimal 2 leg untuk perjalanan multi-kota.';
+    $duffelError = t('Minimal 2 leg untuk perjalanan multi-kota.');
 } elseif ($doSearch && $from && $to) {
     // Primary: FlightList (gratis, real airlines)
     $flightlistResult = flightlistSearchOffers($from, $to, $date, $class ?: 'economy', $passengers);
@@ -133,7 +133,7 @@ if ($doSearch && $tripType === 'multicity' && count($legs) >= 2) {
         }
     }
 } elseif ($doSearch && (!$from || !$to)) {
-    $duffelError = 'Silakan isi kota asal dan tujuan.';
+    $duffelError = t('Silakan isi kota asal dan tujuan.');
 } else {
     $st=db()->prepare("SELECT SQL_CALC_FOUND_ROWS fs.*, f.airline, f.flight_number, f.from_city, f.to_city, f.departure_time, f.arrival_time, f.duration, f.class FROM flight_schedules fs JOIN flights f ON fs.flight_id=f.id WHERE fs.is_active=1 AND fs.departure_date>=CURDATE() ORDER BY fs.departure_date ASC, fs.price ASC LIMIT 10 OFFSET " . ((max(1, (int)($_GET['page'] ?? 1)) - 1) * 10));
     $st->execute([]);

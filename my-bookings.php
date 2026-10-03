@@ -220,7 +220,7 @@ require_once 'includes/header-shared.php';
             <div class="alert alert-success py-2 small" data-testid="refund-ok"><i class="bi bi-check-circle me-1"></i><?= e($_GET['rmsg'] ?? t('Pengajuan refund diterima')) ?></div>
         <?php endif; ?>
         <?php if (isset($_GET['msg']) && $_GET['msg'] === 'refund_fail'): ?>
-            <div class="alert alert-danger py-2 small" data-testid="refund-fail"><i class="bi bi-x-circle me-1"></i><?= e($_GET['rmsg'] ?? 'Pengajuan refund gagal') ?></div>
+            <div class="alert alert-danger py-2 small" data-testid="refund-fail"><i class="bi bi-x-circle me-1"></i><?= e($_GET['rmsg'] ?? t('Pengajuan refund gagal')) ?></div>
         <?php endif; ?>
         <?php if (isset($_GET['msg']) && $_GET['msg'] === 'cancel_paid'): ?>
             <div class="alert alert-warning py-2 small"><i class="bi bi-info-circle me-1"></i><?= t('Booking sudah dibayar tidak dapat dibatalkan sendiri. Silakan ajukan refund.') ?></div>
