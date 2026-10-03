@@ -177,3 +177,19 @@ function testPaymentLabelsLocalized(): void {
     }
     $_SESSION['lang'] = 'id';
 }
+
+/**
+ * Tidak boleh ada grup key di `translations` yang hanya berbeda huruf besar/kecil
+ * (collation ai_ci membuatnya duplikat lookup). Cegah regresi setelah dedupe.
+ */
+function testNoCaseDuplicateTranslationKeys(): void {
+    $rows = db()->query("SELECT `key` FROM translations")->fetchAll(PDO::FETCH_COLUMN);
+    $groups = [];
+    foreach ($rows as $k) $groups[mb_strtolower($k)][$k] = true;
+    $bad = [];
+    foreach ($groups as $low => $variants) {
+        if (count($variants) > 1) $bad[] = implode(' / ', array_keys($variants));
+    }
+    sort($bad);
+    assertSame([], $bad, 'Grup key translations hanya beda huruf besar/kecil');
+}
