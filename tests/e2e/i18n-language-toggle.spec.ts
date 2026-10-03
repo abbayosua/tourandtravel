@@ -737,3 +737,14 @@ test.describe('i18n admin attraction edit', () => {
     }
   });
 });
+
+test.describe('i18n admin login page', () => {
+  test('halaman login admin mengikuti bahasa', async ({ page }) => {
+    const expected: Record<string, string> = { en: 'Admin Login', zh: '管理员登录' };
+    for (const [lang, title] of Object.entries(expected)) {
+      await page.goto(`${BASE}/admin/login.php?lang=${lang}`);
+      await expect(page.locator('html')).toHaveAttribute('lang', lang);
+      await expect(page).toHaveTitle(new RegExp(title));
+    }
+  });
+});

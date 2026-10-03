@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 <!DOCTYPE html>
-<html lang="id">
+<html lang="<?= getCurrentLang() ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -39,6 +39,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="col-md-5">
                 <div class="card border-0 shadow">
                     <div class="card-body p-4">
+                        <div class="text-center mb-3">
+                            <?php foreach (getSupportedLanguages() as $langCode => $langMeta): ?>
+                            <a href="?lang=<?= e($langCode) ?>" class="badge text-decoration-none <?= getCurrentLang() === $langCode ? 'bg-primary' : 'bg-secondary' ?>" title="<?= e($langMeta['label']) ?>"><?= $langMeta['flag'] ?> <?= e($langMeta['label']) ?></a>
+                            <?php endforeach; ?>
+                        </div>
                         <div class="text-center mb-4">
                             <i class="bi bi-shield-lock-fill display-6 text-primary"></i>
                             <h4 class="fw-bold mt-2"><?= t('Admin Panel') ?></h4>
