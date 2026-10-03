@@ -1192,3 +1192,54 @@ $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, 
 $c13 = 0;
 foreach ($adminSalesReport as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c13++; } }
 echo "Upserted $c13 admin sales-report rows.\n";
+
+// ---- Admin hotel API settings ----
+$adminHotelApi = [
+    'en' => [
+        'Sumber live tidak valid' => 'Invalid live source',
+        'rkey NusaTrip harus hex 32–160 karakter' => 'NusaTrip rkey must be 32–160 hex characters',
+        'Pengaturan Hotel API tersimpan' => 'Hotel API settings saved',
+        'Aktifkan live hotel API (Booking.com/OYO/NusaTrip)' => 'Enable live hotel API (Booking.com/OYO/NusaTrip)',
+        'Aktifkan modul NusaTrip (search + booking + VA)' => 'Enable NusaTrip module (search + booking + VA)',
+        'Aktifkan modul OYO (fallback listing per kota)' => 'Enable OYO module (fallback listing per city)',
+        'Sumber utama' => 'Primary source',
+        'NusaTrip rkey (lama/opsional)' => 'NusaTrip rkey (legacy/optional)',
+        'Native API aktif tanpa rkey. rkey lama hanya untuk fallback scraping bila diperlukan.' => 'Native API works without rkey. The legacy rkey is only for scraping fallback if needed.',
+        'Uji pencarian live' => 'Test live search',
+        'Uji' => 'Test',
+        'Kosong/gagal' => 'Empty/failed',
+        'Modul NusaTrip:' => 'NusaTrip module:',
+        'Modul OYO:' => 'OYO module:',
+        'rkey NusaTrip' => 'NusaTrip rkey',
+        'terisi' => 'filled',
+        'kosong' => 'empty',
+        'aktif' => 'active',
+        'nonaktif' => 'inactive',
+    ],
+    'zh' => [
+        'Sumber live tidak valid' => '实时来源无效',
+        'rkey NusaTrip harus hex 32–160 karakter' => 'NusaTrip rkey 必须为 32–160 位十六进制字符',
+        'Pengaturan Hotel API tersimpan' => '酒店 API 设置已保存',
+        'Live Hotel API' => '实时酒店 API',
+        'Aktifkan live hotel API (Booking.com/OYO/NusaTrip)' => '启用实时酒店 API（Booking.com/OYO/NusaTrip）',
+        'Aktifkan modul NusaTrip (search + booking + VA)' => '启用 NusaTrip 模块（搜索 + 预订 + VA）',
+        'Aktifkan modul OYO (fallback listing per kota)' => '启用 OYO 模块（按城市回退列表）',
+        'Sumber utama' => '主要来源',
+        'NusaTrip rkey (lama/opsional)' => 'NusaTrip rkey（旧版/可选）',
+        'Native API aktif tanpa rkey. rkey lama hanya untuk fallback scraping bila diperlukan.' => '原生 API 无需 rkey 即可使用。旧 rkey 仅在需要时用于抓取回退。',
+        'Uji pencarian live' => '测试实时搜索',
+        'Uji' => '测试',
+        'OK' => '正常',
+        'hotel' => '酒店',
+        'Kosong/gagal' => '为空/失败',
+        'Modul NusaTrip:' => 'NusaTrip 模块：',
+        'Modul OYO:' => 'OYO 模块：',
+        'rkey NusaTrip' => 'NusaTrip rkey',
+        'terisi' => '已填写',
+        'kosong' => '为空',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$c14 = 0;
+foreach ($adminHotelApi as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c14++; } }
+echo "Upserted $c14 admin hotel-api rows.\n";

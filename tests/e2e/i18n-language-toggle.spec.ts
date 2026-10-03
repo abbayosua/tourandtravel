@@ -428,3 +428,15 @@ test.describe('i18n admin sales report', () => {
     }
   });
 });
+
+test.describe('i18n admin hotel api settings', () => {
+  test('label pengaturan hotel API mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    const expected: Record<string, string> = { id: 'Sumber utama', en: 'Primary source', zh: '主要来源' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/admin/hotel-api-settings.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('body')).toContainText(label);
+    }
+  });
+});
