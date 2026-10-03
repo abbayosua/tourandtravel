@@ -134,10 +134,13 @@ require_once 'includes/header-shared.php';
             <div class="col-md-6 text-center py-5">
                 <i class="bi bi-search fs-1 text-muted"></i>
                 <h5 class="mt-3 fw-bold"><?= t('Cari Booking') ?></h5>
+                <?php if ($code !== ''): ?>
+                <div class="alert alert-danger py-2 small mt-3" data-testid="track-not-found"><?= t('Kode booking tidak ditemukan. Periksa kembali kode Anda.') ?></div>
+                <?php endif; ?>
                 <p class="text-muted small"><?= t('Masukkan kode booking untuk cek status pemesanan') ?></p>
                 <form method="GET" class="mt-3">
                     <div class="input-group">
-                        <input type="text" name="code" class="form-control" placeholder="<?= t('Contoh: TAT-7A2B1') ?>" required>
+                        <input type="text" name="code" class="form-control" value="<?= e($code) ?>" placeholder="<?= t('Contoh: TAT-7A2B1') ?>" required>
                         <button class="btn btn-primary" type="submit"><?= t('Cari') ?></button>
                     </div>
                 </form>
