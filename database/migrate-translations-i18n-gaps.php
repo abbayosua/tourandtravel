@@ -1452,3 +1452,31 @@ $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, 
 $c20 = 0;
 foreach ($adminBrand as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c20++; } }
 echo "Upserted $c20 admin brand-settings rows.\n";
+
+// ---- Admin live chat settings ----
+$adminChat = [
+    'en' => [
+        'Property ID tawk.to harus 24 karakter hex (contoh: 5f1a2b3c4d5e6f7a8b9c0d1e)' => 'tawk.to Property ID must be 24 hex characters (e.g. 5f1a2b3c4d5e6f7a8b9c0d1e)',
+        'Widget ID tawk.to hanya alfanumerik maks 10 karakter' => 'tawk.to Widget ID must be alphanumeric, max 10 characters',
+        'Pengaturan live chat tersimpan' => 'Live chat settings saved',
+        'Live Chat (tawk.to)' => 'Live Chat (tawk.to)',
+        'Umumnya "default" (1i[...]) — biarkan bila tidak yakin.' => 'Usually "default" (1i[...]) — leave as is if unsure.',
+        'Widget tidak dirender sampai Property ID diisi.' => 'The widget is not rendered until the Property ID is filled in.',
+    ],
+    'zh' => [
+        'Property ID tawk.to harus 24 karakter hex (contoh: 5f1a2b3c4d5e6f7a8b9c0d1e)' => 'tawk.to Property ID 必须为 24 位十六进制字符（例如：5f1a2b3c4d5e6f7a8b9c0d1e）',
+        'Widget ID tawk.to hanya alfanumerik maks 10 karakter' => 'tawk.to Widget ID 只能为字母数字，最多 10 个字符',
+        'Pengaturan live chat tersimpan' => '在线客服设置已保存',
+        'Live Chat' => '在线客服',
+        'Live Chat (tawk.to)' => '在线客服（tawk.to）',
+        'Property ID' => 'Property ID',
+        'Widget ID' => 'Widget ID',
+        'Umumnya "default" (1i[...]) — biarkan bila tidak yakin.' => '通常为“default”（1i[...]）—— 不确定时请保持原样。',
+        'Status' => '状态',
+        'Widget tidak dirender sampai Property ID diisi.' => '在填写 Property ID 之前不会渲染该组件。',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$c21 = 0;
+foreach ($adminChat as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c21++; } }
+echo "Upserted $c21 admin chat-settings rows.\n";

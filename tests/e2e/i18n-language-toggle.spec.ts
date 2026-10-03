@@ -512,3 +512,19 @@ test.describe('i18n admin brand settings', () => {
     }
   });
 });
+
+test.describe('i18n admin live chat settings', () => {
+  test('label pengaturan live chat mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    const expected: Record<string, string> = {
+      id: 'Widget tidak dirender sampai Property ID diisi.',
+      en: 'The widget is not rendered until the Property ID is filled in.',
+      zh: '在填写 Property ID 之前不会渲染该组件。',
+    };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/admin/chat-settings.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('body')).toContainText(label);
+    }
+  });
+});
