@@ -4,6 +4,9 @@
  */
 
 require_once __DIR__ . '/../../includes/pdf-brochure.php';
+// pdf-brochure memakai pdfRemoteImg() dari pdf-dompdf; muat agar test bisa
+// dijalankan terisolasi (php tests/unit/run.php PdfBrochure).
+require_once __DIR__ . '/../../includes/pdf-dompdf.php';
 
 function testBrochureDuration() {
     assertSame('8D7N', pdfBrochureDuration(['title' => '8D HUNAN ZHANGJIAJIE', 'duration_days' => null, 'duration_nights' => null], []), 'parse judul 8D');
