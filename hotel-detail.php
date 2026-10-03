@@ -788,7 +788,7 @@ require_once 'includes/header-shared.php';
                                 var phoneEl = document.getElementById('hotelBookingPhone');
                                 if (nameEl) nameEl.value = p.full_name || '';
                                 if (phoneEl) phoneEl.value = p.phone || '';
-                            } catch(e) {}
+                            } catch(e) { console.warn('profile parse error', e); }
                         }
                         <?php endif; ?>
                         </script>
