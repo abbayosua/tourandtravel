@@ -63,6 +63,7 @@ const PAGES = [
   'pelni.php',
   'track.php',
   'collection.php?slug=best-seller',
+  'booking-success.php?code=E2EI18N1',
   'nusatrip-book.php',
   'ferry-booking.php',
   'pelni-booking.php',
@@ -130,6 +131,21 @@ function leakedStrings(idStrings: string[], otherStrings: string[]): string[] {
 }
 
 test.describe('i18n language toggle', () => {
+  test.beforeAll(() => {
+    // Booking deterministik untuk menyapu halaman booking-success.php.
+    try {
+      mysql(`DELETE FROM bookings WHERE booking_code = 'E2EI18N1'`);
+      const td = mysql(`SELECT id, tour_id FROM tour_dates WHERE is_active = 1 ORDER BY id LIMIT 1`).split('	');
+      mysql(
+        `INSERT INTO bookings (booking_code, tour_id, tour_date_id, name, email, phone, participants, total_price, status) ` +
+          `VALUES ('E2EI18N1', ${td[1]}, ${td[0]}, 'E2E I18N', 'e2e@t.local', '0800000000', 1, 100000, 'pending')`
+      );
+    } catch { /* ignore */ }
+  });
+  test.afterAll(() => {
+    try { mysql(`DELETE FROM bookings WHERE booking_code = 'E2EI18N1'`); } catch { /* ignore */ }
+  });
+
   test('switcher mengganti bahasa, <html lang>, dan nav lalu persisten', async ({ page }) => {
     await page.goto(`${BASE}/?lang=id`);
     await expect(page.locator('html')).toHaveAttribute('lang', 'id');
