@@ -62,6 +62,7 @@ function cleanup() {
     mysql(`DELETE FROM tours WHERE id = ${id}`);
   }
   tourId = 0;
+  mysql(`DELETE FROM promo_codes WHERE code = 'E2E50'`);
   for (const uid of [userId, redeemUserId]) {
     if (!uid) continue;
     mysql(`DELETE FROM wallet_transactions WHERE user_id = ${uid}`);
@@ -107,6 +108,8 @@ interface BookOpts {
   paxNames?: string[];
   usePoints?: boolean;
   useWallet?: boolean;
+  promoCode?: string;
+  insurance?: boolean;
 }
 
 /** Isi form booking tour lalu submit; return kode booking. */
@@ -136,6 +139,8 @@ async function bookTour(page: Page, opts: BookOpts): Promise<string> {
   await page.locator('#bookingPhone').fill('081234567890');
   if (opts.usePoints) await page.locator('#usePointsTour').check();
   if (opts.useWallet) await page.locator('#useWalletTour').check();
+  if (opts.promoCode) await page.locator('#promoCodeTour').fill(opts.promoCode);
+  if (opts.insurance) await page.locator('#addInsuranceTour').check();
 
   await Promise.all([
     page.waitForURL(/booking-success\.php\?code=/, { timeout: 15000 }),
@@ -208,6 +213,37 @@ test('redeem points + wallet (TravelPoints) memotong total', async ({ page }) =>
   ).toBe('1');
   expect(
     mysql(`SELECT COUNT(*) FROM points_ledger WHERE user_id = ${redeemUserId} AND reason = 'redeem' AND points = -100`)
+  ).toBe('1');
+
+  await page.goto(`${BASE}/my-bookings.php`);
+  await expect(page.locator(`text=${code}`).first()).toBeVisible();
+});
+
+test('diskon grup + promo + asuransi diterapkan pada total', async ({ page }) => {
+  // Promo code tetap: diskon tetap Rp 50.000.
+  mysql(
+    `INSERT INTO promo_codes (code, description, discount_type, discount_value, valid_from, valid_until, is_active) ` +
+      `VALUES ('E2E50', 'e2e fixed', 'fixed', 50000, '2020-01-01', '2030-01-01', 1) ` +
+      `ON DUPLICATE KEY UPDATE discount_value = VALUES(discount_value), is_active = 1`
+  );
+
+  await login(page);
+  const code = await bookTour(page, {
+    participants: 5,
+    paxNames: [undefined, 'Pax Dua', 'Pax Tiga', 'Pax Empat', 'Pax Lima'],
+    promoCode: 'E2E50',
+    insurance: true,
+  });
+
+  // 5 x 1.500.000 = 7.500.000; grup 5% = 375.000 -> 7.125.000;
+  // promo tetap 50.000 -> 7.075.000; asuransi 3% (dibulatkan ke 100) = 212.300
+  // -> total 7.287.300
+  const row = mysql(`SELECT total_price, participants FROM bookings WHERE booking_code = '${code}' AND tour_id = ${tourId}`);
+  expect(row).toContain('7287300');
+  expect(row).toContain('5');
+
+  expect(
+    mysql(`SELECT COUNT(*) FROM booking_addons WHERE booking_type = 'tour' AND booking_id = (SELECT id FROM bookings WHERE booking_code = '${code}') AND type = 'insurance' AND amount = 212300`)
   ).toBe('1');
 
   await page.goto(`${BASE}/my-bookings.php`);
