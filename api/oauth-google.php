@@ -19,7 +19,7 @@ $input = json_decode(file_get_contents('php://input'), true);
 $credential = trim($input['credential'] ?? '');
 
 if ($credential === '' || strlen($credential) > 5000) {
-    jsonError('invalid_credential', 'Credential kosong atau terlalu panjang');
+    jsonError('invalid_credential', t('Credential kosong atau terlalu panjang'));
 }
 
 // Verifikasi id_token ke Google (payload JSON atau null)
@@ -34,7 +34,7 @@ if (!is_array($info) || empty($info['email_verified']) || $info['email_verified'
 
 $aud = $info['aud'] ?? '';
 if (defined('GOOGLE_CLIENT_ID') && GOOGLE_CLIENT_ID !== '' && $aud !== GOOGLE_CLIENT_ID) {
-    jsonError('invalid_audience', 'Token bukan untuk aplikasi ini', 401);
+    jsonError('invalid_audience', t('Token bukan untuk aplikasi ini'), 401);
 }
 
 $googleId = (string)($info['sub'] ?? '');

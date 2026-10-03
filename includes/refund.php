@@ -73,11 +73,11 @@ function requestRefund(int $bookingId, int $userId, string $reason): array {
     if ($bk['refund_status'] === 'rejected') return [false, t('Pengajuan refund sebelumnya sudah ditolak')];
 
     $calc = calculateRefund($bookingId);
-    if (!$calc || $calc['pct'] === 0) return [false, 'Booking ini sudah tidak bisa direfund (melewati batas waktu / non-refundable)'];
+    if (!$calc || $calc['pct'] === 0) return [false, t('Booking ini sudah tidak bisa direfund (melewati batas waktu / non-refundable)')];
 
     db()->prepare("UPDATE bookings SET refund_status = 'requested', refund_reason = ? WHERE id = ?")
         ->execute([$reason, $bookingId]);
-    return [true, 'Pengajuan refund diterima. Estimasi refund: ' . $calc['pct'] . '%'];
+    return [true, t('Pengajuan refund diterima. Estimasi refund:') . ' ' . $calc['pct'] . '%'];
 }
 
 /**
