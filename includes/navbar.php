@@ -48,7 +48,7 @@ $navMenuItems = array_values(array_filter($voyageMenus, fn($m) => !empty($m['sho
         <a class="voyage-icon position-relative" href="notifications.php" title="<?= t('Notifikasi') ?>"><i class="bi bi-bell"></i><?php if ($navUnread > 0): ?><span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size:9px;"><?= $navUnread > 9 ? '9+' : $navUnread ?></span><?php endif; ?></a>
         <?php endif; ?>
         <div class="dropdown voyage-drop">
-            <a class="voyage-icon nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" id="currencyDropdown" aria-label="Currency"><i class="bi bi-currency-exchange"></i> <span id="currencyLabel">IDR</span></a>
+            <a class="voyage-icon nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" id="currencyDropdown" aria-label="<?= e(t('Mata Uang')) ?>"><i class="bi bi-currency-exchange"></i> <span id="currencyLabel">IDR</span></a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="currencyDropdown">
                 <li><a class="dropdown-item currency-btn" href="#" data-currency="IDR">IDR (Rp)</a></li>
                 <li><a class="dropdown-item currency-btn" href="#" data-currency="SGD">SGD (S$)</a></li>
@@ -56,14 +56,14 @@ $navMenuItems = array_values(array_filter($voyageMenus, fn($m) => !empty($m['sho
             </ul>
         </div>
         <div class="dropdown voyage-drop">
-            <a class="voyage-icon nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-label="Language"><i class="bi bi-translate"></i> <?= strtoupper(getCurrentLang()) ?></a>
+            <a class="voyage-icon nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" id="langDropdown" aria-label="<?= e(t('Bahasa')) ?>"><i class="bi bi-translate"></i> <?= strtoupper(getCurrentLang()) ?></a>
             <ul class="dropdown-menu dropdown-menu-end">
                 <?php foreach (getSupportedLanguages() as $langCode => $langMeta): ?>
                 <li><a class="dropdown-item <?= getCurrentLang() === $langCode ? 'active' : '' ?>" href="?<?= http_build_query(array_merge($navLangParams, ['lang' => $langCode])) ?>"><?= $langMeta['flag'] ?> <?= e($langMeta['label']) ?></a></li>
                 <?php endforeach; ?>
             </ul>
         </div>
-        <button id="themeToggle" class="voyage-icon" title="Theme" onclick="var t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);localStorage.setItem('theme',t);var ic=document.getElementById('themeIcon');if(ic)ic.className=t==='dark'?'bi bi-moon-stars':'bi bi-sun';"><i class="bi bi-sun" id="themeIcon"></i></button>
+        <button id="themeToggle" class="voyage-icon" title="<?= e(t('Tema')) ?>" onclick="var t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);localStorage.setItem('theme',t);var ic=document.getElementById('themeIcon');if(ic)ic.className=t==='dark'?'bi bi-moon-stars':'bi bi-sun';"><i class="bi bi-sun" id="themeIcon"></i></button>
         <?php if (isset($_SESSION['user_id'])): ?>
         <div class="dropdown voyage-drop">
             <a class="voyage-user klook-user-dropdown dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="bi bi-person-circle"></i><?= e($_SESSION['user_name'] ?? 'User') ?><?php if (!empty($navTier)): ?><span class="badge tier-badge ms-1" id="headerTierBadge" style="background: <?= e($navTier['color']) ?>; font-size: 10px;"><i class="bi <?= e($navTier['icon']) ?>"></i> <?= e($navTier['display_name']) ?></span><?php endif; ?></a>

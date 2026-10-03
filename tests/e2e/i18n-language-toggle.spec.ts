@@ -122,7 +122,7 @@ async function visibleStrings(page: Page): Promise<string[]> {
 
 /** Ganti bahasa lewat kontrol switcher di navbar (bukan sekadar ubah URL). */
 async function switchLanguage(page: Page, lang: string) {
-  await page.click('a[aria-label="Language"]');
+  await page.click('#langDropdown');
   const option = page.locator(`.dropdown-menu a[href*="lang=${lang}"]`).first();
   await option.waitFor({ state: 'visible' });
   await Promise.all([page.waitForLoadState('domcontentloaded'), option.click()]);
@@ -171,6 +171,16 @@ test.describe('i18n language toggle', () => {
     await expect(page.locator('html')).toHaveAttribute('lang', 'zh');
     await expect(page.locator('.voyage-tabs')).toContainText('机票');
     await expect(page.locator('.voyage-tabs')).not.toContainText('Pesawat');
+  });
+
+  // aria-label/title navbar dulu hardcoded Inggris.
+  test('label aksesibilitas navbar mengikuti bahasa', async ({ page }) => {
+    const expected: Record<string, string> = { id: 'Bahasa', en: 'Language', zh: '语言' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/index.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('#langDropdown')).toHaveAttribute('aria-label', label);
+    }
   });
 
   // Format angka/tanggal sisi browser harus ikut bahasa aktif (bukan id-ID hardcoded).
