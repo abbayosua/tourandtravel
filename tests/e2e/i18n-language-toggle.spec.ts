@@ -1235,6 +1235,17 @@ test.describe('i18n tombol tukar transport-search', () => {
   });
 });
 
+test.describe('i18n label aksesibilitas breadcrumb', () => {
+  test('aria-label breadcrumb mengikuti bahasa', async ({ page }) => {
+    await page.goto(`${BASE}/flight-detail.php?schedule_id=1&lang=zh`);
+    await page.waitForLoadState('domcontentloaded');
+    expect(await page.content()).toContain('aria-label="面包屑"');
+    await page.goto(`${BASE}/flight-detail.php?schedule_id=1&lang=en`);
+    await page.waitForLoadState('domcontentloaded');
+    expect(await page.content()).toContain('aria-label="breadcrumb"');
+  });
+});
+
 test.describe('i18n email templates', () => {
   // Render each transactional email in id/en/zh and assert no Indonesian leaks.
   test('template email tidak menyisakan teks Indonesia', async () => {

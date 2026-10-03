@@ -146,7 +146,7 @@ require_once 'includes/header-shared.php';
 ?>
 <section class="py-4 bg-light" style="min-height: 80vh;">
     <div class="container">
-        <nav aria-label="breadcrumb"><ol class="breadcrumb">
+        <nav aria-label="<?= e(t('breadcrumb')) ?>"><ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="flights.php"><?= t('Pesawat') ?></a></li>
             <li class="breadcrumb-item active"><?= $mode==='duffel' ? e($offer['slices'][0]['segments'][0]['marketing_carrier']['iata_code']??'Live').' '.e($offer['slices'][0]['segments'][0]['marketing_carrier_flight_number']??'') : ($mode==='flightlist' ? e(($offer['airlines'][0]??'FL').' '.($offer['route'][0]['flight_no']??'')) : e($schedule['flight_number'])); ?></li>
         </ol></nav>

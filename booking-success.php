@@ -498,6 +498,7 @@ require_once 'includes/header-shared.php';
         .catch(function () {
             btn.disabled = false;
             btn.innerHTML = '<?= t('Bayar Sekarang') ?>';
+            if (statusArea) statusArea.innerHTML = '<span class="text-danger"><?= t('Gagal memulai pembayaran. Coba lagi.') ?></span>';
         });
     });
 
@@ -530,6 +531,7 @@ require_once 'includes/header-shared.php';
                 .catch(function () {
                     payBtn.disabled = false;
                     payBtn.innerHTML = '<?= t('Bayar Sekarang') ?>';
+                    if (statusArea) statusArea.innerHTML = '<span class="text-danger"><?= t('Pembayaran gagal. Coba lagi.') ?></span>';
                 });
         });
     });

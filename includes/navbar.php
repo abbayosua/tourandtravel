@@ -90,7 +90,7 @@ $navMenuItems = array_values(array_filter($voyageMenus, fn($m) => !empty($m['sho
         <a class="voyage-btn voyage-btn-ghost" href="register.php"><?= t('Daftar') ?></a>
         <a class="voyage-btn voyage-btn-solid" href="login.php"><?= t('Masuk') ?></a>
         <?php endif; ?>
-        <button class="voyage-burger d-md-none" id="voyageBurger" aria-label="Menu">☰</button>
+        <button class="voyage-burger d-md-none" id="voyageBurger" aria-label="<?= e(t('Menu')) ?>">☰</button>
     </div>
 </nav>
 <div class="voyage-menu d-none" id="voyageMenu">

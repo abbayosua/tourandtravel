@@ -9,7 +9,7 @@
 function i18nAttrMarkers(): string {
     return '/\b(' . implode('|', [
         'contoh', 'nama', 'nomor', 'alamat', 'telepon', 'sandi', 'depan', 'belakang',
-        'pilih', 'cari', 'tanggal', 'jumlah', 'harga', 'kota', 'tiket', 'pesan', 'tukar',
+        'pilih', 'cari', 'tanggal', 'jumlah', 'harga', 'kota', 'tiket', 'pesan', 'tukar', 'rute', 'jadwal', 'stasiun', 'pelabuhan', 'bandara', 'penumpang', 'penerbangan', 'keberangkatan', 'kelas', 'gerbong', 'dewasa', 'bayi', 'pulang', 'pergi', 'sekali', 'transit', 'kursi', 'maskapai', 'bagasi', 'tiba', 'berangkat', 'sandi', 'kata sandi', 'negara', 'kode negara', 'nomor telepon',
         'kamar', 'malam', 'orang', 'kirim', 'simpan', 'hapus', 'tambah', 'lihat',
         'yang', 'untuk', 'dengan', 'tidak', 'dari',
     ]) . ')\b/i';

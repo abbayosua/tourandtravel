@@ -129,7 +129,7 @@ require_once __DIR__ . '/../components/date-picker.php';
                             <?php if (!empty($vc['instant_confirmation'])): ?><span class="voyage-badge voyage-badge-instant">&#9889; <?= t('Instan') ?></span><?php endif; ?>
                         </span>
                         <?php if (function_exists('isLoggedIn')): ?>
-                        <button type="button" class="voyage-wish wishlist-btn <?= (!empty($wishlistIds) && in_array($vc['id'] ?? 0, $wishlistIds)) ? 'on' : '' ?>" data-tour-id="<?= (int)($vc['id'] ?? 0) ?>" onclick="if(typeof toggleWishlist==='function')toggleWishlist(this, <?= (int)($vc['id'] ?? 0) ?>)" aria-label="wishlist"><i class="bi bi-heart<?= (!empty($wishlistIds) && in_array($vc['id'] ?? 0, $wishlistIds)) ? '-fill' : '' ?>"></i></button>
+                        <button type="button" class="voyage-wish wishlist-btn <?= (!empty($wishlistIds) && in_array($vc['id'] ?? 0, $wishlistIds)) ? 'on' : '' ?>" data-tour-id="<?= (int)($vc['id'] ?? 0) ?>" onclick="if(typeof toggleWishlist==='function')toggleWishlist(this, <?= (int)($vc['id'] ?? 0) ?>)" aria-label="<?= e(t('Wishlist')) ?>"><i class="bi bi-heart<?= (!empty($wishlistIds) && in_array($vc['id'] ?? 0, $wishlistIds)) ? '-fill' : '' ?>"></i></button>
                         <?php endif; ?>
                         <span class="voyage-tcard-pills">
                             <span class="voyage-pill">&#9733; <?= e($vRating) ?> <em><?php if ($vRev > 0): ?>&bull; <?= number_format($vRev) ?><?php endif; ?></em></span>

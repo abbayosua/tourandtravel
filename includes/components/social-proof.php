@@ -15,7 +15,7 @@
                 <div class="fw-semibold" id="spName"></div>
                 <div class="text-muted" id="spText"></div>
             </div>
-            <button type="button" class="btn-close btn-close-sm ms-auto" aria-label="Close" onclick="document.getElementById('socialProofToast').classList.add('d-none')"></button>
+            <button type="button" class="btn-close btn-close-sm ms-auto" aria-label="<?= e(t('Tutup')) ?>" onclick="document.getElementById('socialProofToast').classList.add('d-none')"></button>
         </div>
     </div>
 </div>
