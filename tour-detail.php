@@ -670,37 +670,6 @@ require_once 'includes/header-shared.php';
                     </div>
                     <?php endif; ?>
 
-                    <!-- Price Alert Modal -->
-                    <div class="modal fade" id="priceAlertModal" tabindex="-1">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <form method="POST" action="price-alert-ajax.php">
-                                    <div class="modal-header">
-                                        <h6 class="modal-title fw-bold"><i class="bi bi-bell me-2"></i><?= t('Price Alert') ?></h6>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p class="small text-muted mb-3"><?= t('Kami akan memberi tahu Anda jika harga turun ke target.') ?></p>
-                                        <input type="hidden" name="action" value="create">
-                                        <input type="hidden" name="item_type" value="tour">
-                                        <input type="hidden" name="item_id" value="<?= (int)$tour['id'] ?>">
-                                        <input type="hidden" name="currency" value="<?= e($tour['price_currency'] ?? 'IDR') ?>">
-                                        <div class="mb-3">
-                                            <label class="form-label small fw-semibold"><?= t('Harga Target') ?></label>
-                                            <input type="number" name="target_price" class="form-control" min="1" step="1000" required
-                                                placeholder="<?= t('Masukkan harga target') ?>"
-                                                value="<?= (int)($flashDetail['price'] * 0.9) ?>">
-                                            <small class="text-muted"><?= t('Harga saat ini') ?>: <?= formatCurrencySpan($flashDetail['price'], $tour['price_currency'] ?? 'IDR') ?></small>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="submit" class="btn btn-warning"><?= t('Simpan Alert') ?></button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Harga per tanggal (price_calendar) -->
                     <?php if (!empty($priceCalendar)): ?>
                     <div class="mb-3 p-2 rounded border bg-light" id="priceDatePicker">
@@ -1027,6 +996,7 @@ require_once 'includes/header-shared.php';
                         <i class="bi bi-exclamation-triangle me-1"></i> <?= t('Belum ada jadwal keberangkatan tersedia') ?>
                     </div>
                     <?php endif; ?>
+                    </form>
                 </div>
             </div>
         </div>
@@ -1068,6 +1038,40 @@ require __DIR__ . '/includes/components/pax-modal.php';
 </div>
 
 <?php $siteFocus = 'tour'; require_once 'includes/homepage/trust.php'; ?>
+
+<!-- Price Alert Modal — di luar kartu sticky (z-index) agar tidak tertutup modal-backdrop -->
+<?php if (isLoggedIn()): ?>
+<div class="modal fade" id="priceAlertModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="POST" action="price-alert-ajax.php" id="priceAlertForm">
+                <div class="modal-header">
+                    <h6 class="modal-title fw-bold"><i class="bi bi-bell me-2"></i><?= t('Price Alert') ?></h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="small text-muted mb-3"><?= t('Kami akan memberi tahu Anda jika harga turun ke target.') ?></p>
+                    <input type="hidden" name="action" value="create">
+                    <input type="hidden" name="item_type" value="tour">
+                    <input type="hidden" name="item_id" value="<?= (int)$tour['id'] ?>">
+                    <input type="hidden" name="currency" value="<?= e($tour['price_currency'] ?? 'IDR') ?>">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold"><?= t('Harga Target') ?></label>
+                        <input type="number" name="target_price" class="form-control" min="1" step="1" required
+                            placeholder="<?= t('Masukkan harga target') ?>"
+                            value="<?= (int)($flashDetail['price'] * 0.9) ?>">
+                        <small class="text-muted"><?= t('Harga saat ini') ?>: <?= formatCurrencySpan($flashDetail['price'], $tour['price_currency'] ?? 'IDR') ?></small>
+                    </div>
+                    <div class="alert d-none py-2 small mb-0" id="priceAlertMsg" role="status"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-warning" id="priceAlertSubmit"><?= t('Simpan Alert') ?></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
 <?php require_once 'includes/footer-shared.php'; ?>
 
 <script>
@@ -1250,6 +1254,46 @@ document.addEventListener('DOMContentLoaded', function() {
         touchNavigation: true,
         loop: true,
         autoplayVideos: true
+    });
+});
+</script>
+<script>
+// Price alert: submit via AJAX agar user tidak diarahkan ke halaman JSON mentah.
+document.addEventListener('DOMContentLoaded', function() {
+    var form = document.getElementById('priceAlertForm');
+    if (!form) return;
+    var msg = document.getElementById('priceAlertMsg');
+    var btn = document.getElementById('priceAlertSubmit');
+    var original = btn ? btn.innerHTML : '';
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span><?= t('Memproses...') ?>'; }
+        if (msg) { msg.className = 'alert d-none py-2 small mb-0'; msg.textContent = ''; }
+
+        fetch(form.getAttribute('action'), { method: 'POST', body: new FormData(form), headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, status: r.status, data: d }; }); })
+            .then(function(res) {
+                if (res.status === 401) {
+                    window.location.href = 'login.php?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
+                    return;
+                }
+                if (res.ok && res.data && res.data.success) {
+                    if (msg) { msg.className = 'alert alert-success py-2 small mb-0'; msg.textContent = '<?= t('Alert harga disimpan!') ?>'; }
+                    setTimeout(function() {
+                        var modal = bootstrap.Modal.getInstance(document.getElementById('priceAlertModal'));
+                        if (modal) modal.hide();
+                    }, 900);
+                } else {
+                    if (msg) { msg.className = 'alert alert-danger py-2 small mb-0'; msg.textContent = '<?= t('Gagal menyimpan alert. Coba lagi.') ?>'; }
+                }
+            })
+            .catch(function() {
+                if (msg) { msg.className = 'alert alert-danger py-2 small mb-0'; msg.textContent = '<?= t('Gagal menyimpan alert. Coba lagi.') ?>'; }
+            })
+            .finally(function() {
+                if (btn) { btn.disabled = false; btn.innerHTML = original; }
+            });
     });
 });
 </script>

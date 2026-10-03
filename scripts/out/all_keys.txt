@@ -64,6 +64,7 @@ Alamat email Anda
 Alamat email tidak valid
 Alasan (opsional)
 Alasan Refund
+Alert harga disimpan!
 All rights reserved.
 Anak
 Analytics
@@ -455,6 +456,7 @@ Gagal mengambil kurs
 Gagal mengambil kurs dari Frankfurter API
 Gagal mengubah booking
 Gagal mengunggah
+Gagal menyimpan alert. Coba lagi.
 Gagal menyimpan file
 Gagal menyimpan file config
 Gagal upload
