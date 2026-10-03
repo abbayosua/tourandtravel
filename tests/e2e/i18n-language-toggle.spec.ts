@@ -809,3 +809,44 @@ test.describe('i18n tour detail notes', () => {
     }
   });
 });
+test.describe('i18n email templates', () => {
+  // Render each transactional email in id/en/zh and assert no Indonesian leaks.
+  test('template email tidak menyisakan teks Indonesia', async () => {
+    // Convert a JS value to a PHP literal (array/object/string/number/bool/null).
+    const toPhp = (v: unknown): string => {
+      if (v === null || v === undefined) return 'null';
+      if (typeof v === 'string') return JSON.stringify(v);
+      if (typeof v === 'number' || typeof v === 'boolean') return String(v);
+      if (Array.isArray(v)) return '[' + v.map(toPhp).join(', ') + ']';
+      if (typeof v === 'object') {
+        return '[' + Object.entries(v as Record<string, unknown>)
+          .map(([k, val]) => JSON.stringify(k) + ' => ' + toPhp(val))
+          .join(', ') + ']';
+      }
+      return 'null';
+    };
+    const events = [
+      { event: 'booking-created', data: { booking_code: 'TAT-1', total: 'Rp 100', pay_link: 'http://x/pay', track_link: 'http://x/track' } },
+      { event: 'booking-status', data: { booking_code: 'TAT-2', status: 'paid', track_link: 'http://x/track' } },
+      { event: 'invoice', data: { order_id: 'ORD-1', amount: 'Rp 50', insurance_premi: 0, insurance_amount: '' } },
+      { event: 'reset-password', data: { reset_link: 'http://x/reset' } },
+      { event: 'topup-approved', data: { amount: 'Rp 100.000', admin_note: 'ok', track_link: 'http://x/t' } },
+      { event: 'topup-rejected', data: { amount: 'Rp 100.000', admin_note: 'no', track_link: 'http://x/t' } },
+      { event: 'welcome', data: {} },
+    ];
+    const markers = ['tidak', 'belum', 'sudah', 'silakan', 'mohon', 'berhasil', 'gagal', 'pesanan', 'pembayaran', 'kupon', 'paket', 'tur'];
+    for (const { event, data } of events) {
+      for (const lang of ['en', 'zh']) {
+        const out = execFileSync('php', [
+          '-r',
+          `require "includes/config.php"; require "includes/db.php"; require "includes/email.php";
+           $t = renderEmailTemplate(${JSON.stringify(event)}, ${toPhp(data)}, ${JSON.stringify(lang)});
+           echo $t["subject"] . "\n" . $t["html"];`,
+        ], { encoding: 'utf8' });
+        for (const m of markers) {
+          expect(out.toLowerCase(), `${event} @ ${lang} contains "${m}"`).not.toContain(m);
+        }
+      }
+    }
+  });
+});
