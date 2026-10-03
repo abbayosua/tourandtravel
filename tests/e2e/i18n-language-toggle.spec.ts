@@ -617,3 +617,15 @@ test.describe('i18n booking labels', () => {
     }
   });
 });
+
+test.describe('i18n admin tours list', () => {
+  test('label daftar tour mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    const expected: Record<string, string> = { id: 'Tambah Tour', en: 'Add Tour', zh: '添加旅行团' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/admin/tours.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('body')).toContainText(label);
+    }
+  });
+});

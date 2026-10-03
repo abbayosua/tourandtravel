@@ -1777,3 +1777,41 @@ $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, 
 $c27 = 0;
 foreach ($publicGaps as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c27++; } }
 echo "Upserted $c27 public gap rows.\n";
+
+// ---- Reseller booking messages ----
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+foreach ([
+    ['Saldo tidak cukup. Butuh ', 'en', 'Insufficient balance. Need '],
+    ['Saldo tidak cukup. Butuh ', 'zh', '余额不足。需要 '],
+    [', saldo Anda ', 'en', ', your balance '],
+    [', saldo Anda ', 'zh', '，您的余额 '],
+    ['Gagal memotong saldo. Silakan coba lagi.', 'en', 'Failed to deduct balance. Please try again.'],
+    ['Gagal memotong saldo. Silakan coba lagi.', 'zh', '扣减余额失败，请重试。'],
+    ['Slot tidak cukup. Silakan pilih tanggal lain.', 'en', 'Not enough slots. Please choose another date.'],
+    ['Slot tidak cukup. Silakan pilih tanggal lain.', 'zh', '名额不足，请选择其他日期。'],
+] as [$k, $l, $v]) { $stmt->execute([$k, $l, $v]); }
+echo "Added reseller-booking message rows.\n";
+
+// ---- Admin tours/appearance/currency + SEO tagline ----
+$miscGaps = [
+    'en' => [
+        'Tambah Tour Baru' => 'Add New Tour',
+        'Belum ada tour' => 'No tours yet',
+        'Kurs berhasil diperbarui: IDR=%s, SGD=%s, USD=%s' => 'Exchange rates updated: IDR=%s, SGD=%s, USD=%s',
+        'Homepage menonjolkan hotel: pencarian menginap dominan, deal hotel terbaik, hotel per kota.' => 'Homepage highlights hotels: dominant stay search, best hotel deals, hotels by city.',
+        'Halaman lain (tour/hotel/flight detail) tidak berubah.' => 'Other pages (tour/hotel/flight detail) are unchanged.',
+        'TourAndTravel — paket tour, hotel, tiket pesawat, dan aktivitas wisata terbaik dengan harga transparan.' => 'TourAndTravel — the best tour packages, hotels, flights, and travel activities at transparent prices.',
+    ],
+    'zh' => [
+        'Tambah Tour Baru' => '添加新旅游',
+        'Belum ada tour' => '暂无旅游',
+        'Kurs berhasil diperbarui: IDR=%s, SGD=%s, USD=%s' => '汇率已更新：IDR=%s、SGD=%s、USD=%s',
+        'Homepage menonjolkan hotel: pencarian menginap dominan, deal hotel terbaik, hotel per kota.' => '首页突出酒店：以住宿搜索为主、最优酒店优惠、按城市浏览酒店。',
+        'Halaman lain (tour/hotel/flight detail) tidak berubah.' => '其他页面（旅游/酒店/航班详情）保持不变。',
+        'TourAndTravel — paket tour, hotel, tiket pesawat, dan aktivitas wisata terbaik dengan harga transparan.' => 'TourAndTravel — 最优旅游套餐、酒店、机票和旅行活动，价格透明。',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$c28 = 0;
+foreach ($miscGaps as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c28++; } }
+echo "Upserted $c28 misc gap rows.\n";
