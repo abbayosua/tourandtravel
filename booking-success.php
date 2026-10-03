@@ -302,6 +302,10 @@ require_once 'includes/header-shared.php';
                     </p>
 
                     <div class="d-flex gap-2 justify-content-center flex-wrap">
+                        <?php $waNum = preg_replace('/[^0-9]/', '', (string)getSetting('company_wa', getSetting('contact_wa', ''))); ?>
+                        <?php if (($booking['status'] ?? '') === 'pending' && !$isAwaitingPayment && $waNum !== ''): ?>
+                        <a href="https://wa.me/<?= e($waNum) ?>?text=<?= rawurlencode('Booking ' . ($booking['booking_code'] ?? '')) ?>" target="_blank" rel="noopener" class="btn btn-success" data-testid="wa-contact"><i class="bi bi-whatsapp me-1"></i><?= t('Hubungi Kami') ?></a>
+                        <?php endif; ?>
                         <?php if ($paymentEnabled && $btype === 'tour' && $paymentStatus !== 'paid'): ?>
                             <?php
                             // Backlog #8: metode pembayaran tersimpan (1-click pay)

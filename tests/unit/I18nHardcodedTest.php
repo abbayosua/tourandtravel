@@ -104,3 +104,46 @@ function testNoHardcodedIndonesianTextNodes(): void {
     sort($bad);
     assertSame([], $bad, 'Teks node user-facing hardcoded berbahasa Indonesia');
 }
+
+/**
+ * Pesan server (die()/JSON message/error) yang hardcoded berbahasa Indonesia
+ * bocor di en/zh (mis. 'File rusak', die('Slug required.')). Guard ini
+ * menangkapnya (audit >text< tidak menjangkau ini).
+ */
+function testNoHardcodedIndonesianServerMessages(): void {
+    $root = dirname(__DIR__, 2);
+    $skip = ['.git', 'node_modules', 'test-results', 'scripts', 'vendor', 'uploads', '.serena', 'tests', 'database'];
+    $re = i18nTextMarkers();
+    $patterns = [
+        "/die\(\s*'([^']+)'/",
+        '/die\(\s*"([^"]+)"/',
+        "/'message'\s*=>\s*'([^']+)'/",
+        "/'error'\s*=>\s*'([^']+)'/",
+    ];
+    $bad = [];
+
+    $it = new RecursiveIteratorIterator(
+        new RecursiveCallbackFilterIterator(
+            new RecursiveDirectoryIterator($root, FilesystemIterator::SKIP_DOTS),
+            function ($f) use ($skip) {
+                if ($f->isDir()) return !in_array($f->getFilename(), $skip);
+                return preg_match('/\.php$/', $f->getFilename()) === 1;
+            }
+        )
+    );
+    foreach ($it as $f) {
+        $src = @file_get_contents($f->getPathname());
+        if ($src === false) continue;
+        foreach ($patterns as $p) {
+            if (preg_match_all($p, $src, $m)) {
+                foreach ($m[1] as $v) {
+                    if (strpos($v, '$') !== false || strpos($v, 't(') !== false) continue;
+                    if (!preg_match($re, $v)) continue;
+                    $bad[] = basename($f->getPathname()) . ': "' . $v . '"';
+                }
+            }
+        }
+    }
+    sort($bad);
+    assertSame([], $bad, 'Pesan server hardcoded berbahasa Indonesia');
+}
