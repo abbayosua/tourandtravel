@@ -105,7 +105,7 @@ require_once 'includes/admin-header.php';
                     <select name="src" class="form-select form-select-sm">
                         <option value="nusatrip" <?= ($_GET['src'] ?? '') === 'nusatrip' ? 'selected' : '' ?>>NusaTrip</option>
                         <option value="oyo" <?= ($_GET['src'] ?? '') === 'oyo' ? 'selected' : '' ?>>OYO</option>
-                        <option value="auto" <?= ($_GET['src'] ?? 'auto') === 'auto' ? 'selected' : '' ?>>Auto</option>
+                        <option value="auto" <?= ($_GET['src'] ?? 'auto') === 'auto' ? 'selected' : '' ?>><?= t('Auto') ?></option>
                     </select>
                 </div>
                 <div class="col-md-3"><button class="btn btn-sm btn-outline-primary w-100" data-testid="hotel-api-test"><?= t('Uji') ?></button></div>

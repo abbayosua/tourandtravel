@@ -422,7 +422,7 @@ require_once 'includes/admin-header.php';
                             <?php elseif ($btype === 'tour' && ($b['refund_status'] ?? 'none') === 'approved'): ?>
                                 <span class="badge bg-info"><?= t('Refund') ?> <?= formatRupiah((float)($b['refund_amount'] ?? 0)) ?></span>
                             <?php elseif ($btype === 'tour' && ($b['refund_status'] ?? 'none') === 'rejected'): ?>
-                                <span class="badge bg-secondary">Refund <?= t('ditolak') ?></span>
+                                <span class="badge bg-secondary"><?= t('Refund') ?> <?= t('ditolak') ?></span>
                             <?php endif; ?>
                             <?php if (!empty($b['admin_note'])): ?><small class="d-block text-muted" style="max-width:140px;" title="<?= e($b['admin_note']) ?>"><i class="bi bi-sticky"></i> <?= e(mb_strimwidth($b['admin_note'], 0, 24, '…')) ?></small><?php endif; ?>
                         </td>

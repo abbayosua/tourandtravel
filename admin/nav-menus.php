@@ -122,7 +122,7 @@ require_once 'includes/admin-header.php';
 
 <div class="card border-0 shadow-sm"><div class="card-body p-0 table-responsive">
 <table class="table table-hover mb-0 admin-table">
-<thead class="table-light"><tr><th>#</th><th><?= t('Label') ?></th><th>URL</th><th>Tab</th><th>Menu</th><th><?= t('Status') ?></th><th><?= t('Aksi') ?></th></tr></thead>
+<thead class="table-light"><tr><th>#</th><th><?= t('Label') ?></th><th><?= t('URL') ?></th><th><?= t('Tab') ?></th><th><?= t('Menu') ?></th><th><?= t('Status') ?></th><th><?= t('Aksi') ?></th></tr></thead>
 <tbody><?php foreach ($items as $i): ?><tr>
 <td><?=$i['id']?></td>
 <td><i class="bi <?=e($i['icon'])?> me-1"></i><strong><?=e($i['label'])?></strong></td>
