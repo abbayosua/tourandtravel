@@ -608,9 +608,15 @@ test.describe('i18n reseller pages', () => {
       `INSERT INTO users (name, email, password_hash, role) VALUES ('I18N Reseller', '${EMAIL}', '${hash}', 'reseller') ` +
         `ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash), role = 'reseller'`
     );
+    // Reseller price agar reseller-booking.php tidak redirect ke tour-detail.
+    try {
+      mysql(`DELETE FROM reseller_tour_prices WHERE tour_id = 63`);
+      mysql(`INSERT INTO reseller_tour_prices (tour_id, reseller_price, min_pax, active) VALUES (63, 9000000, 2, 1)`);
+    } catch { /* ignore */ }
   });
   test.afterAll(() => {
     try { mysql(`DELETE FROM users WHERE email = '${EMAIL}'`); } catch { /* ignore */ }
+    try { mysql(`DELETE FROM reseller_tour_prices WHERE tour_id = 63`); } catch { /* ignore */ }
   });
 
   test('label reseller mengikuti bahasa', async ({ page }) => {
@@ -621,6 +627,19 @@ test.describe('i18n reseller pages', () => {
     const expected: Record<string, string> = { id: 'Dashboard Reseller', en: 'Reseller Dashboard', zh: '分销商仪表板' };
     for (const [lang, label] of Object.entries(expected)) {
       await page.goto(`${BASE}/reseller-dashboard.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('body')).toContainText(label);
+    }
+  });
+
+  test('label booking reseller mengikuti bahasa', async ({ page }) => {
+    await page.goto(`${BASE}/login.php`);
+    await page.fill('input[name="email"]', EMAIL);
+    await page.fill('input[name="password"]', PASS);
+    await Promise.all([page.waitForLoadState('domcontentloaded'), page.click('button[type="submit"]')]);
+    const expected: Record<string, string> = { id: 'Booking Reseller', en: 'Reseller Booking', zh: '分销商订单' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/reseller-booking.php?tour_id=63&lang=${lang}`);
       await page.waitForLoadState('domcontentloaded');
       await expect(page.locator('body')).toContainText(label);
     }
