@@ -552,3 +552,15 @@ test.describe('i18n admin price alerts', () => {
     }
   });
 });
+
+test.describe('i18n admin reseller topups', () => {
+  test('label topup reseller mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    const expected: Record<string, string> = { id: 'Semua Status', en: 'All Statuses', zh: '所有状态' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/admin/reseller-topups.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('body')).toContainText(label);
+    }
+  });
+});

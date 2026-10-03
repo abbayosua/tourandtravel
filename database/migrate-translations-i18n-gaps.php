@@ -1535,3 +1535,39 @@ $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, 
 $c23 = 0;
 foreach ($adminPriceAlerts as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c23++; } }
 echo "Upserted $c23 admin price-alert rows.\n";
+
+// ---- Admin reseller topups / esim edit / analytics ----
+$adminMisc = [
+    'en' => [
+        'Semua Status' => 'All Statuses',
+        'Nama Produk' => 'Product Name',
+        'Top 10 Produk' => 'Top 10 Products',
+    ],
+    'zh' => [
+        'Semua Status' => '所有状态',
+        'Pending' => '待处理',
+        'Approved' => '已批准',
+        'Rejected' => '已拒绝',
+        'Filter' => '筛选',
+        'Approve' => '批准',
+        'Reject' => '拒绝',
+        'Edit eSIM' => '编辑 eSIM',
+        'Edit' => '编辑',
+        'Nama Produk' => '产品名称',
+        'SIM' => 'SIM',
+        'Pocket WiFi' => '随身 WiFi',
+        'Status' => '状态',
+        'Analytics' => '数据分析',
+        'Hotel' => '酒店',
+        'Transfer' => '接送',
+        'Ferry' => '船票',
+        'Dari' => '从',
+        'Booking' => '订单',
+        'Revenue' => '收入',
+        'Top 10 Produk' => '热销商品 Top 10',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$c24 = 0;
+foreach ($adminMisc as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c24++; } }
+echo "Upserted $c24 admin misc rows.\n";
