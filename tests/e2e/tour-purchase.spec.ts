@@ -58,15 +58,18 @@ function cleanup() {
   // Bersihkan sisa run sebelumnya (by slug) lalu by id.
   const ids = mysql(`SELECT id FROM tours WHERE slug = '${SLUG}'`).split('\n').filter(Boolean);
   const targets = Array.from(new Set([...ids, ...(tourId ? [String(tourId)] : [])]));
-  for (const id of targets) {
-    mysql(`DELETE b FROM booking_participants b JOIN bookings bk ON b.booking_id = bk.id WHERE bk.tour_id = ${id}`);
-    mysql(`DELETE FROM bookings WHERE tour_id = ${id}`);
-    mysql(`DELETE FROM tour_dates WHERE tour_id = ${id}`);
-    mysql(`DELETE FROM tours WHERE id = ${id}`);
+  if (targets.length > 0) {
+    // Hapus waitlist & promo SEBELUM tour dihapus (masih butuh tour_id).
+    mysql(`DELETE FROM tour_waitlist WHERE tour_id IN (${targets.join(',')})`);
+    mysql(`DELETE FROM promo_codes WHERE code = 'E2E50'`);
+    for (const id of targets) {
+      mysql(`DELETE b FROM booking_participants b JOIN bookings bk ON b.booking_id = bk.id WHERE bk.tour_id = ${id}`);
+      mysql(`DELETE FROM bookings WHERE tour_id = ${id}`);
+      mysql(`DELETE FROM tour_dates WHERE tour_id = ${id}`);
+      mysql(`DELETE FROM tours WHERE id = ${id}`);
+    }
   }
   tourId = 0;
-  mysql(`DELETE FROM promo_codes WHERE code = 'E2E50'`);
-  mysql(`DELETE FROM tour_waitlist WHERE tour_id IN (SELECT id FROM tours WHERE slug = '${SLUG}')`);
   for (const uid of [userId, redeemUserId, cancelUserId, modUserId]) {
     if (!uid) continue;
     mysql(`DELETE FROM wallet_transactions WHERE user_id = ${uid}`);
@@ -181,6 +184,23 @@ test('pembelian 1 peserta berhasil dan tersimpan (mode manual)', async ({ page }
   expect(mysql(`SELECT COUNT(*) FROM booking_participants b JOIN bookings bk ON b.booking_id = bk.id WHERE bk.booking_code = '${code}'`)).toBe('1');
 
   await page.goto(`${BASE}/my-bookings.php`);
+  await expect(page.locator(`text=${code}`).first()).toBeVisible();
+});
+
+test('booking sebagai tamu (tanpa login) berhasil', async ({ page }) => {
+  await page.context().addCookies([{ name: 'lang', value: 'id', url: BASE }]);
+  const code = await bookTour(page, { participants: 1 });
+
+  // user_id NULL (tamu), status pending, tanpa earn TravelPoints.
+  const row = mysql(
+    `SELECT user_id, status, total_price FROM bookings WHERE booking_code = '${code}' AND tour_id = ${tourId}`
+  );
+  expect(row).toContain('pending');
+  expect(row).toContain(String(UNIT_PRICE));
+  expect(mysql(`SELECT COUNT(*) FROM wallet_transactions WHERE reference_type = 'tour_booking' AND reference_id = (SELECT id FROM bookings WHERE booking_code = '${code}')`)).toBe('0');
+
+  // Kode booking tetap bisa dilacak.
+  await page.goto(`${BASE}/track.php?code=${code}`);
   await expect(page.locator(`text=${code}`).first()).toBeVisible();
 });
 
