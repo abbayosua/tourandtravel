@@ -14,3 +14,13 @@ android-app/.gradle/
 android-app/local.properties
 /e2e/
 
+# Serena tool memory
+.serena/
+# Feature docs
+FEATURES.md
+KERETA.md
+PELNI.md
+# Dompdf font build artifacts
+vendor/dompdf/dompdf/lib/fonts/*.ttf
+vendor/dompdf/dompdf/lib/fonts/*.ufm
+vendor/dompdf/dompdf/lib/fonts/*.json
