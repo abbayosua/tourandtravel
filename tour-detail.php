@@ -1030,6 +1030,7 @@ require __DIR__ . '/includes/components/pax-modal.php';
             <button class="btn btn-primary" id="itinCreateBtn" type="button"><?= t('Buat Itinerary') ?></button>
           </div>
           <div id="itinDays"></div>
+          <div id="itinStatus" class="alert alert-danger py-1 small d-none mt-2" data-testid="itin-status"></div>
           <div class="input-group input-group-sm mt-2">
             <input type="text" class="form-control" id="itinItemTitle" placeholder="<?= t('Aktivitas, mis: Kintamani Tour 08:00') ?>">
             <button class="btn btn-outline-primary" id="itinAddItemBtn" type="button"><?= t('Tambah Item') ?></button>
@@ -1090,23 +1091,37 @@ require __DIR__ . '/includes/components/pax-modal.php';
   modalEl.parentNode.insertBefore(btn, modalEl);
 
   var currentItin = null, selectedDay = null;
+  function itinStatus(show) {
+    var el = document.getElementById('itinStatus');
+    if (!el) return;
+    el.textContent = show ? '<?= t('Terjadi kesalahan. Coba lagi.') ?>' : '';
+    el.classList.toggle('d-none', !show);
+  }
   function api(data, cb) {
+    itinStatus(false);
     var xhr = new XMLHttpRequest();
+    function fail() { itinStatus(true); cb(null, 0); }
+    function ok(resp, status) {
+      try { cb(JSON.parse(resp), status); } catch (e) { console.warn('itinerary-ajax parse error', e); fail(); }
+    }
     if (data && data.action) {
       xhr.open('POST', 'itinerary-ajax.php');
       xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-      xhr.onload = function () { try { cb(JSON.parse(xhr.responseText), xhr.status); } catch (e) { console.warn('itinerary-ajax parse error', e); cb(null, xhr.status); } };
+      xhr.onload = function () { ok(xhr.responseText, xhr.status); };
+      xhr.onerror = fail;
       xhr.send(new URLSearchParams(data));
     } else {
       var qs = data && data.itinerary_id ? '?action=get&itinerary_id=' + data.itinerary_id : '?action=list';
       xhr.open('GET', 'itinerary-ajax.php' + qs);
-      xhr.onload = function () { try { cb(JSON.parse(xhr.responseText), xhr.status); } catch (e) { console.warn('itinerary-ajax parse error', e); cb(null, xhr.status); } };
+      xhr.onload = function () { ok(xhr.responseText, xhr.status); };
+      xhr.onerror = fail;
       xhr.send();
     }
   }
   function esc(s) { var d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
   function loadDays(itinId) {
     api({ itinerary_id: itinId }, function (res) {
+      if (!res) return;
       var rows = (res.itinerary && res.itinerary.days) || [];
       var byDay = {};
       rows.forEach(function (r) { (byDay[r.day_id] = byDay[r.day_id] || { day_number: r.day_number, items: [] }).items.push(r); });
@@ -1135,7 +1150,7 @@ require __DIR__ . '/includes/components/pax-modal.php';
         el.addEventListener('click', function (e) {
           e.stopPropagation();
           if (!confirm('<?= t('Hapus item ini dari itinerary?') ?>')) return;
-          api({ action: 'delete_item', item_id: el.getAttribute('data-item') }, function () { loadDays(currentItin); });
+          api({ action: 'delete_item', item_id: el.getAttribute('data-item') }, function (res) { if (res && res.ok) loadDays(currentItin); });
         });
       });
     });
@@ -1144,13 +1159,13 @@ require __DIR__ . '/includes/components/pax-modal.php';
     var title = document.getElementById('itinTitle').value.trim();
     if (!title) return;
     api({ action: 'create_itinerary', title: title }, function (res) {
-      if (!res.ok) return;
+      if (!res || !res.ok) return;
       currentItin = res.itinerary_id;
       api({ itinerary_id: currentItin }, function (det) {
         var firstDay = det.itinerary && det.itinerary.days && det.itinerary.days.length ? det.itinerary.days[0].day_id : null;
         if (!firstDay) return;
         api({ action: 'add_item', day_id: firstDay, title: tourTitle, item_type: 'tour', tour_id: tourId }, function (added) {
-          loadDays(currentItin);
+          if (added) loadDays(currentItin);
         });
       });
     });
@@ -1158,7 +1173,8 @@ require __DIR__ . '/includes/components/pax-modal.php';
   document.getElementById('itinAddItemBtn').addEventListener('click', function () {
     var title = document.getElementById('itinItemTitle').value.trim();
     if (!title || !selectedDay) return;
-    api({ action: 'add_item', day_id: selectedDay, title: title, item_type: 'custom' }, function () {
+    api({ action: 'add_item', day_id: selectedDay, title: title, item_type: 'custom' }, function (res) {
+      if (!res || !res.ok) return;
       document.getElementById('itinItemTitle').value = '';
       loadDays(currentItin);
     });
@@ -1169,6 +1185,7 @@ require __DIR__ . '/includes/components/pax-modal.php';
     document.getElementById('itinMain').classList.toggle('d-none', !logged);
     if (logged) {
       api(null, function (res) {
+        if (!res) return;
         var list = res.user_itineraries || [];
         if (list.length) { currentItin = list[0].id; loadDays(currentItin); }
       });
