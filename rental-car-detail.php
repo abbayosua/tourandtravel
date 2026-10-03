@@ -31,8 +31,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             require_once 'includes/wallet.php';
             spendWallet($_SESSION['user_id'], $walletDeduct, 'rental_booking', 0);
         }
-        $bookingSuccess = "Booking berhasil! Total: " . formatRupiah($total) . " ($days hari)";
+        // PRG: hindari re-submit (double wallet deduct) saat refresh.
+        $_SESSION['rental_booking_flash'] = t('Booking berhasil! Total:') . ' ' . formatRupiah($total) . ' (' . $days . ' ' . t('hari') . ')';
+        header('Location: rental-car-detail.php?' . http_build_query(['slug' => $car['slug'], 'booking' => 'success']));
+        exit;
     }
+}
+
+// PRG: tampilkan pesan sukses sekali dari session setelah redirect.
+if (($_GET['booking'] ?? '') === 'success' && !empty($_SESSION['rental_booking_flash'])) {
+    $bookingSuccess = $_SESSION['rental_booking_flash'];
+    unset($_SESSION['rental_booking_flash']);
 }
 
 require_once 'includes/components/breadcrumb.php';
