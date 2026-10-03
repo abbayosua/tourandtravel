@@ -1154,6 +1154,8 @@ test.describe('i18n admin edit forms', () => {
     'admin/rental-car-edit.php?id=1',
     'admin/flight-edit.php?id=1',
     'admin/esim-edit.php?id=1',
+    'admin/faq-category-edit.php?id=1',
+    'admin/hero-slide-edit.php?id=1',
   ];
   test('tombol simpan form edit mengikuti bahasa', async ({ page }) => {
     await adminLogin(page);

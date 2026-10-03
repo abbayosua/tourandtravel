@@ -17,11 +17,11 @@ $flightRoutes = db()->query("
 <section class="py-5">
     <div class="container">
         <!-- Banner promo -->
-        <div class="rounded-4 p-4 p-md-5 mb-5 text-white" style="background: linear-gradient(135deg, #e33d2e 0%, #f26522 100%);">
+        <div class="rounded-4 p-4 p-md-5 mb-5 text-white" data-testid="flight-promo-banner" style="background: linear-gradient(135deg, #b8300f 0%, #d1500a 100%);">
             <div class="row align-items-center g-3">
                 <div class="col-md-8">
                     <h5 class="fw-bold mb-1"><i class="bi bi-lightning-charge-fill me-2"></i><?= t('Promo Tiket Setiap Hari') ?></h5>
-                    <p class="mb-0 text-white-50"><?= t('Harga spesial untuk rute favorit — kuota terbatas, pesan sekarang.') ?></p>
+                    <p class="mb-0 text-white"><?= t('Harga spesial untuk rute favorit — kuota terbatas, pesan sekarang.') ?></p>
                 </div>
                 <div class="col-md-4 text-md-end">
                     <a href="flights.php" class="btn btn-light rounded-pill px-4 fw-semibold"><?= t('Lihat Semua Promo') ?></a>

@@ -233,9 +233,9 @@ require_once 'includes/header-shared.php';
 
                     <!-- Booking Code -->
                     <div class="bg-primary text-white rounded-4 p-4 mb-4 klook-booking-code">
-                        <small class="text-white-50"><?= t('Kode Booking') ?></small>
+                        <small class="text-white"><?= t('Kode Booking') ?></small>
                         <div class="fs-2 fw-bold tracking-code"><?= e($booking['booking_code']) ?></div>
-                        <div class="mt-2 small text-white-50">
+                        <div class="mt-2 small text-white">
                             <i class="bi bi-link-45deg me-1"></i>
                             <a href="track.php?code=<?= urlencode($booking['booking_code']) ?>" class="text-white"><?= BASE_URL ?>/track.php?code=<?= e($booking['booking_code']) ?></a>
                         </div>
