@@ -234,7 +234,7 @@ function handleMidtransNotification(array $notif): bool {
         $bq->execute([$payment['booking_id']]);
         if ($bk = $bq->fetch()) {
             if (!empty($bk['user_id'])) {
-                addNotification((int)$bk['user_id'], 'payment', 'Pembayaran diterima', 'Booking ' . $bk['booking_code'] . ' telah dibayar.', 'booking-success.php?code=' . $bk['booking_code']);
+                addNotification((int)$bk['user_id'], 'payment', t('Pembayaran diterima'), t('Booking') . ' ' . $bk['booking_code'] . ' ' . t('telah dibayar.'), 'booking-success.php?code=' . $bk['booking_code']);
             }
         }
     }

@@ -47,9 +47,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             // In-app notification
             require_once '../includes/notifications.php';
             $notifMsg = $action === 'approved'
-                ? 'Topup ' . formatRupiah((float)$topup['amount']) . ' telah disetujui. Saldo bertambah.'
-                : 'Topup ' . formatRupiah((float)$topup['amount']) . ' telah ditolak.';
-            addNotification((int)$topup['user_id'], 'payment', 'Status Topup', $notifMsg, 'reseller-dashboard.php');
+                ? t('Topup') . ' ' . formatRupiah((float)$topup['amount']) . ' ' . t('telah disetujui. Saldo bertambah.')
+                : t('Topup') . ' ' . formatRupiah((float)$topup['amount']) . ' ' . t('telah ditolak.');
+            addNotification((int)$topup['user_id'], 'payment', t('Status Topup'), $notifMsg, 'reseller-dashboard.php');
 
             header('Location: reseller-topups.php?msg=' . $action . ($filterUser ? '&user_id=' . $filterUser : ''));
             exit;

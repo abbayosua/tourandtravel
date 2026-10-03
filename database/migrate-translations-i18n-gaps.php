@@ -1918,3 +1918,14 @@ foreach ([
     ['Tanggal Pergi', 'en', 'Departure Date'],
 ] as [$k, $l, $v]) { $stmt->execute([$k, $l, $v]); }
 echo "Added 5 EN-missing rows.\n";
+
+// ---- In-app notification strings ----
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+foreach ([
+    ['Pembayaran diterima', 'en', 'Payment received'], ['Pembayaran diterima', 'zh', '已收到付款'],
+    ['telah dibayar.', 'en', 'has been paid.'], ['telah dibayar.', 'zh', '已支付。'],
+    ['Status Topup', 'en', 'Topup Status'], ['Status Topup', 'zh', '充值状态'],
+    ['telah disetujui. Saldo bertambah.', 'en', 'has been approved. Balance added.'], ['telah disetujui. Saldo bertambah.', 'zh', '已获批准，余额已增加。'],
+    ['telah ditolak.', 'en', 'has been rejected.'], ['telah ditolak.', 'zh', '已被拒绝。'],
+] as [$k, $l, $v]) { $stmt->execute([$k, $l, $v]); }
+echo "Added in-app notification rows.\n";
