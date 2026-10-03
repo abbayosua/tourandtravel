@@ -412,6 +412,7 @@ test.describe('i18n hotel booking', () => {
       await page.waitForLoadState('domcontentloaded');
       await page.locator('#hotelBookingName').fill('E2E I18N');
       await page.locator('#hotelBookingPhone').fill('08123456789');
+      await page.locator('#roomSelect').selectOption({ index: 1 });
       await Promise.all([page.waitForLoadState('domcontentloaded'), page.locator('#bookingSubmitBtn').click()]);
       await expect(page.locator('.alert-success')).toContainText(phrase);
       await expect(page.locator('.alert-success')).not.toContainText('Booking berhasil');
@@ -666,5 +667,17 @@ test.describe('i18n admin Singapay settings', () => {
       await page.waitForLoadState('domcontentloaded');
       expect(await page.content()).toContain(label);
     }
+  });
+});
+
+test.describe('i18n hotel content zh', () => {
+  test('konten hotel tampil dalam bahasa aktif', async ({ page }) => {
+    await page.goto(`${BASE}/hotel-detail.php?slug=the-ritz-carlton-jakarta&lang=zh`);
+    await page.waitForLoadState('domcontentloaded');
+    await expect(page.locator('body')).toContainText('雅加达丽思卡尔顿酒店');
+    await expect(page.locator('body')).not.toContainText('The Ritz-Carlton Jakarta');
+    await page.goto(`${BASE}/hotel-detail.php?slug=the-ritz-carlton-jakarta&lang=en`);
+    await page.waitForLoadState('domcontentloaded');
+    await expect(page.locator('body')).toContainText('The Ritz-Carlton Jakarta, Mega Kuningan');
   });
 });
