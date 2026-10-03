@@ -1571,3 +1571,21 @@ $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, 
 $c24 = 0;
 foreach ($adminMisc as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c24++; } }
 echo "Upserted $c24 admin misc rows.\n";
+
+// ---- Admin form validation/help messages (en identity fixes) ----
+$adminFormMsgs = [
+    'en' => [
+        'Diskon % (mis. 10)' => 'Discount % (e.g. 10)',
+        'Judul wajib diisi' => 'Title is required',
+        'Link CTA harus nama file .php, path internal (diawali /), atau URL' => 'CTA link must be a .php filename, an internal path (starting with /), or a URL',
+        'Pilih Tour (centang untuk menambahkan)' => 'Select Tours (check to add)',
+        'Slide tampil di homepage dengan fokus ini (atau semua).' => 'Slide appears on the homepage with this focus (or all).',
+    ],
+    'zh' => [
+        'Diskon % (mis. 10)' => '折扣%（例如 10）',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$c25 = 0;
+foreach ($adminFormMsgs as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c25++; } }
+echo "Upserted $c25 admin form-message rows.\n";

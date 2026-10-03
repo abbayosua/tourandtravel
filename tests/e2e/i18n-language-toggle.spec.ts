@@ -564,3 +564,15 @@ test.describe('i18n admin reseller topups', () => {
     }
   });
 });
+
+test.describe('i18n admin corporate rates', () => {
+  test('label corporate rates mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    const expected: Record<string, string> = { id: 'Tambah Perusahaan', en: 'Add Company', zh: '添加公司' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/admin/corporate-rates.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('body')).toContainText(label);
+    }
+  });
+});
