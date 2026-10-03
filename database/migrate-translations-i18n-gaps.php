@@ -627,3 +627,31 @@ foreach ($jsExtra as $lang => $dict) {
     }
 }
 echo "Upserted $jsCount JS i18n rows.\n";
+
+// ---- Halaman PELNI (ferry) ----
+$pelniExtra = [
+    'en' => [
+        'Pesan tiket kapal PELNI — Batam, Jakarta, dan rute lainnya.' => 'Book PELNI ferry tickets — Batam, Jakarta, and other routes.',
+        'Pelabuhan asal' => 'Departure port',
+        'Pelabuhan tujuan' => 'Destination port',
+        'ships' => 'ships',
+        'Tidak ada jadwal kapal untuk rute/tanggal ini.' => 'No ferry schedules found for this route/date.',
+        'Tidak ada jadwal kapal ditemukan untuk rute/tanggal ini.' => 'No ferry schedules found for this route/date.',
+        'Pelabuhan asal/tujuan tidak ditemukan. Coba: Batam, Jakarta.' => 'Departure/destination port not found. Try: Batam, Jakarta.',
+    ],
+    'zh' => [
+        'Pesan tiket kapal PELNI — Batam, Jakarta, dan rute lainnya.' => '预订 PELNI 船票 — 巴淡、雅加达及其他航线。',
+        'Pelabuhan asal' => '出发港',
+        'Pelabuhan tujuan' => '目的港',
+        'ships' => '班次',
+        'Tidak ada jadwal kapal untuk rute/tanggal ini.' => '该航线/日期暂无船班。',
+        'Tidak ada jadwal kapal ditemukan untuk rute/tanggal ini.' => '该航线/日期暂无船班。',
+        'Pelabuhan asal/tujuan tidak ditemukan. Coba: Batam, Jakarta.' => '未找到出发港/目的港。请尝试：巴淡、雅加达。',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$pelniCount = 0;
+foreach ($pelniExtra as $lang => $dict) {
+    foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $pelniCount++; }
+}
+echo "Upserted $pelniCount PELNI translation rows.\n";

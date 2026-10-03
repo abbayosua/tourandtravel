@@ -53,10 +53,10 @@ $pelniError = null;
 if ($search && $fromCode && $toCode) {
     $trips = pelniSearchTrips($fromCode, $toCode, $date, $adults, $children, $adults, $children);
     if (empty($trips)) {
-        $pelniError = 'Tidak ada jadwal kapal ditemukan untuk rute/tanggal ini.';
+        $pelniError = t('Tidak ada jadwal kapal ditemukan untuk rute/tanggal ini.');
     }
 } elseif ($search && (!$fromCode || !$toCode)) {
-    $pelniError = 'Pelabuhan asal/tujuan tidak ditemukan. Coba: Batam, Jakarta.';
+    $pelniError = t('Pelabuhan asal/tujuan tidak ditemukan. Coba: Batam, Jakarta.');
 }
 
 require_once 'includes/components/breadcrumb.php';

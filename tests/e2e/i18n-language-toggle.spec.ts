@@ -58,6 +58,8 @@ const PAGES = [
   'esim.php',
   'blog.php',
   'destinasi.php',
+  'pelni.php',
+  'track.php',
   // Halaman detail (konten DB + widget harga/alert)
   'tour-detail.php?slug=8d7n-shanghai-jiangnan-highlights-ink-wash-jiangnan-wuzhen-water-town',
   'tour-detail.php?slug=beijing-qushui-lanting-cabang-sihui',
