@@ -1851,3 +1851,13 @@ foreach ([
     ['Login Google gagal', 'zh', 'Google 登录失败'],
 ] as [$k, $l, $v]) { $stmt->execute([$k, $l, $v]); }
 echo "Added Google sign-in alert rows.\n";
+
+// ---- Admin Singapay headings ----
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+foreach ([
+    ['Pengaturan Singapay (Virtual Account)', 'en', 'Singapay Settings (Virtual Account)'],
+    ['Pengaturan Singapay (Virtual Account)', 'zh', 'Singapay 设置（虚拟账户）'],
+    ['Webhook Singapay:', 'en', 'Singapay Webhook:'],
+    ['Webhook Singapay:', 'zh', 'Singapay Webhook：'],
+] as [$k, $l, $v]) { $stmt->execute([$k, $l, $v]); }
+echo "Added Singapay heading rows.\n";

@@ -40,7 +40,7 @@ Add-on: Kursi & Bagasi
 Admin
 Admin Panel
 Ajak Teman, Dapat Diskon
-Ajak Teman, Dapatkan KlookCash!
+Ajak Teman, Dapatkan TravelPoints!
 Ajak teman daftar & booking, kamu dan teman dapat diskon Rp100.000!
 Ajukan Refund
 Akhir
@@ -209,17 +209,18 @@ Booking Saya
 Booking Sekarang
 Booking Terbaru
 Booking baru
-Booking berhasil dibatalkan. KlookCash yang digunakan telah dikembalikan.
+Booking berhasil dibatalkan. TravelPoints yang digunakan telah dikembalikan.
 Booking berhasil dihapus
 Booking berhasil diubah.
 Booking berhasil! Kode booking: 
+Booking berhasil! Total:
 Booking dibuat
 Booking per Vertikal
 Booking per hari
 Booking sudah dibayar tidak dapat dibatalkan sendiri. Silakan ajukan refund.
 Booking tidak dapat diubah
 Booking tidak ditemukan
-Booking untuk dapat KlookCash
+Booking untuk dapat TravelPoints
 Booking.com tidak mengembalikan data hotel
 Bookings
 Brand & Logo
@@ -372,7 +373,7 @@ EUR → USD
 EXPENSES
 Earn
 Earn dari booking
-Earning Rate KlookCash
+Earning Rate TravelPoints
 Edit
 Edit Artikel
 Edit FAQ
@@ -473,8 +474,8 @@ Gold (%)
 Gold — minimal booking
 Guest
 Gunakan
-Gunakan KlookCash
 Gunakan Profil Tersimpan
+Gunakan TravelPoints
 Gunakan untuk potongan booking berikutnya
 Gym
 H-3 atau kurang / setelah keberangkatan
@@ -491,6 +492,7 @@ Hapus booking ini?
 Hapus flash sale ini?
 Hapus gambar ini?
 Hapus harga reseller ini?
+Hapus item ini dari itinerary?
 Hapus itinerary ini?
 Hapus kamar ini?
 Hapus kode promo?
@@ -722,8 +724,6 @@ Kirim Tautan Reset
 Kirim Test
 Kirim Ulasan
 Klik tombol "Set Price Alert" pada detail tour atau hotel untuk membuat alert.
-KlookCash
-KlookCash Saya
 Kode
 Kode Booking
 Kode Promo
@@ -873,6 +873,7 @@ Max Penumpang
 Max Peserta
 Max peserta minimal 1
 Max. Diskon
+Memeriksa kode promo...
 Memproses...
 Memuat status...
 Memutuskan...
@@ -1034,10 +1035,10 @@ Pembayaran 1-klik gagal:
 Pembayaran Aman
 Pembayaran Berhasil
 Pembayaran Gagal / Ditolak
-Pembayaran KlookCash berhasil
+Pembayaran TravelPoints berhasil
 Pembayaran aman & terenkripsi
 Pembayaran diterima. Terima kasih!
-Pembayaran menggunakan KlookCash
+Pembayaran menggunakan TravelPoints
 Pemesan
 Pemesanan & Pembayaran
 Pencarian
@@ -1053,12 +1054,12 @@ Penerbangan berhasil dipesan! Total:
 Penerbangan tidak tersedia
 Pengajuan refund diterima
 Pengajuan refund gagal
-Pengajuan refund hanya berlaku untuk booking berstatus confirmed yang belum digunakan. Dana refund yang disetujui dikreditkan ke saldo wallet (KlookCash) akun Anda.
+Pengajuan refund hanya berlaku untuk booking berstatus confirmed yang belum digunakan. Dana refund yang disetujui dikreditkan ke saldo wallet (TravelPoints) akun Anda.
 Pengajuan refund sebelumnya sudah ditolak
 Pengalaman pelanggan yang sudah traveling bersama kami
 Pengaturan Hotel API tersimpan
 Pengaturan Loyalty
-Pengaturan Loyalty & KlookCash
+Pengaturan Loyalty & TravelPoints
 Pengaturan Mata Uang
 Pengaturan Midtrans
 Pengaturan Tripay
@@ -1085,7 +1086,7 @@ Perlindungan pembatalan, keterlambatan, dan kehilangan barang.
 Permintaan Topup Baru
 Permintaan topup berhasil dikirim! Menunggu persetujuan admin.
 Persentase (%)
-Persentase dari total booking yang menjadi KlookCash reward.
+Persentase dari total booking yang menjadi TravelPoints reward.
 Pertanyaan
 Pertanyaan terkait ketentuan ini dapat disampaikan melalui:
 Pertanyaan, jawaban, dan kategori wajib diisi
@@ -1230,12 +1231,12 @@ SIM
 Saat ada booking baru, notifikasi otomatis dikirim ke nomor WA Admin/Supplier:
 Saldo
 Saldo Anda
-Saldo KlookCash
-Saldo KlookCash tidak mencukupi
 Saldo Kosong
 Saldo Points
 Saldo Reseller
 Saldo Saat Ini
+Saldo TravelPoints
+Saldo TravelPoints tidak mencukupi
 Saldo points tidak cukup
 Saldo tersisa: 
 Saldo tidak cukup. Butuh 
@@ -1294,7 +1295,7 @@ Set bahasa konten untuk tour yang dipilih?
 Setiap booking dapat poin reward. Tukarkan untuk diskon tour berikutnya!
 Settings
 Setujui Refund
-Setujui refund booking ini? Dana akan dikredit ke KlookCash user.
+Setujui refund booking ini? Dana akan dikredit ke TravelPoints user.
 Sewa
 Sewa Sekarang
 Siang (12-17)
@@ -1422,6 +1423,7 @@ Tanggal keberangkatan tidak valid.
 Tanggal kunjungan harus diisi
 Tanggal penjemputan harus diisi
 Tanggal perjalanan harus diisi
+Tanggal sudah dibooking untuk hotel ini. Pilih tanggal lain.
 Tanggal terlalu jauh (maks 360 hari)
 Tanggal terlalu jauh (maks 360 hari).
 Tanggal tidak boleh di masa lalu
@@ -1570,12 +1572,14 @@ Transfer tidak ditemukan
 Transit
 Transmisi
 Transport AC
+TravelPoints
+TravelPoints Saya
 Tren Pendapatan
 Trip
 Triple (1 kamar 3 org)
 Tukar
 Tukar points
-Tukar points menjadi KlookCash? Penukaran tidak dapat dibatalkan.
+Tukar points menjadi TravelPoints? Penukaran tidak dapat dibatalkan.
 Tulis Ulasan
 Tutup
 Twin
@@ -1677,7 +1681,7 @@ jadwal
 jadwal ditemukan
 jam sejak booking pertama
 kabin
-ke KlookCash
+ke TravelPoints
 kelas
 kendaraan
 kosong

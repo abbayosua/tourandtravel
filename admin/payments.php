@@ -164,7 +164,7 @@ require_once __DIR__ . '/includes/admin-header.php';
                 <input type="text" name="tripay_merchant_code" class="form-control" data-testid="tripay-merchant-code" value="<?= e(getSetting('tripay_merchant_code')) ?>">
             </div>
             <div class="col-12 mt-3">
-                <h6 class="fw-semibold mb-3 mt-2">Pengaturan Singapay (Virtual Account)</h6>
+                <h6 class="fw-semibold mb-3 mt-2"><?= t('Pengaturan Singapay (Virtual Account)') ?></h6>
             </div>
             <div class="col-md-2">
                 <label class="form-label small fw-semibold">Environment</label>
@@ -191,7 +191,7 @@ require_once __DIR__ . '/includes/admin-header.php';
             </div>
             <div class="col-12 mt-3">
                 <button type="submit" name="save_settings" class="btn btn-primary"><?= t('Simpan') ?></button>
-                <small class="text-muted ms-2"><?= t('Webhook Midtrans:') ?> <code><?= e(BASE_URL . '/webhook-midtrans.php') ?></code> · <?= t('Webhook Tripay:') ?> <code><?= e(BASE_URL . '/webhook-tripay.php') ?></code> · Webhook Singapay: <code><?= e(BASE_URL . '/webhook-singapay.php') ?></code></small>
+                <small class="text-muted ms-2"><?= t('Webhook Midtrans:') ?> <code><?= e(BASE_URL . '/webhook-midtrans.php') ?></code> · <?= t('Webhook Tripay:') ?> <code><?= e(BASE_URL . '/webhook-tripay.php') ?></code> · <?= t('Webhook Singapay:') ?> <code><?= e(BASE_URL . '/webhook-singapay.php') ?></code></small>
             </div>
         </form>
     </div>

@@ -654,3 +654,15 @@ test.describe('i18n JS alerts', () => {
     }
   });
 });
+
+test.describe('i18n admin Singapay settings', () => {
+  test('label Singapay mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    const expected: Record<string, string> = { id: 'Pengaturan Singapay (Virtual Account)', en: 'Singapay Settings (Virtual Account)', zh: 'Singapay 设置（虚拟账户）' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/admin/payments.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      expect(await page.content()).toContain(label);
+    }
+  });
+});
