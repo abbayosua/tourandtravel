@@ -15,7 +15,7 @@ function oauthGoogleUpsert(array $info): int {
     $avatar = trim($info['picture'] ?? '');
 
     if ($googleId === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        throw new InvalidArgumentException('Payload Google tidak lengkap');
+        throw new InvalidArgumentException(t('Payload Google tidak lengkap'));
     }
 
     $stmt = db()->prepare("SELECT id FROM users WHERE google_id = ?");

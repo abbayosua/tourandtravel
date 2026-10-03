@@ -119,6 +119,9 @@ function testNoHardcodedIndonesianServerMessages(): void {
         '/die\(\s*"([^"]+)"/',
         "/'message'\s*=>\s*'([^']+)'/",
         "/'error'\s*=>\s*'([^']+)'/",
+        "/return\s*\[(?:false|true),\s*'([^']+)'/",
+        "/throw new [A-Za-z]+\('([^']+)'/",
+        "/jsonError\([^,]+,\s*'([^']+)'/",
     ];
     $bad = [];
 
