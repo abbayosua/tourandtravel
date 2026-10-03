@@ -211,3 +211,26 @@ function testSalutationLabelsLocalized(): void {
     }
     $_SESSION['lang'] = 'id';
 }
+
+/**
+ * Nilai data yang dirender lewat t($var) (nav menu, kategori tour) harus punya
+ * terjemahan en+zh — kalau tidak, label bocor bahasa Indonesia di en/zh.
+ */
+function testDataDrivenLabelsLocalized(): void {
+    $map = i18nDbValueMap();
+    $bad = [];
+    $sources = [
+        'nav_menus.label' => "SELECT DISTINCT label FROM nav_menus WHERE label <> ''",
+        'tours.category' => "SELECT DISTINCT category FROM tours WHERE is_active = 1 AND category <> ''",
+    ];
+    foreach ($sources as $name => $sql) {
+        foreach (db()->query($sql)->fetchAll(PDO::FETCH_COLUMN) as $v) {
+            $lk = mb_strtolower(trim((string)$v));
+            foreach (['en', 'zh'] as $lang) {
+                if (empty($map[$lk][$lang])) $bad[] = "$name: $v ($lang)";
+            }
+        }
+    }
+    sort($bad);
+    assertSame([], $bad, 'Label dinamis t($var) tanpa terjemahan en/zh');
+}
