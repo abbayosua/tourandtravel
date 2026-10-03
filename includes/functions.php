@@ -1250,7 +1250,7 @@ function uploadWebP($file, $targetDir, $quality = 70) {
         'image/webp' => @imagecreatefromwebp($file['tmp_name']),
         default => null,
     };
-    if (!$gd) return ['success' => false, 'message' => 'File rusak'];
+    if (!$gd) return ['success' => false, 'message' => t('File rusak')];
     
     // Resize max 1200px
     $w = imagesx($gd); $h = imagesy($gd);
