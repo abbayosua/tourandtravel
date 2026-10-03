@@ -45,7 +45,7 @@ require_once 'includes/header-shared.php';
                         <?php if ($error): ?>
                             <div class="alert alert-danger py-2 small"><?= $error ?></div>
                         <?php endif; ?>
-                        <form method="POST">
+                        <form method="POST" data-submit-once>
                             <div class="mb-3">
                                 <label class="form-label small fw-semibold"><?= t('Email') ?></label>
                                 <input type="email" name="email" class="form-control" required>

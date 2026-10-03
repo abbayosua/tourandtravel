@@ -48,7 +48,7 @@ require_once 'includes/header-shared.php';
                             <div class="alert alert-success py-2 small"><?= e($success) ?></div>
                             <p class="text-center mt-3 small"><a href="login.php" class="text-decoration-none fw-semibold"><?= t('Masuk') ?></a></p>
                         <?php elseif ($row): ?>
-                        <form method="POST">
+                        <form method="POST" data-submit-once>
                             <input type="hidden" name="token" value="<?= e($token) ?>">
                             <div class="mb-3">
                                 <label class="form-label small fw-semibold"><?= t('Password Baru') ?></label>
