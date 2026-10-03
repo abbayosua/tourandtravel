@@ -66,6 +66,7 @@ function cleanup() {
   }
   tourId = 0;
   mysql(`DELETE FROM promo_codes WHERE code = 'E2E50'`);
+  mysql(`DELETE FROM tour_waitlist WHERE tour_id IN (SELECT id FROM tours WHERE slug = '${SLUG}')`);
   for (const uid of [userId, redeemUserId, cancelUserId, modUserId]) {
     if (!uid) continue;
     mysql(`DELETE FROM wallet_transactions WHERE user_id = ${uid}`);
@@ -84,6 +85,8 @@ function cleanup() {
 
 test.beforeAll(() => {
   cleanup();
+  // Pastikan tabel waitlist ada (migrasi migrate-tour-waitlist.sql).
+  execFileSync('php', ['database/migrate-tour-waitlist.sql'], { stdio: 'ignore' });
   userId = createUser(AUTH_EMAIL);
 
   mysql(
@@ -297,7 +300,6 @@ test('ubah booking (tanggal + peserta) memperbarui total', async ({ page }) => {
   // Buka modal "Ubah" untuk booking ini.
   await page.goto(`${BASE}/my-bookings.php`);
   await page.locator(`button[data-bs-target="#modifyModal${bookingId}"]`).click();
-  const html = await page.content();
   await page.locator(`#modifyModal${bookingId} select[name="new_date_id"]`).waitFor({ state: 'visible' });
 
   await page.locator(`#modifyModal${bookingId} select[name="new_date_id"]`).selectOption({ value: String(date2Id) });
@@ -309,4 +311,21 @@ test('ubah booking (tanggal + peserta) memperbarui total', async ({ page }) => {
   expect(row).toContain(String(date2Id));
   expect(row).toContain('2');
   expect(row).toContain(String(UNIT_PRICE * 2));
+});
+
+test('waitlist saat tour penuh', async ({ page }) => {
+  // Penuhi tour: set available_slots = 0 pada semua tanggal.
+  mysql(`UPDATE tour_dates SET available_slots = 0 WHERE tour_id = ${tourId}`);
+
+  await page.goto(`${BASE}/tour-detail.php?slug=${SLUG}&lang=id`);
+  await expect(page.locator('.waitlist-form')).toBeVisible();
+
+  await page.locator('.waitlist-form input[name="waitlist_name"]').fill('Waitlist User');
+  await page.locator('.waitlist-form input[name="waitlist_email"]').fill('waitlist@t.local');
+  await page.locator('.waitlist-form input[name="waitlist_phone"]').fill('081234567890');
+  await page.locator('.waitlist-form button[type="submit"]').click();
+
+  await expect(page.locator('.waitlist-form')).toBeVisible();
+  await expect(page.getByText('Berhasil join waitlist')).toBeVisible();
+  expect(mysql(`SELECT COUNT(*) FROM tour_waitlist WHERE tour_id = ${tourId} AND email = 'waitlist@t.local'`)).toBe('1');
 });

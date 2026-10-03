@@ -714,37 +714,7 @@ require_once 'includes/header-shared.php';
                         <input type="hidden" name="form_submitted" value="1">
                         <input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>">
                         <?php $totalSisa = 0; foreach ($tourDates as $td) { $totalSisa += max(0, getSisaSlot($td['id'])); } ?>
-                        <?php if ($totalSisa < 1): ?>
-                        <div class="alert alert-warning py-3 text-center mb-0">
-                            <i class="bi bi-x-circle me-1"></i><?= t('Semua jadwal keberangkatan sudah penuh.') ?>
-                            <div class="mt-2"><a href="tours.php" class="btn btn-sm btn-outline-primary"><?= t('Lihat Tour Lain') ?></a></div>
-                        </div>
-                        <!-- Waitlist Form -->
-                        <div class="mt-3 p-3 rounded border bg-light">
-                            <h6 class="fw-semibold mb-2"><i class="bi bi-bell me-1"></i><?= t('Join Waitlist') ?></h6>
-                            <?php if ($waitlistMessage): ?>
-                            <div class="alert alert-success py-2 small mb-2"><?= e($waitlistMessage) ?></div>
-                            <?php endif; ?>
-                            <?php if ($waitlistError): ?>
-                            <div class="alert alert-danger py-2 small mb-2"><?= e($waitlistError) ?></div>
-                            <?php endif; ?>
-                            <p class="small text-muted mb-2"><?= t('Kami akan memberi tahu Anda jika ada slot yang tersedia.') ?></p>
-                            <form method="POST" class="waitlist-form">
-                                <input type="hidden" name="action" value="join_waitlist">
-                                <input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>">
-                                <div class="mb-2">
-                                    <input type="text" name="waitlist_name" class="form-control form-control-sm" placeholder="<?= t('Nama Lengkap') ?>" required>
-                                </div>
-                                <div class="mb-2">
-                                    <input type="email" name="waitlist_email" class="form-control form-control-sm" placeholder="<?= t('Email') ?>" required>
-                                </div>
-                                <div class="mb-2">
-                                    <input type="text" name="waitlist_phone" class="form-control form-control-sm" placeholder="<?= t('No. WhatsApp') ?>" required>
-                                </div>
-                                <button type="submit" class="btn btn-warning btn-sm w-100"><?= t('Join Waitlist') ?></button>
-                            </form>
-                        </div>
-                        <?php else: ?>
+                        <?php if ($totalSisa >= 1): ?>
                         <div class="mb-2">
                             <label class="form-label small"><?= t('Kode Promo (opsional)') ?></label>
                             <div class="input-group input-group-sm">
@@ -918,6 +888,8 @@ require_once 'includes/header-shared.php';
                                 if (!input || !result) return;
                                 var code = input.value.trim();
                                 if (!code) { result.textContent = I18N.t('Masukkan kode promo'); return; }
+                                result.textContent = I18N.t('Memeriksa kode promo...');
+                                result.className = 'klook-promo-result small mt-1 text-muted';
                                 fetch('apply-promo-ajax.php', {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -997,6 +969,37 @@ require_once 'includes/header-shared.php';
                     </div>
                     <?php endif; ?>
                     </form>
+                    <?php if ($totalSisa < 1): ?>
+                    <div class="alert alert-warning py-3 text-center mb-0">
+                        <i class="bi bi-x-circle me-1"></i><?= t('Semua jadwal keberangkatan sudah penuh.') ?>
+                        <div class="mt-2"><a href="tours.php" class="btn btn-sm btn-outline-primary"><?= t('Lihat Tour Lain') ?></a></div>
+                    </div>
+                    <!-- Waitlist Form (di luar #tourBookingForm agar tidak nested) -->
+                    <div class="mt-3 p-3 rounded border bg-light">
+                        <h6 class="fw-semibold mb-2"><i class="bi bi-bell me-1"></i><?= t('Join Waitlist') ?></h6>
+                        <?php if ($waitlistMessage): ?>
+                        <div class="alert alert-success py-2 small mb-2"><?= e($waitlistMessage) ?></div>
+                        <?php endif; ?>
+                        <?php if ($waitlistError): ?>
+                        <div class="alert alert-danger py-2 small mb-2"><?= e($waitlistError) ?></div>
+                        <?php endif; ?>
+                        <p class="small text-muted mb-2"><?= t('Kami akan memberi tahu Anda jika ada slot yang tersedia.') ?></p>
+                        <form method="POST" class="waitlist-form">
+                            <input type="hidden" name="action" value="join_waitlist">
+                            <input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>">
+                            <div class="mb-2">
+                                <input type="text" name="waitlist_name" class="form-control form-control-sm" placeholder="<?= t('Nama Lengkap') ?>" required>
+                            </div>
+                            <div class="mb-2">
+                                <input type="email" name="waitlist_email" class="form-control form-control-sm" placeholder="<?= t('Email') ?>" required>
+                            </div>
+                            <div class="mb-2">
+                                <input type="text" name="waitlist_phone" class="form-control form-control-sm" placeholder="<?= t('No. WhatsApp') ?>" required>
+                            </div>
+                            <button type="submit" class="btn btn-warning btn-sm w-100"><?= t('Join Waitlist') ?></button>
+                        </form>
+                    </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
