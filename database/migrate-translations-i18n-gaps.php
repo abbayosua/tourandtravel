@@ -1355,3 +1355,39 @@ $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, 
 $c17 = 0;
 foreach ($adminEmailLog as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c17++; } }
 echo "Upserted $c17 admin email-log rows.\n";
+
+// ---- Admin WhatsApp settings ----
+$adminWa = [
+    'en' => [
+        'Nomor WA harus diawali 62 (contoh: 6285174488415)' => 'WhatsApp number must start with 62 (e.g. 6285174488415)',
+        'Scan QR ini dengan WhatsApp Anda' => 'Scan this QR with your WhatsApp',
+        'Refresh QR' => 'Refresh QR',
+        'Refresh' => 'Refresh',
+        'Nama Tour' => 'Tour Name',
+        'Nama & No. WA Pemesan' => 'Customer Name & WhatsApp No.',
+        'Link Tracking' => 'Tracking Link',
+        'Akun:' => 'Account:',
+        'Siap mengirim notifikasi ke nomor supplier.' => 'Ready to send notifications to supplier numbers.',
+        'Belum terhubung. Klik "Hubungkan Nomor Baru" untuk scan QR.' => 'Not connected. Click "Connect New Number" to scan the QR.',
+        'Error: ' => 'Error: ',
+    ],
+    'zh' => [
+        'Nomor WA harus diawali 62 (contoh: 6285174488415)' => 'WhatsApp 号码必须以 62 开头（例如：6285174488415）',
+        'Scan QR ini dengan WhatsApp Anda' => '用您的 WhatsApp 扫描此二维码',
+        'Refresh QR' => '刷新二维码',
+        'Refresh' => '刷新',
+        'WUZAPI Server' => 'WUZAPI 服务器',
+        'Server URL' => '服务器 URL',
+        'Nama Tour' => '旅游名称',
+        'Nama & No. WA Pemesan' => '客户姓名及 WhatsApp 号码',
+        'Link Tracking' => '追踪链接',
+        'Akun:' => '账户：',
+        'Siap mengirim notifikasi ke nomor supplier.' => '已准备好向供应商号码发送通知。',
+        'Belum terhubung. Klik "Hubungkan Nomor Baru" untuk scan QR.' => '尚未连接。点击“连接新号码”扫描二维码。',
+        'Error: ' => '错误：',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$c18 = 0;
+foreach ($adminWa as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c18++; } }
+echo "Upserted $c18 admin wa-settings rows.\n";
