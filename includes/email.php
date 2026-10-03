@@ -67,7 +67,7 @@ function sendEmail(string $to, string $subject, string $html, ?string $event = n
     $error = null;
 
     if ($to === '' || !filter_var($to, FILTER_VALIDATE_EMAIL)) {
-        $error = 'alamat email tidak valid';
+        $error = t('alamat email tidak valid');
     } elseif ($driver === 'log') {
         $ok = true; // dev/E2E: tidak mengirim sungguhan
     } else {

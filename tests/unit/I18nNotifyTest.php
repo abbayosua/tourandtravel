@@ -42,3 +42,15 @@ function testRefundPaymentApiStringsLocalized(): void {
         if ($prev === null) { unset($_SESSION['lang']); } else { $_SESSION['lang'] = $prev; }
     }
 }
+
+function testEmailValidationStringLocalized(): void {
+    $prev = $_SESSION['lang'] ?? null;
+    try {
+        foreach (['en', 'zh'] as $lang) {
+            $_SESSION['lang'] = $lang;
+            assertTrue(t('alamat email tidak valid') !== 'alamat email tidak valid', "email error belum diterjemahkan untuk $lang");
+        }
+    } finally {
+        if ($prev === null) { unset($_SESSION['lang']); } else { $_SESSION['lang'] = $prev; }
+    }
+}

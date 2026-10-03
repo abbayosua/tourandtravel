@@ -101,7 +101,7 @@ require_once 'includes/admin-header.php';
         <select name="is_active" class="form-select"><option value="1" <?=($item['is_active']??1)?'selected':''?>><?= t('Aktif') ?></option><option value="0" <?=empty($item['is_active'])?'selected':''?>><?= t('Nonaktif') ?></option></select>
     </div>
 </div></div>
-<button type="submit" class="btn btn-primary w-100"><?= $isAdd ? 'Tambah' : 'Simpan' ?></button>
+<button type="submit" class="btn btn-primary w-100"><?= $isAdd ? t('Tambah') : t('Simpan') ?></button>
 <a href="attractions.php" class="btn btn-outline-secondary w-100 mt-2"><?= t('Batal') ?></a>
 </div></div></form>
 <?php require_once 'includes/admin-footer.php'; ?>

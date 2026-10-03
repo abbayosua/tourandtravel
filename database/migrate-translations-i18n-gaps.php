@@ -1948,3 +1948,10 @@ foreach ([
     ['Gagal membuat session', 'en', 'Failed to create session'], ['Gagal membuat session', 'zh', '创建会话失败'],
 ] as [$k, $l, $v]) { $stmt->execute([$k, $l, $v]); }
 echo "Added refund/payment/API message rows.\n";
+
+// ---- Attraction edit button + email error ----
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+foreach ([
+    ['alamat email tidak valid', 'en', 'invalid email address'], ['alamat email tidak valid', 'zh', '电子邮件地址无效'],
+] as [$k, $l, $v]) { $stmt->execute([$k, $l, $v]); }
+echo "Added attraction/email error rows.\n";

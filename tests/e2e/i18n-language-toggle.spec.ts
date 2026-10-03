@@ -725,3 +725,15 @@ test.describe('i18n admin reviews', () => {
     }
   });
 });
+
+test.describe('i18n admin attraction edit', () => {
+  test('tombol simpan/tambah mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    const expected: Record<string, string> = { id: 'Tambah', en: 'Add', zh: '添加' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/admin/attraction-edit.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('button[type="submit"]').last()).toContainText(label);
+    }
+  });
+});
