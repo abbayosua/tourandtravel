@@ -1245,7 +1245,7 @@ function fillPassenger(sel) {
         var phoneEl = document.getElementById('bookingPhone');
         if (nameEl) nameEl.value = p.full_name || '';
         if (phoneEl) phoneEl.value = p.phone || '';
-    } catch(e) {}
+    } catch(e) { console.warn('profile parse error', e); }
 }
 <?php endif; ?>
 </script>
