@@ -84,6 +84,7 @@ const PAGES = [
   'train-detail.php?slug=argo-bromo-anggrek',
   'flight-detail.php?schedule_id=1',
   'blog-detail.php?slug=tips-memilih-paket-tour-keluarga',
+  'blog-detail.php?slug=panduan-beijing-zh',
 ];
 
 /** Tambahkan parameter bahasa tanpa merusak query string yang sudah ada. */
