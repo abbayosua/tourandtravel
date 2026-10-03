@@ -59,7 +59,8 @@ require_once 'includes/header-shared.php';
 
                 <div class="text-center mt-4">
                     <p class="text-muted small"><?= t('Masih butuh bantuan?') ?></p>
-                    <a href="#" class="btn btn-outline-primary rounded-pill px-4" onclick="return false;"><i class="bi bi-chat-dots me-1"></i><?= t('Hubungi Kami') ?></a>
+                    <?php $waNum = preg_replace('/[^0-9]/', '', (string)getSetting('company_wa', getSetting('contact_wa', ''))); ?>
+                    <a href="<?= $waNum !== '' ? 'https://wa.me/' . e($waNum) : '#kontak' ?>"<?= $waNum !== '' ? ' target="_blank" rel="noopener"' : '' ?> class="btn btn-outline-primary rounded-pill px-4" data-testid="faq-contact"><i class="bi bi-chat-dots me-1"></i><?= t('Hubungi Kami') ?></a>
                 </div>
             </div>
         </div>
