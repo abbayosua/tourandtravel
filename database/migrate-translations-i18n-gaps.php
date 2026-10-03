@@ -1014,3 +1014,37 @@ $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, 
 $c8 = 0;
 foreach ($adminDash as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c8++; } }
 echo "Upserted $c8 admin dashboard rows.\n";
+
+// ---- Admin bookings page ----
+$adminBookings = [
+    'en' => [
+        'Kasur' => 'Bed',
+        'Ubah Status' => 'Change Status',
+        'Catatan untuk tim (tidak dikirim ke pelanggan email)' => 'Note for the team (not sent to the customer email)',
+        'Peserta' => 'Participants',
+        'ditolak' => 'Rejected',
+        'Setujui refund booking ini? Dana akan dikredit ke KlookCash user.' => "Approve this booking refund? Funds will be credited to the user's KlookCash.",
+        'Setujui Refund' => 'Approve Refund',
+        'Tolak pengajuan refund ini?' => 'Reject this refund request?',
+        'Tolak Refund' => 'Reject Refund',
+        'Booking %s' => 'Booking %s',
+    ],
+    'zh' => [
+        'Simpan COGS' => '保存成本',
+        'Jadwal' => '时刻',
+        'Kasur' => '床型',
+        'Ubah Status' => '更改状态',
+        'Peserta' => '参与者',
+        'ditolak' => '已拒绝',
+        'Setujui refund booking ini? Dana akan dikredit ke KlookCash user.' => '批准此订单退款？款项将存入用户的 KlookCash。',
+        'Setujui Refund' => '批准退款',
+        'Tolak pengajuan refund ini?' => '拒绝此退款申请？',
+        'Tolak Refund' => '拒绝退款',
+        'Catatan untuk tim (tidak dikirim ke pelanggan email)' => '团队备注（不会发送到客户邮箱）',
+        'Booking %s' => '订单 %s',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$c9 = 0;
+foreach ($adminBookings as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c9++; } }
+echo "Upserted $c9 admin bookings rows.\n";

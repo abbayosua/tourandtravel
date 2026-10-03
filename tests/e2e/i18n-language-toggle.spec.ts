@@ -346,3 +346,15 @@ test.describe('i18n admin dashboard', () => {
     }
   });
 });
+
+test.describe('i18n admin bookings', () => {
+  test('label booking admin mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    const expected: Record<string, string> = { id: 'Ubah Status', en: 'Change Status', zh: '更改状态' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/admin/bookings.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('body')).toContainText(label);
+    }
+  });
+});
