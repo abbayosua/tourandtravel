@@ -10,13 +10,19 @@ import { join } from 'path';
  * login -> buka tour-detail -> upload paspor peserta -> isi data -> submit ->
  * booking-success.php. Memastikan booking + baris peserta benar-benar tersimpan
  * di database dan muncul di my-bookings, lalu membersihkan datanya.
+ *
+ * Cakupan: 1 peserta, multi-peserta (2), dan redeem points + wallet (TravelPoints).
+ * Test redeem memakai user terpisah agar saldo wallet tidak terakumulasi dari
+ * earn 5% booking sebelumnya.
  */
 
 const BASE = process.env.E2E_BASE_URL || 'http://localhost/tourandtravel';
 const AUTH_EMAIL = 'e2e-tourbuy@t.local';
+const AUTH_EMAIL_REDEEM = 'e2e-tourbuy-redeem@t.local';
 const AUTH_PASS = 'e2epass123';
 const SLUG = 'e2e-tour-purchase';
 const DATE = '2027-12-01';
+const UNIT_PRICE = 1500000;
 
 function mysql(sql: string): string {
   return execFileSync('mysql', ['-uroot', 'tourandtravel', '-N', '-B', '-e', sql], { encoding: 'utf8' }).trim();
@@ -31,7 +37,19 @@ function passportFixture(): string {
 }
 
 let userId = 0;
+let redeemUserId = 0;
 let tourId = 0;
+
+function createUser(email: string): number {
+  const hash = execFileSync('php', ['-r', `echo password_hash(${JSON.stringify(AUTH_PASS)}, PASSWORD_DEFAULT);`], {
+    encoding: 'utf8',
+  }).trim();
+  mysql(
+    `INSERT INTO users (name, email, password_hash, role) VALUES ('E2E ${email}', '${email}', '${hash}', 'user') ` +
+      `ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash)`
+  );
+  return Number(mysql(`SELECT id FROM users WHERE email = '${email}'`));
+}
 
 function cleanup() {
   // Bersihkan sisa run sebelumnya (by slug) lalu by id.
@@ -44,31 +62,27 @@ function cleanup() {
     mysql(`DELETE FROM tours WHERE id = ${id}`);
   }
   tourId = 0;
-  if (userId) {
-    mysql(`DELETE FROM wallet_transactions WHERE user_id = ${userId}`);
-    mysql(`DELETE FROM points_ledger WHERE user_id = ${userId}`);
+  for (const uid of [userId, redeemUserId]) {
+    if (!uid) continue;
+    mysql(`DELETE FROM wallet_transactions WHERE user_id = ${uid}`);
+    mysql(`DELETE FROM points_ledger WHERE user_id = ${uid}`);
     try {
-      mysql(`DELETE FROM users WHERE id = ${userId}`);
+      mysql(`DELETE FROM users WHERE id = ${uid}`);
     } catch {
       /* masih direferensikan */
     }
   }
+  userId = 0;
+  redeemUserId = 0;
 }
 
 test.beforeAll(() => {
   cleanup();
-  const hash = execFileSync('php', ['-r', `echo password_hash(${JSON.stringify(AUTH_PASS)}, PASSWORD_DEFAULT);`], {
-    encoding: 'utf8',
-  }).trim();
-  mysql(
-    `INSERT INTO users (name, email, password_hash, role) VALUES ('E2E TourBuy', '${AUTH_EMAIL}', '${hash}', 'user') ` +
-      `ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash)`
-  );
-  userId = Number(mysql(`SELECT id FROM users WHERE email = '${AUTH_EMAIL}'`));
+  userId = createUser(AUTH_EMAIL);
 
   mysql(
     `INSERT INTO tours (title, slug, category, price, price_currency, content_language, max_participants, is_active) ` +
-      `VALUES ('E2E Tour Purchase', '${SLUG}', 'City Tour', 1500000, 'IDR', 'id', 10, 1)`
+      `VALUES ('E2E Tour Purchase', '${SLUG}', 'City Tour', ${UNIT_PRICE}, 'IDR', 'id', 10, 1)`
   );
   tourId = Number(mysql(`SELECT id FROM tours WHERE slug = '${SLUG}'`));
   mysql(
@@ -79,34 +93,49 @@ test.beforeAll(() => {
 
 test.afterAll(cleanup);
 
-async function login(page: Page) {
+async function login(page: Page, email: string = AUTH_EMAIL) {
   await page.context().addCookies([{ name: 'lang', value: 'id', url: BASE }]);
   await page.goto(`${BASE}/login.php`);
-  await page.fill('input[name="email"]', AUTH_EMAIL);
+  await page.fill('input[name="email"]', email);
   await page.fill('input[name="password"]', AUTH_PASS);
   await Promise.all([page.waitForLoadState('domcontentloaded'), page.click('button[type="submit"]')]);
   await page.waitForLoadState('domcontentloaded');
 }
 
-test('pembelian paket tour berhasil dan tersimpan (mode manual)', async ({ page }) => {
-  await login(page);
-  await page.goto(`${BASE}/tour-detail.php?slug=${SLUG}&lang=id`);
+interface BookOpts {
+  participants: number;
+  paxNames?: string[];
+  usePoints?: boolean;
+  useWallet?: boolean;
+}
 
+/** Isi form booking tour lalu submit; return kode booking. */
+async function bookTour(page: Page, opts: BookOpts): Promise<string> {
+  await page.goto(`${BASE}/tour-detail.php?slug=${SLUG}&lang=id`);
   await expect(page.locator('#tourBookingForm')).toBeVisible();
-  // Harga + tombol booking tampil (form usable).
   await expect(page.locator('#bookingSubmitBtn')).toBeVisible();
 
-  // Upload foto paspor peserta #1 lewat modal multi-peserta.
+  if (opts.participants > 1) {
+    await page.locator('input[name="participants"]').fill(String(opts.participants));
+  }
+
+  // Upload foto paspor setiap peserta lewat modal multi-peserta.
   await page.locator('[data-testid="open-pax-modal"]').click();
   await expect(page.locator('[data-testid="pax-rows"]')).toBeVisible();
-  await page.locator('input.pax-file[data-idx="1"]').setInputFiles(passportFixture());
-  await expect(page.locator('#passportFile1')).not.toHaveValue('', { timeout: 10000 });
+  for (let i = 1; i <= opts.participants; i++) {
+    await page.locator(`input.pax-file[data-idx="${i}"]`).setInputFiles(passportFixture());
+    await expect(page.locator(`#passportFile${i}`)).not.toHaveValue('', { timeout: 10000 });
+    const name = opts.paxNames?.[i - 1];
+    if (name) await page.locator(`input[name="pax_name_${i}"]`).fill(name);
+  }
   await page.locator('[data-testid="pax-done"]').click();
 
   // Isi data pemesan.
   await page.locator('#tourDateSelect').selectOption({ index: 1 });
   await page.locator('#bookingName').fill('Buyer Tour');
   await page.locator('#bookingPhone').fill('081234567890');
+  if (opts.usePoints) await page.locator('#usePointsTour').check();
+  if (opts.useWallet) await page.locator('#useWalletTour').check();
 
   await Promise.all([
     page.waitForURL(/booking-success\.php\?code=/, { timeout: 15000 }),
@@ -118,20 +147,69 @@ test('pembelian paket tour berhasil dan tersimpan (mode manual)', async ({ page 
 
   const code = (page.url().match(/code=([^&]+)/)?.[1] ?? '').trim();
   expect(code).not.toBe('');
+  return code;
+}
 
-  // Booking benar-benar tersimpan dengan status pending (mode manual), milik user.
+test('pembelian 1 peserta berhasil dan tersimpan (mode manual)', async ({ page }) => {
+  await login(page);
+  const code = await bookTour(page, { participants: 1 });
+
   const row = mysql(
     `SELECT status, participants, total_price, user_id FROM bookings WHERE booking_code = '${code}' AND tour_id = ${tourId}`
   );
   expect(row).toContain('pending');
   expect(row).toContain('1');
   expect(row).toContain(String(userId));
-  const participantCount = mysql(
-    `SELECT COUNT(*) FROM booking_participants b JOIN bookings bk ON b.booking_id = bk.id WHERE bk.booking_code = '${code}'`
-  );
-  expect(participantCount).toBe('1');
+  expect(row).toContain(String(UNIT_PRICE));
+  expect(mysql(`SELECT COUNT(*) FROM booking_participants b JOIN bookings bk ON b.booking_id = bk.id WHERE bk.booking_code = '${code}'`)).toBe('1');
 
-  // Booking muncul di halaman "Booking Saya".
+  await page.goto(`${BASE}/my-bookings.php`);
+  await expect(page.locator(`text=${code}`).first()).toBeVisible();
+});
+
+test('pembelian 2 peserta tersimpan dengan benar', async ({ page }) => {
+  await login(page);
+  const code = await bookTour(page, { participants: 2, paxNames: [undefined, 'Second Buyer'] });
+
+  const row = mysql(
+    `SELECT status, participants, total_price FROM bookings WHERE booking_code = '${code}' AND tour_id = ${tourId}`
+  );
+  expect(row).toContain('pending');
+  expect(row).toContain('2');
+  expect(row).toContain(String(UNIT_PRICE * 2));
+
+  const names = mysql(
+    `SELECT full_name FROM booking_participants b JOIN bookings bk ON b.booking_id = bk.id WHERE bk.booking_code = '${code}' ORDER BY b.id`
+  );
+  expect(names).toContain('Buyer Tour');
+  expect(names).toContain('Second Buyer');
+
+  await page.goto(`${BASE}/my-bookings.php`);
+  await expect(page.locator(`text=${code}`).first()).toBeVisible();
+});
+
+test('redeem points + wallet (TravelPoints) memotong total', async ({ page }) => {
+  // User terpisah + seed saldo: 500 points dan Rp 500.000 wallet.
+  redeemUserId = createUser(AUTH_EMAIL_REDEEM);
+  mysql(`INSERT INTO points_ledger (user_id, points, reason) VALUES (${redeemUserId}, 500, 'earn')`);
+  mysql(`INSERT INTO wallet_transactions (user_id, amount, type, description) VALUES (${redeemUserId}, 500000, 'earn', 'e2e seed')`);
+
+  await login(page, AUTH_EMAIL_REDEEM);
+  const code = await bookTour(page, { participants: 1, usePoints: true, useWallet: true });
+
+  // 1.500.000 - 10.000 (100 points) - 500.000 (wallet) = 990.000
+  const row = mysql(`SELECT total_price, user_id FROM bookings WHERE booking_code = '${code}' AND tour_id = ${tourId}`);
+  expect(row).toContain('990000');
+  expect(row).toContain(String(redeemUserId));
+
+  // Wallet terpotong 500.000 (spend) dan points terpotong 100 (redeem).
+  expect(
+    mysql(`SELECT COUNT(*) FROM wallet_transactions WHERE user_id = ${redeemUserId} AND type = 'spend' AND amount = -500000`)
+  ).toBe('1');
+  expect(
+    mysql(`SELECT COUNT(*) FROM points_ledger WHERE user_id = ${redeemUserId} AND reason = 'redeem' AND points = -100`)
+  ).toBe('1');
+
   await page.goto(`${BASE}/my-bookings.php`);
   await expect(page.locator(`text=${code}`).first()).toBeVisible();
 });
