@@ -68,7 +68,8 @@ const PAGES = [
   'collection.php?slug=best-seller',
   'booking-success.php?code=E2EI18N1',
   'nusatrip-book.php',
-  'ferry-booking.php',
+  'ferry-booking.php?company=TestFerry&from=A&to=B&date=2026-12-01&time=08:00&price=100000&passengers=1&vessel=V1',
+
   'pelni-booking.php',
   // Halaman detail (konten DB + widget harga/alert)
   'tour-detail.php?slug=8d7n-shanghai-jiangnan-highlights-ink-wash-jiangnan-wuzhen-water-town',
@@ -851,6 +852,20 @@ test.describe('i18n label pembayaran', () => {
       await expect(methods).toBeVisible();
       await expect(methods).toContainText(label);
       if (lang === 'zh') await expect(methods).not.toContainText('Virtual Account');
+    }
+  });
+});
+
+test.describe('i18n halaman booking ferry', () => {
+  // Key 'Pesan Ferry' dulu punya nilai en identity (tetap Indonesia).
+  const BOOK = 'ferry-booking.php?company=TestFerry&from=A&to=B&date=2026-12-01&time=08:00&price=100000&passengers=1&vessel=V1';
+  test('judul booking ferry mengikuti bahasa', async ({ page }) => {
+    const expected: Record<string, string> = { id: 'Pesan Ferry', en: 'Book Ferry', zh: '预订船票' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/${BOOK}&lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('body')).toContainText(label);
+      if (lang !== 'id') await expect(page.locator('body')).not.toContainText('Pesan Ferry');
     }
   });
 });
