@@ -36,6 +36,7 @@ test('booking hotel redirect ke GET dan refresh tidak re-submit', async ({ page 
   await page.goto(`${BASE}/hotel-detail.php?slug=grand-hyatt-bali&checkin=${CI}&checkout=${CO}&lang=id`);
   await page.locator('#hotelBookingName').fill(NAME);
   await page.locator('#hotelBookingPhone').fill('08123456789');
+  await page.locator('#roomSelect').selectOption({ index: 1 });
 
   await Promise.all([
     page.waitForLoadState('domcontentloaded'),

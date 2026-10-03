@@ -16,6 +16,7 @@ test('submit booking hotel menampilkan loading dan mencegah double-submit', asyn
   await page.goto(`${BASE}/hotel-detail.php?slug=${HOTEL}&lang=id`);
   await page.locator('#hotelBookingName').fill('E2E Tester');
   await page.locator('#hotelBookingPhone').fill('08123456789');
+  await page.locator('#roomSelect').selectOption({ index: 1 });
 
   const btn = page.locator('#bookingSubmitBtn');
   await expect(btn).toBeEnabled();
