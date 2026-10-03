@@ -416,3 +416,15 @@ test.describe('i18n hotel booking', () => {
     }
   });
 });
+
+test.describe('i18n admin sales report', () => {
+  test('label sales report mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    const expected: Record<string, string> = { id: 'Detail Transaksi', en: 'Transaction Details', zh: '交易明细' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/admin/sales-report.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('body')).toContainText(label);
+    }
+  });
+});

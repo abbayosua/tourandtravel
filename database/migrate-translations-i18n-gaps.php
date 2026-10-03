@@ -1170,3 +1170,25 @@ foreach ([
     ['Booking berhasil! Total:', 'zh', '预订成功！总计：'],
 ] as [$k, $l, $v]) { $stmt->execute([$k, $l, $v]); }
 echo "Added hotel booking message rows.\n";
+
+// ---- Admin sales report ----
+$adminSalesReport = [
+    'en' => [
+        'Total Transaksi' => 'Total Transactions',
+    ],
+    'zh' => [
+        'Vertikal' => '业务',
+        'Total Transaksi' => '总交易数',
+        'Rata-rata per Transaksi' => '每笔交易平均',
+        'Vertikal Teratas' => '顶级业务',
+        'Breakdown Pendapatan' => '收入明细',
+        'Detail Transaksi' => '交易明细',
+        'Belum ada transaksi pada periode ini' => '本期暂无交易',
+        'Menampilkan 200 dari' => '显示 200 条，共',
+        'gunakan filter atau Export CSV untuk data lengkap' => '使用筛选或导出 CSV 查看完整数据',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$c13 = 0;
+foreach ($adminSalesReport as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c13++; } }
+echo "Upserted $c13 admin sales-report rows.\n";
