@@ -137,13 +137,13 @@ require_once 'includes/admin-header.php';
 
                 <?php if ($t['status'] === 'pending'): ?>
                 <div class="d-flex gap-1 mt-1">
-                    <form method="POST" class="d-inline">
+                    <form method="POST" class="d-inline" onsubmit="return confirm('<?= t('Setujui topup ini dan tambahkan saldo reseller?') ?>')">
                         <input type="hidden" name="topup_id" value="<?= $t['id'] ?>">
                         <input type="hidden" name="action" value="approved">
                         <input type="text" name="admin_note" class="form-control form-control-sm mb-1" placeholder="<?= t('Catatan (opsional)') ?>" style="width:150px">
                         <button type="submit" class="btn btn-sm btn-success"><i class="bi bi-check-lg"></i><?= t('Approve') ?></button>
                     </form>
-                    <form method="POST" class="d-inline">
+                    <form method="POST" class="d-inline" onsubmit="return confirm('<?= t('Tolak topup ini?') ?>')">
                         <input type="hidden" name="topup_id" value="<?= $t['id'] ?>">
                         <input type="hidden" name="action" value="rejected">
                         <input type="text" name="admin_note" class="form-control form-control-sm mb-1" placeholder="<?= t('Alasan (opsional)') ?>" style="width:150px">
