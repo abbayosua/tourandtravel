@@ -1131,6 +1131,7 @@ require __DIR__ . '/includes/components/pax-modal.php';
       document.querySelectorAll('#itinDays .itin-del').forEach(function (el) {
         el.addEventListener('click', function (e) {
           e.stopPropagation();
+          if (!confirm('<?= t('Hapus item ini dari itinerary?') ?>')) return;
           api({ action: 'delete_item', item_id: el.getAttribute('data-item') }, function () { loadDays(currentItin); });
         });
       });
