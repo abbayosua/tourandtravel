@@ -466,6 +466,7 @@ function getJsI18nKeys() {
         'Diskon:',
         'Kategori',
         'Mulai',
+        'Memproses...',
     ];
 }
 

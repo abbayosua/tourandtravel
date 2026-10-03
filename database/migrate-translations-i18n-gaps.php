@@ -1160,3 +1160,13 @@ $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, 
 $c12 = 0;
 foreach ($adminPayments as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c12++; } }
 echo "Upserted $c12 admin payments rows.\n";
+
+// ---- Hotel booking messages ----
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+foreach ([
+    ['Tanggal sudah dibooking untuk hotel ini. Pilih tanggal lain.', 'en', 'These dates are already booked for this hotel. Choose another date.'],
+    ['Tanggal sudah dibooking untuk hotel ini. Pilih tanggal lain.', 'zh', '该酒店此日期已被预订。请选择其他日期。'],
+    ['Booking berhasil! Total:', 'en', 'Booking successful! Total:'],
+    ['Booking berhasil! Total:', 'zh', '预订成功！总计：'],
+] as [$k, $l, $v]) { $stmt->execute([$k, $l, $v]); }
+echo "Added hotel booking message rows.\n";

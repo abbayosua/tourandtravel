@@ -195,7 +195,7 @@ require_once 'includes/header-shared.php';
                         <?php elseif (!isLoggedIn()): ?>
                             <div class="text-center py-3"><p class="fw-semibold mb-2"><?= t('Login untuk Memesan') ?></p><a href="login.php?redirect=<?= urlencode($_SERVER['REQUEST_URI']) ?>" class="btn btn-primary w-100"><?= t('Masuk / Daftar') ?></a></div>
                         <?php else: ?>
-                        <form method="POST" id="flBookingForm">
+                        <form method="POST" id="flBookingForm" data-submit-once>
                             <div class="row g-2">
                                 <div class="col-md-6"><input type="text" name="name" class="form-control" placeholder="<?= t('Nama Lengkap') ?>" value="<?= e(getUser()['name'] ?? '') ?>" required></div>
                                 <div class="col-md-6"><input type="text" name="phone" class="form-control" placeholder="<?= t('No. Telepon') ?>" value="<?= e(getUser()['phone'] ?? '') ?>" required></div>
@@ -279,7 +279,7 @@ require_once 'includes/header-shared.php';
                             <a href="reseller-topup.php" class="btn btn-sm btn-outline-info"><?= t('Topup') ?></a>
                         </div>
                         <?php endif; ?>
-                        <form method="POST" id="duffelBookingForm">
+                        <form method="POST" id="duffelBookingForm" data-submit-once>
                             <div class="row g-2">
                                 <div class="col-md-6"><input type="text" name="name" class="form-control" placeholder="<?= t('Nama Lengkap') ?>" value="<?= e(getUser()['name'] ?? '') ?>" required></div>
                                 <div class="col-md-6"><input type="text" name="phone" class="form-control" placeholder="<?= t('No. Telepon') ?>" value="<?= e(getUser()['phone'] ?? '') ?>" required></div>
@@ -337,7 +337,7 @@ require_once 'includes/header-shared.php';
                         <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom"><span class="fw-semibold"><?= e($schedule['airline']) ?> · <?= e($schedule['flight_number']) ?></span><span class="fw-bold text-primary fs-5"><?= formatRupiah($schedule['price']) ?><small class="fw-normal fs-6 text-muted">/<?= t('org') ?></small></span></div>
                         <?php if ($bookingSuccess): ?><div class="alert alert-success py-2"><?= $bookingSuccess ?></div><?php endif; ?>
                         <?php if (!isLoggedIn()): ?><div class="text-center py-3"><p class="fw-semibold mb-2"><?= t('Login untuk Memesan') ?></p><a href="login.php?redirect=<?= urlencode($_SERVER['REQUEST_URI']) ?>" class="btn btn-primary w-100"><?= t('Masuk / Daftar') ?></a></div><?php elseif ($schedule['available_seats'] < 1): ?><div class="alert alert-danger py-2"><?= t('Kursi penuh untuk jadwal ini.') ?></div><?php else: ?>
-                        <form method="POST"><div class="row g-2"><div class="col-md-6"><input type="text" name="name" class="form-control" placeholder="<?= t('Nama Lengkap') ?>" value="<?= e(getUser()['name'] ?? '') ?>" required></div><div class="col-md-6"><input type="text" name="phone" class="form-control" placeholder="<?= t('No. Telepon') ?>" value="<?= e(getUser()['phone'] ?? '') ?>" required></div><div class="col-md-4"><select name="passengers" class="form-select"><?php for ($i=1; $i<=min(9, $schedule['available_seats']); $i++): ?><option value="<?= $i ?>"><?= $i ?> <?= t('Penumpang') ?></option><?php endfor; ?></select></div><div class="col-md-8 d-grid"><button type="submit" class="btn btn-primary fw-semibold"><?= t('Pesan Sekarang') ?></button></div></div></form><?php endif; ?>
+                        <form method="POST" data-submit-once><div class="row g-2"><div class="col-md-6"><input type="text" name="name" class="form-control" placeholder="<?= t('Nama Lengkap') ?>" value="<?= e(getUser()['name'] ?? '') ?>" required></div><div class="col-md-6"><input type="text" name="phone" class="form-control" placeholder="<?= t('No. Telepon') ?>" value="<?= e(getUser()['phone'] ?? '') ?>" required></div><div class="col-md-4"><select name="passengers" class="form-select"><?php for ($i=1; $i<=min(9, $schedule['available_seats']); $i++): ?><option value="<?= $i ?>"><?= $i ?> <?= t('Penumpang') ?></option><?php endfor; ?></select></div><div class="col-md-8 d-grid"><button type="submit" class="btn btn-primary fw-semibold"><?= t('Pesan Sekarang') ?></button></div></div></form><?php endif; ?>
                     </div>
                 </div>
                 <?php endif; ?>

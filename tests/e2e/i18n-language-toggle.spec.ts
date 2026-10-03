@@ -394,3 +394,25 @@ test.describe('i18n admin payments', () => {
     }
   });
 });
+
+test.describe('i18n hotel booking', () => {
+  const CI = '2027-06-01';
+  const CO = '2027-06-03';
+  const cleanup = () => { try { mysql(`DELETE FROM hotel_bookings WHERE hotel_id = 1 AND checkin = '${CI}' AND name = 'E2E I18N'`); } catch { /* ignore */ } };
+
+  test.afterAll(cleanup);
+
+  test('pesan sukses booking hotel mengikuti bahasa', async ({ page }) => {
+    const expected: Record<string, string> = { en: 'Booking successful!', zh: '预订成功！' };
+    for (const [lang, phrase] of Object.entries(expected)) {
+      cleanup();
+      await page.goto(`${BASE}/hotel-detail.php?slug=grand-hyatt-bali&checkin=${CI}&checkout=${CO}&lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await page.locator('#hotelBookingName').fill('E2E I18N');
+      await page.locator('#hotelBookingPhone').fill('08123456789');
+      await Promise.all([page.waitForLoadState('domcontentloaded'), page.locator('#bookingSubmitBtn').click()]);
+      await expect(page.locator('.alert-success')).toContainText(phrase);
+      await expect(page.locator('.alert-success')).not.toContainText('Booking berhasil');
+    }
+  });
+});

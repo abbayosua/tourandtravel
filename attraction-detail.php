@@ -156,7 +156,7 @@ require_once 'includes/header-shared.php';
                             <a href="login.php?redirect=<?= urlencode($_SERVER['REQUEST_URI']) ?>" class="btn btn-primary w-100"><?= t('Masuk / Daftar') ?></a>
                         </div>
                     <?php else: ?>
-                    <form method="POST">
+                    <form method="POST" data-submit-once>
                         <input type="hidden" name="form_submitted" value="1">
                         <div class="mb-2">
                             <label class="form-label small"><?= t('Tanggal Kunjungan') ?></label>

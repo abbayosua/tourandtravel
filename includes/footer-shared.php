@@ -106,6 +106,28 @@ $footMenus = getNavMenus();
 <script src="<?= BASE_URL ?>/assets/js/script.js"></script>
 <script src="<?= BASE_URL ?>/assets/js/currency.js?v=<?= filemtime(__DIR__ . '/../assets/js/currency.js') ?>"></script>
 <script>
+// Anti double-submit: form bertanda data-submit-once menonaktifkan tombolnya
+// dan menampilkan spinner saat dikirim. Nilai tombol (jika ada) dipindah ke
+// hidden input agar tetap terkirim meski tombolnya dinonaktifkan.
+document.addEventListener('submit', function (e) {
+    var form = e.target;
+    if (!form || form.tagName !== 'FORM' || !form.hasAttribute('data-submit-once')) return;
+    var btn = (e.submitter && e.submitter.form === form) ? e.submitter : form.querySelector('button[type="submit"], input[type="submit"]');
+    if (!btn || btn.disabled) return;
+    if (btn.name) {
+        var h = document.createElement('input');
+        h.type = 'hidden';
+        h.name = btn.name;
+        h.value = btn.value;
+        form.appendChild(h);
+    }
+    btn.disabled = true;
+    if (btn.tagName === 'BUTTON') {
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>' + (window.I18N ? window.I18N.t('Memproses...') : '');
+    }
+});
+</script>
+<script>
 document.addEventListener('DOMContentLoaded', function() {
     var current = localStorage.getItem('currency') || 'IDR';
     var label = document.getElementById('currencyLabel');

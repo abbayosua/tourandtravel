@@ -216,7 +216,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $overlapStmt = db()->prepare("SELECT COUNT(*) FROM hotel_bookings WHERE hotel_id = ? AND ? < checkout AND checkin < ?");
         $overlapStmt->execute([$hotel['id'], $ci, $co]);
         if ($overlapStmt->fetchColumn() > 0) {
-            $bookingError = 'Tanggal sudah dibooking untuk hotel ini. Pilih tanggal lain.';
+            $bookingError = t('Tanggal sudah dibooking untuk hotel ini. Pilih tanggal lain.');
         } else {
             $nights = max(1, (strtotime($co) - strtotime($ci)) / 86400);
             $nightly = [];
@@ -243,7 +243,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 require_once 'includes/wallet.php';
                 spendWallet($_SESSION['user_id'], $walletDeduct, 'hotel_booking', $bookingId);
             }
-            $bookingSuccess = "Booking berhasil! Total: " . formatRupiah($total);
+            $bookingSuccess = t('Booking berhasil! Total:') . ' ' . formatRupiah($total);
 
             // Save passenger profile if checkbox checked
             if (!empty($_SESSION['user_id']) && !empty($_POST['save_passenger'])) {
@@ -571,7 +571,7 @@ require_once 'includes/header-shared.php';
                         <?php if (!isLoggedIn()): ?>
                             <div class="alert alert-warning py-2 small mb-2"><i class="bi bi-info-circle me-1"></i><?= t('Anda dapat booking sebagai tamu.') ?></div>
                         <?php endif; ?>
-                        <form method="POST" id="hotelBookingForm">
+                        <form method="POST" id="hotelBookingForm" data-submit-once>
                             <input type="hidden" name="room_id" id="roomIdInput" value="">
                             <input type="hidden" name="promo_code_rate" id="promoRateInput" value="0">
                             <div class="mb-2">
@@ -864,17 +864,6 @@ document.addEventListener('DOMContentLoaded', function() {
             .finally(function() {
                 if (btn) { btn.disabled = false; btn.innerHTML = original; }
             });
-    });
-});
-</script>
-<script>
-// Cegah double-submit: nonaktifkan tombol + spinner saat form booking dikirim.
-document.addEventListener('DOMContentLoaded', function() {
-    var form = document.getElementById('hotelBookingForm');
-    if (!form) return;
-    form.addEventListener('submit', function() {
-        var btn = document.getElementById('bookingSubmitBtn');
-        if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span><?= t('Memproses...') ?>'; }
     });
 });
 </script>
