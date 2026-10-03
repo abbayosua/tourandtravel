@@ -1421,3 +1421,34 @@ $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, 
 $c19 = 0;
 foreach ($adminNavMenus as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c19++; } }
 echo "Upserted $c19 admin nav-menus rows.\n";
+
+// ---- Admin brand settings ----
+$adminBrand = [
+    'en' => [
+        'Nama travel wajib diisi' => 'Travel name is required',
+        'Nama travel maksimal 60 karakter' => 'Travel name must be at most 60 characters',
+        'Nama tersimpan, logo dihapus' => 'Name saved, logo removed',
+        'Nama travel' => 'Travel name',
+        'Tampil di navbar, footer, judul tab, email, notifikasi WA, dan PDF.' => 'Shown in the navbar, footer, tab title, emails, WhatsApp notifications, and PDFs.',
+        'Tagline (opsional)' => 'Tagline (optional)',
+        'Logo (JPG/PNG/WebP, maks 2MB)' => 'Logo (JPG/PNG/WebP, max 2MB)',
+        'Hapus logo' => 'Remove logo',
+        'Pratinjau' => 'Preview',
+    ],
+    'zh' => [
+        'Nama travel wajib diisi' => '旅游名称不能为空',
+        'Nama travel maksimal 60 karakter' => '旅游名称最多 60 个字符',
+        'Nama tersimpan, logo dihapus' => '名称已保存，标志已删除',
+        'Brand & Logo' => '品牌与标志',
+        'Nama travel' => '旅游名称',
+        'Tampil di navbar, footer, judul tab, email, notifikasi WA, dan PDF.' => '显示在导航栏、页脚、标签页标题、邮件、WhatsApp 通知和 PDF 中。',
+        'Tagline (opsional)' => '标语（可选）',
+        'Logo (JPG/PNG/WebP, maks 2MB)' => '标志（JPG/PNG/WebP，最大 2MB）',
+        'Hapus logo' => '删除标志',
+        'Pratinjau' => '预览',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$c20 = 0;
+foreach ($adminBrand as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c20++; } }
+echo "Upserted $c20 admin brand-settings rows.\n";

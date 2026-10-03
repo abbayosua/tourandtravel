@@ -500,3 +500,15 @@ test.describe('i18n admin nav menus', () => {
     }
   });
 });
+
+test.describe('i18n admin brand settings', () => {
+  test('label brand settings mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    const expected: Record<string, string> = { id: 'Pratinjau', en: 'Preview', zh: '预览' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/admin/brand-settings.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('body')).toContainText(label);
+    }
+  });
+});
