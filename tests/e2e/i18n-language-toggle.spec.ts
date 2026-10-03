@@ -644,6 +644,19 @@ test.describe('i18n reseller pages', () => {
       await expect(page.locator('body')).toContainText(label);
     }
   });
+
+  test('label topup reseller mengikuti bahasa', async ({ page }) => {
+    await page.goto(`${BASE}/login.php`);
+    await page.fill('input[name="email"]', EMAIL);
+    await page.fill('input[name="password"]', PASS);
+    await Promise.all([page.waitForLoadState('domcontentloaded'), page.click('button[type="submit"]')]);
+    const expected: Record<string, string> = { id: 'Topup Saldo Reseller', en: 'Reseller Balance Topup', zh: '分销商余额充值' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/reseller-topup.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('body')).toContainText(label);
+    }
+  });
 });
 
 test.describe('i18n booking labels', () => {
