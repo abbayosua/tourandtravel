@@ -1888,3 +1888,22 @@ $hotelZh = [
 $hStmt = db()->prepare("UPDATE hotels SET name_zh = ?, description_zh = ? WHERE id = ?");
 foreach ($hotelZh as $id => [$n, $d]) { $hStmt->execute([$n, $d, $id]); }
 echo "Updated " . count($hotelZh) . " hotels with zh content.\n";
+
+// ---- Admin hero-slide / collections ----
+$adminSlideGaps = [
+    'en' => [
+        'JPG/PNG/WebP, maks 2MB. Rekomendasi 1920px lebar.' => 'JPG/PNG/WebP, max 2MB. Recommended 1920px width.',
+        'Cari Sekarang' => 'Search Now',
+    ],
+    'zh' => [
+        'JPG/PNG/WebP, maks 2MB. Rekomendasi 1920px lebar.' => 'JPG/PNG/WebP，最大 2MB。建议宽度 1920px。',
+        'Cari Sekarang' => '立即搜索',
+        'Slug' => '别名',
+        'Item' => '项目',
+        'tour' => '旅游',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$c30 = 0;
+foreach ($adminSlideGaps as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c30++; } }
+echo "Upserted $c30 hero-slide/collection rows.\n";

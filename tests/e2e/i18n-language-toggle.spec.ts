@@ -681,3 +681,19 @@ test.describe('i18n hotel content zh', () => {
     await expect(page.locator('body')).toContainText('The Ritz-Carlton Jakarta, Mega Kuningan');
   });
 });
+
+test.describe('i18n admin hero slide edit', () => {
+  test('label edit slide mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    const expected: Record<string, string> = {
+      id: 'JPG/PNG/WebP, maks 2MB. Rekomendasi 1920px lebar.',
+      en: 'JPG/PNG/WebP, max 2MB. Recommended 1920px width.',
+      zh: 'JPG/PNG/WebP，最大 2MB。建议宽度 1920px。',
+    };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/admin/hero-slide-edit.php?id=6&lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('body')).toContainText(label);
+    }
+  });
+});
