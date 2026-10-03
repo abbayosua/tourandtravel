@@ -27,6 +27,8 @@ const overlay = document.getElementById('sidebarOverlay');
 const body = document.body;
 
 if (toggleBtn && sidebar) {
+    // Mobile: sidebar = off-canvas drawer; mulai tertutup agar tidak menutupi konten.
+    if (window.innerWidth < 768) sidebar.classList.add('collapsed');
     toggleBtn.addEventListener('click', function(e) {
         e.stopPropagation();
         if (window.innerWidth >= 768) {
