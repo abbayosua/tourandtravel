@@ -440,3 +440,15 @@ test.describe('i18n admin hotel api settings', () => {
     }
   });
 });
+
+test.describe('i18n admin push notifications', () => {
+  test('label push notification mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    const expected: Record<string, string> = { id: 'Kirim Notifikasi', en: 'Send Notification', zh: '发送通知' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/admin/push-notifications.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('body')).toContainText(label);
+    }
+  });
+});

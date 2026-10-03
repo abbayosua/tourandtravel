@@ -1243,3 +1243,45 @@ $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, 
 $c14 = 0;
 foreach ($adminHotelApi as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c14++; } }
 echo "Upserted $c14 admin hotel-api rows.\n";
+
+// ---- Admin push notifications ----
+$adminPush = [
+    'en' => [
+        'Semua pengguna' => 'All users',
+        'Per bahasa (sesuai token)' => 'By language (per token)',
+        'User ID tertentu' => 'Specific User IDs',
+        'Bahasa' => 'Language',
+        'opsional' => 'optional',
+        'Judul notifikasi' => 'Notification title',
+        'Isi Pesan' => 'Message body',
+        'Isi pesan notifikasi' => 'Notification message',
+        'Kirim Notifikasi' => 'Send Notification',
+        'Riwayat Pengiriman' => 'Delivery History',
+        'Belum ada pengiriman.' => 'No deliveries yet.',
+        'Terkirim' => 'Sent',
+        'Oleh' => 'By',
+        'gagal' => 'failed',
+    ],
+    'zh' => [
+        'Target' => '目标',
+        'Semua pengguna' => '所有用户',
+        'Per bahasa (sesuai token)' => '按语言（按令牌）',
+        'User ID tertentu' => '指定用户 ID',
+        'Bahasa' => '语言',
+        'User ID' => '用户 ID',
+        'opsional' => '可选',
+        'Judul notifikasi' => '通知标题',
+        'Isi Pesan' => '消息内容',
+        'Isi pesan notifikasi' => '通知消息',
+        'Kirim Notifikasi' => '发送通知',
+        'Riwayat Pengiriman' => '发送历史',
+        'Belum ada pengiriman.' => '暂无发送记录。',
+        'Terkirim' => '已发送',
+        'Oleh' => '发送者',
+        'gagal' => '失败',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$c15 = 0;
+foreach ($adminPush as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c15++; } }
+echo "Upserted $c15 admin push-notification rows.\n";
