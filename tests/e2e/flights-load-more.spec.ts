@@ -99,3 +99,25 @@ test('tombol coba lagi memuat halaman berikut setelah koneksi pulih', async ({ p
   await expect(page.locator('#flightGrid .flight-card')).toHaveCount(12);
   await expect(page.locator('.load-more-trigger')).toHaveCount(0);
 });
+
+test('filter harga diterapkan pada hasil lokal', async ({ page }) => {
+  await page.goto(`${BASE}/flights.php?search=1&from=${FROM}&to=${TO}&date=${DATE}&max_price=150000&lang=id`);
+  await expect(page.locator('#flightContent')).toBeVisible();
+  await expect(page.locator('#flightGrid')).toBeVisible();
+
+  await expect(page.locator('#flightGrid .flight-card')).toHaveCount(6);
+  await expect(page.locator('.load-more-trigger')).toHaveCount(0);
+
+  await expect(page.locator('#flightGrid')).toHaveScreenshot('flights-local-filtered.png', { maxDiffPixelRatio: 0.05 });
+});
+
+test('filter tetap berlaku saat memuat halaman berikutnya', async ({ page }) => {
+  await page.goto(`${BASE}/flights.php?search=1&from=${FROM}&to=${TO}&date=${DATE}&max_price=200000&lang=id`);
+  await expect(page.locator('#flightContent')).toBeVisible();
+  await expect(page.locator('#flightGrid .flight-card')).toHaveCount(10);
+
+  await page.locator('.load-more-trigger').scrollIntoViewIfNeeded();
+
+  await expect(page.locator('#flightGrid .flight-card')).toHaveCount(11);
+  await expect(page.locator('.load-more-trigger')).toHaveCount(0);
+});

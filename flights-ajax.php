@@ -24,12 +24,38 @@ $class = $_GET['class'] ?? '';
 $passengers = max(1, min(9, (int)($_GET['passengers'] ?? 1)));
 $sort = $_GET['sort'] ?? 'price';
 
+$airlineFilter = $_GET['airline'] ?? [];
+$airlineFilter = is_array($airlineFilter) ? array_values(array_filter(array_map('trim', $airlineFilter))) : (trim((string)$airlineFilter) !== '' ? [trim((string)$airlineFilter)] : []);
+$minPrice = trim($_GET['min_price'] ?? '');
+$maxPrice = trim($_GET['max_price'] ?? '');
+$depFilter = trim($_GET['dep'] ?? '');
+$stopsFilter = trim($_GET['stops'] ?? '');
+
 // Get local schedules
 $sql = "SELECT fs.*, f.airline, f.flight_number, f.from_city, f.to_city, f.departure_time, f.arrival_time, f.duration, f.class FROM flight_schedules fs JOIN flights f ON fs.flight_id=f.id WHERE fs.is_active=1 AND fs.departure_date=?";
 $params = [$date];
 if ($from) { $sql .= " AND f.from_city LIKE ?"; $params[] = "%$from%"; }
 if ($to) { $sql .= " AND f.to_city LIKE ?"; $params[] = "%$to%"; }
 if ($class) { $sql .= " AND f.class=?"; $params[] = $class; }
+if (!empty($airlineFilter)) {
+    $ors = [];
+    foreach ($airlineFilter as $af) { $ors[] = "f.airline LIKE ?"; $params[] = "%$af%"; }
+    $sql .= " AND (" . implode(' OR ', $ors) . ")";
+}
+if ($minPrice !== '') { $sql .= " AND fs.price >= ?"; $params[] = (float)$minPrice; }
+if ($maxPrice !== '') { $sql .= " AND fs.price <= ?"; $params[] = (float)$maxPrice; }
+if ($depFilter !== '') {
+    $hour = "HOUR(fs.departure_time)";
+    $depSql = match ($depFilter) {
+        'morning' => "$hour >= 5 AND $hour < 12",
+        'afternoon' => "$hour >= 12 AND $hour < 17",
+        'evening' => "$hour >= 17 AND $hour < 22",
+        'night' => "($hour >= 22 OR $hour < 5)",
+        default => '',
+    };
+    if ($depSql !== '') $sql .= " AND ($depSql)";
+}
+if ($stopsFilter === 'transit') { $sql .= " AND 1=0"; }
 $sql .= " ORDER BY fs.price ASC LIMIT $limit OFFSET $offset";
 
 $stmt = db()->prepare($sql);
