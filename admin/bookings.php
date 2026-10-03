@@ -256,6 +256,8 @@ if (!$typeFilter || $typeFilter === 'ferry') {
 }
 
 usort($all, function ($a, $b) { return strtotime($b['created_at']) - strtotime($a['created_at']); });
+$q = trim($_GET['q'] ?? '');
+if ($q !== '') $all = array_values(array_filter($all, fn($r) => stripos(json_encode($r), $q) !== false));
 
 $typeName = ['tour' => t('Tour'), 'attraction' => t('Atraksi'), 'transfer' => t('Transfer'), 'train' => t('Kereta'), 'esim' => 'eSIM', 'hotel' => t('Hotel'), 'flight' => t('Pesawat')];
 $typeBadge = ['tour' => 'primary', 'attraction' => 'info', 'transfer' => 'warning text-dark', 'train' => 'success', 'esim' => 'secondary', 'hotel' => 'danger', 'flight' => 'dark'];
@@ -279,6 +281,12 @@ require_once 'includes/admin-header.php';
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h4 class="fw-bold mb-0"><?= t('Kelola Booking') ?></h4>
     <div class="d-flex gap-2 flex-wrap">
+        <form method="GET" class="d-flex gap-1">
+            <?php if ($statusFilter): ?><input type="hidden" name="status" value="<?= e($statusFilter) ?>"><?php endif; ?>
+            <?php if ($typeFilter): ?><input type="hidden" name="type" value="<?= e($typeFilter) ?>"><?php endif; ?>
+            <input type="text" name="q" class="form-control form-control-sm" placeholder="<?= t('Cari') ?>" value="<?= e($q) ?>" data-testid="admin-list-search">
+            <button type="submit" class="btn btn-sm btn-outline-primary"><?= t('Cari') ?></button>
+        </form>
         <a href="bookings.php" class="btn btn-sm <?= !$statusFilter && !$typeFilter ? 'btn-primary' : 'btn-outline-primary' ?>"><?= t('Semua') ?></a>
         <?php foreach (['pending', 'confirmed', 'cancelled'] as $st): ?>
         <a href="bookings.php?status=<?= $st ?><?= $typeFilter ? "&type=$typeFilter" : '' ?>" class="btn btn-sm <?= $statusFilter === $st ? 'btn-primary' : 'btn-outline-primary' ?>"><?= e(bookingStatusLabel($st)) ?></a>
