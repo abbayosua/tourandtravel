@@ -293,3 +293,32 @@ test.describe('i18n halaman akun', () => {
     });
   }
 });
+
+// ---- Admin panel (perlu login admin) ----
+const ADMIN_USER = 'admin';
+const ADMIN_PASS = 'tmpcheck123';
+
+async function adminLogin(page: Page) {
+  await page.goto(`${BASE}/admin/login.php`);
+  await page.fill('input[name="username"]', ADMIN_USER);
+  await page.fill('input[name="password"]', ADMIN_PASS);
+  await Promise.all([page.waitForLoadState('domcontentloaded'), page.click('button[type="submit"]')]);
+  await page.waitForLoadState('domcontentloaded');
+}
+
+test.describe('i18n admin panel', () => {
+  test('sidebar admin mengikuti bahasa aktif', async ({ page }) => {
+    await adminLogin(page);
+    const expected: Record<string, string> = { id: 'Ulasan', en: 'Reviews', zh: '评价' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/admin/dashboard.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('#adminSidebar')).toContainText(label);
+    }
+    // Tidak menyisakan label ID pada versi EN.
+    await page.goto(`${BASE}/admin/dashboard.php?lang=en`);
+    await page.waitForLoadState('domcontentloaded');
+    await expect(page.locator('#adminSidebar')).not.toContainText('Ulasan');
+    await expect(page.locator('#adminSidebar')).not.toContainText('Lihat Website');
+  });
+});

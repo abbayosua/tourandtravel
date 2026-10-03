@@ -906,3 +906,33 @@ $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, 
 $c5 = 0;
 foreach ($err4 as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c5++; } }
 echo "Upserted $c5 flight date error rows.\n";
+
+// ---- Admin sidebar / nav labels ----
+$adminNav = [
+    'en' => [
+        'Ulasan' => 'Reviews',
+        'Push Notifikasi' => 'Push Notifications',
+        'Menu Navigasi' => 'Navigation Menu',
+    ],
+    'zh' => [
+        'Overview' => '概览',
+        'Inventory' => '库存',
+        'Bookings' => '订单',
+        'Marketing' => '营销',
+        'Finance' => '财务',
+        'Sales Report' => '销售报表',
+        'Accounting' => '会计',
+        'Content' => '内容',
+        'Brand & Logo' => '品牌与标志',
+        'Menu Navigasi' => '导航菜单',
+        'Settings' => '设置',
+        'Hotel API' => '酒店 API',
+        'Eksternal' => '外部',
+        'Push Notifikasi' => '推送通知',
+        'Ulasan' => '评价',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$c6 = 0;
+foreach ($adminNav as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c6++; } }
+echo "Upserted $c6 admin sidebar rows.\n";

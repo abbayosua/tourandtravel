@@ -1573,6 +1573,7 @@ Trip
 Triple (1 kamar 3 org)
 Tukar
 Tukar points
+Tukar points menjadi KlookCash? Penukaran tidak dapat dibatalkan.
 Tulis Ulasan
 Tutup
 Twin
