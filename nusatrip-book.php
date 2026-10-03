@@ -212,7 +212,7 @@ require_once 'includes/header-shared.php';
         <input type="hidden" name="csrf" value="<?= e($_SESSION['nusa_csrf'] ?? '') ?>">
         <h6 class="fw-semibold"><?= t('Data Tamu') ?></h6>
         <div class="row g-2 mb-3">
-            <div class="col-3"><select name="title" class="form-select"><option>MR</option><option>MRS</option><option>MS</option></select></div>
+            <div class="col-3"><select name="title" class="form-select"><option value="MR"><?= t('MR') ?></option><option value="MRS"><?= t('MRS') ?></option><option value="MS"><?= t('MS') ?></option></select></div>
             <div class="col-4"><input name="first_name" class="form-control" placeholder="<?= e(t('Nama depan')) ?>" required></div>
             <div class="col-5"><input name="last_name" class="form-control" placeholder="<?= e(t('Nama belakang')) ?>" required></div>
             <div class="col-6"><input name="email" type="email" class="form-control" placeholder="Email" required></div>

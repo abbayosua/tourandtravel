@@ -193,3 +193,14 @@ function testNoCaseDuplicateTranslationKeys(): void {
     sort($bad);
     assertSame([], $bad, 'Grup key translations hanya beda huruf besar/kecil');
 }
+
+/** Dropdown sapaan (nusatrip-book) harus diterjemahkan, bukan identity. */
+function testSalutationLabelsLocalized(): void {
+    foreach (['MR', 'MRS', 'MS'] as $k) {
+        $_SESSION['lang'] = 'zh'; $_COOKIE['lang'] = 'zh';
+        assertTrue((bool)preg_match('/[\x{4E00}-\x{9FFF}]/u', t($k)), "zh '$k' tidak diterjemahkan");
+        $_SESSION['lang'] = 'en'; $_COOKIE['lang'] = 'en';
+        assertTrue(t($k) !== $k, "en '$k' masih identity");
+    }
+    $_SESSION['lang'] = 'id';
+}
