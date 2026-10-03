@@ -21,6 +21,7 @@ require_once 'includes/header-shared.php';
     <div class="container">
         <h4 class="fw-bold mb-1"><i class="bi bi-calendar-week me-2"></i><?= t('Itinerary Saya') ?></h4>
         <p class="text-muted small mb-4"><?= t('Rencana perjalanan yang kamu simpan.') ?></p>
+        <div id="itinMsg" class="alert alert-danger py-2 small d-none" data-testid="itin-error"><?= t('Gagal menghapus itinerary. Coba lagi.') ?></div>
 
         <?php if (empty($itineraries)): ?>
         <div class="text-center py-5">
@@ -58,12 +59,27 @@ require_once 'includes/header-shared.php';
 document.querySelectorAll('.itin-del-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
         if (!confirm('<?= t('Hapus itinerary ini?') ?>')) return;
+        var icon = btn.querySelector('i');
+        var prevIcon = icon ? icon.className : '';
+        var msg = document.getElementById('itinMsg');
+        btn.disabled = true;
+        if (icon) icon.className = 'spinner-border spinner-border-sm';
+        if (msg) msg.classList.add('d-none');
+        function failed() {
+            btn.disabled = false;
+            if (icon) icon.className = prevIcon;
+            if (msg) msg.classList.remove('d-none');
+        }
         var xhr = new XMLHttpRequest();
         xhr.open('POST', 'itinerary-ajax.php');
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         xhr.onload = function () {
-            try { if (JSON.parse(xhr.responseText).ok) location.reload(); } catch (e) {}
+            var ok = false;
+            try { ok = !!JSON.parse(xhr.responseText).ok; } catch (e) { ok = false; }
+            if (ok) { location.reload(); return; }
+            failed();
         };
+        xhr.onerror = failed;
         xhr.send(new URLSearchParams({ action: 'delete_itinerary', itinerary_id: btn.getAttribute('data-id') }));
     });
 });
