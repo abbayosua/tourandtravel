@@ -37,7 +37,7 @@ if ($step === 'form') {
     $roomCombo = trim((string)($_GET['room_combo'] ?? ''));
     $roomIdx = max(0, (int)($_GET['room_idx'] ?? 0));
     if ($hotelId === '' || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $checkin) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $checkout) || strtotime($checkout) <= strtotime($checkin)) {
-        $err = 'Parameter booking tidak lengkap.';
+        $err = t('Parameter booking tidak lengkap.');
     } else {
         $rt = nusaHotelRates($hotelId, $checkin, $checkout, $guests);
         $rooms = $rt['data']['rooms'] ?? [];
@@ -52,20 +52,20 @@ if ($step === 'form') {
             $room = $rooms[$roomIdx] ?? null;
         }
         if (!$room) {
-            $err = 'Kamar tidak tersedia (rates kosong / index salah).';
+            $err = t('Kamar tidak tersedia (rates kosong / index salah).');
         } else {
             $roomItems = nusaRoomItems($guests, $room['special_deal'] ?? null, (string)($room['book_reference'] ?? ''));
             $it = nusaHotelItem($hotelId, $checkin, $checkout, $roomItems);
             $sess = $it['data'] ?? null;
             if (($it['http'] ?? 0) !== 200 || empty($sess['cartSession'])) {
                 error_log('NusaTrip hotel_item gagal: ' . mb_substr((string)($it['raw'] ?? ''), 0, 300));
-                $err = 'Gagal membuat sesi booking. Silakan coba lagi atau pilih kamar lain.';
+                $err = t('Gagal membuat sesi booking. Silakan coba lagi atau pilih kamar lain.');
             } else {
                 $attr = nusaCheckoutAttributes($sess['cartSession'], $sess['checkoutId'], $sess['bookingTime']);
                 $val = nusaValidate($sess['cartSession'], $sess['checkoutId'], $sess['bookingTime']);
                 $vd = $val['data'] ?? [];
                 if (!empty($vd['error']) || empty($vd['totalPrice']['IDR'])) {
-                    $err = 'Harga kamar ini tidak tersedia di NusaTrip (' . ($vd['error'][0]['message'] ?? 'validasi gagal') . '). Pilih kamar lain.';
+                    $err = t('Harga kamar ini tidak tersedia di NusaTrip') . ' (' . ($vd['error'][0]['message'] ?? t('validasi gagal')) . '). ' . t('Pilih kamar lain.');
                     $b = nusaBookSess();
                 } else {
                 $_SESSION['nusa_book'] = [
@@ -105,10 +105,10 @@ if ($step === 'submit' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($mid === 6) continue;
         $allowedMethods[] = $mid . '|' . (string)($m['bank_id'] ?? '');
     }
-    if (!hash_equals($_SESSION['nusa_csrf'] ?? '', (string)($_POST['csrf'] ?? ''))) { $err = 'Sesi tidak valid. Kembali dan ulangi.'; $step = 'form'; }
-    elseif (empty($b['cartSession'])) { $err = 'Sesi booking kedaluwarsa. Ulangi dari halaman hotel.'; $step = 'form'; }
-    elseif (empty($b['validate']['totalPrice']['IDR'])) { $err = 'Harga belum tervalidasi NusaTrip. Ulangi dari halaman hotel.'; $step = 'form'; }
-    elseif ($payMethod !== 'cc' && !in_array($payMethod, $allowedMethods, true)) { $err = 'Metode pembayaran tidak valid.'; $step = 'form'; }
+    if (!hash_equals($_SESSION['nusa_csrf'] ?? '', (string)($_POST['csrf'] ?? ''))) { $err = t('Sesi tidak valid. Kembali dan ulangi.'); $step = 'form'; }
+    elseif (empty($b['cartSession'])) { $err = t('Sesi booking kedaluwarsa. Ulangi dari halaman hotel.'); $step = 'form'; }
+    elseif (empty($b['validate']['totalPrice']['IDR'])) { $err = t('Harga belum tervalidasi NusaTrip. Ulangi dari halaman hotel.'); $step = 'form'; }
+    elseif ($payMethod !== 'cc' && !in_array($payMethod, $allowedMethods, true)) { $err = t('Metode pembayaran tidak valid.'); $step = 'form'; }
     else {
         $phoneCc = (string)($_POST['phone_cc'] ?? '62');
         $contact = nusaContact((string)($_POST['title'] ?? 'MR'), trim((string)($_POST['first_name'] ?? '')),
@@ -141,7 +141,7 @@ if ($step === 'submit' && $_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
         error_log('NusaTrip submit gagal: ' . mb_substr((string)($r['raw'] ?? 'HTTP ' . ($r['http'] ?? 0)), 0, 300));
-        $err = 'Submit gagal. Silakan coba lagi.';
+        $err = t('Submit gagal. Silakan coba lagi.');
         $step = 'form';
         $b = nusaBookSess();
     }
@@ -163,7 +163,7 @@ if ($step === 'result') {
             $sm = nusaSummary((string)$res['ref']);
             $summary = $sm['data'] ?? null;
         }
-    } else $err = 'Tidak ada taskId. Ulangi booking.';
+    } else $err = t('Tidak ada taskId. Ulangi booking.');
 }
 
 $pageTitle = 'Booking Hotel NusaTrip';

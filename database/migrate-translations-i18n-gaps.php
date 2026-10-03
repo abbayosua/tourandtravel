@@ -670,3 +670,39 @@ $connectivity = [
 $coStmt = db()->prepare("UPDATE connectivity_products SET name_en = ?, name_zh = ?, description_en = ?, description_zh = ? WHERE id = ?");
 foreach ($connectivity as $id => $c) { $coStmt->execute([$c['name_en'], $c['name_zh'], $c['description_en'], $c['description_zh'], $id]); }
 echo "Updated " . count($connectivity) . " connectivity products (en/zh).\n";
+
+// ---- NusaTrip booking flow errors ----
+$nusaExtra = [
+    'en' => [
+        'Parameter booking tidak lengkap.' => 'Booking parameters are incomplete.',
+        'Kamar tidak tersedia (rates kosong / index salah).' => 'Room not available (empty rates / wrong index).',
+        'Gagal membuat sesi booking. Silakan coba lagi atau pilih kamar lain.' => 'Failed to create a booking session. Please try again or pick another room.',
+        'Harga kamar ini tidak tersedia di NusaTrip' => 'This room rate is not available on NusaTrip',
+        'validasi gagal' => 'validation failed',
+        'Pilih kamar lain.' => 'Choose another room.',
+        'Sesi tidak valid. Kembali dan ulangi.' => 'Invalid session. Go back and try again.',
+        'Sesi booking kedaluwarsa. Ulangi dari halaman hotel.' => 'Booking session expired. Restart from the hotel page.',
+        'Harga belum tervalidasi NusaTrip. Ulangi dari halaman hotel.' => 'Price not validated by NusaTrip yet. Restart from the hotel page.',
+        'Metode pembayaran tidak valid.' => 'Invalid payment method.',
+        'Submit gagal. Silakan coba lagi.' => 'Submit failed. Please try again.',
+        'Tidak ada taskId. Ulangi booking.' => 'No taskId. Please redo the booking.',
+    ],
+    'zh' => [
+        'Parameter booking tidak lengkap.' => '预订参数不完整。',
+        'Kamar tidak tersedia (rates kosong / index salah).' => '房间不可用（价格为空 / 索引错误）。',
+        'Gagal membuat sesi booking. Silakan coba lagi atau pilih kamar lain.' => '创建预订会话失败。请重试或选择其他房间。',
+        'Harga kamar ini tidak tersedia di NusaTrip' => '此房价在 NusaTrip 上不可用',
+        'validasi gagal' => '验证失败',
+        'Pilih kamar lain.' => '请选择其他房间。',
+        'Sesi tidak valid. Kembali dan ulangi.' => '会话无效。请返回重试。',
+        'Sesi booking kedaluwarsa. Ulangi dari halaman hotel.' => '预订会话已过期。请从酒店页面重新开始。',
+        'Harga belum tervalidasi NusaTrip. Ulangi dari halaman hotel.' => '价格尚未经 NusaTrip 验证。请从酒店页面重新开始。',
+        'Metode pembayaran tidak valid.' => '付款方式无效。',
+        'Submit gagal. Silakan coba lagi.' => '提交失败。请重试。',
+        'Tidak ada taskId. Ulangi booking.' => '缺少 taskId。请重新预订。',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$nusaCount = 0;
+foreach ($nusaExtra as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $nusaCount++; } }
+echo "Upserted $nusaCount NusaTrip error rows.\n";
