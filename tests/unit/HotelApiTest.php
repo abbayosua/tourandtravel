@@ -162,7 +162,7 @@ function testRenderLiveHotelCard() {
     ], 'Jakarta', '2026-01-01', '2026-01-02', 2);
     $html = ob_get_clean();
     assertContains('Hotel Uji', $html);
-    assertContains('Rp100.000', $html);
+    assertContains('Rp 100.000', $html);
     assertContains('hotel-detail.php?live=1', $html);
     assertContains('OYO', $html);
 }

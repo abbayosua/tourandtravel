@@ -58,7 +58,7 @@ function testRenderEmailTemplateBilingual() {
     assertContains('Bayar Sekarang', $id['html']);
 
     $en = renderEmailTemplate('booking-created', ['booking_code' => 'TAT-1', 'total' => 'Rp 100', 'pay_link' => 'http://x/pay'], 'en');
-    assertContains('Booking code', $en['html']);
+    assertContains('Booking Code', $en['html']);
     assertContains('Pay Now', $en['html']);
     assertContains(siteName(), $en['html'], 'brand shell tampil');
 }
