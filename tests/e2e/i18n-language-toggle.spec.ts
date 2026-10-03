@@ -322,3 +322,15 @@ test.describe('i18n admin panel', () => {
     await expect(page.locator('#adminSidebar')).not.toContainText('Lihat Website');
   });
 });
+
+test.describe('i18n admin laporan', () => {
+  test('label laporan akuntansi mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    const expected: Record<string, string> = { id: 'Total Pendapatan', en: 'Total Revenue', zh: '总收入' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/admin/accounting.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('body')).toContainText(label);
+    }
+  });
+});

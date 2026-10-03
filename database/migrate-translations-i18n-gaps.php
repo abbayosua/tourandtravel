@@ -936,3 +936,52 @@ $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, 
 $c6 = 0;
 foreach ($adminNav as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c6++; } }
 echo "Upserted $c6 admin sidebar rows.\n";
+
+// ---- Admin common labels (lists/forms/reports) ----
+$adminCommon = [
+    'en' => [
+        'Dari' => 'From',
+        'Tambah Slide' => 'Add Slide',
+        'Edit Slide' => 'Edit Slide',
+        'Edit Ferry' => 'Edit Ferry',
+        'Edit Hotel' => 'Edit Hotel',
+        'Catatan internal' => 'Internal note',
+        'Foto' => 'Photo',
+    ],
+    'zh' => [
+        'Status' => '状态', 'Edit' => '编辑', 'Hotel' => '酒店', 'Transfer' => '接送',
+        'Item' => '项目', 'Filter' => '筛选', 'Ferry' => '船票', 'Total' => '总计',
+        'Pending' => '待处理', 'Sales Report' => '销售报表', 'Accounting' => '会计',
+        'Total Pendapatan' => '总收入', 'Laba Bersih' => '净利润', 'Refund' => '退款',
+        'Dashboard' => '仪表盘', 'Booking' => '订单', 'Price Alerts' => '降价提醒',
+        'COGS' => '销售成本', 'Laba Kotor' => '毛利润', 'Total Pengeluaran' => '总支出',
+        'Tambah Pengeluaran' => '添加支出', 'Belum ada data' => '暂无数据',
+        'Corporate Rates' => '企业价', 'Analytics' => '数据分析', 'Flash Sale' => '限时特惠',
+        'Blog' => '博客', 'Log Email' => '邮件日志', 'Best Seller' => '热销', 'Qty' => '数量',
+        'Refresh' => '刷新', 'Admin Panel' => '管理后台', 'Min Pax' => '最少人数',
+        'Confirmed' => '已确认', 'Revenue' => '收入', 'Draft' => '草稿',
+        'Profit & Loss' => '损益表', 'Total HPP' => '总成本', 'Periode' => '期间',
+        'Menu' => '菜单', 'Reseller' => '分销商', 'Live Chat' => '在线客服',
+        'Hotel API' => '酒店 API', 'Tambah Slide' => '添加幻灯片', 'Edit Slide' => '编辑幻灯片',
+        'aktif' => '启用', 'nonaktif' => '停用', 'Target' => '目标', 'Indonesia' => '印度尼西亚',
+        'English' => '英语', 'Export CSV' => '导出 CSV', 'Label' => '标签',
+        'Environment' => '环境', 'Sandbox' => '沙盒', 'Production' => '生产',
+        'Jadwal' => '时刻', 'Foto' => '照片', 'Catatan internal' => '内部备注',
+        'FAQ' => '常见问题', 'Email' => '电子邮件', 'Reset' => '重置', 'Event' => '事件',
+        'Rate' => '评分', 'Edit Ferry' => '编辑船票', 'Edit Hotel' => '编辑酒店',
+        'Brand & logo tersimpan' => '品牌与标志已保存', 'transaksi' => '交易', 'Dari' => '从',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$c7 = 0;
+foreach ($adminCommon as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c7++; } }
+echo "Upserted $c7 admin common rows.\n";
+
+// ---- Admin: fix identity-EN Indonesian labels ----
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+foreach ([
+    ['Belum ada data', 'en', 'No data yet'],
+    ['Brand & logo tersimpan', 'en', 'Brand & logo saved'],
+    ['Ulasan', 'en', 'Reviews'],
+] as [$k, $l, $v]) { $stmt->execute([$k, $l, $v]); }
+echo "Fixed admin identity-EN labels.\n";
