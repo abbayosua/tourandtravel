@@ -2,7 +2,7 @@
 /**
  * I18nKeysTest — regresi kelengkapan terjemahan untuk semua key t() di kode.
  *
- * Menjamin setiap key t('...') literal di codebase punya terjemahan en DAN zh
+ * Menjamin setiap key t() literal di codebase punya terjemahan en DAN zh
  * di tabel `translations` (perbandingan case-insensitive, karena collation DB
  * ai_ci). Key yang gagal = terjemahan bocor: saat bahasa aktif en/zh, t() akan
  * jatuh ke string Indonesia (fallback = key).
@@ -15,7 +15,7 @@ function i18nBrandKeyAllowlist(): array {
     return ['/pax', 'OYO', 'PDF', 'PELNI', 'Pelni', 'QRIS'];
 }
 
-/** Kumpulkan semua key t('...') / t("...") literal dari file PHP aplikasi. */
+/** Kumpulkan semua key t() literal dari file PHP aplikasi. */
 function i18nScanCodeKeys(): array {
     $root = dirname(__DIR__, 2);
     $skip = ['.git', 'node_modules', 'test-results', 'scripts', 'vendor', 'uploads', '.serena'];
