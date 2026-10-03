@@ -34,6 +34,7 @@ const ID_MARKERS = new RegExp(
       'reseller', 'favorit', 'mitra', 'terpercaya', 'diskon', 'segera', 'segala',
       'kuota', 'seluruh', 'khusus', 'pengiriman', 'selama', 'dimuat', 'peta', 'ulasan', 'penumpang',
       'kembali', 'lanjut', 'simpan', 'kirim', 'jadwal', 'stasiun', 'pelabuhan',
+      'penting', 'catatan', 'kupon', 'diterjemahkan', 'bayar', 'kartu', 'tersisa', 'menyetujui', 'syarat', 'afiliasi',
     ].join('|') +
     ')\\b',
   'i'
@@ -792,6 +793,19 @@ test.describe('i18n admin html lang', () => {
         await page.goto(`${BASE}/admin/${p}?lang=${lang}`);
         await expect(page.locator('html'), `${p} @ ${lang}`).toHaveAttribute('lang', lang);
       }
+    }
+  });
+});
+
+test.describe('i18n tour detail notes', () => {
+  test('judul catatan penting mengikuti bahasa', async ({ page }) => {
+    const slug = '8d7n-shanghai-jiangnan-highlights-ink-wash-jiangnan-wuzhen-water-town';
+    const expected: Record<string, string> = { en: 'Important Notes', zh: '重要须知' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/tour-detail.php?slug=${slug}&lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('body')).toContainText(label);
+      await expect(page.locator('body')).not.toContainText('Catatan Penting');
     }
   });
 });

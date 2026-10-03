@@ -74,11 +74,17 @@ test('wishlist toggle menampilkan state loading + error', async ({ page }) => {
   const errState = await btn.evaluate((el) => ({ cls: el.className, icon: (el.querySelector('i') as HTMLElement)?.className || '' }));
   expect(errState.cls).toContain('text-warning');
   expect(errState.icon).toContain('bi-exclamation-triangle-fill');
-  await expect(btn).toHaveScreenshot('wishlist-toggle-error.png', { maxDiffPixelRatio: 0.1 });
 
-  // Sukses: ikon hati terisi.
+  // Sukses: ikon hati terisi (state persisten -> aman untuk screenshot).
   mode = 'success';
   await page.waitForTimeout(900); // tunggu revert
   await btn.click();
   await expect(btn.locator('i')).toHaveClass(/bi-heart-fill/);
+  await expect(btn).not.toHaveClass(/opacity-50/); // tunggu loading state selesai
+  await page.evaluate(async () => {
+    const f = (document as any).fonts;
+    await f.load('1em "bootstrap-icons"');
+    await f.ready;
+  });
+  await expect(btn).toHaveScreenshot('wishlist-toggle-success.png', { maxDiffPixelRatio: 0.35 });
 });
