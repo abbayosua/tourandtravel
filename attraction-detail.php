@@ -91,7 +91,7 @@ require_once 'includes/header-shared.php';
                 <?php if (!empty($attraction['instant_confirmation'])): ?><span class="badge bg-success"><?= t('Konfirmasi Instan') ?></span><?php endif; ?>
                 <?php if (!empty($attraction['free_cancellation'])): ?><span class="badge bg-info"><?= t('Batal Gratis') ?></span><?php endif; ?>
             </div>
-            <p class="lead"><?= nl2br(e($attraction['description'])) ?></p>
+            <p class="lead"><?= nl2br(e(tContent($attraction, 'description'))) ?></p>
 
             <?php if (count($similar) > 0): ?>
             <h5 class="fw-bold mt-5 mb-3"><?= t('Tiket Lain di') ?> <?= e($attraction['city']) ?></h5>

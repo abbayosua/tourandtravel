@@ -57,7 +57,22 @@ const PAGES = [
   'esim.php',
   'blog.php',
   'destinasi.php',
+  // Halaman detail (konten DB + widget harga/alert)
+  'tour-detail.php?slug=8d7n-shanghai-jiangnan-highlights-ink-wash-jiangnan-wuzhen-water-town',
+  'tour-detail.php?slug=beijing-qushui-lanting-cabang-sihui',
+  'hotel-detail.php?slug=grand-hyatt-bali',
+  'attraction-detail.php?slug=tiket-masuk-taman-mini-indonesia-indah',
+  'transfer-detail.php?slug=bandara-juanda-ke-pusat-kota-surabaya',
+  'rental-car-detail.php?slug=toyota-avanza-jakarta',
+  'esim-detail.php?slug=esim-bali-10gb',
+  'train-detail.php?slug=argo-bromo-anggrek',
+  'blog-detail.php?slug=tips-memilih-paket-tour-keluarga',
 ];
+
+/** Tambahkan parameter bahasa tanpa merusak query string yang sudah ada. */
+function withLang(path: string, lang: string): string {
+  return `${BASE}/${path}${path.includes('?') ? '&' : '?'}lang=${lang}`;
+}
 
 /** Semua string user-facing yang tampil di halaman (teks + placeholder/title/aria-label). */
 async function visibleStrings(page: Page): Promise<string[]> {
@@ -127,15 +142,18 @@ test.describe('i18n language toggle', () => {
 
   for (const lang of ['en', 'zh']) {
     test(`tidak ada sisa teks Indonesia saat bahasa=${lang}`, async ({ page }) => {
+      test.setTimeout(180_000);
       const failures: string[] = [];
 
       for (const path of PAGES) {
-        await page.goto(`${BASE}/${path}?lang=id`);
-        await page.waitForLoadState('networkidle');
+        await page.goto(withLang(path, 'id'));
+        await page.waitForLoadState('domcontentloaded');
+        await page.waitForTimeout(300);
         const idStrings = await visibleStrings(page);
 
-        await page.goto(`${BASE}/${path}?lang=${lang}`);
-        await page.waitForLoadState('networkidle');
+        await page.goto(withLang(path, lang));
+        await page.waitForLoadState('domcontentloaded');
+        await page.waitForTimeout(300);
         const otherStrings = await visibleStrings(page);
 
         const leaked = leakedStrings(idStrings, otherStrings);

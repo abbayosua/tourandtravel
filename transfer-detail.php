@@ -18,7 +18,7 @@ if (!$transfer) {
     exit;
 }
 
-$pageTitle = $transfer['name'];
+$pageTitle = tContent($transfer, 'name');
 
 $bookingError = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
@@ -81,14 +81,14 @@ require_once 'includes/header-shared.php';
 <div class="container py-4">
     <?php renderBreadcrumb([
         ['label' => t('Transfer Bandara'), 'url' => 'transfers.php'],
-        ['label' => $transfer['name'], 'url' => null],
+        ['label' => tContent($transfer, 'name'), 'url' => null],
     ]); ?>
 
     <div class="row">
         <div class="col-lg-8">
             <img src="https://placehold.co/800x450?text=Airport+Transfer" class="w-100 rounded-4 shadow-sm mb-3" style="max-height: 350px; object-fit: cover;" alt="">
 
-            <h2 class="fw-bold"><?= e($transfer['name']) ?></h2>
+            <h2 class="fw-bold"><?= e(tContent($transfer, 'name')) ?></h2>
             <div class="d-flex flex-wrap gap-3 mb-3">
                 <span class="badge bg-primary"><?= e($transfer['vehicle_type'] ?? 'Transfer') ?></span>
                 <span class="text-muted"><i class="bi bi-arrow-left-right me-1"></i><?= e($transfer['from_city']) ?> → <?= e($transfer['to_city']) ?></span>
@@ -96,7 +96,7 @@ require_once 'includes/header-shared.php';
                 <?php if (!empty($transfer['instant_confirmation'])): ?><span class="badge bg-success"><?= t('Konfirmasi Instan') ?></span><?php endif; ?>
                 <?php if (!empty($transfer['free_cancellation'])): ?><span class="badge bg-info"><?= t('Batal Gratis') ?></span><?php endif; ?>
             </div>
-            <p class="lead"><?= nl2br(e($transfer['description'])) ?></p>
+            <p class="lead"><?= nl2br(e(tContent($transfer, 'description'))) ?></p>
 
             <h6 class="fw-semibold"><?= t('Termasuk') ?></h6>
             <div class="row g-2 mb-4">

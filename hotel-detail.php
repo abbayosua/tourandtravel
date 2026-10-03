@@ -544,7 +544,7 @@ require_once 'includes/header-shared.php';
             <div class="col-lg-4">
                 <div class="card border-0 shadow-sm sticky-top" style="top: 100px;">
                     <div class="card-body p-4">
-                        <h5 class="fw-bold text-primary mb-3"><?= formatRupiah($hotel['price_per_night']) ?> <small class="fw-normal text-muted fs-6">/malam</small></h5>
+                        <h5 class="fw-bold text-primary mb-3"><?= formatRupiah($hotel['price_per_night']) ?> <small class="fw-normal text-muted fs-6"><?= t('/malam') ?></small></h5>
 
                         <!-- Price Alert -->
                         <?php if (isLoggedIn()): ?>
@@ -581,7 +581,7 @@ require_once 'includes/header-shared.php';
                                                 <input type="number" name="target_price" class="form-control" min="1" step="1000" required
                                                     placeholder="<?= t('Masukkan harga target') ?>"
                                                     value="<?= (int)($hotel['price_per_night'] * 0.9) ?>">
-                                                <small class="text-muted"><?= t('Harga saat ini') ?>: <?= formatRupiah($hotel['price_per_night']) ?>/malam</small>
+                                                <small class="text-muted"><?= t('Harga saat ini') ?>: <?= formatRupiah($hotel['price_per_night']) ?><?= t('/malam') ?></small>
                                             </div>
                                         </div>
                                         <div class="modal-footer">

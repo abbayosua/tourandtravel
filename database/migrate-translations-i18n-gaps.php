@@ -107,6 +107,19 @@ $en = [
     'Kota atau bandara' => 'City or airport',
     'Kota atau terminal' => 'City or terminal',
     'Tutup' => 'Close',
+    // Detail pages: price alert widget + flight schedule + hotel reviews
+    'Cek Harga per Tanggal' => 'Check Price by Date',
+    'Harga Target' => 'Target Price',
+    'Harga Target per Malam' => 'Target Price per Night',
+    'Harga saat ini' => 'Current price',
+    'Jadwal Penerbangan' => 'Flight Schedule',
+    'Login untuk Set Price Alert' => 'Log in to Set a Price Alert',
+    'Kami akan memberi tahu Anda jika harga turun ke target.' => 'We will notify you when the price drops to your target.',
+    'Masukkan harga target' => 'Enter target price',
+    'Belum ada ulasan untuk hotel ini.' => 'No reviews for this hotel yet.',
+    '/malam · harga live dari' => '/night · live price from',
+    'Simpan Alert' => 'Save Alert',
+    'Nama itinerary, mis: Trip Bali 3 Hari' => 'Itinerary name, e.g. Bali Trip 3 Days',
 ];
 
 $zh = [
@@ -203,6 +216,19 @@ $zh = [
     'Kota atau terminal' => '城市或码头',
     'Tutup' => '关闭',
     'Hotel' => '酒店',
+    // Detail pages: price alert widget + flight schedule + hotel reviews
+    'Cek Harga per Tanggal' => '按日期查价',
+    'Harga Target' => '目标价',
+    'Harga Target per Malam' => '每晚目标价',
+    'Harga saat ini' => '当前价格',
+    'Jadwal Penerbangan' => '航班时刻',
+    'Login untuk Set Price Alert' => '登录后设置降价提醒',
+    'Kami akan memberi tahu Anda jika harga turun ke target.' => '价格降到目标价时我们会通知您。',
+    'Masukkan harga target' => '输入目标价',
+    'Belum ada ulasan untuk hotel ini.' => '此酒店暂无评价。',
+    '/malam · harga live dari' => '/晚 · 实时价格起',
+    'Simpan Alert' => '保存提醒',
+    'Nama itinerary, mis: Trip Bali 3 Hari' => '行程名称，例如：巴厘岛 3 日游',
     // About / terms / privacy / refund content
     ':brand adalah platform pemesanan perjalanan online yang menyediakan paket tour domestik & internasional, hotel, tiket pesawat, ferry, kereta, transfer, atraksi, eSIM, dan rental mobil dalam satu tempat.' =>
         ':brand 是一个在线旅行预订平台，提供国内外旅游套餐、酒店、机票、渡轮、火车、接送、景点门票、eSIM 和租车服务，一站式搞定。',
@@ -346,6 +372,13 @@ $transferEn = [
     4 => 'Merak Port to Soekarno-Hatta Airport',
     5 => 'Juanda Airport to Central Surabaya',
 ];
+$transferDescEn = [
+    1 => 'Private airport transfer to central Jakarta.',
+    2 => 'Bali airport pickup to the Kuta or Seminyak area.',
+    3 => 'Transfer from Yogyakarta International Airport to the Malioboro area.',
+    4 => 'Shuttle between Merak Port and the airport.',
+    5 => 'Transfer from Juanda Airport to central Surabaya.',
+];
 $transferZh = [
     1 => ['苏加诺-哈达机场至雅加达市区', '雅加达机场私人接送。'],
     2 => ['伍拉·赖机场至库塔 & 水明漾', '巴厘岛机场接送，前往库塔或水明漾地区。'],
@@ -353,12 +386,43 @@ $transferZh = [
     4 => ['Merak 港至苏加诺-哈达机场', '从 Merak 港前往机场的接送服务。'],
     5 => ['Juanda 机场至泗水市中心', '从 Juanda 机场前往泗水市中心的接送。'],
 ];
-$trStmt = db()->prepare("UPDATE transfers SET name_en = ?, name_zh = ?, description_zh = ? WHERE id = ?");
+$trStmt = db()->prepare("UPDATE transfers SET name_en = ?, description_en = ?, name_zh = ?, description_zh = ? WHERE id = ?");
 foreach ($transferZh as $id => [$n, $d]) {
-    $trStmt->execute([$transferEn[$id], $n, $d, $id]);
+    $trStmt->execute([$transferEn[$id], $transferDescEn[$id], $n, $d, $id]);
 }
 echo "Updated " . count($transferZh) . " transfers with en/zh content.\n";
 
 // ---- Terjemahan konten: collections ----
 db()->exec("UPDATE collections SET name_en = 'Best Seller', description_en = 'The most popular tours among our customers', name_zh = '热销', description_zh = '最受客户欢迎的旅游线路' WHERE id = 1");
 echo "Updated collections content (en/zh).\n";
+
+// ---- Terjemahan konten: tours (meeting_point / important_notes / flight_info) ----
+$tourContent = [
+    63 => [
+        'meeting_point_en' => 'Soekarno-Hatta International Airport, Terminal 3 (3 hours before departure)',
+        'meeting_point_zh' => '苏加诺-哈达国际机场 3 号航站楼（起飞前 3 小时）',
+        'important_notes_en' => "Prices may change at any time following exchange rates & fuel surcharge\nDeposit of Rp 3,000,000/pax at registration, balance due D-21\nFlight schedules may change per airline policy\nHotels may be substituted with equivalent hotels depending on conditions",
+        'important_notes_zh' => "价格可能随汇率和燃油附加费随时变动\n报名时支付每位 Rp 3,000,000 定金，出发前 21 天付清余款\n航班时刻可能依航空公司政策变动\n酒店可能视情况以同级酒店替换",
+        'flight_info_en' => "CGK - PVG (transit, full service, 25KG baggage)\nPVG - CGK (transit, full service, 25KG baggage)",
+        'flight_info_zh' => "CGK - PVG（转机，全服务，25KG 行李）\nPVG - CGK（转机，全服务，25KG 行李）",
+    ],
+    131 => [
+        'meeting_point_en' => 'Terminal 3 Soekarno-Hatta Airport, 3 hours before departure',
+        'meeting_point_zh' => '苏加诺-哈达机场 3 号航站楼，起飞前 3 小时',
+        'important_notes_en' => "Passport valid for at least 7 months before departure\n50% deposit at registration, balance due D-21\nParticipants under 18 must be accompanied by a parent\nSchedules may change to suit field conditions\nPrice may change if the USD rate exceeds Rp 16,500",
+        'important_notes_zh' => "护照须在出发前至少 7 个月内有效\n报名时支付 50% 定金，出发前 21 天付清余款\n18 岁以下参与者须由父母陪同\n行程可能视实际情况调整\n若美元汇率超过 Rp 16,500，价格可能变动",
+        'flight_info_en' => "GA 890 Jakarta (CGK) 23:15 - Beijing (PEK) 06:10+1\nGA 891 Beijing (PEK) 11:40 - Jakarta (CGK) 16:55",
+        'flight_info_zh' => "GA 890 雅加达 (CGK) 23:15 - 北京 (PEK) 06:10+1\nGA 891 北京 (PEK) 11:40 - 雅加达 (CGK) 16:55",
+    ],
+];
+$tourStmt = db()->prepare(
+    "UPDATE tours SET meeting_point_en = ?, meeting_point_zh = ?, important_notes_en = ?, important_notes_zh = ?, flight_info_en = ?, flight_info_zh = ? WHERE id = ?"
+);
+foreach ($tourContent as $id => $c) {
+    $tourStmt->execute([
+        $c['meeting_point_en'], $c['meeting_point_zh'],
+        $c['important_notes_en'], $c['important_notes_zh'],
+        $c['flight_info_en'], $c['flight_info_zh'], $id,
+    ]);
+}
+echo "Updated " . count($tourContent) . " tours with en/zh content.\n";
