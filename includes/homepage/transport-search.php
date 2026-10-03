@@ -399,6 +399,11 @@ document.addEventListener('DOMContentLoaded', function () {
         var dropdown = dropdownId ? document.getElementById(dropdownId) : null;
         if (!dropdown) return;
         var debounce;
+        function tsTr(k) { return (window.I18N && window.I18N.t) ? window.I18N.t(k) : k; }
+        function tsMsg(txt) {
+            dropdown.innerHTML = '<div class="search-item text-muted"><div class="flex-grow-1 small">' + txt + '</div></div>';
+            dropdown.classList.add('show');
+        }
         input.addEventListener('input', function () {
             clearTimeout(debounce);
             var q = this.value.trim();
@@ -409,10 +414,14 @@ document.addEventListener('DOMContentLoaded', function () {
             if (spidH) spidH.value = '0';
             if (q.length < 1) { dropdown.classList.remove('show'); return; }
             debounce = setTimeout(function () {
+                tsMsg(tsTr('Mencari...'));
                 fetch(endpoint + '?q=' + encodeURIComponent(q))
-                    .then(function (r) { return r.json(); })
+                    .then(function (r) {
+                        if (!r.ok) throw new Error('HTTP ' + r.status);
+                        return r.json();
+                    })
                     .then(function (data) {
-                        if (!data.length) { dropdown.classList.remove('show'); return; }
+                        if (!data.length) { tsMsg(tsTr('Tidak ada hasil ditemukan')); return; }
                         var html = '';
                         data.forEach(function (item) {
                             var pid = item.pid || 0, spid = item.spid || 0;
@@ -428,7 +437,8 @@ document.addEventListener('DOMContentLoaded', function () {
                                 dropdown.classList.remove('show');
                             });
                         });
-                    });
+                    })
+                    .catch(function () { tsMsg(tsTr('Gagal memuat hasil. Coba lagi.')); });
             }, 200);
         });
         document.addEventListener('click', function (e) {

@@ -541,40 +541,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <script>
-document.querySelectorAll('.city-search').forEach(function(input) {
-    var dropdownId = input.getAttribute('data-target');
-    var dropdown = document.getElementById(dropdownId);
-    if (!dropdown) return;
-    var debounce;
-    input.addEventListener('input', function() {
-        clearTimeout(debounce);
-        var q = this.value.trim();
-        if (q.length < 1) { dropdown.classList.remove('show'); return; }
-        debounce = setTimeout(function() {
-            fetch('city-search-ajax.php?q=' + encodeURIComponent(q))
-                .then(function(r) { return r.json(); })
-                .then(function(data) {
-                    if (!data.length) { dropdown.classList.remove('show'); return; }
-                    var html = '';
-                    data.forEach(function(item) {
-                        html += '<div class="search-item" data-label="' + item.label.replace(/"/g,'&quot;') + '"><div class="search-icon bg-light text-primary"><i class="bi bi-geo-alt"></i></div><div class="fw-semibold small">' + item.label + '</div></div>';
-                    });
-                    dropdown.innerHTML = html;
-                    dropdown.classList.add('show');
-                    dropdown.querySelectorAll('.search-item').forEach(function(el){
-                        el.addEventListener('click', function(){
-                            document.getElementById(input.id).value = this.getAttribute('data-label');
-                            dropdown.classList.remove('show');
-                        });
-                    });
-                });
-        }, 200);
-    });
-    document.addEventListener('click', function(e) {
-        var wrapper = input.closest('.search-field') || input.closest('.search-wrapper');
-        if (wrapper && !wrapper.contains(e.target)) dropdown.classList.remove('show');
-    });
-});
 // ===== Harga per tanggal (price_calendar) =====
 var FLIGHT_CAL = <?= json_encode($flightCal) ?>;
 function showFlightCalHint() {
