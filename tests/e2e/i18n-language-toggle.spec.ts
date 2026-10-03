@@ -1079,8 +1079,16 @@ test.describe('i18n admin list chrome', () => {
     'admin/esim.php',
     'admin/collections.php',
     'admin/faq-category.php',
+    'admin/faq.php',
     'admin/trains.php',
     'admin/transfers.php',
+    'admin/hotels.php',
+    'admin/flights.php',
+    'admin/ferries.php',
+    'admin/hero-slides.php',
+    'admin/posts.php',
+    'admin/rental-cars.php',
+    'admin/promo-codes.php',
   ];
   test('header tabel daftar admin mengikuti bahasa', async ({ page }) => {
     await adminLogin(page);
