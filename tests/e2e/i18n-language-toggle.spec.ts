@@ -464,3 +464,15 @@ test.describe('i18n admin flash sales', () => {
     }
   });
 });
+
+test.describe('i18n admin email log', () => {
+  test('label log email mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    const expected: Record<string, string> = { id: 'Kepada', en: 'To', zh: '收件人' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/admin/email-log.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('body')).toContainText(label);
+    }
+  });
+});
