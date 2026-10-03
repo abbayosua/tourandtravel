@@ -34,10 +34,9 @@ $footMenus = getNavMenus();
                 <h5 class="fw-bold mb-3"><?php if ($footLogo): ?><img src="<?= e($footLogo) ?>" alt="<?= e(siteName()) ?>" style="height:30px;width:auto" data-testid="brand-logo"><?php else: ?><i class="bi bi-airplane-engines-fill"></i><?php endif; ?> <?= siteName() ?></h5>
                 <p class="text-secondary small"><?= t('Partner perjalanan terpercaya Anda. Kami menyediakan paket wisata domestik & internasional dengan harga terbaik.') ?></p>
                 <div class="d-flex gap-3 mt-3">
-                    <a href="#" class="text-light fs-5"><i class="bi bi-instagram"></i></a>
-                    <a href="#" class="text-light fs-5"><i class="bi bi-facebook"></i></a>
-                    <a href="#" class="text-light fs-5"><i class="bi bi-youtube"></i></a>
-                    <a href="#" class="text-light fs-5"><i class="bi bi-tiktok"></i></a>
+                    <?php foreach (['instagram' => 'bi-instagram', 'facebook' => 'bi-facebook', 'youtube' => 'bi-youtube', 'tiktok' => 'bi-tiktok'] as $sn => $snIcon): $snUrl = (string)getSetting('social_' . $sn, ''); if (!filter_var($snUrl, FILTER_VALIDATE_URL)) continue; ?>
+                    <a href="<?= e($snUrl) ?>" target="_blank" rel="noopener" class="text-light fs-5" aria-label="<?= e(ucfirst($sn)) ?>" data-testid="social-<?= $sn ?>"><i class="bi <?= $snIcon ?>"></i></a>
+                    <?php endforeach; ?>
                 </div>
             </div>
 
