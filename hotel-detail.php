@@ -456,6 +456,9 @@ require_once 'includes/header-shared.php';
                 <?php endif; ?>
 
             <!-- Hotel Reviews -->
+            <?php if (isset($_GET['review']) && $_GET['review'] === 'success'): ?>
+                <div class="alert alert-success py-2" data-testid="review-success"><?= t('Ulasan berhasil dikirim, terima kasih!') ?></div>
+            <?php endif; ?>
             <h5 class="fw-bold mt-4 mb-3"><i class="bi bi-chat-square-text me-2"></i><?= t('Ulasan') ?></h5>
             <?php
                 $hotelReviews = [];
