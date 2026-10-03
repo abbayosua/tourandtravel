@@ -7,9 +7,13 @@ import { test, expect } from '@playwright/test';
  */
 
 const BASE = process.env.E2E_BASE_URL || 'http://localhost/tourandtravel';
+// Tanggal dikunci agar nilai form (check-in/out & total) deterministik —
+// sebelumnya default = hari ini sehingga baseline screenshot berubah tiap hari.
+const CHECKIN = '2026-10-10';
+const CHECKOUT = '2026-10-12';
 
 test('booking hotel mewajibkan pilih tipe kamar', async ({ page }) => {
-  await page.goto(`${BASE}/hotel-detail.php?slug=grand-hyatt-bali&lang=id`);
+  await page.goto(`${BASE}/hotel-detail.php?slug=grand-hyatt-bali&lang=id&checkin=${CHECKIN}&checkout=${CHECKOUT}`);
 
   const sel = page.locator('#roomSelect');
   await expect(sel).toHaveAttribute('required', '');
