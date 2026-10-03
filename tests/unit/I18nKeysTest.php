@@ -100,6 +100,13 @@ function i18nScanJsCallKeys(): array {
         if (preg_match_all('/I18N\.t\(\s*"((?:[^"\\\\]|\\\\.)*)"\s*[,)]/', $src, $m)) {
             foreach ($m[1] as $k) { $k = stripslashes($k); if (trim($k) !== '') $keys[$k] = true; }
         }
+        // Wrapper tsTr() (transport-search) juga resolve via I18N.t.
+        if (preg_match_all("/\btsTr\(\s*'((?:[^'\\\\]|\\\\.)*)'\s*[,)]/", $src, $m)) {
+            foreach ($m[1] as $k) { $k = stripslashes($k); if (trim($k) !== '') $keys[$k] = true; }
+        }
+        if (preg_match_all('/\btsTr\(\s*"((?:[^"\\\\]|\\\\.)*)"\s*[,)]/', $src, $m)) {
+            foreach ($m[1] as $k) { $k = stripslashes($k); if (trim($k) !== '') $keys[$k] = true; }
+        }
     }
     return array_keys($keys);
 }

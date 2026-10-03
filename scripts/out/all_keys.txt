@@ -221,6 +221,7 @@ Booking berhasil diubah.
 Booking berhasil! Kode booking: 
 Booking berhasil! Total:
 Booking dibuat
+Booking ini sudah tidak bisa direfund (melewati batas waktu / non-refundable)
 Booking per Vertikal
 Booking per hari
 Booking sudah dibayar tidak dapat dibatalkan sendiri. Silakan ajukan refund.
@@ -297,6 +298,7 @@ Conversion Rate
 Corporate Rates
 Cover
 Cover Image (Upload)
+Credential kosong atau terlalu panjang
 Current:
 Daftar
 Daftar Akun Baru
@@ -429,6 +431,7 @@ Fasilitas Hotel
 Fasilitas Termasuk
 Ferry
 File harus format JPG/PNG/WebP
+File rusak
 Filter
 Finance
 Find Your
@@ -437,6 +440,9 @@ First Class
 Flash Deals
 Flash Sale
 FlightList (Real)
+FlightList dibatasi (HTML)
+FlightList juga tidak terjangkau
+FlightList tidak terjangkau
 FlightList: klik Pesan menampilkan link Kiwi.com (affiliate).
 Fokus
 Fokus Website
@@ -467,6 +473,7 @@ Gagal memulai pembayaran. Coba lagi.
 Gagal memutuskan koneksi.
 Gagal mengambil kurs
 Gagal mengambil kurs dari Frankfurter API
+Gagal menghapus itinerary. Coba lagi.
 Gagal mengubah booking
 Gagal mengunggah
 Gagal menyimpan alert. Coba lagi.
@@ -581,6 +588,7 @@ Hotel, vila & resor pilihan — booking instan, harga terbaik.
 Hubungi Kami
 Hubungkan Nomor Baru
 ID item
+ID itinerary wajib diisi.
 Ikon
 Ikuti tren travel, itinerary ideas, dan tips traveling terbaru.
 Impresi
@@ -605,6 +613,7 @@ Itinerary
 Itinerary Saya
 Itinerary berhasil dihapus
 Itinerary berhasil ditambahkan
+Itinerary tidak ditemukan.
 JPG/PNG/WebP, maks 2MB. Rekomendasi 1920px lebar.
 JPG/PNG/WebP, maks 5MB
 Jadikan default
@@ -901,6 +910,7 @@ Menghubungkan...
 Mengunggah...
 Menu
 Menu Navigasi
+Menu Utama
 Menunggu
 Menunggu Konfirmasi
 Menunggu Pembayaran
@@ -972,6 +982,7 @@ Nama, asal, dan tujuan wajib diisi
 Nama, negara, dan kuota wajib diisi
 Nasional, Regional, ...
 Native API aktif tanpa rkey. rkey lama hanya untuk fallback scraping bila diperlukan.
+Navigasi Bawah
 Negara
 Net Profit
 Nikmati perjalanan
@@ -1041,6 +1052,7 @@ Password Baru
 Password berhasil diubah. Silakan masuk dengan password baru.
 Password minimal 6 karakter
 PayPal
+Payload Google tidak lengkap
 Pelabuhan
 Pelabuhan asal
 Pelabuhan asal/tujuan tidak ditemukan. Coba: Batam, Jakarta.
@@ -1077,6 +1089,7 @@ Penerbangan berhasil dipesan! Booking ref:
 Penerbangan berhasil dipesan! Total: 
 Penerbangan tidak tersedia
 Pengajuan refund diterima
+Pengajuan refund diterima. Estimasi refund:
 Pengajuan refund gagal
 Pengajuan refund hanya berlaku untuk booking berstatus confirmed yang belum digunakan. Dana refund yang disetujui dikreditkan ke saldo wallet (TravelPoints) akun Anda.
 Pengajuan refund sebelumnya sudah ditolak
@@ -1283,6 +1296,7 @@ Sebagian produk memiliki kebijakan khusus: full_refund (selalu 100%) atau non_re
 Sedan, MVP, ...
 Segera
 Sekali Jalan
+Selamat Datang di %s
 Selamat datang
 Selamat datang kembali!
 Selesai
@@ -1325,6 +1339,7 @@ Setiap booking dapat poin reward. Tukarkan untuk diskon tour berikutnya!
 Settings
 Setujui Refund
 Setujui refund booking ini? Dana akan dikredit ke TravelPoints user.
+Setujui topup ini dan tambahkan saldo reseller?
 Sewa
 Sewa Sekarang
 Siang (12-17)
@@ -1365,6 +1380,7 @@ Slot tidak cukup
 Slot tidak cukup untuk tanggal tersebut.
 Slot tidak cukup. Silakan pilih tanggal lain.
 Slug
+Slug wajib diisi.
 Sore (17-22)
 Spa
 Spend
@@ -1432,6 +1448,7 @@ Tamu
 Tamu & Kamar
 Tandai Kedaluwarsa
 Tandai dibaca
+Tandai pembayaran ini kedaluwarsa?
 Tandai semua dibaca
 Tanggal
 Tanggal Berangkat
@@ -1483,6 +1500,7 @@ Terdaftar
 Terhubung
 Terima kasih, pemesanan Anda telah diterima.
 Terjadi kesalahan. Coba lagi nanti.
+Terjadi kesalahan. Coba lagi.
 Terjual/Kuota
 Terkirim
 Terkonfirmasi
@@ -1555,9 +1573,11 @@ Token Akun WUZAPI
 Token Google tidak valid atau email tidak terverifikasi
 Token NusaTrip kosong
 Token akun pengirim WA. Kosongkan jika tidak diubah.
+Token bukan untuk aplikasi ini
 Token tidak valid (key angka atau rkey hex dari /hotels/result?...)
 Tolak Refund
 Tolak pengajuan refund ini?
+Tolak topup ini?
 Top 10 Produk
 Top Referrer
 Top experiences
@@ -1594,6 +1614,7 @@ Tour berhasil ditambahkan
 Tour dan harga wajib diisi.
 Tour sudah memiliki harga reseller. Edit yang sudah ada.
 Tour tidak ditemukan
+Tour tidak ditemukan.
 TourAndTravel — paket tour, hotel, tiket pesawat, dan aktivitas wisata terbaik dengan harga transparan.
 Tracking
 Tracking Booking
@@ -1622,6 +1643,7 @@ URL
 Ubah
 Ubah Booking
 Ubah Status
+Ubah status booking ini? Customer akan menerima notifikasi.
 Uji
 Uji pencarian live
 Ukuran file maksimal 2MB
