@@ -1016,6 +1016,40 @@ test.describe('i18n hasil pencarian ferry', () => {
   });
 });
 
+test.describe('i18n admin settings sweep', () => {
+  // 'Reseller'/'Reseller booking' sah berbahasa Inggris (identity-en).
+  const ADMIN_LEAK_ALLOWLIST = new Set(['Reseller', 'Reseller booking']);
+  // Halaman admin pengaturan yang belum punya sweep khusus.
+  const ADMIN_PAGES = [
+    'admin/appearance.php',
+    'admin/loyalty-settings.php',
+    'admin/analytics.php',
+    'admin/ab-tests.php',
+  ];
+  for (const lang of ['en', 'zh']) {
+    test(`admin settings bersih dari teks Indonesia saat bahasa=${lang}`, async ({ page }) => {
+      test.setTimeout(120_000);
+      await adminLogin(page);
+      const failures: string[] = [];
+      for (const path of ADMIN_PAGES) {
+        await page.goto(`${BASE}/${path}?lang=id`);
+        await page.waitForLoadState('domcontentloaded');
+        await page.waitForTimeout(300);
+        const idStrings = await visibleStrings(page);
+
+        await page.goto(`${BASE}/${path}?lang=${lang}`);
+        await page.waitForLoadState('domcontentloaded');
+        await page.waitForTimeout(300);
+        const otherStrings = await visibleStrings(page);
+
+        const leaked = leakedStrings(idStrings, otherStrings).filter((s) => !ADMIN_LEAK_ALLOWLIST.has(s));
+        if (leaked.length) failures.push(`${path}:\n  - ${leaked.join('\n  - ')}`);
+      }
+      expect(failures, `Teks Indonesia bocor di admin ${lang}:\n${failures.join('\n')}`).toEqual([]);
+    });
+  }
+});
+
 test.describe('i18n email templates', () => {
   // Render each transactional email in id/en/zh and assert no Indonesian leaks.
   test('template email tidak menyisakan teks Indonesia', async () => {
