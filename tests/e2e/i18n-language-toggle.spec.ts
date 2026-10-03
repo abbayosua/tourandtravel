@@ -822,6 +822,43 @@ test.describe('i18n tour detail notes', () => {
     }
   });
 });
+test.describe('i18n itinerary builder tour-detail', () => {
+  // Tombol "Buat Itinerary" + placeholder aktivitas dulu punya nilai en identity (tetap ID).
+  test('label itinerary builder mengikuti bahasa', async ({ page }) => {
+    const slug = '8d7n-shanghai-jiangnan-highlights-ink-wash-jiangnan-wuzhen-water-town';
+    const expected: Record<string, { btn: string; ph: string }> = {
+      en: { btn: 'Create Itinerary', ph: 'Activity, e.g.' },
+      zh: { btn: '创建行程', ph: '活动，例如' },
+    };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/tour-detail.php?slug=${slug}&lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('#itinCreateBtn')).toContainText(label.btn);
+      await expect(page.locator('#itinItemTitle')).toHaveAttribute('placeholder', new RegExp(label.ph));
+      await expect(page.locator('body')).not.toContainText('Buat Itinerary');
+    }
+  });
+});
+test.describe('i18n admin mata uang & promo', () => {
+  // Label admin ini dulu punya nilai en identity (tetap ID) sehingga EN bocor.
+  test('label mata uang & promo mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    const currency: Record<string, string> = { en: 'Default Currency', zh: '默认货币' };
+    const promo: Record<string, string> = { en: 'Min. Purchase', zh: '最低购买' };
+    for (const lang of ['en', 'zh']) {
+      await page.goto(`${BASE}/admin/currency-settings.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('body')).toContainText(currency[lang]);
+      await expect(page.locator('body')).not.toContainText('Mata Uang Default');
+
+      await page.goto(`${BASE}/admin/promo-codes.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('body')).toContainText(promo[lang]);
+      await expect(page.locator('body')).not.toContainText('Min. Pembelian');
+    }
+  });
+});
+
 test.describe('i18n label pembayaran', () => {
   // Label channel pembayaran (Virtual Account / Biaya) dulu hardcoded Inggris.
   const CODE = 'E2EPAYLBL';
