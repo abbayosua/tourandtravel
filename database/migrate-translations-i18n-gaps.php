@@ -1907,3 +1907,14 @@ $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, 
 $c30 = 0;
 foreach ($adminSlideGaps as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c30++; } }
 echo "Upserted $c30 hero-slide/collection rows.\n";
+
+// ---- EN-missing keys that already had zh ----
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+foreach ([
+    ['Dengan memesan, Anda menyetujui syarat & ketentuan pemesanan ferry kami.', 'en', 'By booking, you agree to our ferry booking terms & conditions.'],
+    ['Lanjutkan pembayaran di bawah untuk konfirmasi instan.', 'en', 'Continue payment below for instant confirmation.'],
+    ['Peta tidak tersedia untuk item ini.', 'en', 'Map is not available for this item.'],
+    ['Rating per Aspek', 'en', 'Rating per Aspect'],
+    ['Tanggal Pergi', 'en', 'Departure Date'],
+] as [$k, $l, $v]) { $stmt->execute([$k, $l, $v]); }
+echo "Added 5 EN-missing rows.\n";

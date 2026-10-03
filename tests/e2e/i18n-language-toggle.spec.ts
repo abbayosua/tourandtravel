@@ -697,3 +697,15 @@ test.describe('i18n admin hero slide edit', () => {
     }
   });
 });
+
+test.describe('i18n admin reviews', () => {
+  test('judul halaman ulasan mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    const expected: Record<string, string> = { id: 'Ulasan', en: 'Reviews', zh: '评价' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/admin/reviews.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      expect(await page.content()).toContain(label);
+    }
+  });
+});
