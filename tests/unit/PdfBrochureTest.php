@@ -60,3 +60,20 @@ function testBrochureNewColumns() {
     assertTrue(strpos($h, '&lt;br&gt;') === false, 'tanggal tidak ke-escape');
     assertContains('dalam SGD', $h, 'footnote pakai currency tour');
 }
+
+function testBrochureHtmlLocalized() {
+    $tour = ['title' => 'Tour Test 8D', 'category' => 'China', 'location_city' => null, 'description' => 'Intro.',
+        'price' => 1000000, 'price_currency' => 'IDR', 'max_participants' => 20, 'duration_days' => null, 'duration_nights' => null];
+    $days = [['day_number' => 1, 'title' => 'Day 1', 'description' => 'x', 'meals' => 'Dinner', 'accommodation' => 'Hotel X']];
+    $deps = [['date' => '2026-10-14', 'price' => 8990000, 'currency' => 'IDR', 'slots' => null, 'slots_booked' => null]];
+
+    $id = pdfTourBrochureHtml($tour, $days, '', $deps, 'id');
+    $en = pdfTourBrochureHtml($tour, $days, '', $deps, 'en');
+    $zh = pdfTourBrochureHtml($tour, $days, '', $deps, 'zh');
+
+    assertContains('INFORMASI TOUR', $id, 'label ID ada');
+    assertContains('TOUR INFORMATION', $en, 'label EN ada');
+    assertContains('旅游信息', $zh, 'label ZH ada');
+    assertTrue(strpos($en, 'INFORMASI TOUR') === false, 'versi en tidak boleh ada label ID');
+    assertTrue(strpos($zh, 'INFORMASI TOUR') === false, 'versi zh tidak boleh ada label ID');
+}
