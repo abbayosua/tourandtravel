@@ -259,7 +259,7 @@ function loadStatus() {
                     <div class="small text-muted">
                         <i class="bi bi-info-circle me-1"></i><?= t('Siap mengirim notifikasi ke nomor supplier.') ?></div>` : `
                     <div class="small text-warning">
-                        <i class="bi bi-exclamation-triangle me-1"></i><?= t('Belum terhubung. Klik \"Hubungkan Nomor Baru\" untuk scan QR.') ?></div>`}
+                        <i class="bi bi-exclamation-triangle me-1"></i><?= t('Belum terhubung. Klik "Hubungkan Nomor Baru" untuk scan QR.') ?></div>`}
                 `;
 
                 document.getElementById('btnConnect').style.display = connected ? 'none' : 'inline-block';

@@ -629,3 +629,16 @@ test.describe('i18n admin tours list', () => {
     }
   });
 });
+
+test.describe('i18n admin WA connection', () => {
+  test('pesan koneksi WhatsApp mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    const expected: Record<string, string> = { id: 'Belum terhubung', en: 'Not connected', zh: '尚未连接' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/admin/wa-settings.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      // Pesan dirender via JS template, jadi cek sumber HTML.
+      expect(await page.content()).toContain(label);
+    }
+  });
+});

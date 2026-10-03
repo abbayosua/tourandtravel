@@ -1815,3 +1815,31 @@ $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, 
 $c28 = 0;
 foreach ($miscGaps as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c28++; } }
 echo "Upserted $c28 misc gap rows.\n";
+
+// ---- Final residual gaps ----
+$finalGaps = [
+    'en' => [
+        'Data Penumpang Utama' => 'Primary Passenger Data',
+        'Homepage menonjolkan penerbangan: form cari tiket dominan, promo & rute populer.' => 'Homepage highlights flights: dominant ticket search, promos & popular routes.',
+        'Penerbangan berhasil dipesan (dengan add-on)! Booking ref: ' => 'Flight booked successfully (with add-on)! Booking ref: ',
+        'Pelabuhan' => 'Port',
+        'add-on gagal: ' => 'add-on failed: ',
+        'tipe kamar tersedia' => 'room types available',
+        'Booking Hotel' => 'Hotel Booking',
+    ],
+    'zh' => [
+        'Data Penumpang Utama' => '主要乘客信息',
+        'Homepage menonjolkan penerbangan: form cari tiket dominan, promo & rute populer.' => '首页突出机票：以机票搜索为主、促销和热门航线。',
+        'Penerbangan berhasil dipesan (dengan add-on)! Booking ref: ' => '航班预订成功（含附加服务）！预订编号：',
+        'Pelabuhan' => '港口',
+        'add-on gagal: ' => '附加服务失败：',
+        'tipe kamar tersedia' => '种房型可选',
+        'Booking Hotel' => '酒店预订',
+        'Reseller booking' => '分销商订单',
+        'Topup History' => '充值历史',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$c29 = 0;
+foreach ($finalGaps as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c29++; } }
+echo "Upserted $c29 final gap rows.\n";
