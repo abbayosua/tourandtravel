@@ -101,7 +101,7 @@ require_once 'includes/admin-header.php';
                 </div>
                 <div class="col-md-2">
                     <label class="form-label small fw-semibold"><?= t('Harga Reseller') ?></label>
-                    <input type="number" name="reseller_price" class="form-control" min="0" step="1000" value="<?= $editData ? $editData['reseller_price'] : '' ?>" required>
+                    <input type="number" name="reseller_price" class="form-control" min="0" step="any" value="<?= $editData ? $editData['reseller_price'] : '' ?>" required>
                 </div>
                 <div class="col-md-2">
                     <label class="form-label small fw-semibold"><?= t('Min Pax') ?></label>

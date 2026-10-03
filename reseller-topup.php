@@ -80,7 +80,7 @@ require_once 'includes/header-shared.php';
                                 <label class="form-label small fw-semibold"><?= t('Jumlah Topup') ?></label>
                                 <div class="input-group">
                                     <span class="input-group-text">Rp</span>
-                                    <input type="number" name="amount" class="form-control" min="50000" step="10000" placeholder="500000" required>
+                                    <input type="number" name="amount" class="form-control" min="50000" step="any" placeholder="500000" required>
                                 </div>
                                 <div class="form-text"><?= t('Minimal Rp 50.000') ?></div>
                             </div>
