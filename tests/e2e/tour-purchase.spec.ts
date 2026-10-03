@@ -176,6 +176,10 @@ test('pembelian 1 peserta berhasil dan tersimpan (mode manual)', async ({ page }
   await login(page);
   const code = await bookTour(page, { participants: 1 });
 
+  // TravelPoints 5% (Rp 75.000) tampil di konfirmasi pertama untuk user login.
+  await expect(page.locator('body')).toContainText('TravelPoints');
+  await expect(page.locator('body')).toContainText('75.000');
+
   const row = mysql(
     `SELECT status, participants, total_price, user_id FROM bookings WHERE booking_code = '${code}' AND tour_id = ${tourId}`
   );
