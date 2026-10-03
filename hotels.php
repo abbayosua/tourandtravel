@@ -5,7 +5,7 @@ require_once 'includes/functions.php';
 require_once 'includes/hotelapi.php';
 require_once 'includes/components/live-hotel-card.php';
 
-$pageTitle = 'Hotel';
+$pageTitle = t('Hotel');
 $city = $_GET['city'] ?? '';
 $checkin = $_GET['checkin'] ?? '';
 $checkout = $_GET['checkout'] ?? '';

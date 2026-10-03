@@ -1196,6 +1196,23 @@ test.describe('i18n bottom nav (mobile)', () => {
   });
 });
 
+test.describe('i18n document title', () => {
+  // <title> halaman (tab browser) harus ikut bahasa.
+  test('judul dokumen mengikuti bahasa', async ({ page }) => {
+    const cases: Record<string, Record<string, string>> = {
+      'login.php': { en: 'Login', zh: '登录' },
+      'hotels.php': { en: 'Hotel', zh: '酒店' },
+    };
+    for (const [path, expected] of Object.entries(cases)) {
+      for (const [lang, label] of Object.entries(expected)) {
+        await page.goto(`${BASE}/${path}?lang=${lang}`);
+        await page.waitForLoadState('domcontentloaded');
+        await expect(page).toHaveTitle(new RegExp('^' + label));
+      }
+    }
+  });
+});
+
 test.describe('i18n email templates', () => {
   // Render each transactional email in id/en/zh and assert no Indonesian leaks.
   test('template email tidak menyisakan teks Indonesia', async () => {

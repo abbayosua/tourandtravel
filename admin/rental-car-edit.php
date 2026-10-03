@@ -14,7 +14,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
         header('Location: rental-cars.php?msg=updated');exit;
     } else $error=t('Isi semua field');
 }
-$pageTitle='Edit Rental Mobil'; require_once 'includes/admin-header.php';
+$pageTitle=t('Edit Rental Mobil'); require_once 'includes/admin-header.php';
 ?>
 <h4 class="fw-bold mb-3"><?= t('Edit Rental Mobil') ?></h4>
 <?php if($error):?><div class="alert alert-danger py-2"><?=$error?></div><?php endif;?>

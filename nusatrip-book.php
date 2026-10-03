@@ -166,7 +166,7 @@ if ($step === 'result') {
     } else $err = t('Tidak ada taskId. Ulangi booking.');
 }
 
-$pageTitle = 'Booking Hotel NusaTrip';
+$pageTitle = t('Booking Hotel NusaTrip');
 require_once 'includes/header-shared.php';
 ?>
 <section class="py-4 bg-light"><div class="container" style="max-width:720px">

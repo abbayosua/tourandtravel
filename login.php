@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = 'Login';
+$pageTitle = t('Login');
 require_once 'includes/header-shared.php';
 ?>
 
