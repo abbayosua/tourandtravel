@@ -1,49 +1,40 @@
-) + (rooms > 1 ?
-+ I18N.t(
-+ rooms +
-<i class=
-></i>
-A/B Testing
-Aktif
-Akun: ${name}
-Belum ada impresi.
-Belum ada perusahaan.
-Berhasil! Cek email Anda.
-Corporate Rates
-Daftar Perusahaan
-Diskon %
-Gagal. Coba lagi.
+4.9 • 2M+
+API Key
+Account ID
+Auto
+Booking.com
+Client ID
+Client Secret
+Environment
+Fee
+Ferry
+Frankfurter API
 IDR
-Impresi
-Jakarta → Denpasar
-Jakarta → Kuala Lumpur
-Jakarta → Singapore
-Jelajahi Lebih Banyak,
+IDR (Rp)
+JPG/PNG/WebP, maks 5MB
 KlookCash
-Kode promo tidak valid
-Konversi
 Loading...
-Masukkan kode promo
+MRS
+Menu
+Midtrans Snap
 NOW() AND (stock_limit IS NULL OR sold_count
-Nama
-Nikmati Perjalanannya.
-Nonaktif
-Pesan tiket ferry, pesawat, dan kereta api dalam satu tempat.
-Pesan tiket pesawat, ferry, dan kereta api dalam satu tempat.
-Rate
-Simpan
-Status
-Tambah Perusahaan
-Tautkan
-Tautkan User
-Terjadi kesalahan. Coba lagi nanti.
+NusaTrip
+OYO
+PELNI
+Pengaturan Singapay (Virtual Account)
+Production
+Refund
+Rp ' + promoDiscount.toLocaleString('id-ID') + '
+Rp 0
+SGD (S$)
+Sandbox
+Singapay (VA)
+Tab
 Test.php — berisi satu atau lebih fungsi
  *   function test
-Varian
-Webhook URL:
-Welcome to
-ada 5 paket
-ada :n paket
-id-ID
+Tripay
+URL
+USD ($)
+Virtual Account
 · #
-· Target:
+· Webhook Singapay:

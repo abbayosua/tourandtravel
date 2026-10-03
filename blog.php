@@ -37,7 +37,7 @@ require_once 'includes/header-shared.php';
         <div class="d-flex flex-wrap gap-2 mb-4">
             <a href="blog.php" class="btn btn-sm <?= $category === '' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill px-3"><?= t('Semua') ?></a>
             <?php foreach ($categories as $cat): ?>
-                <a href="blog.php?category=<?= urlencode($cat) ?>" class="btn btn-sm <?= $category === $cat ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill px-3"><?= e($cat) ?></a>
+                <a href="blog.php?category=<?= urlencode($cat) ?>" class="btn btn-sm <?= $category === $cat ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill px-3"><?= e(t($cat)) ?></a>
             <?php endforeach; ?>
         </div>
 
@@ -49,7 +49,7 @@ require_once 'includes/header-shared.php';
                     <div class="card border-0 shadow-sm h-100 klook-hover-card overflow-hidden">
                         <img src="<?= e($p['cover_image'] ?: 'https://placehold.co/640x360?text=' . urlencode(e(tContent($p, 'title')))) ?>" class="w-100" style="height: 170px; object-fit: cover;" alt="<?= e(tContent($p, 'title')) ?>">
                         <div class="card-body p-3">
-                            <?php if ($p['category']): ?><span class="badge bg-primary mb-2"><?= e($p['category']) ?></span><?php endif; ?>
+                            <?php if ($p['category']): ?><span class="badge bg-primary mb-2"><?= e(t($p['category'])) ?></span><?php endif; ?>
                             <h6 class="fw-semibold text-dark"><?= e(tContent($p, 'title')) ?></h6>
                             <p class="text-muted small mb-2"><?= e(mb_substr((string)tContent($p, 'excerpt'), 0, 90)) ?>…</p>
                             <small class="text-muted"><?= $p['published_at'] ? date('d M Y', strtotime($p['published_at'])) : '' ?></small>

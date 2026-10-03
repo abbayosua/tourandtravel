@@ -3,7 +3,7 @@ require_once 'includes/config.php';
 require_once 'includes/db.php';
 require_once 'includes/functions.php';
 
-$pageTitle = 'Tiket Tempat Wisata';
+$pageTitle = t('Tiket Tempat Wisata');
 $city = $_GET['city'] ?? '';
 $category = $_GET['category'] ?? '';
 
@@ -40,7 +40,7 @@ require_once 'includes/header-shared.php';
                                 <select name="city" class="form-select form-select-sm mb-3" onchange="this.form.submit()">
                                     <option value=""><?= t('Semua Kota') ?></option>
                                     <?php foreach ($cities as $c): ?>
-                                        <option value="<?= e($c) ?>" <?= $city === $c ? 'selected' : '' ?>><?= e($c) ?></option>
+                                        <option value="<?= e($c) ?>" <?= $city === $c ? 'selected' : '' ?>><?= e(t($c)) ?></option>
                                     <?php endforeach; ?>
                                 </select>
 
@@ -48,7 +48,7 @@ require_once 'includes/header-shared.php';
                                 <select name="category" class="form-select form-select-sm" onchange="this.form.submit()">
                                     <option value=""><?= t('Semua Kategori') ?></option>
                                     <?php foreach ($categories as $cat): ?>
-                                        <option value="<?= e($cat) ?>" <?= $category === $cat ? 'selected' : '' ?>><?= e($cat) ?></option>
+                                        <option value="<?= e($cat) ?>" <?= $category === $cat ? 'selected' : '' ?>><?= e(t($cat)) ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </form>
@@ -82,12 +82,12 @@ require_once 'includes/header-shared.php';
                                     <span class="badge bg-info text-white position-absolute top-0 end-0 m-2 shadow-sm" style="font-size: 10px; margin-top: 28px !important;"><i class="bi bi-shield-check me-1"></i><?= t('Batal Gratis') ?></span>
                                 <?php endif; ?>
                                 <?php if ($a['category']): ?>
-                                    <span class="badge bg-white text-dark position-absolute top-0 start-0 m-2 shadow-sm" style="margin-top: 38px;"><?= e($a['category']) ?></span>
+                                    <span class="badge bg-white text-dark position-absolute top-0 start-0 m-2 shadow-sm" style="margin-top: 38px;"><?= e(t($a['category'])) ?></span>
                                 <?php endif; ?>
                             </div>
                             <div class="card-body p-3 d-flex flex-column">
                                 <h6 class="fw-semibold mb-1"><?= e(tContent($a, 'name')) ?></h6>
-                                <p class="small text-muted flex-grow-1 mb-2"><?= e($a['city']) ?> · <?= e($a['duration'] ?? '') ?></p>
+                                <p class="small text-muted flex-grow-1 mb-2"><?= e(t($a['city'])) ?> · <?= e($a['duration'] ?? '') ?></p>
                                 <div class="d-flex justify-content-between align-items-center pt-2 border-top mt-auto">
                                     <div>
                                         <span class="fw-bold text-primary"><?= formatCurrencySpan($a['price'], $a['price_currency'] ?? 'IDR') ?></span>

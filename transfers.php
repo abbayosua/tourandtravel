@@ -42,7 +42,7 @@ require_once 'includes/header-shared.php';
                                 <select name="from" class="form-select form-select-sm mb-3" onchange="this.form.submit()">
                                     <option value=""><?= t('Semua Lokasi') ?></option>
                                     <?php foreach ($fromCities as $c): ?>
-                                        <option value="<?= e($c) ?>" <?= $fromCity === $c ? 'selected' : '' ?>><?= e($c) ?></option>
+                                        <option value="<?= e($c) ?>" <?= $fromCity === $c ? 'selected' : '' ?>><?= e(t($c)) ?></option>
                                     <?php endforeach; ?>
                                 </select>
 
@@ -50,7 +50,7 @@ require_once 'includes/header-shared.php';
                                 <select name="to" class="form-select form-select-sm mb-3" onchange="this.form.submit()">
                                     <option value=""><?= t('Semua Tujuan') ?></option>
                                     <?php foreach ($toCities as $c): ?>
-                                        <option value="<?= e($c) ?>" <?= $toCity === $c ? 'selected' : '' ?>><?= e($c) ?></option>
+                                        <option value="<?= e($c) ?>" <?= $toCity === $c ? 'selected' : '' ?>><?= e(t($c)) ?></option>
                                     <?php endforeach; ?>
                                 </select>
 
@@ -88,7 +88,7 @@ require_once 'includes/header-shared.php';
                             </div>
                             <div class="card-body p-3 d-flex flex-column">
                                 <h6 class="fw-semibold mb-1"><?= e(tContent($t, 'name')) ?></h6>
-                                <p class="small text-muted flex-grow-1 mb-2"><i class="bi bi-arrow-left-right me-1"></i><?= e($t['from_city']) ?> → <?= e($t['to_city']) ?> · <?= $t['max_passengers'] ?> <?= t('pax') ?></p>
+                                <p class="small text-muted flex-grow-1 mb-2"><i class="bi bi-arrow-left-right me-1"></i><?= e(t($t['from_city'])) ?> → <?= e(t($t['to_city'])) ?> · <?= $t['max_passengers'] ?> <?= t('pax') ?></p>
                                 <div class="d-flex justify-content-between align-items-center pt-2 border-top mt-auto">
                                     <div>
                                         <span class="fw-bold text-primary"><?= formatCurrencySpan($t['price'], $t['price_currency'] ?? 'IDR') ?></span>

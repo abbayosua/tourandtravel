@@ -33,18 +33,18 @@ require_once 'includes/header-shared.php';
                         <?php $itemIndex = 0; ?>
                         <?php foreach ($grouped as $catName => $catItems): ?>
                         <h5 class="fw-bold mt-4 mb-2 d-flex align-items-center">
-                            <i class="bi bi-tag text-primary me-2"></i><?= e($catName) ?>
+                            <i class="bi bi-tag text-primary me-2"></i><?= e(t($catName)) ?>
                         </h5>
                         <?php foreach ($catItems as $it): ?>
                             <?php $itemIndex++; ?>
                             <div class="accordion-item border-0 shadow-sm mb-2 rounded-3 overflow-hidden">
                                 <h2 class="accordion-header" id="faqHead<?= $itemIndex ?>">
                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqBody<?= $itemIndex ?>" aria-expanded="false" aria-controls="faqBody<?= $itemIndex ?>">
-                                        <?= e($it['question']) ?>
+                                        <?= e(tContent($it, 'question')) ?>
                                     </button>
                                 </h2>
                                 <div id="faqBody<?= $itemIndex ?>" class="accordion-collapse collapse" aria-labelledby="faqHead<?= $itemIndex ?>" data-bs-parent="#faqAccordion">
-                                    <div class="accordion-body small text-muted"><?= nl2br(e($it['answer'])) ?></div>
+                                    <div class="accordion-body small text-muted"><?= nl2br(e(tContent($it, 'answer'))) ?></div>
                                 </div>
                             </div>
                         <?php endforeach; ?>
