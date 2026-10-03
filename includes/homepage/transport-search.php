@@ -211,7 +211,7 @@ $tsPhTo = $tsPhTo ?? $tsPhFrom;
                             <input type="hidden" name="from_spid" value="<?= (int)$tsFromSpid ?>">
                             <?php endif; ?>
                         </div>
-                        <button type="button" class="swap-btn" aria-label="Tukar"><span class="swap-btn-inner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 16l-4-4 4-4"/><path d="M17 8l4 4-4 4"/><line x1="3" y1="12" x2="21" y2="12"/></svg></span></button>
+                        <button type="button" class="swap-btn" aria-label="<?= e(t('Tukar asal dan tujuan')) ?>"><span class="swap-btn-inner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 16l-4-4 4-4"/><path d="M17 8l4 4-4 4"/><line x1="3" y1="12" x2="21" y2="12"/></svg></span></button>
                         <div class="search-field voyage-field">
                             <span class="search-field-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 7 11.5 7.3 11.8a1 1 0 0 0 1.4 0C13 21.5 20 15.4 20 10a8 8 0 0 0-8-8z"/></svg> <?= t('Ke') ?></span>
                             <input type="text" name="to" class="ts-search <?= e($tsSearchClass) ?>" placeholder="<?= e($tsPhTo) ?>" value="<?= e($tsTo) ?>" autocomplete="off"<?php if ($isTrain): ?> readonly data-kai-picker="to"<?php endif; ?> data-target="<?= $isFlight ? 'toDropdown' : 'tsToDropdown' ?>" id="<?= $isFlight ? 'toInput' : 'tsToInput' ?>">

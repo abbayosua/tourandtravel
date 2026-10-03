@@ -82,10 +82,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (tripayInstantEnabled()) {
             $ferryPaymentResult = createTripayTransaction($ferryBookingId, $totalPrice, ['name' => $name, 'email' => $email, 'phone' => $phone], 'BRIVA', 'ferry');
         }
+
+        // PRG: redirect ke GET agar refresh tidak membuat booking ganda.
+        $redirectQuery = $_GET;
+        $redirectQuery['booking'] = $bookingCode;
+        header('Location: ferry-booking.php?' . http_build_query($redirectQuery));
+        exit;
     } else {
         $defaultName  = $name;
         $defaultEmail = $email;
         $defaultPhone = $phone;
+    }
+}
+
+// PRG: render halaman sukses dari GET (refresh tidak re-submit/membuat booking ganda).
+if (!$success && $_SERVER['REQUEST_METHOD'] !== 'POST' && !empty($_GET['booking'])) {
+    $bkStmt = db()->prepare("SELECT * FROM ferry_bookings WHERE booking_code = ?");
+    $bkStmt->execute([trim((string)$_GET['booking'])]);
+    if ($bk = $bkStmt->fetch()) {
+        $success        = true;
+        $bookingCode    = $bk['booking_code'];
+        $ferryBookingId = (int)$bk['id'];
+        $company        = $bk['company'];
+        $vesselName     = $bk['vessel_name'];
+        $routeFrom      = $bk['route_from'];
+        $routeTo        = $bk['route_to'];
+        $fromTerminal   = '';
+        $toTerminal     = '';
+        $departDate     = $bk['departure_date'];
+        $departTime     = $bk['departure_time'];
+        $arrivalTime    = $bk['arrival_time'];
+        $passengers     = (int)$bk['passengers'];
+        $pricePerPax    = (float)$bk['price_per_pax'];
+        $totalPrice     = (float)$bk['total_price'];
+        $pageTitle      = t('Booking Berhasil');
     }
 }
 

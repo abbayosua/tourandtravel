@@ -1223,6 +1223,18 @@ test.describe('i18n document title', () => {
   });
 });
 
+test.describe('i18n tombol tukar transport-search', () => {
+  // aria-label tombol tukar dulu hardcoded "Tukar".
+  test('label tombol tukar mengikuti bahasa', async ({ page }) => {
+    const expected: Record<string, string> = { en: 'Swap origin and destination', zh: '交换出发地和目的地' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/trains.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('.swap-btn').first()).toHaveAttribute('aria-label', label);
+    }
+  });
+});
+
 test.describe('i18n email templates', () => {
   // Render each transactional email in id/en/zh and assert no Indonesian leaks.
   test('template email tidak menyisakan teks Indonesia', async () => {

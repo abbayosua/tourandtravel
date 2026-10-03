@@ -70,10 +70,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pelniBookingId = (int)db()->lastInsertId();
         $success = true;
         $pageTitle = t('Booking Berhasil');
+
+        // PRG: redirect ke GET agar refresh tidak membuat booking ganda.
+        $redirectQuery = $_GET;
+        $redirectQuery['booking'] = $bookingCode;
+        header('Location: pelni-booking.php?' . http_build_query($redirectQuery));
+        exit;
     } else {
         $defaultName  = $name;
         $defaultEmail = $email;
         $defaultPhone = $phone;
+    }
+}
+
+// PRG: render halaman sukses dari GET (refresh tidak re-submit/membuat booking ganda).
+if (!$success && $_SERVER['REQUEST_METHOD'] !== 'POST' && !empty($_GET['booking'])) {
+    $bkStmt = db()->prepare("SELECT * FROM pelni_bookings WHERE booking_code = ?");
+    $bkStmt->execute([trim((string)$_GET['booking'])]);
+    if ($bk = $bkStmt->fetch()) {
+        $success        = true;
+        $bookingCode    = $bk['booking_code'];
+        $pelniBookingId = (int)$bk['id'];
+        $shipName       = $bk['ship_name'];
+        $shipNumber     = $bk['ship_number'];
+        $shipClass      = $bk['ship_class'];
+        $shipCode       = $bk['ship_code'];
+        $routeFrom      = $bk['route_from'];
+        $routeTo        = $bk['route_to'];
+        $departDate     = $bk['departure_date'];
+        $departTime     = $bk['departure_time'];
+        $arrivalTime    = $bk['arrival_time'];
+        $passengers     = (int)$bk['passengers'];
+        $pricePerPax    = (float)$bk['price_per_pax'];
+        $totalPrice     = (float)$bk['total_price'];
+        $pageTitle      = t('Booking Berhasil');
     }
 }
 
