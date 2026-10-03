@@ -867,4 +867,15 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+<script>
+// Cegah double-submit: nonaktifkan tombol + spinner saat form booking dikirim.
+document.addEventListener('DOMContentLoaded', function() {
+    var form = document.getElementById('hotelBookingForm');
+    if (!form) return;
+    form.addEventListener('submit', function() {
+        var btn = document.getElementById('bookingSubmitBtn');
+        if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span><?= t('Memproses...') ?>'; }
+    });
+});
+</script>
 <?php require_once 'includes/footer-shared.php'; ?>
