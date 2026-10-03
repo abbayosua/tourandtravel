@@ -142,7 +142,7 @@ require_once 'includes/header-shared.php';
                                     <div class="text-center" style="min-width:70px;"><div class="fs-5 fw-bold"><?= e($f['arrival_time'] ?? '-') ?></div><small class="text-muted"><?= e($f['to_terminal'] ?: $to) ?></small></div>
                                 </div>
                             </div>
-                            <div class="col-md-2 text-center"><?php if ($isCheapest): ?><span class="badge bg-success rounded-pill"><?= t('Hemat') ?></span><?php else: ?><span class="badge bg-light text-dark border rounded-pill">Ferry</span><?php endif; ?><small class="d-block text-muted mt-1" style="font-size:11px"><i class="bi bi-ticket-perforated me-1"></i>e-ticket</small></div>
+                            <div class="col-md-2 text-center"><?php if ($isCheapest): ?><span class="badge bg-success rounded-pill"><?= t('Hemat') ?></span><?php else: ?><span class="badge bg-light text-dark border rounded-pill"><?= t('Ferry') ?></span><?php endif; ?><small class="d-block text-muted mt-1" style="font-size:11px"><i class="bi bi-ticket-perforated me-1"></i><?= t('e-ticket') ?></small></div>
                             <div class="col-md-2 text-center"><div class="fs-6 fw-bold text-primary"><?= formatRupiah($f['price']) ?></div><small class="text-muted">/ <?= t('orang') ?></small></div>
                             <div class="col-md-2 text-md-end"><a href="<?= $bookUrl ?>" class="btn btn-primary rounded-pill px-4 fw-semibold w-100" data-testid="btn-book-ferry"><?= t('Pesan') ?></a></div>
                         </div>

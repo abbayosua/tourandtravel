@@ -982,6 +982,40 @@ test.describe('i18n newsletter footer', () => {
   });
 });
 
+test.describe('i18n hasil pencarian ferry', () => {
+  // Badge hasil ferry ("Ferry" / "e-ticket") dulu hardcoded.
+  const KEY = 'ferry:9001:9002:2026-12-01:0:0:1';
+  test.beforeAll(() => {
+    try {
+      const trips = { trips: [
+        { company: 'TestFerry', vessel_name: 'V1', departure_time: '08:00', arrival_time: '10:00', from_terminal: 'Merak', to_terminal: 'Bakauheni', price: 100000, date: '2026-12-01' },
+        { company: 'TestFerry', vessel_name: 'V2', departure_time: '12:00', arrival_time: '14:00', from_terminal: 'Merak', to_terminal: 'Bakauheni', price: 150000, date: '2026-12-01' },
+      ] };
+      const json = JSON.stringify(trips).replace(/'/g, "''");
+      mysql(
+        `INSERT INTO flight_cache (cache_key, source, response_json, offers_count, expires_at) ` +
+          `VALUES ('${KEY}', 'ferry', '${json}', 2, UTC_TIMESTAMP() + INTERVAL 1 HOUR) ` +
+          `ON DUPLICATE KEY UPDATE response_json = VALUES(response_json), expires_at = VALUES(expires_at)`
+      );
+    } catch { /* ignore */ }
+  });
+  test.afterAll(() => {
+    try { mysql(`DELETE FROM flight_cache WHERE cache_key = '${KEY}'`); } catch { /* ignore */ }
+  });
+
+  test('badge hasil ferry mengikuti bahasa', async ({ page }) => {
+    const expected: Record<string, string> = { en: 'e-ticket', zh: '电子票' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/ferries.php?search=1&from_pid=9001&to_pid=9002&date=2026-12-01&passengers=1&lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      const card = page.locator('.flight-card').first();
+      await expect(card).toBeVisible();
+      await expect(card).toContainText(label);
+      if (lang === 'zh') await expect(card).not.toContainText('e-ticket');
+    }
+  });
+});
+
 test.describe('i18n email templates', () => {
   // Render each transactional email in id/en/zh and assert no Indonesian leaks.
   test('template email tidak menyisakan teks Indonesia', async () => {

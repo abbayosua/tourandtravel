@@ -1685,6 +1685,7 @@ dikredit ke wallet
 diskon
 diterapkan
 ditolak
+e-ticket
 eSIM
 eSIM & Connectivity
 ferries

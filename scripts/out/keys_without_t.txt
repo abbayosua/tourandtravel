@@ -16,7 +16,6 @@ Buka
 Client ID
 Client Secret
 Environment
-Ferry
 Frankfurter API
 Gagal. Coba lagi.
 IDR
