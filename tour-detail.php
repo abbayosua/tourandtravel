@@ -1095,12 +1095,12 @@ require __DIR__ . '/includes/components/pax-modal.php';
     if (data && data.action) {
       xhr.open('POST', 'itinerary-ajax.php');
       xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-      xhr.onload = function () { try { cb(JSON.parse(xhr.responseText), xhr.status); } catch (e) {} };
+      xhr.onload = function () { try { cb(JSON.parse(xhr.responseText), xhr.status); } catch (e) { console.warn('itinerary-ajax parse error', e); cb(null, xhr.status); } };
       xhr.send(new URLSearchParams(data));
     } else {
       var qs = data && data.itinerary_id ? '?action=get&itinerary_id=' + data.itinerary_id : '?action=list';
       xhr.open('GET', 'itinerary-ajax.php' + qs);
-      xhr.onload = function () { try { cb(JSON.parse(xhr.responseText), xhr.status); } catch (e) {} };
+      xhr.onload = function () { try { cb(JSON.parse(xhr.responseText), xhr.status); } catch (e) { console.warn('itinerary-ajax parse error', e); cb(null, xhr.status); } };
       xhr.send();
     }
   }
