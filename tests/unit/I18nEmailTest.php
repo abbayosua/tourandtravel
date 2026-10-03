@@ -127,3 +127,15 @@ function testBookingStatusEmailLocalizesStatusLabel(): void {
         assertTrue(strpos($t['html'], '>paid<') === false, "kode status mentah bocor di $lang");
     }
 }
+
+/** Subject email yang di-pass caller (welcome/status) harus diterjemahkan. */
+function testEmailSubjectKeysLocalized(): void {
+    foreach (['Selamat Datang di %s', 'Status Booking - %s'] as $k) {
+        foreach (['en', 'zh'] as $lang) {
+            $_SESSION['lang'] = $lang; $_COOKIE['lang'] = $lang;
+            $v = t($k);
+            assertTrue($v !== $k && $v !== '', "subject '$k' belum diterjemahkan ($lang)");
+        }
+    }
+    $_SESSION['lang'] = 'id';
+}

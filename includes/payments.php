@@ -221,7 +221,7 @@ function handleMidtransNotification(array $notif): bool {
                     'booking_code' => $bk['booking_code'],
                     'status' => $newStatus,
                     'track_link' => BASE_URL . '/track.php?code=' . $bk['booking_code'],
-                    'subject' => 'Status Booking - ' . $bk['booking_code'],
+                    'subject' => sprintf(t('Status Booking - %s'), $bk['booking_code']),
                 ]);
             }
         }
