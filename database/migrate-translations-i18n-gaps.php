@@ -1480,3 +1480,33 @@ $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, 
 $c21 = 0;
 foreach ($adminChat as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c21++; } }
 echo "Upserted $c21 admin chat-settings rows.\n";
+
+// ---- Admin reseller pricing ----
+$adminResellerPricing = [
+    'en' => [
+        'Harga Reseller per Tour' => 'Reseller Price per Tour',
+        'Tour sudah memiliki harga reseller. Edit yang sudah ada.' => 'This tour already has a reseller price. Edit the existing one.',
+        'Edit Harga Reseller' => 'Edit Reseller Price',
+        'Tambah Harga Reseller' => 'Add Reseller Price',
+        'Harga Normal' => 'Regular Price',
+        'Toggle' => 'Toggle',
+        'Toggle status?' => 'Toggle status?',
+    ],
+    'zh' => [
+        'Harga Reseller per Tour' => '每个旅游的分销价',
+        'Tour sudah memiliki harga reseller. Edit yang sudah ada.' => '该旅游已有分销价。请编辑现有价格。',
+        'Edit Harga Reseller' => '编辑分销价',
+        'Tambah Harga Reseller' => '添加分销价',
+        'Min Pax' => '最少人数',
+        'Update' => '更新',
+        'Harga Normal' => '原价',
+        'Status' => '状态',
+        'Edit' => '编辑',
+        'Toggle' => '切换',
+        'Toggle status?' => '切换状态？',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$c22 = 0;
+foreach ($adminResellerPricing as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c22++; } }
+echo "Upserted $c22 admin reseller-pricing rows.\n";

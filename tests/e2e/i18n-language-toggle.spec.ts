@@ -528,3 +528,15 @@ test.describe('i18n admin live chat settings', () => {
     }
   });
 });
+
+test.describe('i18n admin reseller pricing', () => {
+  test('label harga reseller mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    const expected: Record<string, string> = { id: 'Tambah Harga Reseller', en: 'Add Reseller Price', zh: '添加分销价' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/admin/reseller-pricing.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('body')).toContainText(label);
+    }
+  });
+});
