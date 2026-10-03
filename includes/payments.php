@@ -214,7 +214,7 @@ function handleMidtransNotification(array $notif): bool {
                     'name' => $bk['name'],
                     'insurance_premi' => $insPremi,
                     'insurance_amount' => $insPremi > 0 ? formatRupiah($insPremi) : '',
-                    'subject' => 'Pembayaran Diterima - ' . $bk['booking_code'],
+                    'subject' => t('Pembayaran Diterima') . ' - ' . $bk['booking_code'],
                 ]);
             } else {
                 sendEmailTemplate($bk['email'], 'booking-status', [

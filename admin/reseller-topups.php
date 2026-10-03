@@ -35,8 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             require_once '../includes/email.php';
             $emailTemplate = $action === 'approved' ? 'topup-approved' : 'topup-rejected';
             $emailSubject = $action === 'approved'
-                ? 'Topup Disetujui - ' . formatRupiah((float)$topup['amount'])
-                : 'Topup Ditolak - ' . formatRupiah((float)$topup['amount']);
+                ? t('Topup Disetujui') . ' - ' . formatRupiah((float)$topup['amount'])
+                : t('Topup Ditolak') . ' - ' . formatRupiah((float)$topup['amount']);
             sendEmailTemplate($topup['user_email'], $emailTemplate, [
                 'amount' => formatRupiah((float)$topup['amount']),
                 'admin_note' => $adminNote,

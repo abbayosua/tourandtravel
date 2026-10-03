@@ -12,10 +12,10 @@ $token = trim($input['token'] ?? '');
 $lang = trim($input['lang'] ?? '') ?: getCurrentLang();
 
 if ($token === '' || strlen($token) < 32 || strlen($token) > 500) {
-    jsonError('invalid_token', 'Format token tidak valid');
+    jsonError('invalid_token', t('Format token tidak valid'));
 }
 if ($lang !== '' && !isValidLang($lang)) {
-    jsonError('invalid_lang', 'Bahasa tidak didukung');
+    jsonError('invalid_lang', t('Bahasa tidak didukung'));
 }
 
 $userId = getAuthUserId();

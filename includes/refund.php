@@ -93,13 +93,13 @@ function decideRefund(int $bookingId, bool $approve, int $adminId): array {
 
     if (!$approve) {
         db()->prepare("UPDATE bookings SET refund_status = 'rejected' WHERE id = ?")->execute([$bookingId]);
-        return [true, 'Refund ditolak'];
+        return [true, t('Refund ditolak')];
     }
 
     $calc = calculateRefund($bookingId);
     if (!$calc || $calc['amount'] <= 0) {
         db()->prepare("UPDATE bookings SET refund_status = 'rejected' WHERE id = ?")->execute([$bookingId]);
-        return [false, 'Amount refund 0 — pengajuan otomatis ditolak'];
+        return [false, t('Amount refund 0 — pengajuan otomatis ditolak')];
     }
 
     db()->beginTransaction();
@@ -128,5 +128,5 @@ function decideRefund(int $bookingId, bool $approve, int $adminId): array {
     require_once __DIR__ . '/availability.php';
     releaseTourSlotsOnCancel($bookingId);
 
-    return [true, 'Refund disetujui: ' . $calc['amount'] . ' dikredit ke wallet'];
+    return [true, t('Refund disetujui:') . ' ' . $calc['amount'] . ' ' . t('dikredit ke wallet')];
 }

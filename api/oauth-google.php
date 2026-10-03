@@ -29,7 +29,7 @@ $raw = @file_get_contents($verifyUrl, false, $ctx);
 $info = $raw ? json_decode($raw, true) : null;
 
 if (!is_array($info) || empty($info['email_verified']) || $info['email_verified'] !== 'true') {
-    jsonError('invalid_token', 'Token Google tidak valid atau email tidak terverifikasi', 401);
+    jsonError('invalid_token', t('Token Google tidak valid atau email tidak terverifikasi'), 401);
 }
 
 $aud = $info['aud'] ?? '';
@@ -49,7 +49,7 @@ try {
 }
 
 if (!loginUserById((int)$userId)) {
-    jsonError('login_failed', 'Gagal membuat session', 500);
+    jsonError('login_failed', t('Gagal membuat session'), 500);
 }
 
 jsonOk(['user_id' => (int)$userId, 'name' => $name, 'avatar_url' => $avatar]);

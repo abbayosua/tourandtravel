@@ -1929,3 +1929,22 @@ foreach ([
     ['telah ditolak.', 'en', 'has been rejected.'], ['telah ditolak.', 'zh', '已被拒绝。'],
 ] as [$k, $l, $v]) { $stmt->execute([$k, $l, $v]); }
 echo "Added in-app notification rows.\n";
+
+// ---- Refund/payment/API message strings ----
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+foreach ([
+    ['Topup Disetujui', 'en', 'Topup Approved'], ['Topup Disetujui', 'zh', '充值已批准'],
+    ['Topup Ditolak', 'en', 'Topup Rejected'], ['Topup Ditolak', 'zh', '充值被拒绝'],
+    ['Pembayaran Diterima', 'en', 'Payment Received'], ['Pembayaran Diterima', 'zh', '已收到付款'],
+    ['Refund pembatalan booking', 'en', 'Booking cancellation refund'], ['Refund pembatalan booking', 'zh', '订单取消退款'],
+    ['Refund ditolak', 'en', 'Refund rejected'], ['Refund ditolak', 'zh', '退款被拒绝'],
+    ['Amount refund 0 — pengajuan otomatis ditolak', 'en', 'Refund amount 0 — request automatically rejected'], ['Amount refund 0 — pengajuan otomatis ditolak', 'zh', '退款金额为 0 — 申请自动被拒绝'],
+    ['Refund disetujui:', 'en', 'Refund approved:'], ['Refund disetujui:', 'zh', '退款已批准：'],
+    ['dikredit ke wallet', 'en', 'credited to wallet'], ['dikredit ke wallet', 'zh', '已存入钱包'],
+    ['Tidak ada penerbangan untuk rute/tanggal ini.', 'en', 'No flights for this route/date.'], ['Tidak ada penerbangan untuk rute/tanggal ini.', 'zh', '该航线/日期暂无航班。'],
+    ['Format token tidak valid', 'en', 'Invalid token format'], ['Format token tidak valid', 'zh', '令牌格式无效'],
+    ['Bahasa tidak didukung', 'en', 'Language not supported'], ['Bahasa tidak didukung', 'zh', '不支持该语言'],
+    ['Token Google tidak valid atau email tidak terverifikasi', 'en', 'Invalid Google token or email not verified'], ['Token Google tidak valid atau email tidak terverifikasi', 'zh', 'Google 令牌无效或邮箱未验证'],
+    ['Gagal membuat session', 'en', 'Failed to create session'], ['Gagal membuat session', 'zh', '创建会话失败'],
+] as [$k, $l, $v]) { $stmt->execute([$k, $l, $v]); }
+echo "Added refund/payment/API message rows.\n";

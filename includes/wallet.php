@@ -64,7 +64,7 @@ function spendWallet($userId, $amount, $referenceType = null, $referenceId = nul
  */
 function refundWallet($userId, $amount, $referenceType = null, $referenceId = null) {
     $amount = (float)$amount;
-    addWalletTransaction($userId, $amount, 'refund', 'Refund pembatalan booking', $referenceType, $referenceId);
+    addWalletTransaction($userId, $amount, 'refund', t('Refund pembatalan booking'), $referenceType, $referenceId);
     return ['success' => true, 'new_balance' => getWalletBalance($userId)];
 }
 

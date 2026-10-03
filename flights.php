@@ -113,7 +113,7 @@ if ($doSearch && $tripType === 'multicity' && count($legs) >= 2) {
             $st->execute($params);
             $localSchedules=$st->fetchAll();
             if (empty($localSchedules) && empty($duffelOffers)) {
-                $duffelError = $flightlistResult['error'] ?? ($result['error'] ?? 'Tidak ada penerbangan untuk rute/tanggal ini.');
+                $duffelError = $flightlistResult['error'] ?? ($result['error'] ?? t('Tidak ada penerbangan untuk rute/tanggal ini.'));
             }
         }
     } else {
