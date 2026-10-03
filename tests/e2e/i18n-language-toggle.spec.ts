@@ -141,6 +141,17 @@ test.describe('i18n language toggle', () => {
     await expect(page.locator('.voyage-tabs')).not.toContainText('Pesawat');
   });
 
+  // Format angka/tanggal sisi browser harus ikut bahasa aktif (bukan id-ID hardcoded).
+  test('locale JS mengikuti bahasa aktif untuk format angka/tanggal', async ({ page }) => {
+    const expected: Record<string, string> = { id: 'id-ID', en: 'en-US', zh: 'zh-CN' };
+    for (const [lang, locale] of Object.entries(expected)) {
+      await page.goto(`${BASE}/tours.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      const got = await page.evaluate(() => (window as any).I18N && (window as any).I18N.locale);
+      expect(got, `I18N.locale untuk ${lang}`).toBe(locale);
+    }
+  });
+
   for (const lang of ['en', 'zh']) {
     test(`tidak ada sisa teks Indonesia saat bahasa=${lang}`, async ({ page }) => {
       test.setTimeout(180_000);

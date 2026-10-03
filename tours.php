@@ -286,7 +286,8 @@ document.addEventListener('DOMContentLoaded', function() {
     var minI = document.getElementById('priceMinInput'), maxI = document.getElementById('priceMaxInput');
     var minL = document.getElementById('priceMinLabel'), maxL = document.getElementById('priceMaxLabel');
     if (!minR || !maxR) return;
-    var fmt = function(n) { return 'Rp ' + Number(n).toLocaleString('id-ID'); };
+    var loc = (window.I18N && window.I18N.locale) || 'id-ID';
+    var fmt = function(n) { return 'Rp ' + Number(n).toLocaleString(loc); };
     function sync() {
         var lo = parseInt(minR.value), hi = parseInt(maxR.value);
         if (lo > hi) { var t = lo; lo = hi; hi = t; }

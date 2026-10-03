@@ -876,7 +876,8 @@ require_once 'includes/header-shared.php';
                         <?php if (!empty($_SESSION['user_id'])): require_once 'includes/wallet.php'; $walletBal = getWalletBalance($_SESSION['user_id']); else: $walletBal = 0; endif; ?>
                         <script>
                         (function () {
-                            var fmt = function (n) { return 'Rp ' + Math.round(n).toLocaleString('id-ID'); };
+                            var loc = (window.I18N && window.I18N.locale) || 'id-ID';
+                            var fmt = function (n) { return 'Rp ' + Math.round(n).toLocaleString(loc); };
                             var baseEl = document.querySelector('select[name="tour_date_id"]');
                             var paxEl = document.querySelector('input[name="participants"]');
                             var insEl = document.getElementById('addInsuranceTour');
@@ -958,7 +959,7 @@ require_once 'includes/header-shared.php';
                                     if (d.success) {
                                         promoDiscount = parseFloat(d.discount) || 0;
                                         result.innerHTML = '<i class="bi bi-check-circle-fill text-success me-1"></i>' + d.message +
-                                            ' Diskon: <strong>Rp ' + promoDiscount.toLocaleString('id-ID') + '</strong>';
+                                            ' Diskon: <strong>Rp ' + promoDiscount.toLocaleString((window.I18N && window.I18N.locale) || 'id-ID') + '</strong>';
                                         result.className = 'klook-promo-result small mt-1 text-success';
                                     } else {
                                         promoDiscount = 0;

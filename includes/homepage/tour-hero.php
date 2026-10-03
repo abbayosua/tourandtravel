@@ -170,7 +170,7 @@ dateVal=document.getElementById('voyageWhenVal'),
 whoBtn=document.getElementById('voyageWhoBtn'),whoPop=document.getElementById('voyageWhoPop'),
 whoVal=document.getElementById('voyageWhoVal'),whoOk=document.getElementById('voyageWhoOk');
 var adults=2,children=0;
-function fmt(d){try{return new Date(d+'T00:00:00').toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'})}catch(e){return d}}
+function fmt(d){try{return new Date(d+'T00:00:00').toLocaleDateString((window.I18N && window.I18N.locale) || 'id-ID',{day:'numeric',month:'short',year:'numeric'})}catch(e){return d}}
 function closeAll(){whoPop.classList.remove('show')}
 function syncDate(v){if(!v)return;dateHidden.value=v;dateVal.textContent=fmt(v);}
 dateBtn.addEventListener('click',function(e){e.stopPropagation();whoPop.classList.remove('show');if(datePick&&datePick._flatpickr){datePick._flatpickr.open();}else if(datePick){datePick.focus();}});

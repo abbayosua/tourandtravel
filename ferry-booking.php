@@ -394,7 +394,7 @@ document.getElementById('passengers').addEventListener('change', function() {
 
     // Update price display
     document.getElementById('paxCountDisplay').textContent = count;
-    document.getElementById('totalPriceDisplay').textContent = 'Rp ' + total.toLocaleString('id-ID');
+    document.getElementById('totalPriceDisplay').textContent = 'Rp ' + total.toLocaleString((window.I18N && window.I18N.locale) || 'id-ID');
 
     // Show/hide pax name fields
     document.querySelectorAll('.pax-field').forEach(function(el) {
