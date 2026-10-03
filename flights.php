@@ -120,7 +120,7 @@ if ($doSearch && $tripType === 'multicity' && count($legs) >= 2) {
         if ($class === '') $cabin = 'economy';
         $result = duffelSearchOffers($from, $to, $date, $cabin, $passengers);
         if (isset($result['error'])) {
-            $duffelError = $result['error'] . ' (FlightList juga tidak terjangkau)';
+            $duffelError = $result['error'] . ' (' . t('FlightList juga tidak terjangkau') . ')';
         } else {
             $all = $result['offers'] ?? [];
             if ($class) {

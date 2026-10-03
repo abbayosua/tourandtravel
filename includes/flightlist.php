@@ -64,12 +64,12 @@ function flightlistSearchOffers($origin, $dest, $date, $cabinClass = 'economy', 
     $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $err = curl_error($ch);
     curl_close($ch);
-    if ($err) return ['error' => 'FlightList tidak terjangkau: ' . $err, 'unreachable' => true];
-    if ($code >= 400 || $resp === false || $resp === '') return ['error' => 'FlightList tidak terjangkau (HTTP ' . $code . ')', 'unreachable' => true];
+    if ($err) return ['error' => t('FlightList tidak terjangkau') . ': ' . $err, 'unreachable' => true];
+    if ($code >= 400 || $resp === false || $resp === '') return ['error' => t('FlightList tidak terjangkau') . ' (HTTP ' . $code . ')', 'unreachable' => true];
     $data = json_decode($resp, true);
     if (!is_array($data) || !isset($data['data']) || !is_array($data['data'])) {
         // Check if response is HTML (blocked)
-        if (strpos($resp, '<html') !== false) return ['error' => 'FlightList dibatasi (HTML)', 'unreachable' => true];
+        if (strpos($resp, '<html') !== false) return ['error' => t('FlightList dibatasi (HTML)'), 'unreachable' => true];
         return ['error' => t('Format FlightList tidak valid'), 'unreachable' => true];
     }
     $offers = $data['data'];
