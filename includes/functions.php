@@ -467,6 +467,9 @@ function getJsI18nKeys() {
         'Kategori',
         'Mulai',
         'Memproses...',
+        'Mencari...',
+        'Tidak ada hasil ditemukan',
+        'Gagal memuat hasil. Coba lagi.',
     ];
 }
 

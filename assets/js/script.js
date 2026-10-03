@@ -46,6 +46,14 @@ function initSearchAutocomplete(inputId, dropdownId) {
 
     var debounceTimer;
 
+    function tr(key) {
+        return (window.I18N && typeof window.I18N.t === 'function') ? window.I18N.t(key) : key;
+    }
+    function showMessage(text) {
+        dropdown.innerHTML = '<div class="search-item text-muted"><div class="flex-grow-1 small">' + escapeHtml(text) + '</div></div>';
+        dropdown.classList.add('show');
+    }
+
     input.addEventListener('input', function () {
         clearTimeout(debounceTimer);
         var q = this.value.trim();
@@ -55,12 +63,15 @@ function initSearchAutocomplete(inputId, dropdownId) {
             return;
         }
         debounceTimer = setTimeout(function () {
+            showMessage(tr('Mencari...'));
             fetch('search-ajax.php?q=' + encodeURIComponent(q))
-                .then(function (r) { return r.json(); })
+                .then(function (r) {
+                    if (!r.ok) throw new Error('HTTP ' + r.status);
+                    return r.json();
+                })
                 .then(function (data) {
                     if (!data || !data.length) {
-                        dropdown.classList.remove('show');
-                        dropdown.innerHTML = '';
+                        showMessage(tr('Tidak ada hasil ditemukan'));
                         return;
                     }
                     var html = '';
@@ -82,6 +93,9 @@ function initSearchAutocomplete(inputId, dropdownId) {
                     });
                     dropdown.innerHTML = html;
                     dropdown.classList.add('show');
+                })
+                .catch(function () {
+                    showMessage(tr('Gagal memuat hasil. Coba lagi.'));
                 });
         }, 300);
     });
