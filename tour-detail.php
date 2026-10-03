@@ -512,7 +512,7 @@ require_once 'includes/header-shared.php';
                     $srStmt->execute([(int)$tour['id']]);
                     $subAvg = $srStmt->fetchAll();
                 } catch (Throwable $e) {}
-                $subLabels = ['cleanliness' => 'Kebersihan', 'location' => 'Lokasi', 'staff' => 'Staff', 'value' => 'Nilai', 'facilities' => 'Fasilitas', 'comfort' => 'Kenyamanan'];
+                $subLabels = ['cleanliness' => t('Kebersihan'), 'location' => t('Lokasi'), 'staff' => t('Staff'), 'value' => t('Nilai'), 'facilities' => t('Fasilitas'), 'comfort' => t('Kenyamanan')];
                 ?>
                 <?php if (count($subAvg) > 0): ?>
                 <div class="mb-3">
