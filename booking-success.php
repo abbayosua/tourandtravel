@@ -337,7 +337,7 @@ require_once 'includes/header-shared.php';
                                             <span class="d-inline-flex align-items-center justify-content-center rounded bg-light" style="width:36px;height:36px"><i class="bi <?= e($ticon) ?> fs-5 text-primary"></i></span>
                                             <?php endif; ?>
                                             <span>
-                                                <span class="d-block fw-semibold small"><?= e($tm['label']) ?></span>
+                                                <span class="d-block fw-semibold small"><?= e(tripayLocalizedLabel($tm['label'])) ?></span>
                                                 <?php if (!empty($tm['fee'])): ?><span class="d-block text-muted" style="font-size:11px"><?= t('Biaya') ?> <?= e($tm['fee']) ?></span><?php endif; ?>
                                             </span>
                                         </label>

@@ -93,6 +93,12 @@ function tripayUiChannels(): array {
     return ['BRIVA', 'BCAVA', 'BNIVA', 'MANDIRIVA', 'PERMATAVA', 'QRIS', 'ALFAMART', 'INDOMARET'];
 }
 
+/** Label channel dalam bahasa aktif: suffix "Virtual Account" ikut terjemahan. */
+function tripayLocalizedLabel(string $label): string {
+    if ($label === '') return $label;
+    return str_ireplace('Virtual Account', t('Virtual Account'), $label);
+}
+
 function tripayApiKey(): string {
     return (string)getSetting('tripay_api_key', '');
 }

@@ -78,5 +78,14 @@ setSetting('tripay_api_key', '');
 setSetting('tripay_private_key', '');
 setSetting('tripay_merchant_code', '');
 
+// Label channel tripay: suffix "Virtual Account" ikut bahasa aktif.
+$_SESSION['lang'] = 'zh'; $_COOKIE['lang'] = 'zh';
+check('label VA zh', tripayLocalizedLabel('BRI Virtual Account') === 'BRI 虚拟账户');
+$_SESSION['lang'] = 'en'; $_COOKIE['lang'] = 'en';
+check('label VA en', tripayLocalizedLabel('BRI Virtual Account') === 'BRI Virtual Account');
+$_SESSION['lang'] = 'id'; $_COOKIE['lang'] = 'id';
+check('label VA id', tripayLocalizedLabel('BRI Virtual Account') === 'BRI Virtual Account');
+check('label QRIS tetap', tripayLocalizedLabel('QRIS') === 'QRIS');
+
 echo "\n$pass passed, $fail failed\n";
 exit($fail > 0 ? 1 : 0);

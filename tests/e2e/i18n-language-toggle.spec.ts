@@ -921,6 +921,32 @@ test.describe('i18n label pembayaran', () => {
       if (lang === 'zh') await expect(methods).not.toContainText('Virtual Account');
     }
   });
+
+  // Label channel Tripay ("BRI Virtual Account") ikut bahasa aktif.
+  test('label channel Tripay mengikuti bahasa', async ({ page }) => {
+    const set = (k: string, v: string) =>
+      mysql(`INSERT INTO settings (setting_key, setting_value) VALUES ('${k}', '${v}') ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)`);
+    set('payment_gateway', 'tripay');
+    set('tripay_api_key', 'E2EKEY');
+    set('tripay_private_key', 'E2EPRIV');
+    set('tripay_merchant_code', 'E2E001');
+    try {
+      const expected: Record<string, string> = { en: 'BRI Virtual Account', zh: 'BRI 虚拟账户' };
+      for (const [lang, label] of Object.entries(expected)) {
+        await page.goto(`${BASE}/booking-success.php?code=${CODE}&lang=${lang}`);
+        await page.waitForLoadState('domcontentloaded');
+        const grid = page.locator('[data-testid="tripay-methods"]');
+        await expect(grid).toBeVisible();
+        await expect(grid).toContainText(label);
+        if (lang === 'zh') await expect(grid).not.toContainText('Virtual Account');
+      }
+    } finally {
+      set('payment_gateway', 'singapay');
+      set('tripay_api_key', '');
+      set('tripay_private_key', '');
+      set('tripay_merchant_code', '');
+    }
+  });
 });
 
 test.describe('i18n halaman booking ferry', () => {
