@@ -571,7 +571,7 @@ require_once 'includes/header-shared.php';
                 <div class="card border-0 shadow-sm mb-4 bg-light">
                     <div class="card-body p-3">
                         <h6 class="fw-semibold mb-2"><?= t('Tulis Ulasan') ?></h6>
-                        <form method="POST" action="review-submit.php" enctype="multipart/form-data">
+                        <form method="POST" action="review-submit.php" enctype="multipart/form-data" data-submit-once>
                             <input type="hidden" name="tour_id" value="<?= $tour['id'] ?>">
                             <input type="hidden" name="slug" value="<?= e($tour['slug']) ?>">
                             <div class="mb-2">
