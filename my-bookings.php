@@ -330,7 +330,7 @@ require_once 'includes/header-shared.php';
 <div class="modal fade" id="refundModal<?= $b['id'] ?>" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form method="POST" action="my-bookings.php">
+            <form method="POST" action="my-bookings.php" data-submit-once>
                 <input type="hidden" name="action" value="request_refund">
                 <input type="hidden" name="booking_id" value="<?= (int)$b['id'] ?>">
                 <div class="modal-header">
@@ -369,7 +369,7 @@ $dates = $availDates->fetchAll();
 <div class="modal fade" id="modifyModal<?= $b['id'] ?>" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form method="POST" action="my-bookings.php">
+            <form method="POST" action="my-bookings.php" data-submit-once>
                 <input type="hidden" name="action" value="modify_booking">
                 <input type="hidden" name="booking_id" value="<?= (int)$b['id'] ?>">
                 <div class="modal-header">

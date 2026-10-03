@@ -13,6 +13,7 @@ const BASE = process.env.E2E_BASE_URL || 'http://localhost/tourandtravel';
 const PASS = 'tmpcheck123';
 const USER_EMAIL = 'e2e-forms@t.local';
 const RESELLER_EMAIL = 'e2e-forms-reseller@t.local';
+const BOOKING_CODE = 'E2EFRM01';
 
 function mysql(sql: string): string {
   return execFileSync('mysql', ['-uroot', 'tourandtravel', '-N', '-B', '-e', sql], { encoding: 'utf8' }).trim();
@@ -34,11 +35,26 @@ test.beforeAll(() => {
   const uid = mysql(`SELECT id FROM users WHERE email='${USER_EMAIL}'`);
   mysql(`DELETE FROM passenger_profiles WHERE user_id=${uid}`);
   mysql(`INSERT INTO passenger_profiles (user_id, full_name, is_default) VALUES (${uid}, 'E2E Passenger', 0)`);
+
+  // Booking terkonfirmasi (untuk modal refund/modify) + 1 price alert.
+  const ids = mysql(
+    `SELECT t.id, td.id FROM tours t JOIN tour_dates td ON td.tour_id=t.id ` +
+      `WHERE t.is_active=1 AND td.departure_date>=CURDATE() ORDER BY td.departure_date LIMIT 1`
+  ).split('\t');
+  mysql(`DELETE FROM bookings WHERE booking_code='${BOOKING_CODE}'`);
+  mysql(
+    `INSERT INTO bookings (booking_code,user_id,tour_id,tour_date_id,name,email,phone,participants,total_price,status,payment_status) ` +
+      `VALUES ('${BOOKING_CODE}',${uid},${ids[0]},${ids[1]},'E2E Forms','${USER_EMAIL}','08123456789',1,100000,'confirmed','unpaid')`
+  );
+  mysql(`DELETE FROM price_alerts WHERE user_id=${uid}`);
+  mysql(`INSERT INTO price_alerts (user_id, item_type, item_id, target_price) VALUES (${uid}, 'tour', ${ids[0]}, 500000)`);
 });
 
 test.afterAll(() => {
   const uid = mysql(`SELECT id FROM users WHERE email='${USER_EMAIL}'`);
   if (uid) mysql(`DELETE FROM passenger_profiles WHERE user_id=${uid}`);
+  if (uid) mysql(`DELETE FROM price_alerts WHERE user_id=${uid}`);
+  mysql(`DELETE FROM bookings WHERE booking_code='${BOOKING_CODE}'`);
   mysql(`DELETE FROM users WHERE email IN ('${USER_EMAIL}','${RESELLER_EMAIL}')`);
 });
 
@@ -59,6 +75,13 @@ test('form akun memakai guard anti dobel-submit', async ({ page }) => {
   await expect(page.locator('form[data-submit-once]')).toHaveCount(1);
   await page.goto(`${BASE}/my-profiles.php`);
   await expect(page.locator('form[data-submit-once]')).toHaveCount(3);
+
+  await page.goto(`${BASE}/my-bookings.php`);
+  await expect(page.locator('form[data-submit-once]')).toHaveCount(2);
+  await page.goto(`${BASE}/wallet.php?tab=points`);
+  await expect(page.locator('form[data-testid="redeem-form"][data-submit-once]')).toHaveCount(1);
+  await page.goto(`${BASE}/my-alerts.php`);
+  await expect(page.locator('form[data-submit-once]')).toHaveCount(1);
 
   await login(page, RESELLER_EMAIL);
   await page.goto(`${BASE}/reseller-topup.php`);

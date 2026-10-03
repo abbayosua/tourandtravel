@@ -78,7 +78,7 @@ require_once 'includes/header-shared.php';
                         </td>
                         <td class="small text-muted"><?= $a['notified_at'] ? date('d M Y H:i', strtotime($a['notified_at'])) : '-' ?></td>
                         <td class="text-end">
-                            <form method="POST" class="d-inline">
+                            <form method="POST" class="d-inline" data-submit-once>
                                 <input type="hidden" name="alert_id" value="<?= (int)$a['id'] ?>">
                                 <button type="submit" name="toggle_alert" class="btn btn-sm btn-outline-<?= $a['active'] ? 'warning' : 'success' ?>" title="<?= $a['active'] ? t('Nonaktifkan') : t('Aktifkan') ?>">
                                     <i class="bi bi-<?= $a['active'] ? 'pause-circle' : 'play-circle' ?>"></i>
