@@ -52,3 +52,4 @@ $voyageNoSpacer = !empty($voyageNoSpacer) || in_array($voyagePage, $voyageHeroPa
 
 <?php require __DIR__ . '/navbar.php'; ?>
 <?php if (empty($voyageNoSpacer)): ?><div class="voyage-spreader"></div><?php endif; ?>
+<main id="mainContent" tabindex="-1">

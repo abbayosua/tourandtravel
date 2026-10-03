@@ -1,5 +1,7 @@
 // Smooth scroll
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    // Skip link harus pakai navigasi native agar fokus pindah ke #mainContent.
+    if (anchor.classList.contains('skip-link')) return;
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
         const target = document.querySelector(this.getAttribute('href'));

@@ -7,6 +7,7 @@
 if (!function_exists('getNavMenus')) require_once __DIR__ . '/nav-menus.php';
 $footMenus = getNavMenus();
 ?>
+</main>
 <!-- Footer Klook-style -->
 <footer id="kontak" class="bg-dark text-light pt-5 pb-3 mt-5 voyage-footer">
     <div class="container">
