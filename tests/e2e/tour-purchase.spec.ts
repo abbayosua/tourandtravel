@@ -177,8 +177,9 @@ test('pembelian 1 peserta berhasil dan tersimpan (mode manual)', async ({ page }
   const code = await bookTour(page, { participants: 1 });
 
   // TravelPoints 5% (Rp 75.000) tampil di konfirmasi pertama untuk user login.
-  await expect(page.locator('body')).toContainText('TravelPoints');
-  await expect(page.locator('body')).toContainText('75.000');
+  const bsText = await page.locator('body').textContent();
+  expect(bsText).toContain('TravelPoints');
+  expect(bsText).toContain('75.000');
 
   const row = mysql(
     `SELECT status, participants, total_price, user_id FROM bookings WHERE booking_code = '${code}' AND tour_id = ${tourId}`
@@ -246,6 +247,9 @@ test('pembelian 2 peserta tersimpan dengan benar', async ({ page }) => {
 test('redeem points + wallet (TravelPoints) memotong total', async ({ page }) => {
   // User terpisah + seed saldo: 500 points dan Rp 500.000 wallet.
   redeemUserId = createUser(AUTH_EMAIL_REDEEM);
+  // Bersihkan sisa run sebelumnya agar saldo deterministik.
+  mysql(`DELETE FROM wallet_transactions WHERE user_id = ${redeemUserId}`);
+  mysql(`DELETE FROM points_ledger WHERE user_id = ${redeemUserId}`);
   mysql(`INSERT INTO points_ledger (user_id, points, reason) VALUES (${redeemUserId}, 500, 'earn')`);
   mysql(`INSERT INTO wallet_transactions (user_id, amount, type, description) VALUES (${redeemUserId}, 500000, 'earn', 'e2e seed')`);
 
@@ -309,6 +313,9 @@ test('diskon grup + promo + asuransi diterapkan pada total', async ({ page }) =>
 test('pembatalan booking tour mengembalikan wallet (TravelPoints)', async ({ page }) => {
   const cancelEmail = 'e2e-tourbuy-cancel@t.local';
   cancelUserId = createUser(cancelEmail);
+  // Bersihkan sisa run sebelumnya agar saldo deterministik.
+  mysql(`DELETE FROM wallet_transactions WHERE user_id = ${cancelUserId}`);
+  mysql(`DELETE FROM points_ledger WHERE user_id = ${cancelUserId}`);
   mysql(`INSERT INTO wallet_transactions (user_id, amount, type, description) VALUES (${cancelUserId}, 500000, 'earn', 'e2e seed')`);
 
   await login(page, cancelEmail);
