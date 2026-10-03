@@ -750,3 +750,15 @@ test.describe('i18n admin login page', () => {
     }
   });
 });
+
+test.describe('i18n admin html lang', () => {
+  test('halaman admin mendeklarasikan bahasa aktif', async ({ page }) => {
+    await adminLogin(page);
+    for (const lang of ['id', 'en', 'zh']) {
+      for (const p of ['dashboard.php', 'bookings.php', 'tours.php', 'payments.php', 'accounting.php']) {
+        await page.goto(`${BASE}/admin/${p}?lang=${lang}`);
+        await expect(page.locator('html'), `${p} @ ${lang}`).toHaveAttribute('lang', lang);
+      }
+    }
+  });
+});
