@@ -642,3 +642,15 @@ test.describe('i18n admin WA connection', () => {
     }
   });
 });
+
+test.describe('i18n JS alerts', () => {
+  test('pesan alert JS mengikuti bahasa', async ({ page }) => {
+    const expected: Record<string, string> = { en: 'Google login failed', zh: 'Google 登录失败' };
+    for (const [lang, val] of Object.entries(expected)) {
+      await page.goto(`${BASE}/login.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      const v = await page.evaluate(() => (window as any).I18N?.strings?.['Login Google gagal']);
+      expect(v, `I18N string untuk ${lang}`).toBe(val);
+    }
+  });
+});

@@ -471,6 +471,7 @@ function getJsI18nKeys() {
         'Tidak ada hasil ditemukan',
         'Gagal memuat hasil. Coba lagi.',
         'Memeriksa kode promo...',
+        'Login Google gagal',
     ];
 }
 

@@ -1843,3 +1843,11 @@ $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, 
 $c29 = 0;
 foreach ($finalGaps as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c29++; } }
 echo "Upserted $c29 final gap rows.\n";
+
+// ---- Google sign-in alert ----
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+foreach ([
+    ['Login Google gagal', 'en', 'Google login failed'],
+    ['Login Google gagal', 'zh', 'Google 登录失败'],
+] as [$k, $l, $v]) { $stmt->execute([$k, $l, $v]); }
+echo "Added Google sign-in alert rows.\n";

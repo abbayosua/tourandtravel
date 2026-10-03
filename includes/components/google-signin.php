@@ -31,10 +31,10 @@ if ($googleClientId === ''):
             if (d.success) {
                 location.href = redirect && redirect.indexOf('/') === 0 && redirect.indexOf('//') === -1 ? redirect : 'index.php';
             } else {
-                alert(d.message || 'Login Google gagal');
+                alert(d.message || I18N.t('Login Google gagal'));
             }
         })
-        .catch(function () { alert('Login Google gagal'); });
+        .catch(function () { alert(I18N.t('Login Google gagal')); });
     };
     window.initGoogleSignIn = function () {
         google.accounts.id.initialize({
