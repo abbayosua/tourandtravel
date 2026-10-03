@@ -41,6 +41,7 @@ let userId = 0;
 let redeemUserId = 0;
 let cancelUserId = 0;
 let modUserId = 0;
+let refundUserId = 0;
 let tourId = 0;
 
 function createUser(email: string): number {
@@ -70,7 +71,7 @@ function cleanup() {
     }
   }
   tourId = 0;
-  for (const uid of [userId, redeemUserId, cancelUserId, modUserId]) {
+  for (const uid of [userId, redeemUserId, cancelUserId, modUserId, refundUserId]) {
     if (!uid) continue;
     mysql(`DELETE FROM wallet_transactions WHERE user_id = ${uid}`);
     mysql(`DELETE FROM points_ledger WHERE user_id = ${uid}`);
@@ -84,6 +85,7 @@ function cleanup() {
   redeemUserId = 0;
   cancelUserId = 0;
   modUserId = 0;
+  refundUserId = 0;
 }
 
 test.beforeAll(() => {
@@ -348,4 +350,29 @@ test('waitlist saat tour penuh', async ({ page }) => {
   await expect(page.locator('.waitlist-form')).toBeVisible();
   await expect(page.getByText('Berhasil join waitlist')).toBeVisible();
   expect(mysql(`SELECT COUNT(*) FROM tour_waitlist WHERE tour_id = ${tourId} AND email = 'waitlist@t.local'`)).toBe('1');
+});
+
+test('ajukan refund pada booking confirmed', async ({ page }) => {
+  // Kembalikan slot (test waitlist sebelumnya menyetel 0).
+  mysql(`UPDATE tour_dates SET available_slots = 10 WHERE tour_id = ${tourId}`);
+  const refundEmail = 'e2e-tourbuy-refund@t.local';
+  refundUserId = createUser(refundEmail);
+  await login(page, refundEmail);
+  const code = await bookTour(page, { participants: 1 });
+  const bookingId = Number(mysql(`SELECT id FROM bookings WHERE booking_code = '${code}'`));
+
+  // Simulasi booking dikonfirmasi admin.
+  mysql(`UPDATE bookings SET status = 'confirmed' WHERE id = ${bookingId}`);
+
+  await page.goto(`${BASE}/my-bookings.php`);
+  await page.locator(`[data-testid="refund-btn-${bookingId}"]`).click();
+  await page.locator(`#refundModal${bookingId}`).waitFor({ state: 'visible' });
+  await page.locator(`#refundModal${bookingId} textarea[name="reason"]`).fill('Perubahan jadwal perjalanan');
+
+  await Promise.all([
+    page.waitForURL(/my-bookings\.php\?msg=refund_requested/, { timeout: 15000 }),
+    page.locator(`#refundModal${bookingId} [data-testid="refund-submit"]`).click(),
+  ]);
+
+  expect(mysql(`SELECT refund_status FROM bookings WHERE id = ${bookingId}`)).toBe('requested');
 });
