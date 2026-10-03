@@ -1072,6 +1072,29 @@ test.describe('i18n admin settings sweep', () => {
   }
 });
 
+test.describe('i18n admin list chrome', () => {
+  // Header tabel daftar admin harus ikut bahasa (chrome, bukan data).
+  const PAGES = [
+    'admin/attractions.php',
+    'admin/esim.php',
+    'admin/collections.php',
+    'admin/faq-category.php',
+    'admin/trains.php',
+    'admin/transfers.php',
+  ];
+  test('header tabel daftar admin mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    const expected: Record<string, string> = { en: 'Actions', zh: '操作' };
+    for (const [lang, label] of Object.entries(expected)) {
+      for (const path of PAGES) {
+        await page.goto(`${BASE}/${path}?lang=${lang}`);
+        await page.waitForLoadState('domcontentloaded');
+        await expect(page.locator('table thead').first()).toContainText(label);
+      }
+    }
+  });
+});
+
 test.describe('i18n email templates', () => {
   // Render each transactional email in id/en/zh and assert no Indonesian leaks.
   test('template email tidak menyisakan teks Indonesia', async () => {
