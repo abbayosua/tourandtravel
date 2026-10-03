@@ -33,6 +33,8 @@ $ (USD)
 > Rp 20 Juta
 A/B Testing
 AC
+API Key
+Account ID
 Accounting
 Ada Saldo
 Add-on tidak tersedia untuk penerbangan ini.
@@ -83,6 +85,7 @@ Atau pilih channel lain
 Atraksi
 Atur Password Baru
 Atur menu yang muncul di SELURUH header website (tab + menu mobile).
+Auto
 Auto (NusaTrip native, fallback OYO)
 Automatic
 Avg Order Value
@@ -272,7 +275,9 @@ Cek Harga per Tanggal
 Cek blog TourAndTravel
 Check-in
 Check-out
+Client ID
 Client Key
+Client Secret
 Coba Lagi
 Coba: Batam → Jakarta, atau ubah tanggal.
 Coba: Batam → Singapore, atau ubah tanggal.
@@ -454,6 +459,7 @@ Gagal memotong saldo. Silakan coba lagi.
 Gagal memproses refund
 Gagal memuat hasil. Coba lagi.
 Gagal memuat hotel. Periksa koneksi Anda.
+Gagal memuat penerbangan. Periksa koneksi Anda.
 Gagal memuat status: 
 Gagal memuat tour. Periksa koneksi Anda.
 Gagal memulai pembayaran. Coba lagi.
@@ -1466,7 +1472,6 @@ Terdaftar
 Terhubung
 Terima kasih, pemesanan Anda telah diterima.
 Terjadi kesalahan. Coba lagi nanti.
-Terjadi kesalahan. Coba lagi.
 Terjual/Kuota
 Terkirim
 Terkonfirmasi
@@ -1496,7 +1501,6 @@ Tidak ada jadwal ferry untuk rute/tanggal ini.
 Tidak ada jadwal kapal ditemukan untuk rute/tanggal ini.
 Tidak ada jadwal kapal untuk rute/tanggal ini.
 Tidak ada jadwal kereta ditemukan untuk rute/tanggal ini.
-Tidak ada jadwal lokal yang cocok dengan filter.
 Tidak ada mobil.
 Tidak ada penerbangan untuk rute/tanggal ini.
 Tidak ada penerbangan untuk rute/tanggal tersebut.

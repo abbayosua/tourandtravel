@@ -7,15 +7,9 @@
 <i class=
 ></i>
 ><div class=
-API Key
-Account ID
-Auto
 Berhasil! Cek email Anda.
 Booking.com
 Buka
-Client ID
-Client Secret
-Environment
 Frankfurter API
 Gagal. Coba lagi.
 IDR
@@ -24,26 +18,20 @@ Kode promo tidak valid
 MRS
 Masukkan kode promo
 Memeriksa kode promo...
-Menu
 Midtrans Snap
 NOW() AND (stock_limit IS NULL OR sold_count
 NusaTrip
 OYO
 Open
 PELNI
-Production
-Refund
 Rp 0
 SGD (S$)
-Sandbox
 Singapay (VA)
-Tab
 Terjadi kesalahan. Coba lagi nanti.
 Test.php — berisi satu atau lebih fungsi
  *   function test
 TravelPoints
 Tripay
-URL
 USD ($)
 ada 5 paket
 ada :n paket

@@ -1142,6 +1142,32 @@ test.describe('i18n admin list chrome', () => {
   });
 });
 
+test.describe('i18n admin edit forms', () => {
+  // Tombol simpan form edit admin harus ikut bahasa.
+  const PAGES = [
+    'admin/hotel-edit.php?id=1',
+    'admin/faq-edit.php?id=1',
+    'admin/post-edit.php?id=1',
+    'admin/ferry-edit.php?id=1',
+    'admin/train-edit.php?id=1',
+    'admin/transfer-edit.php?id=1',
+    'admin/rental-car-edit.php?id=1',
+    'admin/flight-edit.php?id=1',
+    'admin/esim-edit.php?id=1',
+  ];
+  test('tombol simpan form edit mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    const expected: Record<string, string> = { en: 'Save', zh: '保存' };
+    for (const [lang, label] of Object.entries(expected)) {
+      for (const path of PAGES) {
+        await page.goto(`${BASE}/${path}&lang=${lang}`);
+        await page.waitForLoadState('domcontentloaded');
+        await expect(page.locator('button[type="submit"]').first()).toContainText(label);
+      }
+    }
+  });
+});
+
 test.describe('i18n email templates', () => {
   // Render each transactional email in id/en/zh and assert no Indonesian leaks.
   test('template email tidak menyisakan teks Indonesia', async () => {
