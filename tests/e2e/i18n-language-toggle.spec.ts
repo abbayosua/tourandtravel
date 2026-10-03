@@ -566,6 +566,21 @@ test.describe('i18n admin live chat settings', () => {
       await expect(page.locator('body')).toContainText(label);
     }
   });
+
+  // Help text tawk.to dulu punya nilai en berbahasa Indonesia.
+  test('help text tawk.to mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    const expected: Record<string, string> = {
+      en: 'From the tawk.to dashboard',
+      zh: '来自 tawk.to',
+    };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/admin/chat-settings.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('body')).toContainText(label);
+      await expect(page.locator('body')).not.toContainText('Dari dashboard tawk.to');
+    }
+  });
 });
 
 test.describe('i18n admin reseller pricing', () => {
