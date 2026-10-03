@@ -288,6 +288,9 @@ test('diskon grup + promo + asuransi diterapkan pada total', async ({ page }) =>
     insurance: true,
   });
 
+  // Total setelah diskon grup + promo + asuransi tampil di konfirmasi.
+  await expect(page.locator('body')).toContainText('Rp 7.287.300');
+
   // 5 x 1.500.000 = 7.500.000; grup 5% = 375.000 -> 7.125.000;
   // promo tetap 50.000 -> 7.075.000; asuransi 3% (dibulatkan ke 100) = 212.300
   // -> total 7.287.300
