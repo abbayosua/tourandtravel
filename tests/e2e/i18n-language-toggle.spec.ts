@@ -54,6 +54,8 @@ const PAGES = [
   'refund-policy.php',
   'login.php',
   'register.php',
+  'forgot-password.php',
+  'reset-password.php',
   'attractions.php',
   'transfers.php',
   'rental-cars.php',
