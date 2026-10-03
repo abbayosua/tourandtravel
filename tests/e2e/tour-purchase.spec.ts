@@ -22,6 +22,7 @@ const AUTH_EMAIL_REDEEM = 'e2e-tourbuy-redeem@t.local';
 const AUTH_PASS = 'e2epass123';
 const SLUG = 'e2e-tour-purchase';
 const DATE = '2027-12-01';
+const DATE2 = '2027-12-15';
 const UNIT_PRICE = 1500000;
 
 function mysql(sql: string): string {
@@ -39,6 +40,7 @@ function passportFixture(): string {
 let userId = 0;
 let redeemUserId = 0;
 let cancelUserId = 0;
+let modUserId = 0;
 let tourId = 0;
 
 function createUser(email: string): number {
@@ -64,7 +66,7 @@ function cleanup() {
   }
   tourId = 0;
   mysql(`DELETE FROM promo_codes WHERE code = 'E2E50'`);
-  for (const uid of [userId, redeemUserId, cancelUserId]) {
+  for (const uid of [userId, redeemUserId, cancelUserId, modUserId]) {
     if (!uid) continue;
     mysql(`DELETE FROM wallet_transactions WHERE user_id = ${uid}`);
     mysql(`DELETE FROM points_ledger WHERE user_id = ${uid}`);
@@ -77,6 +79,7 @@ function cleanup() {
   userId = 0;
   redeemUserId = 0;
   cancelUserId = 0;
+  modUserId = 0;
 }
 
 test.beforeAll(() => {
@@ -91,6 +94,10 @@ test.beforeAll(() => {
   mysql(
     `INSERT INTO tour_dates (tour_id, departure_date, return_date, available_slots, booked, is_active) ` +
       `VALUES (${tourId}, '${DATE}', '${DATE}', 10, 0, 1)`
+  );
+  mysql(
+    `INSERT INTO tour_dates (tour_id, departure_date, return_date, available_slots, booked, is_active) ` +
+      `VALUES (${tourId}, '${DATE2}', '${DATE2}', 10, 0, 1)`
   );
 });
 
@@ -276,4 +283,30 @@ test('pembatalan booking tour mengembalikan wallet (TravelPoints)', async ({ pag
   expect(
     mysql(`SELECT COUNT(*) FROM wallet_transactions WHERE user_id = ${cancelUserId} AND type = 'refund' AND reference_type = 'tour_booking' AND amount = 500000`)
   ).toBe('1');
+});
+
+test('ubah booking (tanggal + peserta) memperbarui total', async ({ page }) => {
+  const modEmail = 'e2e-tourbuy-mod@t.local';
+  modUserId = createUser(modEmail);
+  await login(page, modEmail);
+
+  const code = await bookTour(page, { participants: 1 });
+  const bookingId = Number(mysql(`SELECT id FROM bookings WHERE booking_code = '${code}'`));
+  const date2Id = Number(mysql(`SELECT id FROM tour_dates WHERE tour_id = ${tourId} AND departure_date = '${DATE2}'`));
+
+  // Buka modal "Ubah" untuk booking ini.
+  await page.goto(`${BASE}/my-bookings.php`);
+  await page.locator(`button[data-bs-target="#modifyModal${bookingId}"]`).click();
+  const html = await page.content();
+  await page.locator(`#modifyModal${bookingId} select[name="new_date_id"]`).waitFor({ state: 'visible' });
+
+  await page.locator(`#modifyModal${bookingId} select[name="new_date_id"]`).selectOption({ value: String(date2Id) });
+  await page.locator(`#modifyModal${bookingId} input[name="new_participants"]`).fill('2');
+  await page.locator(`#modifyModal${bookingId} button[type="submit"]`).click();
+  await page.waitForURL(/my-bookings\.php\?msg=modified/, { timeout: 15000 });
+
+  const row = mysql(`SELECT tour_date_id, participants, total_price FROM bookings WHERE id = ${bookingId}`);
+  expect(row).toContain(String(date2Id));
+  expect(row).toContain('2');
+  expect(row).toContain(String(UNIT_PRICE * 2));
 });

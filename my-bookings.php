@@ -356,7 +356,7 @@ require_once 'includes/header-shared.php';
 <?php foreach ($all as $b): if ($b['btype'] !== 'tour' || !in_array($b['status'], ['pending','confirmed']) || ($b['payment_status'] ?? null) === 'paid') continue; if (isset($modModalsRendered[$b['id']])) continue; $modModalsRendered[$b['id']] = true; ?>
 <?php
 // Get available dates for this tour
-$availDates = db()->prepare("SELECT td.*, (td.max_participants - COALESCE(SUM(b.participants), 0)) as sisa_slot
+$availDates = db()->prepare("SELECT td.*, (td.available_slots - COALESCE(SUM(b.participants), 0)) as sisa_slot
     FROM tour_dates td
     LEFT JOIN bookings b ON b.tour_date_id = td.id AND b.status IN ('pending','confirmed')
     WHERE td.tour_id = ? AND td.departure_date >= CURDATE()
