@@ -150,12 +150,17 @@ function toggleWishlist(btn, tourId, itemType) {
     return;
     <?php endif; ?>
     var icon = btn.querySelector('i');
+    if (btn.dataset.wlBusy === '1') return;
+    btn.dataset.wlBusy = '1';
+    var prevIcon = icon ? icon.className : '';
+    var prevCls = btn.className;
+    btn.classList.add('opacity-50');
     fetch('wishlist-ajax.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'tour_id=' + encodeURIComponent(tourId) + '&item_type=' + encodeURIComponent(itemType) + '&action=toggle'
     })
-        .then(function(r) { return r.json(); })
+        .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
         .then(function(d) {
             if (d.status === 'added') {
                 icon.className = 'bi bi-heart-fill';
@@ -164,6 +169,20 @@ function toggleWishlist(btn, tourId, itemType) {
                 icon.className = 'bi bi-heart';
                 btn.className = btn.className.replace(/text-\w+/g, '').trim() + ' text-white';
             }
+        })
+        .catch(function() {
+            // Feedback error singkat, lalu kembalikan tampilan semula.
+            if (icon) icon.className = 'bi bi-exclamation-triangle-fill';
+            btn.classList.add('text-warning');
+            btn.title = '<?= t('Gagal menyimpan wishlist. Coba lagi.') ?>';
+            setTimeout(function() {
+                if (icon) icon.className = prevIcon;
+                btn.className = prevCls;
+            }, 1500);
+        })
+        .finally(function() {
+            btn.dataset.wlBusy = '0';
+            btn.classList.remove('opacity-50');
         });
 }
 </script>
