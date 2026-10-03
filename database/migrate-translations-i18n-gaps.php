@@ -1285,3 +1285,40 @@ $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, 
 $c15 = 0;
 foreach ($adminPush as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c15++; } }
 echo "Upserted $c15 admin push-notification rows.\n";
+
+// ---- Admin flash sales ----
+$adminFlash = [
+    'en' => [
+        'Item, periode wajib diisi; akhir harus setelah mulai' => 'Item and period are required; end must be after start',
+        'Akhir' => 'End',
+        'Terjual/Kuota' => 'Sold/Quota',
+        'Belum ada flash sale' => 'No flash sales yet',
+        'Edit Flash Sale' => 'Edit Flash Sale',
+        'Tambah Flash Sale' => 'Add Flash Sale',
+        'Tipe item' => 'Item type',
+        'ID item' => 'Item ID',
+        'Diskon (%)' => 'Discount (%)',
+        'Kuota (kosong = tanpa batas)' => 'Quota (empty = unlimited)',
+    ],
+    'zh' => [
+        'Item, periode wajib diisi; akhir harus setelah mulai' => '商品和周期为必填；结束时间必须晚于开始时间',
+        'Flash Sale' => '限时特惠',
+        'Item' => '商品',
+        'Diskon' => '折扣',
+        'Akhir' => '结束',
+        'Terjual/Kuota' => '已售/配额',
+        'Status' => '状态',
+        'Edit' => '编辑',
+        'Belum ada flash sale' => '暂无限时特惠',
+        'Edit Flash Sale' => '编辑限时特惠',
+        'Tambah Flash Sale' => '添加限时特惠',
+        'Tipe item' => '商品类型',
+        'ID item' => '商品 ID',
+        'Diskon (%)' => '折扣（%）',
+        'Kuota (kosong = tanpa batas)' => '配额（留空 = 不限）',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$c16 = 0;
+foreach ($adminFlash as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c16++; } }
+echo "Upserted $c16 admin flash-sale rows.\n";

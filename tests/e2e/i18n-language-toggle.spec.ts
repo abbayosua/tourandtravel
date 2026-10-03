@@ -452,3 +452,15 @@ test.describe('i18n admin push notifications', () => {
     }
   });
 });
+
+test.describe('i18n admin flash sales', () => {
+  test('label flash sale mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    const expected: Record<string, string> = { id: 'Tambah Flash Sale', en: 'Add Flash Sale', zh: '添加限时特惠' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/admin/flash-sales.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('body')).toContainText(label);
+    }
+  });
+});
