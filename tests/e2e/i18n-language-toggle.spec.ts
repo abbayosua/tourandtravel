@@ -32,7 +32,7 @@ const ID_MARKERS = new RegExp(
       'keberangkatan', 'jadwal', 'stasiun', 'pelabuhan', 'rute', 'bantuan', 'lacak',
       'profil', 'notifikasi', 'tentang', 'ketentuan', 'kebijakan', 'hubungi', 'beranda',
       'reseller', 'favorit', 'mitra', 'terpercaya', 'diskon', 'segera', 'segala',
-      'kuota', 'seluruh', 'khusus', 'pengiriman', 'selama',
+      'kuota', 'seluruh', 'khusus', 'pengiriman', 'selama', 'dimuat', 'peta', 'ulasan', 'penumpang',
     ].join('|') +
     ')\\b',
   'i'
@@ -600,6 +600,18 @@ test.describe('i18n reseller pages', () => {
     const expected: Record<string, string> = { id: 'Dashboard Reseller', en: 'Reseller Dashboard', zh: '分销商仪表板' };
     for (const [lang, label] of Object.entries(expected)) {
       await page.goto(`${BASE}/reseller-dashboard.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('body')).toContainText(label);
+    }
+  });
+});
+
+test.describe('i18n booking labels', () => {
+  test('label ulasan & info tour-detail mengikuti bahasa', async ({ page }) => {
+    const slug = '8d7n-shanghai-jiangnan-highlights-ink-wash-jiangnan-wuzhen-water-town';
+    const expected: Record<string, string> = { id: 'Ulasan', en: 'Reviews', zh: '评价' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/tour-detail.php?slug=${slug}&lang=${lang}`);
       await page.waitForLoadState('domcontentloaded');
       await expect(page.locator('body')).toContainText(label);
     }
