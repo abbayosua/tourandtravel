@@ -77,6 +77,7 @@ const PAGES = [
   'hotel-detail.php?slug=grand-hyatt-bali',
   'hotel-detail.php?slug=four-seasons-resort-ubud',
   'attraction-detail.php?slug=tiket-masuk-taman-mini-indonesia-indah',
+  'attraction-detail.php?slug=candi-borobudur-sunrise-ticket',
   'transfer-detail.php?slug=bandara-juanda-ke-pusat-kota-surabaya',
   'rental-car-detail.php?slug=toyota-avanza-jakarta',
   'esim-detail.php?slug=esim-bali-10gb',
