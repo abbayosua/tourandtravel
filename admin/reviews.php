@@ -68,7 +68,7 @@ require_once __DIR__ . '/includes/admin-header.php';
             </div>
         </div>
         <?php endif; ?>
-        <form method="POST" class="d-flex gap-2">
+        <form method="POST" data-submit-once class="d-flex gap-2">
             <input type="hidden" name="review_id" value="<?= (int)$r['id'] ?>">
             <input type="text" name="reply_text" class="form-control form-control-sm" placeholder="<?= t('Balas ulasan...') ?>" value="<?= e($r['reply_text'] ?? '') ?>">
             <button type="submit" name="reply_review" class="btn btn-sm btn-primary"><?= t('Balas') ?></button>

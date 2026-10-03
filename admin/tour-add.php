@@ -67,7 +67,7 @@ require_once 'includes/admin-header.php';
     <div class="alert alert-danger py-2"><?= $error ?></div>
 <?php endif; ?>
 
-<form method="POST" enctype="multipart/form-data">
+<form method="POST" data-submit-once enctype="multipart/form-data">
     <div class="row">
         <div class="col-md-8">
             <div class="card border-0 shadow-sm mb-3">

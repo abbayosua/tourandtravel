@@ -78,7 +78,7 @@ require_once 'includes/admin-header.php';
 <div class="card border-0 shadow-sm mb-3">
     <div class="card-body p-3">
         <h5 class="fw-semibold mb-3"><?= $editId > 0 ? t('Edit') : t('Tambah') ?><?= t('Kode Promo') ?></h5>
-        <form method="POST" class="row g-2">
+        <form method="POST" data-submit-once class="row g-2">
             <input type="hidden" name="id" value="<?= $editId ?>">
             <div class="col-md-3">
                 <label class="form-label small"><?= t('Kode') ?></label>

@@ -50,7 +50,7 @@ require_once 'includes/admin-header.php';
 <div class="row">
     <div class="col-md-7">
         <div class="card border-0 shadow-sm mb-3"><div class="card-body">
-            <form method="POST" enctype="multipart/form-data">
+            <form method="POST" data-submit-once enctype="multipart/form-data">
                 <input type="hidden" name="save_brand" value="1">
                 <div class="mb-3">
                     <label class="form-label"><?= t('Nama travel') ?></label>

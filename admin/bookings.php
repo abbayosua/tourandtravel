@@ -332,7 +332,7 @@ require_once 'includes/admin-header.php';
                         <td><?= formatRupiah($b['total_price']) ?><?= $btype === 'tour' && !empty($b['insurance_premi']) ? ' <span class="badge bg-success-subtle text-success" title="' . t('Asuransi perjalanan') . '"><i class="bi bi-shield-check"></i> +' . formatRupiah((float)$b['insurance_premi']) . '</span>' : '' ?></td>
                         <td data-testid="cogs-cell">
                             <small class="text-muted"><?= formatRupiah($b['cogs'] ?? 0) ?></small>
-                            <form method="POST" action="bookings.php?update_status=<?= $b['id'] ?>&status=<?= e($b['status']) ?>&type=<?= $btype ?>" class="d-flex gap-1 mt-1" style="max-width:130px;">
+                            <form method="POST" data-submit-once action="bookings.php?update_status=<?= $b['id'] ?>&status=<?= e($b['status']) ?>&type=<?= $btype ?>" class="d-flex gap-1 mt-1" style="max-width:130px;">
                                 <input type="number" name="cogs" class="form-control form-control-sm" value="<?= e($b['cogs'] ?? 0) ?>" min="0" step="0.01" aria-label="<?= t('COGS') ?>">
                                 <button type="submit" class="btn btn-sm btn-outline-secondary" title="<?= t('Simpan COGS') ?>"><i class="bi bi-check"></i></button>
                             </form>
@@ -371,7 +371,7 @@ require_once 'includes/admin-header.php';
                               <div class="modal-dialog modal-lg modal-dialog-scrollable">
                                 <div class="modal-content">
                                   <div class="modal-header py-2"><h6 class="modal-title"><?= t('Data Peserta') ?> — <?= e($b['booking_code'] ?? '') ?></h6><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-                                  <form method="POST">
+                                  <form method="POST" data-submit-once>
                                     <input type="hidden" name="pax_update" value="1">
                                     <input type="hidden" name="booking_id" value="<?= (int)$b['id'] ?>">
                                     <div class="modal-body">
@@ -394,7 +394,7 @@ require_once 'includes/admin-header.php';
                                       <button type="submit" class="btn btn-primary btn-sm" data-testid="pax-save-<?= (int)$b['id'] ?>"><?= t('Simpan Nama') ?></button>
                                     </div>
                                   </form>
-                                  <form method="POST" enctype="multipart/form-data" class="border-top p-2">
+                                  <form method="POST" data-submit-once enctype="multipart/form-data" class="border-top p-2">
                                     <input type="hidden" name="pax_add" value="1">
                                     <input type="hidden" name="booking_id" value="<?= (int)$b['id'] ?>">
                                     <div class="d-flex gap-2 align-items-end flex-wrap">
@@ -448,7 +448,7 @@ require_once 'includes/admin-header.php';
                             <div class="modal fade" id="noteModal<?= $b['id'] ?>" tabindex="-1">
                               <div class="modal-dialog modal-sm">
                                 <div class="modal-content">
-                                  <form method="POST" action="bookings.php?update_status=<?= $b['id'] ?>&status=<?= e($b['status']) ?>&type=<?= $btype ?>">
+                                  <form method="POST" data-submit-once action="bookings.php?update_status=<?= $b['id'] ?>&status=<?= e($b['status']) ?>&type=<?= $btype ?>">
                                     <div class="modal-header py-2"><h6 class="modal-title"><?= t('Catatan internal') ?> — <?= e($b['name']) ?></h6><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
                                     <div class="modal-body">
                                       <textarea name="admin_note" class="form-control form-control-sm" rows="3" placeholder="<?= t('Catatan untuk tim (tidak dikirim ke pelanggan email)') ?>"><?= e($b['admin_note'] ?? '') ?></textarea>

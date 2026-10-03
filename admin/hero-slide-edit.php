@@ -75,7 +75,7 @@ require_once __DIR__ . '/includes/admin-header.php';
 
 <?php if ($error): ?><div class="alert alert-danger py-2 small"><?= e($error) ?></div><?php endif; ?>
 
-<form method="POST" enctype="multipart/form-data">
+<form method="POST" data-submit-once enctype="multipart/form-data">
     <div class="row">
         <div class="col-md-7">
             <div class="card border-0 shadow-sm mb-3"><div class="card-body p-4">

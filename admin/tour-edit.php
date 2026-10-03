@@ -194,7 +194,7 @@ require_once 'includes/admin-header.php';
 <?php endif; ?>
 
 <!-- Form Edit Tour -->
-<form method="POST" enctype="multipart/form-data">
+<form method="POST" data-submit-once enctype="multipart/form-data">
     <div class="row">
         <div class="col-md-8">
             <div class="card border-0 shadow-sm mb-3">
@@ -280,7 +280,7 @@ require_once 'includes/admin-header.php';
     </div>
     <div class="card-body">
         <div class="collapse mb-3" id="addDateForm">
-            <form method="POST" class="row g-2 bg-light p-3 rounded">
+            <form method="POST" data-submit-once class="row g-2 bg-light p-3 rounded">
                 <div class="col-md-3">
                     <label class="form-label small"><?= t('Tanggal Berangkat') ?></label>
                     <?php renderDatePicker(['name' => 'departure_date', 'cls' => 'form-control form-control-sm', 'required' => true, 'bare' => true]); ?>
@@ -370,7 +370,7 @@ require_once 'includes/admin-header.php';
     </div>
     <div class="card-body">
         <div class="collapse mb-3" id="addItineraryForm">
-            <form method="POST" class="row g-2 bg-light p-3 rounded">
+            <form method="POST" data-submit-once class="row g-2 bg-light p-3 rounded">
                 <div class="col-md-1">
                     <label class="form-label small"><?= t('Hari') ?></label>
                     <input type="number" name="day" class="form-control form-control-sm" min="1" required>
@@ -450,7 +450,7 @@ require_once 'includes/admin-header.php';
         <?php
         try { $galleryItems = db()->prepare("SELECT * FROM tour_images WHERE tour_id=? ORDER BY sort_order ASC, id ASC"); $galleryItems->execute([$id]); $galleryItems = $galleryItems->fetchAll(); } catch(Throwable $e){ $galleryItems=[]; }
         ?>
-        <form method="POST" enctype="multipart/form-data" class="mb-3">
+        <form method="POST" data-submit-once enctype="multipart/form-data" class="mb-3">
             <div class="row g-2 align-items-end">
                 <div class="col-md-9">
                     <label class="form-label small"><?= t('Pilih Gambar (bisa banyak)') ?></label>

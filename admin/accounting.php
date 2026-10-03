@@ -265,7 +265,7 @@ require_once 'includes/admin-header.php';
                         <td class="fw-semibold"><?= formatRupiah($er['amount']) ?></td>
                         <td class="text-end table-action">
                             <button class="btn btn-sm btn-outline-primary" onclick="openExpenseModal(<?= (int)$er['id'] ?>)" data-testid="edit-expense"><i class="bi bi-pencil"></i></button>
-                            <form method="POST" class="d-inline" onsubmit="return confirm('<?= t('Hapus pengeluaran ini?') ?>')">
+                            <form method="POST" data-submit-once class="d-inline" onsubmit="return confirm('<?= t('Hapus pengeluaran ini?') ?>')">
                                 <input type="hidden" name="csrf_token" value="<?= e($csrfToken) ?>">
                                 <input type="hidden" name="expense_action" value="delete">
                                 <input type="hidden" name="id" value="<?= (int)$er['id'] ?>">
@@ -287,7 +287,7 @@ require_once 'includes/admin-header.php';
 <div class="modal fade" id="expenseModal" tabindex="-1" data-testid="expense-modal">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form method="POST" id="expenseForm">
+      <form method="POST" data-submit-once id="expenseForm">
         <input type="hidden" name="csrf_token" value="<?= e($csrfToken) ?>">
         <input type="hidden" name="expense_action" value="save">
         <input type="hidden" name="id" id="expenseId" value="0">

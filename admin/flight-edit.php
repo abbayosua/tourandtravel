@@ -27,7 +27,7 @@ $pageTitle=t('Edit Pesawat'); require_once 'includes/admin-header.php';
 ?>
 <h4 class="fw-bold mb-3"><?= t('Edit Pesawat') ?></h4>
 <?php if($error):?><div class="alert alert-danger py-2"><?=$error?></div><?php endif;?>
-<form method="POST">
+<form method="POST" data-submit-once>
 <div class="row"><div class="col-md-8">
 <div class="card border-0 shadow-sm mb-3"><div class="card-body">
 <div class="row g-2"><div class="col-md-6 mb-3"><label class="form-label"><?= t('Maskapai') ?></label><input name="airline" class="form-control" value="<?=e($item['airline'])?>" required></div>

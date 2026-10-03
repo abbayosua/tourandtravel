@@ -85,7 +85,7 @@ require_once 'includes/admin-header.php';
 <div class="card border-0 shadow-sm mb-4">
     <div class="card-body p-4">
         <h6 class="fw-semibold mb-3"><?= $editData ? t('Edit Harga Reseller') : t('Tambah Harga Reseller') ?></h6>
-        <form method="POST">
+        <form method="POST" data-submit-once>
             <?php if ($editData): ?><input type="hidden" name="edit_id" value="<?= $editData['id'] ?>"><?php endif; ?>
             <div class="row g-3 align-items-end">
                 <div class="col-md-4">

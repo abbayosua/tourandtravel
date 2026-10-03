@@ -72,7 +72,7 @@ require_once 'includes/admin-header.php';
 <!-- Bulk Set Content Language -->
 <div class="card border-0 shadow-sm mb-3">
     <div class="card-body py-2">
-        <form method="POST" class="d-flex align-items-center gap-2 flex-wrap" id="bulkLangForm">
+        <form method="POST" data-submit-once class="d-flex align-items-center gap-2 flex-wrap" id="bulkLangForm">
             <input type="hidden" name="bulk_set_lang" value="1">
             <strong class="small"><?= t('Bulk Bahasa Konten:') ?></strong>
             <select name="bulk_lang" class="form-select form-select-sm" style="width: auto;">

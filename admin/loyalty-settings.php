@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_loyalty'])) {
     <div class="alert alert-danger py-2"><?= $error ?></div>
 <?php endif; ?>
 
-<form method="POST">
+<form method="POST" data-submit-once>
 <div class="row g-4">
     <div class="col-md-6">
         <div class="card border-0 shadow-sm mb-3">

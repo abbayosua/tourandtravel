@@ -18,7 +18,7 @@ $pageTitle=t('Edit Rental Mobil'); require_once 'includes/admin-header.php';
 ?>
 <h4 class="fw-bold mb-3"><?= t('Edit Rental Mobil') ?></h4>
 <?php if($error):?><div class="alert alert-danger py-2"><?=$error?></div><?php endif;?>
-<form method="POST">
+<form method="POST" data-submit-once>
 <div class="card border-0 shadow-sm mb-3"><div class="card-body">
 <div class="row g-2"><div class="col-md-6"><label class="form-label"><?= t('Nama Mobil') ?></label><input name="name" class="form-control" value="<?=e($item['name'])?>" required></div>
 <div class="col-md-3"><label class="form-label"><?= t('Tipe') ?></label><input name="car_type" class="form-control" value="<?=e($item['car_type'])?>" required></div>

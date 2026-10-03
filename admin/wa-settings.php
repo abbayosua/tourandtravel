@@ -156,7 +156,7 @@ require_once 'includes/admin-header.php';
                         </div>
                     </div>
 
-                    <form method="POST">
+                    <form method="POST" data-submit-once>
                         <input type="hidden" name="save_settings" value="1">
                         <div class="mb-3">
                             <label class="form-label small fw-semibold"><?= t('Nomor WA Admin/Supplier') ?> <span class="text-danger">*</span></label>
@@ -184,7 +184,7 @@ require_once 'includes/admin-header.php';
             <div class="card border-0 shadow-sm mt-4">
                 <div class="card-body">
                     <h6 class="fw-semibold mb-3"><i class="bi bi-send me-2"></i><?= t('Test Kirim WA') ?></h6>
-                    <form method="POST" action="wa-test.php">
+                    <form method="POST" data-submit-once action="wa-test.php">
                         <div class="mb-2">
                             <label class="form-label small"><?= t('Nomor Tujuan') ?></label>
                             <input type="text" name="test_phone" class="form-control form-control-sm" value="<?= e($wa_settings['admin_phone']) ?>">

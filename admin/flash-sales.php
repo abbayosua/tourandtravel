@@ -76,7 +76,7 @@ require_once 'includes/admin-header.php';
                         <td><span class="badge bg-<?= $live ? 'success' : 'secondary' ?>" data-testid="fs-status"><?= $live ? t('Aktif') : t('Nonaktif') ?></span></td>
                         <td class="text-nowrap">
                             <a class="btn btn-sm btn-outline-primary" href="flash-sales.php?edit=<?= $fs['id'] ?>"><?= t('Edit') ?></a>
-                            <form method="POST" class="d-inline" onsubmit="return confirm('<?= t('Hapus flash sale ini?') ?>')">
+                            <form method="POST" data-submit-once class="d-inline" onsubmit="return confirm('<?= t('Hapus flash sale ini?') ?>')">
                                 <input type="hidden" name="action" value="delete">
                                 <input type="hidden" name="id" value="<?= $fs['id'] ?>">
                                 <button class="btn btn-sm btn-outline-danger"><?= t('Hapus') ?></button>
@@ -92,7 +92,7 @@ require_once 'includes/admin-header.php';
     <div class="col-md-4">
         <div class="card border-0 shadow-sm"><div class="card-body">
             <h6 class="fw-semibold mb-3"><?= $editFs ? t('Edit Flash Sale') : t('Tambah Flash Sale') ?></h6>
-            <form method="POST">
+            <form method="POST" data-submit-once>
                 <input type="hidden" name="action" value="save">
                 <input type="hidden" name="id" value="<?= (int)($editFs['id'] ?? 0) ?>">
                 <div class="mb-2"><label class="form-label small"><?= t('Tipe item') ?></label>

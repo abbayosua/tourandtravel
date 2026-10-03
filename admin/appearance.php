@@ -45,7 +45,7 @@ require_once __DIR__ . '/includes/admin-header.php';
     <div class="card-body p-4">
         <h6 class="fw-semibold mb-1"><?= t('Fokus Website') ?></h6>
         <p class="text-muted small mb-3"><?= t('Pilih produk utama yang dijual website ini. Halaman utama akan tersusun otomatis mengikuti pilihan.') ?></p>
-        <form method="POST" class="row g-3 align-items-end">
+        <form method="POST" data-submit-once class="row g-3 align-items-end">
             <div class="col-md-6">
                 <label class="form-label small fw-semibold"><?= t('Fokus') ?></label>
                 <select name="site_focus" class="form-select" id="siteFocusSelect">

@@ -96,7 +96,7 @@ require_once 'includes/admin-header.php';
                         <td><?= (int)$r['stock'] ?></td>
                         <td class="text-nowrap">
                             <a class="btn btn-sm btn-outline-primary" href="hotel-rooms.php?hotel_id=<?= $hotelId ?>&edit=<?= $r['id'] ?>"><?= t('Edit') ?></a>
-                            <form method="POST" class="d-inline" onsubmit="return confirm('<?= t('Hapus kamar ini?') ?>')">
+                            <form method="POST" data-submit-once class="d-inline" onsubmit="return confirm('<?= t('Hapus kamar ini?') ?>')">
                                 <input type="hidden" name="action" value="delete">
                                 <input type="hidden" name="id" value="<?= $r['id'] ?>">
                                 <button class="btn btn-sm btn-outline-danger"><?= t('Hapus') ?></button>
@@ -115,7 +115,7 @@ require_once 'includes/admin-header.php';
     <div class="col-md-4">
         <div class="card border-0 shadow-sm mb-3"><div class="card-body">
             <h6 class="fw-semibold mb-3"><?= $editRoom ? t('Edit Tipe Kamar') : t('Tambah Tipe Kamar') ?></h6>
-            <form method="POST">
+            <form method="POST" data-submit-once>
                 <input type="hidden" name="action" value="save">
                 <input type="hidden" name="id" value="<?= (int)($editRoom['id'] ?? 0) ?>">
                 <div class="mb-2"><label class="form-label small"><?= t('Nama') ?> (ID)</label><input name="name" class="form-control form-control-sm" value="<?= e($editRoom['name'] ?? '') ?>" required></div>

@@ -58,7 +58,7 @@ require_once 'includes/admin-header.php';
 <div class="row">
     <div class="col-md-7">
         <div class="card border-0 shadow-sm mb-3"><div class="card-body">
-            <form method="POST">
+            <form method="POST" data-submit-once>
                 <input type="hidden" name="save_settings" value="1">
                 <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" name="hotel_live_enabled" id="hotelLiveEnabled" value="1" <?= $liveEnabled ? 'checked' : '' ?>>

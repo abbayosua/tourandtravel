@@ -92,7 +92,7 @@ require_once __DIR__ . '/includes/admin-header.php';
 <div class="card border-0 shadow-sm mb-4">
     <div class="card-body p-4">
         <h6 class="fw-semibold mb-3"><?= t('Mode Pembayaran Paket Tour') ?></h6>
-        <form method="POST" id="paymentModeForm">
+        <form method="POST" data-submit-once id="paymentModeForm">
         <div class="row g-3 mb-4">
             <div class="col-md-4">
                 <label class="form-label small fw-semibold"><?= t('Mode') ?></label>
@@ -119,7 +119,7 @@ require_once __DIR__ . '/includes/admin-header.php';
         </div>
         </form>
         <h6 class="fw-semibold mb-3"><?= t('Pengaturan Midtrans') ?></h6>
-        <form method="POST" class="row g-3">
+        <form method="POST" data-submit-once class="row g-3">
             <div class="col-md-3">
                 <label class="form-label small fw-semibold"><?= t('Environment') ?></label>
                 <select name="midtrans_env" class="form-select">

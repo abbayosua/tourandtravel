@@ -36,7 +36,7 @@ require_once 'includes/admin-header.php';
 ?>
 <h4 class="fw-bold mb-3"><?= t('Edit Hotel') ?></h4>
 <?php if ($error): ?><div class="alert alert-danger py-2"><?=$error?></div><?php endif; ?>
-<form method="POST">
+<form method="POST" data-submit-once>
 <div class="row">
 <div class="col-md-8">
 <div class="card border-0 shadow-sm mb-3"><div class="card-body">

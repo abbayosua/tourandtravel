@@ -20,7 +20,7 @@ $pageTitle=t('Edit Ferry'); require_once 'includes/admin-header.php';
 ?>
 <h4 class="fw-bold mb-3"><?= t('Edit Ferry') ?></h4>
 <?php if($error):?><div class="alert alert-danger py-2"><?=$error?></div><?php endif;?>
-<form method="POST">
+<form method="POST" data-submit-once>
 <div class="card border-0 shadow-sm mb-3"><div class="card-body">
 <div class="row g-2"><div class="col-md-4"><label class="form-label"><?= t('Perusahaan') ?></label><input name="company" class="form-control" value="<?=e($item['company'])?>" required></div>
 <div class="col-md-4"><label class="form-label"><?= t('Kapal') ?></label><input name="vessel_name" class="form-control" value="<?=e($item['vessel_name']??'')?>"></div>

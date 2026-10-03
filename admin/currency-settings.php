@@ -52,7 +52,7 @@ $currencies = getSupportedCurrencies();
                 <h6 class="fw-bold mb-0"><i class="bi bi-gear me-2"></i><?= t('Mata Uang Default') ?></h6>
             </div>
             <div class="card-body">
-                <form method="POST">
+                <form method="POST" data-submit-once>
                     <div class="mb-3">
                         <label class="form-label small fw-semibold"><?= t('Mata uang yang ditampilkan ke pengunjung') ?></label>
                         <select name="default_currency" class="form-select">
@@ -75,7 +75,7 @@ $currencies = getSupportedCurrencies();
         <div class="card border-0 shadow-sm mb-3">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <h6 class="fw-bold mb-0"><i class="bi bi-graph-up me-2"></i><?= t('Kurs Terkini (EUR Base)') ?></h6>
-                <form method="POST" class="d-inline">
+                <form method="POST" data-submit-once class="d-inline">
                     <button type="submit" name="refresh_rates" class="btn btn-sm btn-outline-primary">
                         <i class="bi bi-arrow-clockwise"></i> <?= t('Refresh') ?>
                     </button>

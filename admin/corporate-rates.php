@@ -51,7 +51,7 @@ require_once 'includes/admin-header.php';
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body p-3">
                     <h6 class="fw-semibold mb-3"><?= t('Tambah Perusahaan') ?></h6>
-                    <form method="POST">
+                    <form method="POST" data-submit-once>
                         <input type="hidden" name="action" value="create">
                         <div class="mb-2"><input type="text" name="name" class="form-control" placeholder="<?= t('Nama perusahaan') ?>" required></div>
                         <div class="mb-3"><input type="number" name="discount_percent" class="form-control" min="0" max="100" step="0.5" placeholder="<?= t('Diskon % (mis. 10)') ?>" required></div>
@@ -62,7 +62,7 @@ require_once 'includes/admin-header.php';
             <div class="card border-0 shadow-sm">
                 <div class="card-body p-3">
                     <h6 class="fw-semibold mb-3"><?= t('Tautkan User') ?></h6>
-                    <form method="POST">
+                    <form method="POST" data-submit-once>
                         <input type="hidden" name="action" value="assign_user">
                         <div class="mb-2"><input type="email" name="email" class="form-control" placeholder="<?= t('Email user') ?>" required></div>
                         <select name="company_id" class="form-select mb-3" required>
@@ -91,7 +91,7 @@ require_once 'includes/admin-header.php';
                         <tr>
                             <td><?= e($c['name']) ?></td>
                             <td>
-                                <form method="POST" class="d-flex gap-1">
+                                <form method="POST" data-submit-once class="d-flex gap-1">
                                     <input type="hidden" name="action" value="update_pct">
                                     <input type="hidden" name="id" value="<?= (int)$c['id'] ?>">
                                     <input type="number" name="discount_percent" class="form-control form-control-sm" min="0" max="100" step="0.5" value="<?= (float)$c['discount_percent'] ?>">
@@ -100,7 +100,7 @@ require_once 'includes/admin-header.php';
                             </td>
                             <td><span class="badge <?= $c['is_active'] ? 'bg-success' : 'bg-secondary' ?>"><?= $c['is_active'] ? t('Aktif') : t('Nonaktif') ?></span></td>
                             <td>
-                                <form method="POST">
+                                <form method="POST" data-submit-once>
                                     <input type="hidden" name="action" value="toggle">
                                     <input type="hidden" name="id" value="<?= (int)$c['id'] ?>">
                                     <button type="submit" class="btn btn-sm btn-outline-secondary"><?= $c['is_active'] ? t('Nonaktifkan') : t('Aktifkan') ?></button>
