@@ -594,7 +594,7 @@ require_once 'includes/header-shared.php';
                             <input type="hidden" name="promo_code_rate" id="promoRateInput" value="0">
                             <div class="mb-2">
                                 <label class="form-label small"><?= t('Tipe Kamar') ?></label>
-                                <select name="room_id_select" id="roomSelect" class="form-select form-select-sm" data-testid="room-select">
+                                <select name="room_id_select" id="roomSelect" class="form-select form-select-sm" data-testid="room-select" required>
                                     <option value=""><?= t('Pilih tipe kamar') ?></option>
                                     <?php foreach ($hotelRooms as $hr): if ($hr['stock'] < 1) continue; ?>
                                         <option value="<?= $hr['id'] ?>" data-rate="<?= (float)$hr['rate'] ?>" data-breakfast="<?= (int)$hr['breakfast'] ?>" data-refundable="<?= (int)$hr['refundable'] ?>" data-max-guest="<?= (int)$hr['max_guest'] ?>" data-stock="<?= (int)$hr['stock'] ?>">
