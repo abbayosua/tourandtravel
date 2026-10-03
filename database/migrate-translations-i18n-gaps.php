@@ -1128,3 +1128,35 @@ $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, 
 $c11 = 0;
 foreach ($adminAccounting as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c11++; } }
 echo "Upserted $c11 admin accounting rows.\n";
+
+// ---- Admin payments settings ----
+$adminPayments = [
+    'en' => [
+        'Mode Pembayaran Paket Tour' => 'Tour Package Payment Mode',
+        'Manual — approve admin' => 'Manual — admin approval',
+        'Instant — payment gateway' => 'Instant — payment gateway',
+        'Manual: booking pending, admin konfirmasi. Instant: pelanggan bayar via gateway.' => 'Manual: booking pending, admin confirms. Instant: customer pays via gateway.',
+        'Gateway (mode instant)' => 'Gateway (instant mode)',
+        'Instant AKTIF via ' => 'Instant ACTIVE via ',
+        'Berjalan MANUAL — semua gateway nonaktif' => 'Running MANUAL — all gateways disabled',
+        'Pengaturan Tripay' => 'Tripay Settings',
+    ],
+    'zh' => [
+        'Mode Pembayaran Paket Tour' => '旅游套餐支付模式',
+        'Mode' => '模式',
+        'Manual — approve admin' => '手动 — 管理员审核',
+        'Instant — payment gateway' => '即时 — 支付网关',
+        'Manual: booking pending, admin konfirmasi. Instant: pelanggan bayar via gateway.' => '手动：订单待处理，由管理员确认。即时：客户通过支付网关付款。',
+        'Gateway (mode instant)' => '网关（即时模式）',
+        'Instant AKTIF via ' => '即时已启用，经由 ',
+        'Berjalan MANUAL — semua gateway nonaktif' => '以手动模式运行 — 所有网关已禁用',
+        'Pengaturan Tripay' => 'Tripay 设置',
+        'Gateway' => '网关',
+        'Merchant Code' => '商户代码',
+        'Private Key' => '私钥',
+    ],
+];
+$stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");
+$c12 = 0;
+foreach ($adminPayments as $lang => $dict) { foreach ($dict as $key => $value) { $stmt->execute([$key, $lang, $value]); $c12++; } }
+echo "Upserted $c12 admin payments rows.\n";

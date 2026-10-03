@@ -382,3 +382,15 @@ test.describe('i18n admin pengeluaran', () => {
     }
   });
 });
+
+test.describe('i18n admin payments', () => {
+  test('label pengaturan pembayaran mengikuti bahasa', async ({ page }) => {
+    await adminLogin(page);
+    const expected: Record<string, string> = { id: 'Pengaturan Tripay', en: 'Tripay Settings', zh: 'Tripay 设置' };
+    for (const [lang, label] of Object.entries(expected)) {
+      await page.goto(`${BASE}/admin/payments.php?lang=${lang}`);
+      await page.waitForLoadState('domcontentloaded');
+      await expect(page.locator('body')).toContainText(label);
+    }
+  });
+});
