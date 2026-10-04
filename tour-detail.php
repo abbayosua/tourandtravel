@@ -1156,24 +1156,30 @@ require __DIR__ . '/includes/components/pax-modal.php';
     });
   }
   document.getElementById('itinCreateBtn').addEventListener('click', function () {
+    var btn = this;
     var title = document.getElementById('itinTitle').value.trim();
-    if (!title) return;
+    if (!title || btn.disabled) return;
+    btn.disabled = true;
     api({ action: 'create_itinerary', title: title }, function (res) {
-      if (!res || !res.ok) return;
+      if (!res || !res.ok) { btn.disabled = false; return; }
       currentItin = res.itinerary_id;
       api({ itinerary_id: currentItin }, function (det) {
         var firstDay = det.itinerary && det.itinerary.days && det.itinerary.days.length ? det.itinerary.days[0].day_id : null;
-        if (!firstDay) return;
+        if (!firstDay) { btn.disabled = false; return; }
         api({ action: 'add_item', day_id: firstDay, title: tourTitle, item_type: 'tour', tour_id: tourId }, function (added) {
+          btn.disabled = false;
           if (added) loadDays(currentItin);
         });
       });
     });
   });
   document.getElementById('itinAddItemBtn').addEventListener('click', function () {
+    var btn = this;
     var title = document.getElementById('itinItemTitle').value.trim();
-    if (!title || !selectedDay) return;
+    if (!title || !selectedDay || btn.disabled) return;
+    btn.disabled = true;
     api({ action: 'add_item', day_id: selectedDay, title: title, item_type: 'custom' }, function (res) {
+      btn.disabled = false;
       if (!res || !res.ok) return;
       document.getElementById('itinItemTitle').value = '';
       loadDays(currentItin);

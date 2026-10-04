@@ -89,14 +89,13 @@ function tripayChannelMeta(?string $code = null): ?array {
 }
 
 /** Channel yang ditawarkan di UI (urutan tampil). */
-function tripayUiChannels(): array {
-    return ['BRIVA', 'BCAVA', 'BNIVA', 'MANDIRIVA', 'PERMATAVA', 'QRIS', 'ALFAMART', 'INDOMARET'];
+/** Localize a Tripay channel label (e.g. "BRI Virtual Account" -> "BRI 虚拟账户"). */
+function tripayLocalizedLabel(string $label): string {
+    return str_ireplace('Virtual Account', t('Virtual Account'), $label);
 }
 
-/** Label channel dalam bahasa aktif: suffix "Virtual Account" ikut terjemahan. */
-function tripayLocalizedLabel(string $label): string {
-    if ($label === '') return $label;
-    return str_ireplace('Virtual Account', t('Virtual Account'), $label);
+function tripayUiChannels(): array {
+    return ['BRIVA', 'BCAVA', 'BNIVA', 'MANDIRIVA', 'PERMATAVA', 'QRIS', 'ALFAMART', 'INDOMARET'];
 }
 
 function tripayApiKey(): string {
