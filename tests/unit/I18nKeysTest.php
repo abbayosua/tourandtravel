@@ -137,6 +137,13 @@ function testEveryCodeKeyHasEnAndZh(): void {
     assertSame([], $missingZh, 'Key t() tanpa terjemahan zh');
 }
 
+/** 'Mulai' dipakai untuk tanggal mulai; en harus "Start", bukan "From". */
+function testMulaiMeansStart(): void {
+    $_SESSION['lang'] = 'en'; $_COOKIE['lang'] = 'en';
+    assertSame('Start', t('Mulai'));
+    $_SESSION['lang'] = 'id';
+}
+
 /**
  * Key dengan nilai `en` identity (en == key) yang memuat kata Indonesia = bocor:
  * saat bahasa aktif EN, label tetap tampil bahasa Indonesia.
