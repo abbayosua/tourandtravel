@@ -27,7 +27,7 @@ function renderLiveHotelCard(array $h, string $city = '', string $checkin = '', 
         'guests' => $guests,
     ], fn($v) => $v !== '' && $v !== null));
     ?>
-    <div class="card border-0 shadow-sm mb-3 overflow-hidden klook-hover-card position-relative">
+    <div class="card border-0 shadow-sm mb-3 overflow-hidden klook-hover-card position-relative js-live-hotel" data-hotel-star="<?= (int)($h['star'] ?? 0) ?>" data-hotel-price="<?= (float)($h['price'] ?? 0) ?>">
         <?php if ($sourceLabel): ?>
             <span class="badge bg-dark position-absolute top-0 start-0 m-2" style="z-index:5;font-size:10px;"><?= e($sourceLabel) ?></span>
         <?php endif; ?>

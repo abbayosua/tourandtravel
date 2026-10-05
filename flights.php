@@ -171,29 +171,8 @@ if (!empty($localSchedules)) {
     }
 }
 sort($allAirlines);
-// Filter NusaTrip offers by airline/min/max price/departure time/stops
-if (!empty($nusaOffers) && (!empty($airlineFilter) || $minPrice !== '' || $maxPrice !== '' || $depFilter !== '' || $stopsFilter !== '')) {
-    $nusaOffers = array_values(array_filter($nusaOffers, function ($o) use ($airlineFilter, $minPrice, $maxPrice, $depFilter, $stopsFilter) {
-        if (!empty($airlineFilter)) {
-            $matched = false;
-            foreach ($airlineFilter as $af) {
-                if (stripos($o['airline_name'] ?? '', $af) !== false || stripos($o['airline_code'] ?? '', $af) !== false) { $matched = true; break; }
-            }
-            if (!$matched) return false;
-        }
-        $price = (float)($o['price'] ?? 0);
-        if ($minPrice !== '' && $price < (float)$minPrice) return false;
-        if ($maxPrice !== '' && $price > (float)$maxPrice) return false;
-        if ($depFilter !== '') {
-            $hour = (int)date('G', strtotime($o['dep'] ?? ''));
-            $inRange = match ($depFilter) { 'morning' => $hour >= 5 && $hour < 12, 'afternoon' => $hour >= 12 && $hour < 17, 'evening' => $hour >= 17 && $hour < 22, 'night' => $hour >= 22 || $hour < 5, default => true };
-            if (!$inRange) return false;
-        }
-        if ($stopsFilter === 'direct' && (int)($o['stops'] ?? 0) > 0) return false;
-        if ($stopsFilter === 'transit' && (int)($o['stops'] ?? 0) === 0) return false;
-        return true;
-    }));
-}
+// Filter NusaTrip dilakukan di sisi klien (JS #flightFilterForm): semua offer
+// dirender dari SATU panggilan flight_search, lalu difilter tanpa fetch ulang.
 // Filter live/local schedules by airline/min/max price/departure time/stops
 if (!empty($duffelOffers) && (!empty($airlineFilter) || $minPrice !== '' || $maxPrice !== '' || $depFilter !== '' || $stopsFilter !== '')) {
     $duffelOffers = array_values(array_filter($duffelOffers, function ($o) use ($airlineFilter, $minPrice, $maxPrice, $depFilter, $stopsFilter) {
@@ -285,7 +264,7 @@ require_once 'includes/header-shared.php';
                             <i class="bi bi-funnel me-1"></i><?= t('Filter') ?>
                         </button>
                         <div class="collapse d-lg-block" id="flightFilterCollapse">
-                            <form method="GET" id="flightFilterForm">
+                            <form method="GET" id="flightFilterForm" onsubmit="event.preventDefault(); onFlightFilterChange();">
                                 <?php foreach (['from','to','date','return_date','trip_type','passengers','class','search'] as $hf): if (!isset($_GET[$hf])) continue; ?>
                                 <input type="hidden" name="<?= $hf ?>" value="<?= e(is_array($_GET[$hf]) ? implode(',', $_GET[$hf]) : $_GET[$hf]) ?>">
                                 <?php endforeach; ?>
@@ -295,7 +274,7 @@ require_once 'includes/header-shared.php';
                                 <div class="mb-3">
                                     <?php foreach (array_slice($allAirlines, 0, 8) as $al): ?>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="airline[]" value="<?= e($al) ?>" id="al_<?= e(buatSlug($al)) ?>" <?= in_array($al, $airlineFilter) ? 'checked' : '' ?> onchange="this.form.submit()">
+                                        <input class="form-check-input" type="checkbox" name="airline[]" value="<?= e($al) ?>" id="al_<?= e(buatSlug($al)) ?>" <?= in_array($al, $airlineFilter) ? 'checked' : '' ?> onchange="onFlightFilterChange()">
                                         <label class="form-check-label small" for="al_<?= e(buatSlug($al)) ?>"><?= e($al) ?></label>
                                     </div>
                                     <?php endforeach; ?>
@@ -306,12 +285,12 @@ require_once 'includes/header-shared.php';
                                 <div class="mb-3">
                                     <?php foreach (['morning' => t('Pagi (05-12)'), 'afternoon' => t('Siang (12-17)'), 'evening' => t('Sore (17-22)'), 'night' => t('Malam (22-05)')] as $dk => $dl): ?>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="dep" value="<?= $dk ?>" id="dep_<?= $dk ?>" <?= $depFilter === $dk ? 'checked' : '' ?> onchange="this.form.submit()">
+                                        <input class="form-check-input" type="radio" name="dep" value="<?= $dk ?>" id="dep_<?= $dk ?>" <?= $depFilter === $dk ? 'checked' : '' ?> onchange="onFlightFilterChange()">
                                         <label class="form-check-label small" for="dep_<?= $dk ?>"><?= $dl ?></label>
                                     </div>
                                     <?php endforeach; ?>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="dep" value="" id="dep_all" <?= $depFilter === '' ? 'checked' : '' ?> onchange="this.form.submit()">
+                                        <input class="form-check-input" type="radio" name="dep" value="" id="dep_all" <?= $depFilter === '' ? 'checked' : '' ?> onchange="onFlightFilterChange()">
                                         <label class="form-check-label small" for="dep_all"><?= t('Semua') ?></label>
                                     </div>
                                 </div>
@@ -319,15 +298,15 @@ require_once 'includes/header-shared.php';
                                 <h6 class="fw-semibold mb-2"><?= t('Transit') ?></h6>
                                 <div class="mb-3">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="stops" value="direct" id="stops_direct" <?= $stopsFilter === 'direct' ? 'checked' : '' ?> onchange="this.form.submit()">
+                                        <input class="form-check-input" type="radio" name="stops" value="direct" id="stops_direct" <?= $stopsFilter === 'direct' ? 'checked' : '' ?> onchange="onFlightFilterChange()">
                                         <label class="form-check-label small" for="stops_direct"><?= t('Langsung') ?></label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="stops" value="transit" id="stops_transit" <?= $stopsFilter === 'transit' ? 'checked' : '' ?> onchange="this.form.submit()">
+                                        <input class="form-check-input" type="radio" name="stops" value="transit" id="stops_transit" <?= $stopsFilter === 'transit' ? 'checked' : '' ?> onchange="onFlightFilterChange()">
                                         <label class="form-check-label small" for="stops_transit"><?= t('Transit') ?></label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="stops" value="" id="stops_all" <?= $stopsFilter === '' ? 'checked' : '' ?> onchange="this.form.submit()">
+                                        <input class="form-check-input" type="radio" name="stops" value="" id="stops_all" <?= $stopsFilter === '' ? 'checked' : '' ?> onchange="onFlightFilterChange()">
                                         <label class="form-check-label small" for="stops_all"><?= t('Semua') ?></label>
                                     </div>
                                 </div>
@@ -337,7 +316,7 @@ require_once 'includes/header-shared.php';
                                     <input type="number" name="min_price" class="form-control form-control-sm" placeholder="<?= t('Min') ?>" value="<?= e($minPrice) ?>" min="0">
                                     <input type="number" name="max_price" class="form-control form-control-sm" placeholder="<?= t('Max') ?>" value="<?= e($maxPrice) ?>" min="0">
                                 </div>
-                                <button class="btn btn-primary btn-sm w-100" type="submit"><i class="bi bi-funnel me-1"></i><?= t('Terapkan') ?></button>
+                                <button class="btn btn-primary btn-sm w-100" type="button" onclick="onFlightFilterChange()"><i class="bi bi-funnel me-1"></i><?= t('Terapkan') ?></button>
                                 <a href="?from=<?= urlencode($from) ?>&to=<?= urlencode($to) ?>&date=<?= urlencode($date) ?>&class=<?= urlencode($class) ?>&passengers=<?= $passengers ?>&trip_type=<?= $tripType ?>&search=1" class="btn btn-outline-secondary btn-sm w-100 mt-2"><?= t('Reset') ?></a>
                             </form>
                         </div>
@@ -401,10 +380,10 @@ require_once 'includes/header-shared.php';
             <?php $badge = 'NusaTrip'; $badgeClass = 'bg-primary'; ?>
             <!-- Sort bar ala Traveloka -->
             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                <div><h5 class="fw-bold mb-0"><?= count($nusaOffers) ?> <?= t('Penerbangan') ?> <span class="badge <?= $badgeClass ?> ms-1" style="font-size:11px"><?= $badge ?></span></h5><small class="text-muted"><?= formatDate($date) ?> · <?= e($from) ?> → <?= e($to) ?> · <?= $passengers ?> <?= t('pax') ?></small></div>
+                <div><h5 class="fw-bold mb-0"><span id="flightResultCount"><?= count($nusaOffers) ?></span> <?= t('Penerbangan') ?> <span class="badge <?= $badgeClass ?> ms-1" style="font-size:11px"><?= $badge ?></span></h5><small class="text-muted"><?= formatDate($date) ?> · <?= e($from) ?> → <?= e($to) ?> · <?= $passengers ?> <?= t('pax') ?></small></div>
                 <div class="d-flex gap-1">
-                    <a href="?<?= e(http_build_query(array_merge($_GET, ['sort' => 'price']))) ?>" class="btn btn-sm <?= $sort === 'price' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Termurah') ?></a>
-                    <a href="?<?= e(http_build_query(array_merge($_GET, ['sort' => 'duration']))) ?>" class="btn btn-sm <?= $sort === 'duration' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Tercepat') ?></a>
+                    <button type="button" data-flight-sort="price" onclick="sortFlightOffers('price')" class="btn btn-sm <?= $sort === 'price' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Termurah') ?></button>
+                    <button type="button" data-flight-sort="duration" onclick="sortFlightOffers('duration')" class="btn btn-sm <?= $sort === 'duration' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Tercepat') ?></button>
                 </div>
             </div>
             <div class="row g-3" id="flightGrid">
@@ -416,7 +395,7 @@ require_once 'includes/header-shared.php';
                     $stops = (int)($o['stops'] ?? 0);
                     $cc = strtolower((string)($o['class_type'] ?? 'economy'));
                 ?>
-                <div class="col-12">
+                <div class="col-12 js-nusa-offer" data-airline="<?= e($o['airline_name']) ?>" data-airline-code="<?= e($o['airline_code']) ?>" data-price="<?= (float)$o['price'] ?>" data-dep-hour="<?= (int)date('G', strtotime((string)$o['dep'])) ?>" data-stops="<?= $stops ?>" data-duration="<?= $durMin ?>">
                     <div class="card border-0 shadow-sm flight-card">
                         <div class="card-body p-3 p-md-4">
                             <div class="row align-items-center g-3">
@@ -442,6 +421,7 @@ require_once 'includes/header-shared.php';
                 </div>
                 <?php endforeach; ?>
             </div>
+            <div class="text-center py-4 text-muted d-none" id="flightNoMatch"><i class="bi bi-search fs-1"></i><p class="mt-2"><?= t('Tidak ada penerbangan untuk rute/tanggal tersebut.') ?></p></div>
             <?php elseif (!empty($localSchedules)): ?>
             <div class="alert alert-info py-2 small"><?= t('Hasil live tidak tersedia, menampilkan jadwal lokal.') ?></div>
             <div class="row g-3" id="flightGrid">
@@ -581,5 +561,94 @@ document.addEventListener('DOMContentLoaded', function() {
     showFlightCalHint();
     var dateInput = document.querySelector('input[name="date"]');
     if (dateInput) dateInput.addEventListener('change', showFlightCalHint);
+});
+</script>
+<script>
+// ===== Filter & sort sisi klien untuk hasil live NusaTrip =====
+// Offer di-fetch SEKALI saat pencarian (from/to/date), lalu filter/sort di browser
+// tanpa memanggil endpoint flight_search lagi.
+var FLIGHT_LIVE = <?= !empty($nusaOffers) ? 'true' : 'false' ?>;
+
+function flightFilterState() {
+    var form = document.getElementById('flightFilterForm');
+    if (!form) return null;
+    var minEl = form.querySelector('input[name="min_price"]');
+    var maxEl = form.querySelector('input[name="max_price"]');
+    var depEl = form.querySelector('input[name="dep"]:checked');
+    var stopsEl = form.querySelector('input[name="stops"]:checked');
+    return {
+        airlines: Array.prototype.map.call(form.querySelectorAll('input[name="airline[]"]:checked'), function (i) { return i.value.toLowerCase(); }),
+        dep: depEl ? depEl.value : '',
+        stops: stopsEl ? stopsEl.value : '',
+        min: minEl && minEl.value !== '' ? parseFloat(minEl.value) : 0,
+        max: maxEl && maxEl.value !== '' ? parseFloat(maxEl.value) : Infinity
+    };
+}
+
+function flightOfferMatches(el, f) {
+    if (f.airlines.length) {
+        var name = (el.dataset.airline || '').toLowerCase();
+        var code = (el.dataset.airlineCode || '').toLowerCase();
+        var hit = f.airlines.some(function (a) { return name.indexOf(a) !== -1 || code.indexOf(a) !== -1; });
+        if (!hit) return false;
+    }
+    var price = parseFloat(el.dataset.price || '0') || 0;
+    if (price < f.min || price > f.max) return false;
+    if (f.dep) {
+        var h = parseInt(el.dataset.depHour, 10);
+        var ok = f.dep === 'morning' ? (h >= 5 && h < 12)
+            : f.dep === 'afternoon' ? (h >= 12 && h < 17)
+            : f.dep === 'evening' ? (h >= 17 && h < 22)
+            : f.dep === 'night' ? (h >= 22 || h < 5) : true;
+        if (!ok) return false;
+    }
+    if (f.stops) {
+        var s = parseInt(el.dataset.stops, 10) || 0;
+        if (f.stops === 'direct' && s > 0) return false;
+        if (f.stops === 'transit' && s === 0) return false;
+    }
+    return true;
+}
+
+function applyFlightFilter() {
+    var f = flightFilterState();
+    if (!f) return;
+    var visible = 0;
+    document.querySelectorAll('#flightGrid .js-nusa-offer').forEach(function (el) {
+        var ok = flightOfferMatches(el, f);
+        el.style.display = ok ? '' : 'none';
+        if (ok) visible++;
+    });
+    var cnt = document.getElementById('flightResultCount');
+    if (cnt) cnt.textContent = visible;
+    var empty = document.getElementById('flightNoMatch');
+    if (empty) empty.classList.toggle('d-none', visible !== 0);
+}
+
+function onFlightFilterChange() {
+    var form = document.getElementById('flightFilterForm');
+    if (FLIGHT_LIVE) {
+        applyFlightFilter();
+    } else if (form) {
+        form.submit();
+    }
+}
+
+function sortFlightOffers(mode) {
+    var grid = document.getElementById('flightGrid');
+    if (!grid) return;
+    Array.prototype.slice.call(grid.querySelectorAll('.js-nusa-offer')).sort(function (a, b) {
+        if (mode === 'duration') return (parseInt(a.dataset.duration, 10) || 0) - (parseInt(b.dataset.duration, 10) || 0);
+        return (parseFloat(a.dataset.price || '0') || 0) - (parseFloat(b.dataset.price || '0') || 0);
+    }).forEach(function (el) { grid.appendChild(el); });
+    document.querySelectorAll('[data-flight-sort]').forEach(function (b) {
+        var active = b.dataset.flightSort === mode;
+        b.classList.toggle('btn-primary', active);
+        b.classList.toggle('btn-outline-secondary', !active);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    if (FLIGHT_LIVE) applyFlightFilter();
 });
 </script>

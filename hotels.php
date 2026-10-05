@@ -66,12 +66,9 @@ $liveSource = null;
 $liveError = null;
 $liveEnabled = function_exists('hotelApiEnabled') && hotelApiEnabled();
 if ($city !== '' && $liveEnabled) {
+    // Fetch SEMUA hotel kota sekali; filter (bintang/harga) & sort dilakukan di klien
+    // (JS #hotelFilterForm) agar ganti filter tidak memanggil endpoint lagi.
     $live = hotelApiSearch($city, [
-        'stars' => $stars,
-        'min_price' => $minPrice,
-        'max_price' => $maxPrice,
-        'sort' => $sort,
-        'limit' => 60,
         'checkin' => $checkin,
         'checkout' => $checkout,
         'guests' => $guests,
@@ -107,7 +104,7 @@ require __DIR__ . '/includes/homepage/hotel-hero.php';
                             <i class="bi bi-funnel me-1"></i><?= t('Filter') ?>
                         </button>
                         <div class="collapse d-lg-block" id="filterCollapse">
-                            <form method="GET" class="row g-2 align-items-end">
+                            <form method="GET" id="hotelFilterForm" class="row g-2 align-items-end" onsubmit="event.preventDefault(); onHotelFilterChange();">
                                 <input type="hidden" name="city" value="<?= e($city) ?>">
                                 <input type="hidden" name="checkin" value="<?= e($checkin ?: date('Y-m-d')) ?>">
                                 <input type="hidden" name="checkout" value="<?= e($checkout ?: date('Y-m-d', strtotime('+2 days'))) ?>">
@@ -116,31 +113,40 @@ require __DIR__ . '/includes/homepage/hotel-hero.php';
                                     <label class="form-label small fw-semibold text-muted"><?= t('Bintang') ?></label>
                                     <div class="d-flex flex-wrap gap-2" data-testid="stars-filter">
                                         <?php for ($s=5; $s>=3; $s--): ?>
-                                        <input type="radio" class="btn-check" name="stars" id="star<?= $s ?>" value="<?= $s ?>" <?= $stars == $s ? 'checked' : '' ?> onchange="this.form.submit()">
+                                        <input type="radio" class="btn-check" name="stars" id="star<?= $s ?>" value="<?= $s ?>" <?= $stars == $s ? 'checked' : '' ?> onchange="onHotelFilterChange()">
                                         <label class="btn btn-sm btn-outline-warning rounded-pill" for="star<?= $s ?>"><?= str_repeat('★', $s) ?></label>
                                         <?php endfor; ?>
-                                        <input type="radio" class="btn-check" name="stars" id="starAll" value="" <?= $stars === '' ? 'checked' : '' ?> onchange="this.form.submit()">
+                                        <input type="radio" class="btn-check" name="stars" id="starAll" value="" <?= $stars === '' ? 'checked' : '' ?> onchange="onHotelFilterChange()">
                                         <label class="btn btn-sm btn-outline-secondary rounded-pill" for="starAll"><?= t('Semua') ?></label>
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label small fw-semibold text-muted"><?= t('Harga per Malam') ?></label>
-                                    <div class="mb-1 d-flex justify-content-between small text-muted">
+                                    <div class="mb-1 d-flex justify-content-between small fw-semibold">
                                         <span id="hPriceMinLabel">Rp <?= number_format((float)($minPrice ?: 0), 0, ',', '.') ?></span>
+                                        <span class="text-muted fw-normal">–</span>
                                         <span id="hPriceMaxLabel">Rp <?= number_format((float)($maxPrice ?: 5000000), 0, ',', '.') ?></span>
                                     </div>
-                                    <input type="range" class="form-range" id="hPriceMinRange" min="0" max="5000000" step="250000" value="<?= (int)($minPrice ?: 0) ?>" data-testid="hotel-price-min-range">
-                                    <input type="range" class="form-range" id="hPriceMaxRange" min="0" max="5000000" step="250000" value="<?= (int)($maxPrice ?: 5000000) ?>" data-testid="hotel-price-max-range">
+                                    <div class="h-dual-range">
+                                        <div class="h-dual-track"><div class="h-dual-fill" id="hPriceFill"></div></div>
+                                        <input type="range" class="form-range h-dual-input" id="hPriceMinRange" min="0" max="5000000" step="250000" value="<?= (int)($minPrice ?: 0) ?>" data-testid="hotel-price-min-range" aria-label="<?= t('Harga minimum') ?>">
+                                        <input type="range" class="form-range h-dual-input" id="hPriceMaxRange" min="0" max="5000000" step="250000" value="<?= (int)($maxPrice ?: 5000000) ?>" data-testid="hotel-price-max-range" aria-label="<?= t('Harga maksimum') ?>">
+                                    </div>
+                                    <div class="d-flex justify-content-between small text-muted mt-1">
+                                        <span><i class="bi bi-dash-circle me-1"></i><?= t('Min') ?></span>
+                                        <span><?= t('Maks') ?><i class="bi bi-plus-circle ms-1"></i></span>
+                                    </div>
                                     <input type="hidden" name="min_price" id="hPriceMinInput" value="<?= e($minPrice) ?>">
                                     <input type="hidden" name="max_price" id="hPriceMaxInput" value="<?= e($maxPrice) ?>">
                                 </div>
+                                <?php if (!$usingLive): ?>
                                 <div class="col-12">
                                     <label class="form-label small fw-semibold text-muted"><?= t('Fasilitas') ?></label>
                                     <div class="row g-1" data-testid="amenities-filter">
                                         <?php foreach (['Kolam', 'Parkir', 'WiFi', 'Sarapan', 'Gym', 'Spa', 'Restoran'] as $am): ?>
                                         <div class="col-6">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="amenity[]" value="<?= $am ?>" id="am<?= md5($am) ?>" <?= in_array($am, $amenities, true) ? 'checked' : '' ?> onchange="this.form.submit()">
+                                                <input class="form-check-input" type="checkbox" name="amenity[]" value="<?= $am ?>" id="am<?= md5($am) ?>" <?= in_array($am, $amenities, true) ? 'checked' : '' ?> onchange="onHotelFilterChange()">
                                                 <label class="form-check-label small" for="am<?= md5($am) ?>"><?= t($am) ?></label>
                                             </div>
                                         </div>
@@ -149,21 +155,22 @@ require __DIR__ . '/includes/homepage/hotel-hero.php';
                                 </div>
                                 <div class="col-12">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="best" value="1" id="fltBest" <?= $bestSeller ? 'checked' : '' ?> onchange="this.form.submit()">
+                                        <input class="form-check-input" type="checkbox" name="best" value="1" id="fltBest" <?= $bestSeller ? 'checked' : '' ?> onchange="onHotelFilterChange()">
                                         <label class="form-check-label small" for="fltBest"><?= t('Best Seller') ?></label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="free_cancel" value="1" id="fltCancel" <?= $freeCancel ? 'checked' : '' ?> onchange="this.form.submit()">
+                                        <input class="form-check-input" type="checkbox" name="free_cancel" value="1" id="fltCancel" <?= $freeCancel ? 'checked' : '' ?> onchange="onHotelFilterChange()">
                                         <label class="form-check-label small" for="fltCancel"><?= t('Batal Gratis') ?></label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="instant" value="1" id="fltInstant" <?= $instantConf ? 'checked' : '' ?> onchange="this.form.submit()">
+                                        <input class="form-check-input" type="checkbox" name="instant" value="1" id="fltInstant" <?= $instantConf ? 'checked' : '' ?> onchange="onHotelFilterChange()">
                                         <label class="form-check-label small" for="fltInstant"><?= t('Konfirmasi Instan') ?></label>
                                     </div>
                                 </div>
+                                <?php endif; ?>
                                 <div class="col-12">
                                     <label class="form-label small fw-semibold text-muted"><?= t('Urutkan') ?></label>
-                                    <select name="sort" class="form-select form-select-sm" onchange="this.form.submit()">
+                                    <select name="sort" class="form-select form-select-sm" onchange="onHotelFilterChange()">
                                         <option value="price" <?= $sort === 'price' ? 'selected' : '' ?>><?= t('Harga Termurah') ?></option>
                                         <option value="price_desc" <?= $sort === 'price_desc' ? 'selected' : '' ?>><?= t('Harga Termahal') ?></option>
                                         <option value="stars" <?= $sort === 'stars' ? 'selected' : '' ?>><?= t('Bintang Tertinggi') ?></option>
@@ -219,11 +226,17 @@ require __DIR__ . '/includes/homepage/hotel-hero.php';
                 <div id="hotelContent" style="display: none;">
                 <?php if (count($displayHotels) > 0): ?>
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <small class="text-muted"><?= count($displayHotels) ?> <?= t('hotel ditemukan') ?></small>
+                    <small class="text-muted"><span id="hotelResultCount"><?= count($displayHotels) ?></span> <?= t('hotel ditemukan') ?></small>
                     <div class="d-flex gap-1">
+                        <?php if ($usingLive): ?>
+                        <button type="button" data-hotel-sort="price" onclick="sortLiveHotels('price')" class="btn btn-sm <?= $sort === 'price' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Harga Termurah') ?></button>
+                        <button type="button" data-hotel-sort="price_desc" onclick="sortLiveHotels('price_desc')" class="btn btn-sm <?= $sort === 'price_desc' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Harga Termahal') ?></button>
+                        <button type="button" data-hotel-sort="stars" onclick="sortLiveHotels('stars')" class="btn btn-sm <?= $sort === 'stars' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Bintang Tertinggi') ?></button>
+                        <?php else: ?>
                         <a href="?<?= e(http_build_query(array_merge($_GET, ['sort' => 'price']))) ?>" class="btn btn-sm <?= $sort === 'price' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Harga Termurah') ?></a>
                         <a href="?<?= e(http_build_query(array_merge($_GET, ['sort' => 'price_desc']))) ?>" class="btn btn-sm <?= $sort === 'price_desc' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Harga Termahal') ?></a>
                         <a href="?<?= e(http_build_query(array_merge($_GET, ['sort' => 'stars']))) ?>" class="btn btn-sm <?= $sort === 'stars' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Bintang Tertinggi') ?></a>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <?php if ($usingLive): ?>
@@ -337,6 +350,17 @@ require __DIR__ . '/includes/homepage/hotel-hero.php';
 </section>
 <?php endif; ?>
 <?php require_once 'includes/footer-shared.php'; ?>
+<style>
+.h-dual-range { position: relative; height: 28px; }
+.h-dual-track { position: absolute; top: 50%; left: 0; right: 0; height: 6px; transform: translateY(-50%); background: #dee2e6; border-radius: 999px; }
+.h-dual-fill { position: absolute; top: 0; bottom: 0; background: #0d6efd; border-radius: 999px; }
+.h-dual-input { position: absolute !important; top: 0; left: 0; width: 100%; height: 28px; margin: 0; background: transparent; pointer-events: none; -webkit-appearance: none; appearance: none; }
+.h-dual-input::-webkit-slider-runnable-track { background: transparent; height: 28px; }
+.h-dual-input::-webkit-slider-thumb { pointer-events: auto; -webkit-appearance: none; width: 18px; height: 18px; margin-top: 5px; border-radius: 50%; background: #fff; border: 2px solid #0d6efd; box-shadow: 0 1px 3px rgba(0,0,0,.25); cursor: grab; }
+.h-dual-input::-moz-range-track { background: transparent; }
+.h-dual-input::-moz-range-thumb { pointer-events: auto; width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 2px solid #0d6efd; cursor: grab; }
+.h-dual-input:focus { box-shadow: none; }
+</style>
 <script>
 // Show skeleton initially, then reveal content
 document.addEventListener('DOMContentLoaded', function() {
@@ -356,19 +380,36 @@ document.addEventListener('DOMContentLoaded', function() {
     var minR = document.getElementById('hPriceMinRange'), maxR = document.getElementById('hPriceMaxRange');
     var minI = document.getElementById('hPriceMinInput'), maxI = document.getElementById('hPriceMaxInput');
     var minL = document.getElementById('hPriceMinLabel'), maxL = document.getElementById('hPriceMaxLabel');
+    var fill = document.getElementById('hPriceFill');
     if (!minR || !maxR) return;
+    var ABS_MIN = parseInt(minR.min, 10) || 0;
+    var ABS_MAX = parseInt(minR.max, 10) || 5000000;
+    var GAP = parseInt(minR.step, 10) || 250000;
     var loc = (window.I18N && window.I18N.locale) || 'id-ID';
     var fmt = function(n) { return 'Rp ' + Number(n).toLocaleString(loc); };
-    function sync() {
-        var lo = parseInt(minR.value), hi = parseInt(maxR.value);
-        if (lo > hi) { var t = lo; lo = hi; hi = t; }
-        minI.value = lo <= 0 ? '' : lo;
-        maxI.value = hi >= 5000000 ? '' : hi;
+    function sync(from) {
+        var lo = parseInt(minR.value, 10), hi = parseInt(maxR.value, 10);
+        // Jepit agar tidak saling lewat (sisakan 1 step gap)
+        if (lo > hi - GAP) {
+            if (from === 'min') { lo = hi - GAP; if (lo < ABS_MIN) lo = ABS_MIN; minR.value = lo; }
+            else { hi = lo + GAP; if (hi > ABS_MAX) hi = ABS_MAX; maxR.value = hi; }
+        }
+        minI.value = lo <= ABS_MIN ? '' : lo;
+        maxI.value = hi >= ABS_MAX ? '' : hi;
         minL.textContent = fmt(lo); maxL.textContent = fmt(hi);
+        if (fill) {
+            var pLo = ((lo - ABS_MIN) / (ABS_MAX - ABS_MIN)) * 100;
+            var pHi = ((hi - ABS_MIN) / (ABS_MAX - ABS_MIN)) * 100;
+            fill.style.left = pLo + '%'; fill.style.width = Math.max(0, pHi - pLo) + '%';
+        }
+        // Pastikan thumb min selalu di atas saat overlap di ujung kiri
+        minR.style.zIndex = (lo > ABS_MAX - (ABS_MAX - ABS_MIN) / 2) ? '4' : '5';
+        maxR.style.zIndex = '3';
     }
-    minR.addEventListener('input', sync); maxR.addEventListener('input', sync);
-    minR.addEventListener('change', function() { minR.closest('form').submit(); });
-    maxR.addEventListener('change', function() { maxR.closest('form').submit(); });
+    minR.addEventListener('input', function() { sync('min'); if (window.HOTEL_LIVE) applyHotelFilter(); });
+    maxR.addEventListener('input', function() { sync('max'); if (window.HOTEL_LIVE) applyHotelFilter(); });
+    minR.addEventListener('change', onHotelFilterChange);
+    maxR.addEventListener('change', onHotelFilterChange);
     sync();
 })();
 </script>
@@ -443,5 +484,84 @@ document.addEventListener('DOMContentLoaded', function() {
 
         observer.observe(loadMoreTrigger);
     }
+});
+</script>
+<script>
+// ===== Filter & sort sisi klien untuk hasil live NusaTrip/OYO =====
+// Daftar hotel di-fetch SEKALI saat kota dicari, lalu filter (bintang/harga) & sort
+// di browser tanpa memanggil endpoint lagi.
+var HOTEL_LIVE = <?= $usingLive ? 'true' : 'false' ?>;
+window.HOTEL_LIVE = HOTEL_LIVE;
+
+function hotelFilterState() {
+    var form = document.getElementById('hotelFilterForm');
+    if (!form) return null;
+    var starEl = form.querySelector('input[name="stars"]:checked');
+    var minEl = form.querySelector('input[name="min_price"]');
+    var maxEl = form.querySelector('input[name="max_price"]');
+    return {
+        stars: starEl && starEl.value !== '' ? parseInt(starEl.value, 10) : 0,
+        min: minEl && minEl.value !== '' ? parseFloat(minEl.value) : 0,
+        max: maxEl && maxEl.value !== '' ? parseFloat(maxEl.value) : Infinity
+    };
+}
+
+function hotelMatches(el, f) {
+    if (f.stars > 0 && (parseInt(el.dataset.hotelStar, 10) || 0) !== f.stars) return false;
+    var price = parseFloat(el.dataset.hotelPrice || '0') || 0;
+    if (price > 0 && (price < f.min || price > f.max)) return false;
+    return true;
+}
+
+function applyHotelFilter() {
+    var f = hotelFilterState();
+    if (!f) return;
+    var visible = 0;
+    document.querySelectorAll('#hotelContent .js-live-hotel').forEach(function (el) {
+        var ok = hotelMatches(el, f);
+        el.style.display = ok ? '' : 'none';
+        if (ok) visible++;
+    });
+    var cnt = document.getElementById('hotelResultCount');
+    if (cnt) cnt.textContent = visible;
+}
+
+function onHotelFilterChange() {
+    var form = document.getElementById('hotelFilterForm');
+    if (HOTEL_LIVE) {
+        applyHotelFilter();
+        var sel = form ? form.querySelector('select[name="sort"]') : null;
+        sortLiveHotels(sel ? sel.value : 'price');
+    } else if (form) {
+        form.submit();
+    }
+}
+
+function sortLiveHotels(mode) {
+    var content = document.getElementById('hotelContent');
+    if (!content) return;
+    Array.prototype.slice.call(content.querySelectorAll('.js-live-hotel')).sort(function (a, b) {
+        var pa = parseFloat(a.dataset.hotelPrice || '0') || 0, pb = parseFloat(b.dataset.hotelPrice || '0') || 0;
+        var sa = parseInt(a.dataset.hotelStar, 10) || 0, sb = parseInt(b.dataset.hotelStar, 10) || 0;
+        if (mode === 'price_desc') return pb - pa;
+        if (mode === 'stars') return (sb - sa) || (pa - pb);
+        return pa - pb;
+    }).forEach(function (el) { content.appendChild(el); });
+    document.querySelectorAll('[data-hotel-sort]').forEach(function (b) {
+        var active = b.dataset.hotelSort === mode;
+        b.classList.toggle('btn-primary', active);
+        b.classList.toggle('btn-outline-secondary', !active);
+    });
+    var form = document.getElementById('hotelFilterForm');
+    var sel = form ? form.querySelector('select[name="sort"]') : null;
+    if (sel && sel.value !== mode) sel.value = mode;
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    if (!HOTEL_LIVE) return;
+    applyHotelFilter();
+    var form = document.getElementById('hotelFilterForm');
+    var sel = form ? form.querySelector('select[name="sort"]') : null;
+    sortLiveHotels(sel ? sel.value : 'price');
 });
 </script>
