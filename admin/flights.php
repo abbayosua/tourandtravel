@@ -1,5 +1,6 @@
 <?php
-require_once '../includes/config.php'; require_once '../includes/db.php'; require_once '../includes/functions.php'; require_once '../includes/auth.php'; cekLogin();
+require_once '../includes/config.php'; require_once '../includes/db.php'; require_once '../includes/functions.php'; require_once '../includes/auth.php';
+require_once 'includes/admin-access.php'; requireAdminPage();
 $msg=''; if(isset($_GET['msg'])) $msg=match($_GET['msg']){'added'=>'OK','updated'=>'OK','deleted'=>'OK',default=>''};
 if(isset($_GET['delete'])){$id=(int)$_GET['delete'];db()->prepare("DELETE FROM flights WHERE id=?")->execute([$id]);header('Location: flights.php?msg=deleted');exit;}
 $items=db()->query("SELECT * FROM flights ORDER BY airline,flight_number")->fetchAll();

@@ -4,7 +4,8 @@
  */
 require_once '../includes/config.php';
 require_once '../includes/auth.php';
-cekLogin();
+require_once 'includes/admin-access.php';
+requireAdminPage();
 
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 $wa_config_file = __DIR__ . '/../includes/wa-config.json';

@@ -1,5 +1,6 @@
 <?php
-require_once '../includes/config.php'; require_once '../includes/db.php'; require_once '../includes/functions.php'; require_once '../includes/auth.php'; cekLogin();
+require_once '../includes/config.php'; require_once '../includes/db.php'; require_once '../includes/functions.php'; require_once '../includes/auth.php';
+require_once 'includes/admin-access.php'; requireAdminPage();
 $id=(int)($_GET['id']??0);
 $stmt=db()->prepare("SELECT * FROM rental_cars WHERE id=?");
 $stmt->execute([$id]); $item=$stmt->fetch();

@@ -54,6 +54,8 @@
     #adminSidebar.icon-only .nav-link {
         justify-content: center;
         padding: 10px 0;
+        white-space: nowrap;
+        overflow: hidden;
     }
     #adminSidebar.icon-only .nav-link span.nav-label {
         display: none;
@@ -67,6 +69,13 @@
     }
     #adminSidebar.icon-only hr {
         margin: 0.5rem 0;
+    }
+    /* Baris bahasa: hanya badge aktif yang tampil, di tengah */
+    #adminSidebar.icon-only hr + .nav-link {
+        justify-content: center !important;
+    }
+    #adminSidebar.icon-only .nav-link .badge:not(.bg-primary) {
+        display: none;
     }
 }
 #adminSidebar.collapsed .nav-link {
@@ -124,7 +133,7 @@
         </a>
         <div class="d-flex align-items-center ms-auto">
             <button id="adminThemeToggle" class="voyage-icon-btn me-2" title="<?= e(t('Tema')) ?>"><i class="bi bi-moon-stars"></i></button>
-            <span class="admin-user me-3 small"><?= e($_SESSION['admin_username']) ?></span>
+            <span class="admin-user me-3 small"><?= e($_SESSION['admin_username']) ?> <span class="badge <?= isSuperadmin() ? 'bg-danger' : 'bg-info' ?>"><?= e(isSuperadmin() ? t('Superadmin') : t('Staff')) ?></span></span>
             <a href="logout.php" class="btn-voyage-ghost"><?= t('Logout') ?></a>
         </div>
     </div>
@@ -137,6 +146,7 @@
         <div class="sidebar p-3" id="adminSidebar">
             <nav class="nav flex-column">
                 <?php
+                require_once __DIR__ . '/admin-access.php';
                 $currentPage = basename($_SERVER['PHP_SELF']);
                 $sectionHdr = function (string $label) { ?>
                 <div class="nav-section-label small text-secondary text-uppercase fw-bold px-2 pt-2 pb-1" style="letter-spacing:.08em; font-size:.68rem;"><?= $label ?></div>
@@ -147,67 +157,32 @@
                 </a>
                 <?php };
 
-                // ===== OVERVIEW =====
-                $sectionHdr(t('Overview'));
-                $navItem('dashboard.php', 'bi-speedometer2', t('Dashboard'), ['dashboard.php']);
-                $navItem('analytics.php', 'bi-graph-up-arrow', t('Analytics'), ['analytics.php']);
+                // testid lama dipertahankan untuk E2E
+                $navTestids = [
+                    'flash-sales' => 'nav-flash-sales',
+                    'sales-report' => 'nav-sales-report',
+                    'accounting' => 'nav-accounting',
+                    'brand-settings' => 'nav-brand-settings',
+                    'chat-settings' => 'nav-chat-settings',
+                    'hotel-api-settings' => 'nav-hotel-api-settings',
+                ];
+                $shownNav = [];
+                foreach (adminPages() as $pKey => $p) {
+                    if (empty($p['show'])) continue;
+                    if (!canAccessPage($pKey)) continue;
+                    $shownNav[$p['section']][] = $pKey;
+                }
+                $allPages = adminPages();
+                foreach (adminSections() as $section) {
+                    if (empty($shownNav[$section])) continue;
+                    $sectionHdr(t($section));
+                    foreach ($shownNav[$section] as $pKey) {
+                        $p = $allPages[$pKey];
+                        $navItem($p['file'], $p['icon'], t($p['label']), adminFilesForKey($pKey), $navTestids[$pKey] ?? '');
+                    }
+                }
 
-                // ===== INVENTORY =====
-                $sectionHdr(t('Inventory'));
-                $navItem('tours.php', 'bi-map', t('Kelola Tour'), ['tours.php', 'tour-edit.php', 'tour-add.php']);
-                $navItem('hotels.php', 'bi-building', t('Kelola Hotel'), ['hotels.php', 'hotel-edit.php', 'hotel-rooms.php']);
-                $navItem('flights.php', 'bi-airplane', t('Kelola Pesawat'), ['flights.php', 'flight-edit.php']);
-                $navItem('ferries.php', 'bi-water', t('Kelola Ferry'), ['ferries.php', 'ferry-edit.php']);
-                $navItem('rental-cars.php', 'bi-car-front', t('Kelola Rental'), ['rental-cars.php', 'rental-car-edit.php']);
-                $navItem('attractions.php', 'bi-signpost-2', t('Kelola Atraksi'), ['attractions.php', 'attraction-edit.php']);
-                $navItem('transfers.php', 'bi-car-front', t('Kelola Transfer'), ['transfers.php', 'transfer-edit.php']);
-                $navItem('trains.php', 'bi-train-front', t('Kelola Kereta'), ['trains.php', 'train-edit.php']);
-                $navItem('esim.php', 'bi-sim', t('Kelola eSIM'), ['esim.php', 'esim-edit.php']);
-
-                // ===== BOOKINGS =====
-                $sectionHdr(t('Bookings'));
-                $navItem('bookings.php', 'bi-ticket-perforated', t('Kelola Booking'), ['bookings.php']);
-                $navItem('payments.php', 'bi-credit-card', t('Pembayaran'), ['payments.php']);
-
-                // ===== MARKETING =====
-                $sectionHdr(t('Marketing'));
-                $navItem('flash-sales.php', 'bi-lightning-charge', t('Flash Sale'), ['flash-sales.php'], 'nav-flash-sales');
-                $navItem('promo-codes.php', 'bi-tag', t('Kode Promo'), ['promo-codes.php']);
-                $navItem('price-alerts.php', 'bi-bell', t('Price Alerts'), ['price-alerts.php']);
-                $navItem('push-notifications.php', 'bi-bell-fill', t('Push Notifikasi'), ['push-notifications.php']);
-                $navItem('corporate-rates.php', 'bi-building', t('Corporate Rates'), ['corporate-rates.php']);
-                $navItem('collections.php', 'bi-collection', t('Koleksi'), ['collections.php']);
-
-                // ===== FINANCE =====
-                $sectionHdr(t('Finance'));
-                $navItem('sales-report.php', 'bi-graph-up', t('Sales Report'), ['sales-report.php'], 'nav-sales-report');
-                $navItem('accounting.php', 'bi-cash-stack', t('Accounting'), ['accounting.php'], 'nav-accounting');
-                $navItem('loyalty-settings.php', 'bi-award', t('Loyalty Settings'), ['loyalty-settings.php']);
-
-                // ===== RESELLER =====
-                $sectionHdr(t('Reseller'));
-                $navItem('resellers.php', 'bi-shop', t('Kelola Reseller'), ['resellers.php']);
-                $navItem('reseller-topups.php', 'bi-wallet2', t('Topup Reseller'), ['reseller-topups.php']);
-                $navItem('reseller-pricing.php', 'bi-tags', t('Harga Reseller'), ['reseller-pricing.php']);
-
-                // ===== CONTENT =====
-                $sectionHdr(t('Content'));
-                $navItem('posts.php', 'bi-journal-richtext', t('Blog'), ['posts.php', 'post-edit.php']);
-                $navItem('reviews.php', 'bi-chat-square-heart', t('Ulasan'), ['reviews.php']);
-                $navItem('faq.php', 'bi-question-circle', t('Kelola FAQ'), ['faq.php', 'faq-edit.php', 'faq-category.php', 'faq-category-edit.php']);
-                $navItem('appearance.php', 'bi-layout-text-window-reverse', t('Tampilan Homepage'), ['appearance.php']);
-                $navItem('brand-settings.php', 'bi-award', t('Brand & Logo'), ['brand-settings.php'], 'nav-brand-settings');
-                $navItem('nav-menus.php', 'bi-menu-button-wide', t('Menu Navigasi'), ['nav-menus.php']);
-
-                // ===== SETTINGS =====
-                $sectionHdr(t('Settings'));
-                $navItem('wa-settings.php', 'bi-whatsapp', t('Pengaturan WA'), ['wa-settings.php']);
-                $navItem('chat-settings.php', 'bi-chat-dots', t('Live Chat'), ['chat-settings.php'], 'nav-chat-settings');
-                $navItem('email-log.php', 'bi-envelope-paper', t('Log Email'), ['email-log.php']);
-                $navItem('currency-settings.php', 'bi-currency-exchange', t('Mata Uang'), ['currency-settings.php']);
-                $navItem('hotel-api-settings.php', 'bi-building-gear', t('Hotel API'), ['hotel-api-settings.php'], 'nav-hotel-api-settings');
-
-                // ===== EXTERNAL =====
+                // ===== EXTERNAL (selalu tampil) =====
                 $sectionHdr(t('Eksternal'));
                 $navItem('../index.php', 'bi-globe', t('Lihat Website'), []);
                 ?>
@@ -225,3 +200,4 @@
         </div>
         <!-- Content -->
         <div class="flex-grow-1 p-4" id="adminContent">
+            <?= adminFlashHtml() ?>

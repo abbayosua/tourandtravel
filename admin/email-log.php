@@ -4,7 +4,8 @@ require_once '../includes/db.php';
 require_once '../includes/functions.php';
 require_once '../includes/email.php';
 require_once '../includes/auth.php';
-cekLogin();
+require_once 'includes/admin-access.php';
+requireAdminPage();
 
 $pageTitle = t('Log Email');
 

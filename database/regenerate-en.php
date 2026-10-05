@@ -75,6 +75,10 @@ $manual = [
     'Gagal menyimpan wishlist. Coba lagi.' => 'Failed to save wishlist. Try again.',
     'TravelPoints Saya' => 'My TravelPoints', 'Referral Saya' => 'My Referrals',
     'Ganti Password' => 'Change Password', 'Simpan Perubahan' => 'Save Changes',
+    // RBAC panel admin
+    'Kelola Admin' => 'Manage Admins', 'Tambah Admin' => 'Add Admin', 'Edit Admin' => 'Edit Admin',
+    'Hak Akses' => 'Access Rights', 'Peran' => 'Role', 'Superadmin' => 'Superadmin', 'Staff' => 'Staff',
+    'Anda tidak memiliki akses ke halaman ini.' => 'You do not have access to this page.',
     // status
     'Pending' => 'Pending', 'Dikonfirmasi' => 'Confirmed', 'Dibatalkan' => 'Cancelled',
     'Menunggu Konfirmasi' => 'Awaiting Confirmation', 'Selesai' => 'Completed',

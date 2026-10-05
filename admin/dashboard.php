@@ -4,7 +4,8 @@ require_once '../includes/db.php';
 require_once '../includes/functions.php';
 require_once '../includes/analytics.php';
 require_once '../includes/auth.php';
-cekLogin();
+require_once 'includes/admin-access.php';
+requireAdminPage();
 
 // ============================================================
 // KPI Agregat (8 tabel booking, status-aware) — PRD ADMINPRD.md 3.1

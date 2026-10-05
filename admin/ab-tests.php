@@ -7,7 +7,8 @@ require_once '../includes/config.php';
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
 require_once '../includes/auth.php';
-cekLogin();
+require_once 'includes/admin-access.php';
+requireAdminPage();
 
 $pageTitle = t('A/B Testing');
 $tests = db()->query("SELECT t.*, (SELECT COUNT(*) FROM ab_variants v WHERE v.test_name = t.test_name) AS variant_count FROM ab_tests t ORDER BY t.test_name")->fetchAll();

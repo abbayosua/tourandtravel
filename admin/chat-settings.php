@@ -3,8 +3,9 @@ require_once '../includes/config.php';
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
 require_once '../includes/auth.php';
+require_once 'includes/admin-access.php';
 
-cekLogin();
+requireAdminPage();
 
 $message = '';
 $error = '';
