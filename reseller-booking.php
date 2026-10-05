@@ -109,6 +109,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } else {
                     $success = $bookingCode;
                     $balance = getResellerBalance($userId);
+                    require_once 'includes/notifications.php';
+                    try {
+                        $rdStmt = db()->prepare("SELECT departure_date FROM tour_dates WHERE id = ? LIMIT 1");
+                        $rdStmt->execute([$dateId]);
+                        $rdRow = $rdStmt->fetch();
+                        $rdDetail = ($rdRow ? tglIndonesia($rdRow['departure_date']) . ' • ' : '') . $passengers . ' ' . t('pax');
+                    } catch (Throwable $e) { $rdDetail = $passengers . ' ' . t('pax'); }
+                    notifyBookingCreated($userId, t('Tour'), tContent($tour, 'title'), $rdDetail, $bookingCode, 'my-bookings.php');
                 }
             }
         }

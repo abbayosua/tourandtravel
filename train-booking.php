@@ -138,6 +138,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['form_submitted'] ?? '') ==
             ]);
 
             unset($_SESSION['kereta_sel'][$token]);
+            if (!empty($_SESSION['user_id'])) {
+                require_once 'includes/notifications.php';
+                $kbName = $t['train_name'] ?? $sel['name'] ?? 'Kereta';
+                $kbDetail = trim(($t['train_from'] ?? $sel['from'] ?? '') . ' → ' . ($t['train_to'] ?? $sel['to'] ?? '')) . ' • ' . $sel['date'] . ' • ' . $paxCount . ' ' . t('pax');
+                notifyBookingCreated((int)$_SESSION['user_id'], t('Kereta'), $kbName, $kbDetail, $inv, 'train-booking.php?done=' . urlencode($inv));
+            }
             header('Location: train-booking.php?done=' . urlencode($inv));
             exit;
         }

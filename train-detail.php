@@ -48,6 +48,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
         }
         $ins = db()->prepare("INSERT INTO train_bookings (train_id, user_id, name, email, phone, travel_date, seats, total_price, booking_code, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
         $ins->execute([$train['id'], $_SESSION['user_id'] ?? null, $name, $email, $phone, $travelDate, $seats, $totalPrice, $bookingCode]);
+        if (!empty($_SESSION['user_id'])) {
+            require_once 'includes/notifications.php';
+            $trDetail = $train['route_from'] . ' → ' . $train['route_to'] . ' • ' . $travelDate . ' • ' . $seats . ' ' . t('pax');
+            notifyBookingCreated((int)$_SESSION['user_id'], t('Kereta'), $train['name'], $trDetail, $bookingCode, 'booking-success.php?code=' . urlencode($bookingCode));
+        }
         $bookingId = (int)db()->lastInsertId();
         if ($walletDeduct > 0 && !empty($_SESSION['user_id'])) {
             require_once 'includes/wallet.php';

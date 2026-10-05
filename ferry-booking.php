@@ -74,6 +74,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $ferryBookingId = (int)db()->lastInsertId();
         $success = true;
         $pageTitle = t('Booking Berhasil');
+        if (!empty($userId)) {
+            require_once 'includes/notifications.php';
+            $ferryRoute = trim(($fromTerminal ?: $routeFrom) . ' → ' . ($toTerminal ?: $routeTo));
+            $ferryDetail = trim($departDate . ' • ' . $passengers . ' ' . t('pax'));
+            notifyBookingCreated((int)$userId, t('Ferry'), trim($company . ' ' . $vesselName), trim($ferryRoute . ' • ' . $ferryDetail, ' •'), $bookingCode, 'my-bookings.php');
+        }
 
         // Auto-create payment (idempotent) — user tidak perlu klik dulu,
         // metode pembayaran langsung ditampilkan. Booking tetap pending

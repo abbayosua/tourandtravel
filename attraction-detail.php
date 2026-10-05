@@ -53,6 +53,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
         }
         $ins = db()->prepare("INSERT INTO attraction_bookings (attraction_id, user_id, name, email, phone, visit_date, quantity, total_price, booking_code, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
         $ins->execute([$attraction['id'], $_SESSION['user_id'] ?? null, $name, $email, $phone, $visitDate, $quantity, $totalPrice, $bookingCode]);
+        require_once 'includes/notifications.php';
+        $abDetail = $visitDate . ' • ' . $quantity . ' ' . t('Tiket');
+        notifyBookingCreated((int)$_SESSION['user_id'], t('Atraksi'), tContent($attraction, 'name'), $abDetail, $bookingCode, 'booking-success.php?code=' . urlencode($bookingCode));
         $bookingId = (int)db()->lastInsertId();
         if ($walletDeduct > 0 && !empty($_SESSION['user_id'])) {
             require_once 'includes/wallet.php';

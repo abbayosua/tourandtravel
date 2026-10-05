@@ -10,6 +10,19 @@ function addNotification(int $userId, string $type, string $title, string $body 
     } catch (Throwable $e) {}
 }
 
+/**
+ * Notifikasi booking kaya info: "Tour: Nama Produk • 09 Oct 2026 • 2 pax • TAT-XXX".
+ * $kind sebaiknya sudah diterjemahkan di call-site, mis. t('Tour'), t('Hotel').
+ */
+function notifyBookingCreated(int $userId, string $kind, string $product, string $detail, string $code, string $link = 'my-bookings.php'): void {
+    if ($userId <= 0) return;
+    $body = trim($kind . ': ' . $product);
+    if (trim($detail) !== '') $body .= ' • ' . trim($detail);
+    $body .= ' • ' . trim($code);
+    $title = function_exists('t') ? t('Booking dibuat') : 'Booking dibuat';
+    addNotification($userId, 'booking', $title, mb_substr($body, 0, 255), $link ?: null);
+}
+
 function getUnreadCount(int $userId): int {
     $st = db()->prepare("SELECT COUNT(*) FROM notifications WHERE user_id = ? AND read_at IS NULL");
     $st->execute([$userId]);

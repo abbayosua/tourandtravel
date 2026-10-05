@@ -45,6 +45,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
         }
         $ins = db()->prepare("INSERT INTO connectivity_bookings (product_id, user_id, name, email, phone, quantity, total_price, booking_code, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
         $ins->execute([$product['id'], $_SESSION['user_id'] ?? null, $name, $email, $phone, $quantity, $totalPrice, $bookingCode]);
+        if (!empty($_SESSION['user_id'])) {
+            require_once 'includes/notifications.php';
+            $ebDetail = $quantity . ' pcs';
+            notifyBookingCreated((int)$_SESSION['user_id'], t('eSIM'), tContent($product, 'name'), $ebDetail, $bookingCode, 'booking-success.php?code=' . urlencode($bookingCode));
+        }
         $bookingId = (int)db()->lastInsertId();
         if ($walletDeduct > 0 && !empty($_SESSION['user_id'])) {
             require_once 'includes/wallet.php';

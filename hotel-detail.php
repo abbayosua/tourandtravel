@@ -239,6 +239,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $insert = db()->prepare("INSERT INTO hotel_bookings (hotel_id, room_id, user_id, checkin, checkout, rooms, guests, name, phone, email, total_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $insert->execute([$hotel['id'], $room['id'] ?? null, $_SESSION['user_id'] ?? null, $ci, $co, $rooms, $g, $name, $phone, $email ?: null, $total]);
             $bookingId = (int)db()->lastInsertId();
+            if (!empty($_SESSION['user_id'])) {
+                require_once 'includes/notifications.php';
+                $hbDetail = $ci . ' → ' . $co . ' • ' . $rooms . ' ' . t('Kamar');
+                notifyBookingCreated((int)$_SESSION['user_id'], t('Hotel'), tContent($hotel, 'name'), $hbDetail, 'HTB-' . $bookingId, 'booking-success.php?code=HTB-' . $bookingId . '&btype=hotel');
+            }
             if ($walletDeduct > 0 && !empty($_SESSION['user_id'])) {
                 require_once 'includes/wallet.php';
                 spendWallet($_SESSION['user_id'], $walletDeduct, 'hotel_booking', $bookingId);

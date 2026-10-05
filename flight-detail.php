@@ -132,6 +132,10 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['book_duffel'])) {
                             $bc = (string)($order['booking_reference'] ?? $order['id'] ?? '');
                             db()->prepare("INSERT INTO flight_bookings (schedule_id, provider, title, booking_code, offer_id, user_id, name, email, phone, departure_date, seats, total_price, status, payment_status) VALUES (NULL, 'duffel', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'confirmed', 'paid')")
                                 ->execute([$title, $bc, $offerId, $_SESSION['user_id'], $name, $email, $phone, $depDate, count($passengersData), (float)($offer['total_amount'] ?? 0)]);
+                            if (!empty($_SESSION['user_id'])) {
+                                require_once 'includes/notifications.php';
+                                notifyBookingCreated((int)$_SESSION['user_id'], t('Pesawat'), $title, $depDate . ' • ' . count($passengersData) . ' ' . t('pax'), $bc !== '' ? $bc : 'DUFFEL', 'my-bookings.php');
+                            }
                         } catch (Throwable $e) {
                             error_log('flight_bookings (duffel) persist gagal: ' . $e->getMessage());
                         }
@@ -153,6 +157,8 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['book_duffel'])) {
             $newFbId = (int)db()->lastInsertId();
             $bookingCode = 'FLB-' . $newFbId;
             db()->prepare("UPDATE flight_bookings SET booking_code = ? WHERE id = ?")->execute([$bookingCode, $newFbId]);
+            require_once 'includes/notifications.php';
+            notifyBookingCreated((int)$_SESSION['user_id'], t('Pesawat'), $title, $schedule['departure_date'] . ' • ' . $passengers . ' ' . t('pax'), $bookingCode, 'booking-success.php?code=' . urlencode($bookingCode) . '&btype=flight');
             header('Location: booking-success.php?code=' . urlencode($bookingCode) . '&btype=flight');
             exit;
         }

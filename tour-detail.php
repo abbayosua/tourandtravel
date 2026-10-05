@@ -243,7 +243,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
         // Notifikasi in-app utk user (bila login)
         require_once 'includes/notifications.php';
         if (!empty($_SESSION['user_id'])) {
-            addNotification((int)$_SESSION['user_id'], 'booking', t('Booking dibuat'), t('Booking') . ' ' . $bookingCode, 'my-bookings.php');
+            $notifDetail = tglIndonesia($selectedDate['departure_date']) . ' • ' . $participants . ' ' . t('pax');
+            notifyBookingCreated((int)$_SESSION['user_id'], t('Tour'), tContent($tour, 'title'), $notifDetail, $bookingCode, 'my-bookings.php');
         }
 
         // Email booking_created ke pemesan (tidak pernah throw)
