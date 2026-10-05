@@ -169,25 +169,23 @@ require_once 'includes/header-shared.php';
                         <h3 class="fw-bold mb-2"><?= t('Pesanan Diterima') ?></h3>
                         <p class="text-muted mb-4"><?= t('Selesaikan pembayaran ke Virtual Account di bawah. Tiket diproses otomatis oleh penyedia.') ?></p>
 
-                        <div class="bg-primary text-white rounded-4 p-4 mb-4">
-                            <small><?= t('Kode Booking') ?></small>
-                            <div class="fs-4 fw-bold"><?= e($booking['booking_code']) ?></div>
-                        </div>
-
                         <?php if (!empty($booking['va_number'])): ?>
-                        <div class="text-start bg-light rounded-4 p-4 mb-4" data-testid="kereta-va">
-                            <h6 class="fw-semibold mb-3"><i class="bi bi-bank me-1"></i><?= t('Instruksi Pembayaran') ?></h6>
-                            <table class="table table-borderless mb-0 small">
-                                <tr><td class="text-muted ps-0"><?= t('Bank') ?></td><td class="fw-semibold text-end"><?= e($booking['va_bank']) ?></td></tr>
-                                <tr><td class="text-muted ps-0"><?= ($booking['payment_method'] ?? '') === 'TRANSFER' ? t('Nomor Rekening Tujuan') : t('Nomor Virtual Account') ?></td><td class="fw-bold text-end fs-5" id="vaNumber"><?= e($booking['va_number']) ?></td></tr>
-                                <tr><td class="text-muted ps-0"><?= t('Total Bayar') ?></td><td class="fw-semibold text-primary text-end"><?= formatRupiah($booking['payment_total'] ?: $booking['total_price']) ?></td></tr>
+                        <div class="bg-primary text-white rounded-4 p-4 mb-3" data-testid="kereta-va">
+                            <small class="text-white d-block opacity-75"><?= ($booking['payment_method'] ?? '') === 'TRANSFER' ? t('Nomor Rekening Tujuan') : t('Nomor Virtual Account') ?> · <?= e($booking['va_bank']) ?></small>
+                            <div class="fs-2 fw-bold mb-2" id="vaNumber" style="letter-spacing:1px;"><?= e($booking['va_number']) ?></div>
+                            <div class="d-flex justify-content-between align-items-center gap-2 small mb-3 flex-wrap">
+                                <span><?= t('Total Bayar') ?>: <strong><?= formatRupiah($booking['payment_total'] ?: $booking['total_price']) ?></strong></span>
                                 <?php if (!empty($booking['payment_deadline'])): ?>
-                                <tr><td class="text-muted ps-0"><?= t('Batas Waktu') ?></td><td class="fw-semibold text-danger text-end"><?= e($booking['payment_deadline']) ?></td></tr>
+                                <span class="badge bg-warning text-dark"><?= t('Batas Waktu') ?>: <?= e($booking['payment_deadline']) ?></span>
                                 <?php endif; ?>
-                            </table>
-                            <button type="button" class="btn btn-sm btn-outline-primary mt-3" id="copyVaBtn" data-va="<?= e($booking['va_number']) ?>"><i class="bi bi-clipboard me-1"></i><?= t('Salin Nomor VA') ?></button>
+                            </div>
+                            <button type="button" class="btn btn-light w-100 fw-semibold" id="copyVaBtn" data-va="<?= e($booking['va_number']) ?>"><i class="bi bi-clipboard me-1"></i><?= t('Salin Nomor VA') ?></button>
                         </div>
+                        <div class="small text-muted mb-4"><?= t('Kode Booking') ?>: <span class="fw-semibold text-dark"><?= e($booking['booking_code']) ?></span> <span class="opacity-75">· <?= t('pakai untuk lacak / konfirmasi WA') ?></span></div>
                         <?php else: ?>
+                        <div class="bg-light rounded-4 p-3 mb-3 small">
+                            <?= t('Kode Booking') ?>: <strong><?= e($booking['booking_code']) ?></strong>
+                        </div>
                         <div class="alert alert-warning small text-start">
                             <?= t('Kode booking sudah dibuat. Silakan hubungi kami via WhatsApp untuk mendapatkan nomor pembayaran.') ?>
                         </div>

@@ -218,7 +218,7 @@ $trainBookings = db()->prepare("
     ORDER BY tb.created_at DESC
 ");
 $trainBookings->execute([$userId]);
-foreach ($trainBookings->fetchAll() as $b) { $b['item_title'] = tContent(['title' => $b['item_title'], 'title_en' => $b['item_title_en'] ?? ''], 'title'); $b['img'] = 'https://placehold.co/300x200?text=KAI'; $all[] = $b; }
+foreach ($trainBookings->fetchAll() as $b) { $b['item_title'] = tContent(['title' => $b['item_title'], 'title_en' => $b['item_title_en'] ?? ''], 'title'); $b['img'] = 'assets/img/kai.jpeg'; $all[] = $b; }
 
 $esimBookings = db()->prepare("
     SELECT cb.*, cp.name as item_title, cp.name_en as item_title_en, cp.name_zh as item_title_zh, cp.slug as item_slug, cp.price_currency, 'esim' AS btype,
