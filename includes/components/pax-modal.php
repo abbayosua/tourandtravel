@@ -46,17 +46,23 @@ $paxSelfChecked = $paxSelfChecked ?? true;
     var CSRF = '<?= e(csrfToken()) ?>';
     var modal = null;
     var uploaded = {};
+    var names = {};
 
     function esc(s) { var d = document.createElement('div'); d.textContent = (s == null ? '' : s); return d.innerHTML; }
 
     function render() {
         var n = Math.max(1, parseInt(paxInput.value, 10) || 1);
         var self = SHOW_SELF && !!(selfChk && selfChk.checked);
+        // Simpan nama yang sudah diketik agar tidak hilang saat render ulang
+        // (buka ulang modal / ubah jumlah peserta).
+        rowsEl.querySelectorAll('input[name^="pax_name_"]').forEach(function (inp) {
+            names[inp.name.replace('pax_name_', '')] = inp.value;
+        });
         if (countEl) countEl.textContent = n;
         rowsEl.innerHTML = '';
         for (var i = 1; i <= n; i++) {
             var isSelf = (i === 1 && self);
-            var val = isSelf ? (nameEl ? nameEl.value : '') : '';
+            var val = isSelf ? (nameEl ? nameEl.value : '') : (names[i] || '');
             var done = !!uploaded[i];
             var row = document.createElement('div');
             row.className = 'border rounded p-2 mb-2';
@@ -136,6 +142,13 @@ $paxSelfChecked = $paxSelfChecked ?? true;
     rowsEl.addEventListener('change', function (ev) {
         var t = ev.target;
         if (t && t.classList && t.classList.contains('pax-file')) uploadPax(t);
+    });
+
+    rowsEl.addEventListener('input', function (ev) {
+        var t = ev.target;
+        if (t && t.name && t.name.indexOf('pax_name_') === 0) {
+            names[t.name.replace('pax_name_', '')] = t.value;
+        }
     });
 
     function openModal() {

@@ -267,6 +267,47 @@ test('pembelian 2 peserta tersimpan dengan benar', async ({ page }) => {
   await expect(page.locator(`text=${code}`).first()).toBeVisible();
 });
 
+test('nama peserta tidak hilang saat modal peserta dibuka ulang', async ({ page }) => {
+  await login(page);
+  await page.goto(`${BASE}/tour-detail.php?slug=${SLUG}&lang=id`);
+  await expect(page.locator('#tourBookingForm')).toBeVisible();
+  await page.locator('input[name="participants"]').fill('3');
+
+  // Isi modal: unggah paspor tiap peserta + nama peserta #2 & #3.
+  await page.locator('[data-testid="open-pax-modal"]').click();
+  await expect(page.locator('[data-testid="pax-rows"]')).toBeVisible();
+  for (let i = 1; i <= 3; i++) {
+    await page.locator(`input.pax-file[data-idx="${i}"]`).setInputFiles(passportFixture());
+    await expect(page.locator(`#passportFile${i}`)).not.toHaveValue('', { timeout: 10000 });
+  }
+  await page.locator('input[name="pax_name_2"]').fill('Pax Dua');
+  await page.locator('input[name="pax_name_3"]').fill('Pax Tiga');
+  await page.locator('[data-testid="pax-done"]').click();
+
+  // Regresi: buka ulang modal tidak boleh mengosongkan nama yang sudah diketik.
+  await page.locator('[data-testid="open-pax-modal"]').click();
+  await expect(page.locator('input[name="pax_name_2"]')).toHaveValue('Pax Dua');
+  await expect(page.locator('input[name="pax_name_3"]')).toHaveValue('Pax Tiga');
+  await page.locator('[data-testid="pax-done"]').click();
+
+  await pickFirstDeparture(page);
+  await page.locator('#bookingName').fill('Buyer Tour');
+  await page.locator('#bookingPhone').fill('081234567890');
+  await Promise.all([
+    page.waitForURL(/booking-success\.php\?code=/, { timeout: 60000 }),
+    page.locator('#bookingSubmitBtn').click(),
+  ]);
+  const code = (page.url().match(/code=([^&]+)/)?.[1] ?? '').trim();
+  expect(code).not.toBe('');
+
+  const names = mysql(
+    `SELECT full_name FROM booking_participants b JOIN bookings bk ON b.booking_id = bk.id WHERE bk.booking_code = '${code}' ORDER BY b.id`
+  );
+  expect(names).toContain('Buyer Tour');
+  expect(names).toContain('Pax Dua');
+  expect(names).toContain('Pax Tiga');
+});
+
 test('redeem points + wallet (TravelPoints) memotong total', async ({ page }) => {
   // User terpisah + seed saldo: 500 points dan Rp 500.000 wallet.
   redeemUserId = createUser(AUTH_EMAIL_REDEEM);
