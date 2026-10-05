@@ -65,7 +65,6 @@
     }
     #adminSidebar.icon-only .nav-link i {
         margin-right: 0;
-        width: auto;
     }
     #adminSidebar.icon-only hr {
         margin: 0.5rem 0;

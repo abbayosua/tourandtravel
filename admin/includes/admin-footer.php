@@ -27,6 +27,11 @@ const overlay = document.getElementById('sidebarOverlay');
 const body = document.body;
 
 if (toggleBtn && sidebar) {
+    // Tooltip mode ikon: isi title dari label agar ikon terbaca saat kecil.
+    sidebar.querySelectorAll('.nav-link').forEach(function (a) {
+        var lbl = a.querySelector('.nav-label');
+        if (lbl && !a.getAttribute('title')) a.setAttribute('title', lbl.textContent.trim());
+    });
     // Mobile: sidebar = off-canvas drawer; mulai tertutup agar tidak menutupi konten.
     if (window.innerWidth < 768) sidebar.classList.add('collapsed');
     toggleBtn.addEventListener('click', function(e) {
