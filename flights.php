@@ -2,6 +2,8 @@
 require_once 'includes/config.php';
 require_once 'includes/db.php';
 require_once 'includes/functions.php';
+require_once 'includes/nusatrip.php';
+// FlightList & Duffel dinonaktifkan — pencarian & booking pakai NusaTrip (lihat nusatrip-flight-book.php).
 require_once 'includes/duffel.php';
 require_once 'includes/flightlist.php';
 
@@ -53,6 +55,8 @@ if (!$doSearch && (!strtotime($date) || $date < date('Y-m-d'))) $date = date('Y-
 
 $duffelOffers = [];
 $duffelError = null;
+$nusaOffers = [];
+$nusaError = null;
 $localSchedules = [];
 $localTotal = 0;
 $localPage = max(1, (int)($_GET['page'] ?? 1));
@@ -92,68 +96,46 @@ $loadLocalFlights = function (string $from, string $to, string $date, string $cl
 };
 
 if ($doSearch && $tripType === 'multicity' && count($legs) >= 2) {
-    // Multi-city: langsung Duffel multi-slice (FlightList tak dukung multi-leg)
-    $cabinMap = ['economy'=>'economy','business'=>'business','first'=>'first','premium_economy'=>'premium_economy'];
-    $cabin = $cabinMap[$class] ?? 'economy';
-    $result = duffelSearchOffers(null, null, null, $cabin, $passengers, $legs);
-    if (isset($result['error'])) {
-        $duffelError = $result['error'];
-    } else {
-        $duffelOffers = $result['offers'] ?? [];
-        $offerSource = 'duffel';
-        $flightlistCurrency = $duffelOffers[0]['total_currency'] ?? 'USD';
-    }
+    // Multi-kota tak didukung flight_search NusaTrip (single leg) → fallback jadwal lokal.
+    [$localSchedules, $localTotal] = $loadLocalFlights($from, $to, $date, $class, $localPage);
 } elseif ($doSearch && $tripType === 'multicity') {
-    $duffelError = t('Minimal 2 leg untuk perjalanan multi-kota.');
+    $nusaError = t('Minimal 2 leg untuk perjalanan multi-kota.');
 } elseif ($doSearch && $from && $to) {
-    // Primary: FlightList (gratis, real airlines)
-    $flightlistResult = flightlistSearchOffers($from, $to, $date, $class ?: 'economy', $passengers);
-    if (isset($flightlistResult['offers']) && count($flightlistResult['offers']) > 0) {
-        $duffelOffers = $flightlistResult['offers'];
-        $flightlistCurrency = $flightlistResult['currency'] ?? 'USD';
-        // Mark as FlightList source via session flag
-        $offerSource = 'flightlist';
-    } elseif (!empty($flightlistResult['unreachable'])) {
-        // FlightList unreachable -> fallback Duffel
-        $cabinMap = ['economy'=>'economy','business'=>'business','first'=>'first','premium_economy'=>'premium_economy'];
-        $cabin = $cabinMap[$class] ?? 'economy';
-        if ($class === '') $cabin = 'economy';
-        $result = duffelSearchOffers($from, $to, $date, $cabin, $passengers);
-        if (isset($result['error'])) {
-            $duffelError = $result['error'] . ' (' . t('FlightList juga tidak terjangkau') . ')';
-        } else {
-            $all = $result['offers'] ?? [];
-            if ($class) {
-                $filtered = array_values(array_filter($all, function($o) use ($class) {
-                    $seg = $o['slices'][0]['segments'][0] ?? null;
-                    if (!$seg) return true;
-                    $cc = strtolower($seg['passengers'][0]['cabin_class'] ?? '');
-                    return $cc === $class;
-                }));
-                $duffelOffers = $filtered;
-                if (empty($duffelOffers)) $duffelOffers = $all;
-            } else {
-                $duffelOffers = $all;
-            }
-            $offerSource = 'duffel';
-        }
-        if (!empty($result['error']) || empty($duffelOffers)) {
-            // Final fallback: DB seed
-            [$localSchedules, $localTotal] = $loadLocalFlights($from, $to, $date, $class, $localPage);
-            if (empty($localSchedules) && empty($duffelOffers)) {
-                $duffelError = $flightlistResult['error'] ?? ($result['error'] ?? t('Tidak ada penerbangan untuk rute/tanggal ini.'));
-            }
-        }
+    // Primary: NusaTrip (flightlist & duffel dinonaktifkan).
+    if (!nusaModuleEnabled()) {
+        $nusaError = t('Modul NusaTrip nonaktif.');
     } else {
-        // FlightList reachable but 0 results -> show FlightList 0 (no fallback to avoid confusing mix), with DB fallback if desired
-        $offerSource = 'flightlist';
-        if (empty($flightlistResult['offers'])) {
-            // Fallback to DB so demo not empty
-            [$localSchedules, $localTotal] = $loadLocalFlights($from, $to, $date, $class, $localPage);
+        $fromCode = nusaParseIata($from);
+        $toCode = nusaParseIata($to);
+        if (!$fromCode || !$toCode) {
+            $nusaError = t('Kode bandara tidak valid. Contoh: CGK, DPS, atau pilih dari daftar.');
+        } else {
+            $nusaRes = nusaFlightSearch($fromCode, $toCode, $date, $passengers);
+            $nusaData = $nusaRes['data'] ?? null;
+            if (($nusaRes['http'] ?? 0) === 200 && is_array($nusaData) && !empty($nusaData['outbounds'])) {
+                $nusaAirlines = (array)($nusaData['airlines'] ?? []);
+                $flightRoute = (string)($nusaData['flightRoute'] ?? 'domestic');
+                $_SESSION['nusa_flight_offers'] = [];
+                foreach ($nusaData['outbounds'] as $o) {
+                    if (empty($o['param'])) continue;
+                    $norm = nusaNormalizeFlight($o, $nusaAirlines, $fromCode, $toCode);
+                    $norm['flight_route'] = $flightRoute;
+                    $norm['pax'] = $passengers;
+                    $norm['key'] = substr(md5($norm['param']), 0, 16);
+                    $nusaOffers[] = $norm;
+                    $_SESSION['nusa_flight_offers'][$norm['key']] = $norm;
+                }
+                $offerSource = 'nusatrip';
+            } else {
+                $nusaError = (string)($nusaData['messages'][0]['message'] ?? '') ?: t('NusaTrip tidak terjangkau');
+            }
         }
+    }
+    if (empty($nusaOffers)) {
+        [$localSchedules, $localTotal] = $loadLocalFlights($from, $to, $date, $class, $localPage);
     }
 } elseif ($doSearch && (!$from || !$to)) {
-    $duffelError = t('Silakan isi kota asal dan tujuan.');
+    $nusaError = t('Silakan isi kota asal dan tujuan.');
 } else {
     $st=db()->prepare("SELECT SQL_CALC_FOUND_ROWS fs.*, f.airline, f.flight_number, f.from_city, f.to_city, f.departure_time, f.arrival_time, f.duration, f.class FROM flight_schedules fs JOIN flights f ON fs.flight_id=f.id WHERE fs.is_active=1 AND fs.departure_date>=CURDATE() ORDER BY fs.departure_date ASC, fs.price ASC LIMIT 10 OFFSET " . ((max(1, (int)($_GET['page'] ?? 1)) - 1) * 10));
     $st->execute([]);
@@ -176,6 +158,12 @@ if (!empty($duffelOffers)) {
         if ($airline && !in_array($airline, $allAirlines)) $allAirlines[] = $airline;
     }
 }
+if (!empty($nusaOffers)) {
+    foreach ($nusaOffers as $o) {
+        $airline = $o['airline_name'] ?? '';
+        if ($airline && !in_array($airline, $allAirlines)) $allAirlines[] = $airline;
+    }
+}
 if (!empty($localSchedules)) {
     foreach ($localSchedules as $s) {
         $airline = $s['airline'] ?? '';
@@ -183,6 +171,29 @@ if (!empty($localSchedules)) {
     }
 }
 sort($allAirlines);
+// Filter NusaTrip offers by airline/min/max price/departure time/stops
+if (!empty($nusaOffers) && (!empty($airlineFilter) || $minPrice !== '' || $maxPrice !== '' || $depFilter !== '' || $stopsFilter !== '')) {
+    $nusaOffers = array_values(array_filter($nusaOffers, function ($o) use ($airlineFilter, $minPrice, $maxPrice, $depFilter, $stopsFilter) {
+        if (!empty($airlineFilter)) {
+            $matched = false;
+            foreach ($airlineFilter as $af) {
+                if (stripos($o['airline_name'] ?? '', $af) !== false || stripos($o['airline_code'] ?? '', $af) !== false) { $matched = true; break; }
+            }
+            if (!$matched) return false;
+        }
+        $price = (float)($o['price'] ?? 0);
+        if ($minPrice !== '' && $price < (float)$minPrice) return false;
+        if ($maxPrice !== '' && $price > (float)$maxPrice) return false;
+        if ($depFilter !== '') {
+            $hour = (int)date('G', strtotime($o['dep'] ?? ''));
+            $inRange = match ($depFilter) { 'morning' => $hour >= 5 && $hour < 12, 'afternoon' => $hour >= 12 && $hour < 17, 'evening' => $hour >= 17 && $hour < 22, 'night' => $hour >= 22 || $hour < 5, default => true };
+            if (!$inRange) return false;
+        }
+        if ($stopsFilter === 'direct' && (int)($o['stops'] ?? 0) > 0) return false;
+        if ($stopsFilter === 'transit' && (int)($o['stops'] ?? 0) === 0) return false;
+        return true;
+    }));
+}
 // Filter live/local schedules by airline/min/max price/departure time/stops
 if (!empty($duffelOffers) && (!empty($airlineFilter) || $minPrice !== '' || $maxPrice !== '' || $depFilter !== '' || $stopsFilter !== '')) {
     $duffelOffers = array_values(array_filter($duffelOffers, function ($o) use ($airlineFilter, $minPrice, $maxPrice, $depFilter, $stopsFilter) {
@@ -250,9 +261,11 @@ $sortDurationOf = function ($o) {
 };
 if ($sort === 'price' || $sort === 'rating') {
     usort($duffelOffers, function ($a, $b) use ($sortPriceOf) { return $sortPriceOf($a) <=> $sortPriceOf($b); });
+    usort($nusaOffers, function ($a, $b) { return (float)($a['price'] ?? 0) <=> (float)($b['price'] ?? 0); });
     usort($localSchedules, function ($a, $b) { return (float)($a['price'] ?? 0) <=> (float)($b['price'] ?? 0); });
 } elseif ($sort === 'duration') {
     usort($duffelOffers, function ($a, $b) use ($sortDurationOf) { return $sortDurationOf($a) <=> $sortDurationOf($b); });
+    usort($nusaOffers, function ($a, $b) { return (int)($a['duration'] ?? 0) <=> (int)($b['duration'] ?? 0); });
 }
 require_once 'includes/components/breadcrumb.php';
 require_once 'includes/header-shared.php';
@@ -384,82 +397,45 @@ require_once 'includes/header-shared.php';
                 <!-- Actual Content (hidden initially, shown after load) -->
                 <div id="flightContent" style="display: none;">
         <?php if ($doSearch): ?>
-            <?php if (!empty($duffelOffers)): ?>
-            <?php
-                $badge = 'Live Duffel'; $badgeClass='bg-success';
-                if (($offerSource ?? '') === 'flightlist') { $badge='FlightList (Real)'; $badgeClass='bg-primary'; }
-                elseif (($offerSource ?? '') === 'duffel') { $badge='Live Duffel'; $badgeClass='bg-success'; }
-            ?>
+            <?php if (!empty($nusaOffers)): ?>
+            <?php $badge = 'NusaTrip'; $badgeClass = 'bg-primary'; ?>
             <!-- Sort bar ala Traveloka -->
             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                <div><h5 class="fw-bold mb-0"><?= count($duffelOffers) ?> <?= t('Penerbangan') ?> <span class="badge <?= $badgeClass ?> ms-1" style="font-size:11px"><?= $badge ?></span></h5><small class="text-muted"><?= formatDate($date) ?> · <?= e($from) ?> → <?= e($to) ?> · <?= $passengers ?> <?= t('pax') ?></small></div>
+                <div><h5 class="fw-bold mb-0"><?= count($nusaOffers) ?> <?= t('Penerbangan') ?> <span class="badge <?= $badgeClass ?> ms-1" style="font-size:11px"><?= $badge ?></span></h5><small class="text-muted"><?= formatDate($date) ?> · <?= e($from) ?> → <?= e($to) ?> · <?= $passengers ?> <?= t('pax') ?></small></div>
                 <div class="d-flex gap-1">
                     <a href="?<?= e(http_build_query(array_merge($_GET, ['sort' => 'price']))) ?>" class="btn btn-sm <?= $sort === 'price' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Termurah') ?></a>
                     <a href="?<?= e(http_build_query(array_merge($_GET, ['sort' => 'duration']))) ?>" class="btn btn-sm <?= $sort === 'duration' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Tercepat') ?></a>
-                    <a href="?<?= e(http_build_query(array_merge($_GET, ['sort' => 'rating']))) ?>" class="btn btn-sm <?= $sort === 'rating' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Terpopuler') ?></a>
                 </div>
             </div>
-            </div>
-            <div class="row g-3" id="duffelResults">
-                <?php foreach ($duffelOffers as $o):
-                    $isFlightList = isset($o['route']) && isset($o['flyFrom']);
-                    if ($isFlightList) {
-                        $route0 = $o['route'][0] ?? $o;
-                        $airlineCode = $o['airlines'][0] ?? ($route0['airline'] ?? 'ZZ');
-                        $carrier = ['name'=>$airlineCode, 'iata_code'=>$airlineCode, 'logo_symbol_url'=>null];
-                        $dep = date('H:i', strtotime($o['local_departure'] ?? $route0['local_departure'] ?? ''));
-                        $arr = date('H:i', strtotime($o['local_arrival'] ?? $route0['local_arrival'] ?? ''));
-                        $duration = flightlistFormatDuration($o['duration']['departure'] ?? $o['duration']['total'] ?? 0);
-                        $stops = count($o['route']) > 1 ? count($o['route'])-1 : 0;
-                        $cc = 'economy';
-                        $offerId = $o['id'];
-                        $fromCode = $o['flyFrom'] ?? $route0['flyFrom'] ?? '';
-                        $toCode = $o['flyTo'] ?? $route0['flyTo'] ?? '';
-                        $isFL = true;
-                    } else {
-                        $slice = $o['slices'][0]; $seg = $slice['segments'][0];
-                        $dep = date('H:i', strtotime($seg['departing_at'])); $arr = date('H:i', strtotime($seg['arriving_at']));
-                        $carrier = $seg['marketing_carrier'] ?? $seg['operating_carrier'];
-                        $duration = duffelFormatDuration($slice['duration'] ?? $seg['duration']);
-                        $cc = $seg['passengers'][0]['cabin_class'] ?? 'economy';
-                        $offerId = $o['id'];
-                        $isFL = false;
-                        $fromCode = $seg['origin']['iata_code'] ?? '';
-                        $toCode = $seg['destination']['iata_code'] ?? '';
-                        $stops = count($slice['segments']) > 1 ? count($slice['segments'])-1 : 0;
-                    }
-                    $baggages = $isFL ? [] : ($seg['passengers'][0]['baggages'] ?? []);
+            <div class="row g-3" id="flightGrid">
+                <?php foreach ($nusaOffers as $o):
+                    $dep = !empty($o['dep']) ? date('H:i', strtotime(substr($o['dep'], 0, 8))) : '--:--';
+                    $arr = !empty($o['arr']) ? date('H:i', strtotime(substr($o['arr'], 0, 8))) : '--:--';
+                    $durMin = (int)($o['duration'] ?? 0);
+                    $duration = $durMin > 0 ? floor($durMin / 60) . 'j ' . ($durMin % 60) . 'm' : '-';
+                    $stops = (int)($o['stops'] ?? 0);
+                    $cc = strtolower((string)($o['class_type'] ?? 'economy'));
                 ?>
                 <div class="col-12">
                     <div class="card border-0 shadow-sm flight-card">
                         <div class="card-body p-3 p-md-4">
                             <div class="row align-items-center g-3">
                                 <div class="col-md-2 d-flex align-items-center gap-2">
-                                    <?php $logoUrl = 'https://images.kiwi.com/airlines/64/' . e($carrier['iata_code'] ?? 'ZZ') . '.png'; ?>
-                                    <img src="<?= $logoUrl ?>" alt="<?= e($carrier['name'] ?? '') ?>" style="width:44px;height:44px;object-fit:contain" class="bg-white rounded-2 border" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-                                    <div class="flight-logo d-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary fw-bold rounded-2" style="width:44px;height:44px;display:none;"><?= e(substr($carrier['name']??'ZZ',0,2)) ?></div>
-                                    <div><div class="fw-semibold small"><?= e($carrier['name'] ?? 'Duffel Airways') ?></div><small class="text-muted" style="font-size:11px;"><?= e($carrier['iata_code'] ?? 'ZZ') ?> <?= e($seg['marketing_carrier_flight_number'] ?? '') ?></small></div>
+                                    <?php $logoUrl = 'https://images.kiwi.com/airlines/64/' . e($o['airline_code'] ?: 'ZZ') . '.png'; ?>
+                                    <img src="<?= $logoUrl ?>" alt="<?= e($o['airline_name']) ?>" style="width:44px;height:44px;object-fit:contain" class="bg-white rounded-2 border" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                    <div class="flight-logo d-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary fw-bold rounded-2" style="width:44px;height:44px;display:none;"><?= e(substr($o['airline_name'] ?: 'ZZ', 0, 2)) ?></div>
+                                    <div><div class="fw-semibold small"><?= e($o['airline_name']) ?></div><small class="text-muted" style="font-size:11px;"><?= e($o['flight_number']) ?></small></div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="d-flex align-items-center justify-content-center gap-2">
-                                        <div class="text-center" style="min-width:70px;"><div class="fs-5 fw-bold"><?= $dep ?></div><small class="text-muted"><?= e($isFL ? $fromCode : ($seg['origin']['iata_code'] ?? '')) ?></small></div>
+                                        <div class="text-center" style="min-width:70px;"><div class="fs-5 fw-bold"><?= $dep ?></div><small class="text-muted"><?= e($o['from']) ?></small></div>
                                         <div class="flex-grow-1 text-center px-2"><div class="border-top border-2 border-primary position-relative"><i class="bi bi-airplane-fill text-primary position-absolute top-0 start-50 translate-middle" style="font-size:12px;"></i></div><small class="text-muted d-block mt-1"><?= e($duration) ?></small><?php if ($stops>0): ?><small class="text-warning" style="font-size:11px"><?= $stops ?> <?= t('transit') ?></small><?php else: ?><small class="text-success" style="font-size:11px"><?= t('Langsung') ?></small><?php endif; ?></div>
-                                        <div class="text-center" style="min-width:70px;"><div class="fs-5 fw-bold"><?= $arr ?></div><small class="text-muted"><?= e($isFL ? $toCode : ($seg['destination']['iata_code'] ?? '')) ?></small></div>
+                                        <div class="text-center" style="min-width:70px;"><div class="fs-5 fw-bold"><?= $arr ?></div><small class="text-muted"><?= e($o['to']) ?></small></div>
                                     </div>
                                 </div>
-                                <div class="col-md-2 text-center"><span class="badge bg-<?= $cc==='economy'?'success':($cc==='business'?'warning text-dark':'danger') ?> rounded-pill"><?= ucfirst($cc) ?></span><small class="d-block text-muted mt-1" style="font-size:11px"><?php
-$baggageInfo = '';
-if ($isFL) {
-    $baggageInfo = t('Bagasi') . ' ' . ($o['baggage'] ?? '-');
-} else {
-    $baggageText = '';
-    foreach($baggages as $bg) $baggageText .= $bg['quantity'] . ' ' . ($bg['type']==='checked'?t('bagasi'):t('kabin')) . ' ';
-    $baggageInfo = $baggageText ?: ($s['baggage_allowance'] ?? '');
-    if (!empty($o['refundable'])) echo '<span class="badge bg-success-subtle text-success border border-success-subtle d-block mt-1" style="font-size:10px;"><i class="bi bi-arrow-repeat me-1"></i>' . t('Refundable') . '</span>';
-}
-?><?= $baggageInfo ? '<span class="d-block" style="font-size:10px;"><i class="bi bi-briefcase me-1"></i>' . e($baggageInfo) . '</span>' : '' ?></small></div>
-                                <div class="col-md-2 text-center"><div class="fs-6 fw-bold text-primary"><?= $isFL ? flightlistFormatPrice($o['price'] ?? $o['conversion']['USD'] ?? 0) : duffelFormatPrice($o['total_amount'], $o['total_currency']) ?></div><small class="text-muted">/ <?= t('orang') ?></small></div>
-                                <div class="col-md-2 text-md-end"><a href="flight-detail.php?<?= $isFL ? "fl_offer_id=".e($offerId) : "offer_id=".e($offerId) ?>" class="btn btn-primary rounded-pill px-4 fw-semibold w-100"><?= t('Pilih') ?></a></div>
+                                <div class="col-md-2 text-center"><span class="badge bg-<?= $cc==='economy'?'success':($cc==='business'?'warning text-dark':'danger') ?> rounded-pill"><?= e(ucfirst($cc)) ?></span><small class="d-block text-muted mt-1" style="font-size:11px"><?php if (!empty($o['baggage'])): ?><span class="d-block" style="font-size:10px;"><i class="bi bi-briefcase me-1"></i><?= t('Bagasi') ?> <?= e((string)$o['baggage']) ?> kg</span><?php endif; ?><?php if (!empty($o['seat'])): ?><span class="d-block" style="font-size:10px;"><?= t('Sisa') ?> <?= (int)$o['seat'] ?></span><?php endif; ?></small></div>
+                                <div class="col-md-2 text-center"><div class="fs-6 fw-bold text-primary"><?= formatCurrencySpan((float)$o['price'], 'IDR') ?></div><small class="text-muted">/ <?= t('orang') ?></small></div>
+                                <div class="col-md-2 text-md-end"><a href="nusatrip-flight-book.php?of=<?= e($o['key']) ?>" class="btn btn-primary rounded-pill px-4 fw-semibold w-100"><?= t('Pilih') ?></a></div>
                             </div>
                         </div>
                     </div>
@@ -492,7 +468,7 @@ if ($isFL) {
             </div>
             <?php endif; ?>
             <?php else: ?>
-            <div class="text-center py-5" id="noResults"><i class="bi bi-airplane fs-1 text-muted"></i><p class="mt-2 text-muted"><?= t('Tidak ada penerbangan untuk rute/tanggal tersebut.') ?></p><p class="small text-muted"><?= t('Coba: CGK → DPS, SIN → CGK, atau ubah tanggal.') ?></p><a href="flights.php" class="btn btn-primary rounded-pill px-4"><?= t('Reset') ?></a></div>
+            <div class="text-center py-5" id="noResults"><i class="bi bi-airplane fs-1 text-muted"></i><p class="mt-2 text-muted"><?= t('Tidak ada penerbangan untuk rute/tanggal tersebut.') ?></p><?php if (!empty($nusaError)): ?><p class="small text-danger"><?= e($nusaError) ?></p><?php endif; ?><p class="small text-muted"><?= t('Coba: CGK → DPS, SIN → CGK, atau ubah tanggal.') ?></p><a href="flights.php" class="btn btn-primary rounded-pill px-4"><?= t('Reset') ?></a></div>
             <?php endif; ?>
         <?php endif; ?>
         </div><!-- /.col-lg-9 -->

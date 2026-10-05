@@ -162,6 +162,76 @@ function nusaFlightItem(string $outboundParam, int $adults = 1): array {
         'infantNum' => '0', 'outboundParam' => $outboundParam, 'lang' => 'en']);
 }
 
+/** Ambil kode IATA (3 huruf) dari input user: "Jakarta (CGK)" | "Batam (BTH) · Hang Nadim" | "cgk" | "CGK" → "CGK". */
+function nusaParseIata(string $str): ?string {
+    $s = trim($str);
+    if ($s === '') return null;
+    if (preg_match('/\(([A-Za-z]{3})\b/', $s, $m)) return strtoupper($m[1]);
+    $t = strtoupper($s);
+    if (preg_match('/^[A-Z]{3}$/', $t)) return $t;
+    return null;
+}
+
+/** Normalisasi satu outbound flight_search → struktur kartu live kita. */
+function nusaNormalizeFlight(array $o, array $airlines = [], string $from = '', string $to = ''): array {
+    $segs = array_values((array)($o['segments'] ?? []));
+    $seg0 = $segs[0] ?? [];
+    $last = $segs ? $segs[count($segs) - 1] : [];
+    $code = (string)($o['airline_code'] ?? ($seg0['airline_code'] ?? ''));
+    $name = $code;
+    foreach ($airlines as $a) {
+        if ((string)($a['iataCode'] ?? '') === $code) { $name = (string)($a['name'] ?? $code); break; }
+    }
+    $fare = (float)($o['one_way_fare_idr'] ?? $o['one_way_fare'] ?? 0);
+    return [
+        'source' => 'nusatrip',
+        'id' => (string)($o['id'] ?? ''),
+        'param' => (string)($o['param'] ?? ''),
+        'airline_code' => $code,
+        'airline_name' => $name !== '' ? $name : $code,
+        'flight_number' => (string)($seg0['flight_number'] ?? ($o['id'] ?? '')),
+        'from' => (string)($seg0['departure_airport_code'] ?? $from),
+        'to' => (string)($last['arrival_airport_code'] ?? $to),
+        'dep' => (string)($seg0['departure_time'] ?? ''),
+        'arr' => (string)($last['arrival_time'] ?? ''),
+        'duration' => (int)($o['duration'] ?? 0),
+        'stops' => max(0, count($segs) - 1),
+        'price' => $fare,
+        'currency' => (string)($o['currency'] ?? 'IDR'),
+        'seat' => (int)($o['available_seat'] ?? 0),
+        'baggage' => $o['baggage'] ?? null,
+        'class_type' => (string)($o['class_type'] ?? 'ECONOMY'),
+        'segments' => $segs,
+    ];
+}
+
+/** items flight = passengers (BUKAN occupancies). birthDate harus yyyymmdd, type dewasa=0. */
+function nusaFlightItems(array $pax, string $bookingTime, string $flightRoute = 'domestic'): string {
+    $passengers = [];
+    foreach ($pax as $p) {
+        $passengers[] = ['title' => (string)($p['title'] ?? 'MR'), 'firstName' => (string)($p['first'] ?? ''),
+            'lastName' => (string)($p['last'] ?? ''), 'nationality' => (string)($p['nationality'] ?? 'ID'),
+            'birthDate' => (string)($p['birth'] ?? ''), 'type' => (int)($p['type'] ?? 0)];
+    }
+    return json_encode([['passengers' => $passengers, 'flightRoute' => $flightRoute,
+        'bookingTime' => $bookingTime]], JSON_UNESCAPED_SLASHES);
+}
+
+/** payment flight: VA bank transfer pakai bankId, kartu pakai instrument 6. */
+function nusaFlightPayment(int $instrumentId, string $bankId = ''): string {
+    $p = ['displayCurrencyCode' => 'IDR', 'paymentInstrument' => $instrumentId];
+    if ($bankId !== '') $p['bankId'] = $bankId;
+    return json_encode($p, JSON_UNESCAPED_SLASHES);
+}
+
+/** Terima 01-01-1990 / 1990-01-01 / 19900101 → yyyymmdd (untuk birthDate NusaTrip). */
+function nusaFlightDob(string $in): string {
+    $d = (string)preg_replace('/\D/', '', $in);
+    if (preg_match('/^(\d{2})-(\d{2})-(\d{4})$/', $in, $m)) return $m[3] . $m[2] . $m[1];
+    if (preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $in, $m)) return $m[1] . $m[2] . $m[3];
+    return $d;
+}
+
 // ---------- Booking chain (guest OK) ----------
 
 /** roomItems: ["<guests>#<special_deal>#<book_reference>"] 3 segmen, deal kosong bila null. */
