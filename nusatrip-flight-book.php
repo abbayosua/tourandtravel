@@ -57,6 +57,13 @@ function nusaFlightPersist(array $b, array $res, ?array $summary): void {
                 $isPaid ? 'paid' : 'unpaid', $isPaid ? 'confirmed' : 'pending',
                 $summary ? json_encode($summary, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : null,
             ]);
+        $freshId = (int)db()->lastInsertId();
+        if ($freshId > 0) {
+            require_once __DIR__ . '/notifications.php';
+            $nfTitle = trim(($b['airline_name'] ?? '') . ' ' . ($b['flight_number'] ?? '') . ' ' . ($b['from'] ?? '') . '→' . ($b['to'] ?? ''));
+            $nfDetail = trim(($b['departure_date'] ?? '') . ' • ' . (int)($b['pax'] ?? 1) . ' ' . (function_exists('t') ? t('pax') : 'pax'));
+            notifyBookingCreated((int)$_SESSION['user_id'], function_exists('t') ? t('Pesawat') : 'Pesawat', $nfTitle, $nfDetail, $bookingCode, 'my-bookings.php');
+        }
     } catch (Throwable $e) {
         error_log('nusatrip_flight_bookings persist gagal: ' . $e->getMessage());
     }

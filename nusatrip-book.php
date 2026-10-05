@@ -58,6 +58,12 @@ function nusaPersistBooking(array $b, array $res, ?array $summary): void {
                 $isPaid ? 'paid' : 'unpaid', $isPaid ? 'confirmed' : 'pending',
                 $summary ? json_encode($summary, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : null,
             ]);
+        $freshId = (int)db()->lastInsertId();
+        if ($freshId > 0) {
+            require_once __DIR__ . '/notifications.php';
+            $nbDetail = $b['checkin'] . ' → ' . $b['checkout'] . ' • ' . (int)($b['guests'] ?? 1) . ' ' . (function_exists('t') ? t('pax') : 'pax');
+            notifyBookingCreated((int)$_SESSION['user_id'], function_exists('t') ? t('Hotel') : 'Hotel', (string)($b['hotel_name'] ?? ''), $nbDetail, $bookingCode, 'my-bookings.php');
+        }
     } catch (Throwable $e) {
         error_log('nusatrip_bookings persist gagal: ' . $e->getMessage());
     }

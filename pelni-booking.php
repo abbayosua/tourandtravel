@@ -118,6 +118,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
 
         $pelniBookingId = (int)db()->lastInsertId();
+        if (!empty($userId)) {
+            require_once 'includes/notifications.php';
+            $pbDetail = $routeFrom . ' → ' . $routeTo . ' • ' . $departDate . ' • ' . $passengers . ' ' . t('pax');
+            notifyBookingCreated((int)$userId, 'Pelni', trim($shipName . ' ' . $shipNumber), $pbDetail, $bookingCode, 'my-bookings.php');
+        }
 
         // Booking langsung ke penyedia (klikmbc.biz) — pembeli bayar via VA/transfer dari penyedia.
         $payMethod = trim($_POST['pay_method'] ?? $defaultPayMethod);

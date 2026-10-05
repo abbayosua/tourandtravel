@@ -58,6 +58,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
         }
         $ins = db()->prepare("INSERT INTO transfer_bookings (transfer_id, user_id, name, email, phone, pickup_date, pickup_time, pickup_location, flight_number, passengers, total_price, booking_code, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
         $ins->execute([$transfer['id'], $_SESSION['user_id'] ?? null, $name, $email, $phone, $pickupDate, $pickupTime, $pickupLocation, $flightNumber ?: null, $passengers, $totalPrice, $bookingCode]);
+        require_once 'includes/notifications.php';
+        $tfDetail = $transfer['from_city'] . ' → ' . $transfer['to_city'] . ' • ' . $pickupDate . ' ' . $pickupTime . ' • ' . $passengers . ' ' . t('pax');
+        notifyBookingCreated((int)$_SESSION['user_id'], t('Transfer'), tContent($transfer, 'name'), $tfDetail, $bookingCode, 'booking-success.php?code=' . urlencode($bookingCode));
         $bookingId = (int)db()->lastInsertId();
         if ($walletDeduct > 0 && !empty($_SESSION['user_id'])) {
             require_once 'includes/wallet.php';
