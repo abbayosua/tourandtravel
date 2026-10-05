@@ -284,14 +284,9 @@ function handleTripayCallback(array $data): bool {
         // Booking paid → status confirmed (membuka akses refund & review)
         db()->prepare("UPDATE bookings SET status = 'confirmed' WHERE id = ? AND status = 'pending'")
             ->execute([(int)$payment['booking_id']]);
-        // Poin loyalty: reuse pola midtrans
-        $b2 = db()->prepare('SELECT total_price, booking_code, user_id FROM bookings WHERE id = ?');
-        $b2->execute([(int)$payment['booking_id']]);
-        if (($bk2 = $b2->fetch()) && (int)($bk2['user_id'] ?? 0) > 0) {
-            require_once __DIR__ . '/points.php';
-            awardPointsForPaidBooking('tour', (int)$payment['booking_id'], (int)$bk2['user_id'], (float)$bk2['total_price'], $bk2['booking_code'] ?? null);
-            autoAssignTier((int)$bk2['user_id']);
-        }
+        // Poin loyalty + TravelPoints: reuse pola midtrans
+        require_once __DIR__ . '/points.php';
+        awardLoyaltyOnPaid('tour', (int)$payment['booking_id']);
     }
     if ($newStatus === 'paid' && $payment['booking_type'] === 'ferry') {
         // Ferry paid → confirmed

@@ -132,6 +132,16 @@ async function login(page: Page, email: string = AUTH_EMAIL) {
   await page.waitForLoadState('domcontentloaded');
 }
 
+/** Admin tandai booking tour sebagai confirmed (pembayaran manual diterima). */
+async function adminConfirmBooking(page: Page, bookingId: number) {
+  await page.goto(`${BASE}/admin/login.php`);
+  await page.fill('input[name="username"]', 'admin');
+  await page.fill('input[name="password"]', 'tmpcheck123');
+  await Promise.all([page.waitForLoadState('domcontentloaded'), page.click('button[type="submit"]')]);
+  await page.goto(`${BASE}/admin/bookings.php?update_status=${bookingId}&status=confirmed&type=tour`);
+  await page.waitForLoadState('domcontentloaded');
+}
+
 interface BookOpts {
   participants: number;
   paxNames?: string[];
@@ -199,10 +209,9 @@ test('pembelian 1 peserta berhasil dan tersimpan (mode manual)', async ({ page }
   await login(page);
   const code = await bookTour(page, { participants: 1 });
 
-  // TravelPoints 5% (Rp 75.000) tampil di konfirmasi pertama untuk user login.
-  const bsText = await page.locator('body').textContent();
-  expect(bsText).toContain('TravelPoints');
-  expect(bsText).toContain('75.000');
+  // TravelPoints 5% TIDAK cair sebelum pembayaran selesai (booking masih pending).
+  await expect(page.locator('[data-testid="travelpoints-earned"]')).toHaveCount(0);
+  expect(mysql(`SELECT COUNT(*) FROM wallet_transactions WHERE type='earn' AND reference_type='tour_booking' AND reference_id=(SELECT id FROM bookings WHERE booking_code='${code}')`)).toBe('0');
 
   const row = mysql(
     `SELECT status, participants, total_price, user_id FROM bookings WHERE booking_code = '${code}' AND tour_id = ${tourId}`
@@ -226,6 +235,35 @@ test('pembelian 1 peserta berhasil dan tersimpan (mode manual)', async ({ page }
 
   await page.goto(`${BASE}/my-bookings.php`);
   await expect(page.locator(`text=${code}`).first()).toBeVisible();
+});
+
+test('TravelPoints cair hanya setelah pembayaran selesai (admin konfirmasi)', async ({ page }) => {
+  mysql(`UPDATE tour_dates SET available_slots = 100 WHERE tour_id = ${tourId}`);
+  mysql(`DELETE FROM wallet_transactions WHERE user_id = ${userId}`);
+  await login(page);
+  const code = await bookTour(page, { participants: 1 });
+  const bid = Number(mysql(`SELECT id FROM bookings WHERE booking_code = '${code}'`));
+
+  const earned = () => Number(mysql(`SELECT COALESCE(SUM(amount),0) FROM wallet_transactions WHERE type='earn' AND reference_type='tour_booking' AND reference_id=${bid}`));
+
+  // Pending → belum cair, walau halaman konfirmasi sudah dibuka berkali-kali.
+  expect(earned()).toBe(0);
+  await page.goto(`${BASE}/booking-success.php?code=${code}`);
+  await page.reload();
+  expect(earned()).toBe(0);
+  await expect(page.locator('[data-testid="travelpoints-earned"]')).toHaveCount(0);
+
+  // Admin tandai confirmed (pembayaran manual diterima) → cair 5%.
+  await adminConfirmBooking(page, bid);
+  expect(earned()).toBe(Math.round(UNIT_PRICE * 0.05));
+
+  // Idempotent: konfirmasi ulang tidak menggandakan.
+  await adminConfirmBooking(page, bid);
+  expect(earned()).toBe(Math.round(UNIT_PRICE * 0.05));
+
+  // Halaman konfirmasi kini menampilkan reward.
+  await page.goto(`${BASE}/booking-success.php?code=${code}`);
+  await expect(page.locator('[data-testid="travelpoints-earned"]')).toContainText('75.000');
 });
 
 test('booking sebagai tamu (tanpa login) berhasil', async ({ page }) => {

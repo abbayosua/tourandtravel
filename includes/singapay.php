@@ -307,6 +307,9 @@ function singapayApplyPaid(array $payment, string $txId, array $data, bool $isPa
         deductTourSlotsOnPaid((int)$payment['booking_id']);
         db()->prepare("UPDATE bookings SET status = 'confirmed' WHERE id = ? AND status = 'pending'")
             ->execute([(int)$payment['booking_id']]);
+        // Loyalty + TravelPoints: pola sama dgn gateway lain (idempotent)
+        require_once __DIR__ . '/points.php';
+        awardLoyaltyOnPaid('tour', (int)$payment['booking_id']);
     }
     if ($isPaid && $payment['booking_type'] === 'ferry') {
         db()->prepare("UPDATE ferry_bookings SET status = 'confirmed' WHERE id = ? AND status = 'pending'")

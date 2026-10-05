@@ -69,6 +69,27 @@ function refundWallet($userId, $amount, $referenceType = null, $referenceId = nu
 }
 
 /**
+ * Earn TravelPoints (5% dari total) untuk booking yang SUDAH dibayar — idempotent.
+ * Dipanggil dari transisi pembayaran (webhook gateway / approve admin), BUKAN saat
+ * halaman booking dibuka, agar poin tidak cair sebelum pembayaran selesai.
+ * Return poin yang dicatat (0 bila duplikat / tidak memenuhi syarat).
+ */
+function awardTravelPointsForPaidBooking($bookingType, $bookingId, $userId, $totalPrice, $bookingCode = null) {
+    $userId = (int)$userId;
+    $bookingId = (int)$bookingId;
+    $totalPrice = (float)$totalPrice;
+    if ($userId <= 0 || $bookingId <= 0 || $totalPrice <= 0) return 0;
+    $refType = (string)$bookingType . '_booking';
+    $check = db()->prepare("SELECT COUNT(*) FROM wallet_transactions WHERE reference_type = ? AND reference_id = ? AND type = 'earn'");
+    $check->execute([$refType, $bookingId]);
+    if ((int)$check->fetchColumn() > 0) return 0;
+    $points = (float)round($totalPrice * 0.05);
+    if ($points <= 0) return 0;
+    addWalletTransaction($userId, $points, 'earn', 'Reward booking ' . $bookingCode, $refType, $bookingId);
+    return $points;
+}
+
+/**
  * Get wallet transaction history
  */
 function getWalletTransactions($userId, $limit = 50) {

@@ -101,6 +101,12 @@ if ($action === 'charge') {
     db()->prepare("UPDATE `{$typeMap[$bookingType]}` SET payment_status = ? WHERE id = ?")
         ->execute([$finalStatus, $bookingId]);
 
+    // Loyalty + TravelPoints: cair saat 1-click charge benar-benar paid (idempotent)
+    if ($finalStatus === 'paid') {
+        require_once __DIR__ . '/../includes/points.php';
+        awardLoyaltyOnPaid($bookingType, (int)$bookingId);
+    }
+
     echo json_encode([
         'success' => $finalStatus === 'paid',
         'status' => $res['status'],

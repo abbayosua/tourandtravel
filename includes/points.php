@@ -71,6 +71,38 @@ function awardPointsForPaidBooking(string $bookingType, int $bookingId, int $use
 }
 
 /**
+ * Beri SELURUH reward loyalitas saat booking benar-benar PAID:
+ * loyalty points + TravelPoints (wallet 5%) + auto-assign tier. Idempotent.
+ * Dipanggil dari transisi pembayaran (webhook gateway / approve admin),
+ * BUKAN saat halaman booking dibuka.
+ */
+function awardLoyaltyOnPaid(string $bookingType, int $bookingId): void {
+    if ($bookingId <= 0) return;
+    $tableMap = [
+        'tour' => 'bookings', 'hotel' => 'hotel_bookings', 'flight' => 'flight_bookings',
+        'train' => 'train_bookings', 'transfer' => 'transfer_bookings',
+        'attraction' => 'attraction_bookings', 'esim' => 'connectivity_bookings',
+        'ferry' => 'ferry_bookings', 'pelni' => 'pelni_bookings',
+    ];
+    $table = $tableMap[$bookingType] ?? null;
+    if (!$table) return;
+    require_once __DIR__ . '/wallet.php';
+    try {
+        $st = db()->prepare("SELECT total_price, booking_code, user_id FROM `$table` WHERE id = ?");
+        $st->execute([$bookingId]);
+        $bk = $st->fetch();
+    } catch (Throwable $e) {
+        return;
+    }
+    if (!$bk) return;
+    $uid = (int)($bk['user_id'] ?? 0);
+    if ($uid <= 0) return;
+    awardPointsForPaidBooking($bookingType, $bookingId, $uid, (float)$bk['total_price'], $bk['booking_code'] ?? null);
+    awardTravelPointsForPaidBooking($bookingType, $bookingId, $uid, (float)$bk['total_price'], $bk['booking_code'] ?? null);
+    autoAssignTier($uid);
+}
+
+/**
  * Auto-assign tier based on completed booking count.
  * Called after payment. Reads thresholds from settings.
  */

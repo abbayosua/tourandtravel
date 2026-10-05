@@ -140,19 +140,14 @@ if (!$booking) {
     exit;
 }
 
-// Earn TravelPoints (5% dari total) untuk user yang login — sekali per booking
+// TravelPoints 5% dicairkan saat pembayaran SELESAI (webhook gateway / approve admin),
+// bukan saat halaman ini dibuka. Di sini hanya menampilkan bila sudah benar-benar cair.
 $earnedPoints = 0;
 if (!empty($booking['user_id'])) {
     require_once 'includes/wallet.php';
-    // Cek belum pernah earn untuk booking ini
-    $check = db()->prepare("SELECT COUNT(*) FROM wallet_transactions WHERE reference_type = ? AND reference_id = ? AND type = 'earn'");
+    $check = db()->prepare("SELECT COALESCE(SUM(amount), 0) FROM wallet_transactions WHERE reference_type = ? AND reference_id = ? AND type = 'earn'");
     $check->execute([$btype . '_booking', $booking['id']]);
-    if ($check->fetchColumn() == 0) {
-        $earnedPoints = round($booking['total_price'] * 0.05);
-        if ($earnedPoints > 0) {
-            addWalletTransaction($booking['user_id'], $earnedPoints, 'earn', 'Reward booking ' . $booking['booking_code'], $btype . '_booking', $booking['id']);
-        }
-    }
+    $earnedPoints = (float)$check->fetchColumn();
 }
 
 // Payment: manual (default) = admin approve; instant = gateway aktif
@@ -250,7 +245,7 @@ require_once 'includes/header-shared.php';
 
                     <!-- TravelPoints earned -->
                     <?php if ($earnedPoints > 0): ?>
-                    <div class="bg-success bg-opacity-10 text-success rounded-4 p-3 mb-4 d-flex align-items-center justify-content-center gap-2">
+                    <div class="bg-success bg-opacity-10 text-success rounded-4 p-3 mb-4 d-flex align-items-center justify-content-center gap-2" data-testid="travelpoints-earned">
                         <i class="bi bi-coin fs-4"></i>
                         <div>
                             <div class="fw-bold">+ <?= number_format($earnedPoints, 0, ',', '.') ?> TravelPoints</div>

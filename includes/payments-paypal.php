@@ -138,5 +138,9 @@ function paypalCaptureOrder(string $bookingType, int $bookingId, string $paypalO
             ->execute([$bookingId]);
     }
 
+    // Loyalty + TravelPoints: cair saat pembayaran benar-benar selesai (idempotent)
+    require_once __DIR__ . '/points.php';
+    awardLoyaltyOnPaid($bookingType, (int)$bookingId);
+
     return ['status' => 'paid', 'capture_id' => $captureId];
 }

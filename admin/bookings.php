@@ -48,6 +48,12 @@ if (isset($_GET['update_status'])) {
         $vals[] = $id;
         db()->prepare("UPDATE `$table` SET " . implode(", ", $sets) . " WHERE id = ?")->execute($vals);
 
+        // Loyalty + TravelPoints saat admin menandai booking sudah dibayar (idempotent)
+        if (in_array($status, ['paid', 'confirmed'], true)) {
+            require_once '../includes/points.php';
+            awardLoyaltyOnPaid($type, $id);
+        }
+
         // Refund reseller balance on cancellation
         if ($status === 'cancelled' && $type === 'tour') {
             $resRow = db()->prepare("SELECT user_id, total_price FROM bookings WHERE id = ? AND booking_source = 'reseller'");
