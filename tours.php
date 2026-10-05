@@ -102,12 +102,20 @@ renderPageHero(t('Paket Tour'), $total . ' ' . t('tour ditemukan'), [['label' =>
                                 </select>
 
                                 <h6 class="fw-semibold mb-2"><?= t('Rentang Harga (IDR)') ?></h6>
-                                <div class="mb-1 d-flex justify-content-between small text-muted">
+                                <div class="mb-1 d-flex justify-content-between small fw-semibold">
                                     <span id="priceMinLabel">Rp <?= number_format((float)($minPrice ?: $priceFloor), 0, ',', '.') ?></span>
+                                    <span class="text-muted fw-normal">–</span>
                                     <span id="priceMaxLabel">Rp <?= number_format((float)($maxPrice ?: $priceCeil), 0, ',', '.') ?></span>
                                 </div>
-                                <input type="range" class="form-range" id="priceMinRange" min="<?= $priceFloor ?>" max="<?= $priceCeil ?>" step="500000" value="<?= (int)($minPrice ?: $priceFloor) ?>" data-testid="price-min-range">
-                                <input type="range" class="form-range" id="priceMaxRange" min="<?= $priceFloor ?>" max="<?= $priceCeil ?>" step="500000" value="<?= (int)($maxPrice ?: $priceCeil) ?>" data-testid="price-max-range">
+                                <div class="t-dual-range">
+                                    <div class="t-dual-track"><div class="t-dual-fill" id="priceFill"></div></div>
+                                    <input type="range" class="form-range t-dual-input" id="priceMinRange" min="<?= $priceFloor ?>" max="<?= $priceCeil ?>" step="500000" value="<?= (int)($minPrice ?: $priceFloor) ?>" data-testid="price-min-range" aria-label="<?= t('Harga minimum') ?>">
+                                    <input type="range" class="form-range t-dual-input" id="priceMaxRange" min="<?= $priceFloor ?>" max="<?= $priceCeil ?>" step="500000" value="<?= (int)($maxPrice ?: $priceCeil) ?>" data-testid="price-max-range" aria-label="<?= t('Harga maksimum') ?>">
+                                </div>
+                                <div class="d-flex justify-content-between small text-muted mt-1 mb-2">
+                                    <span><i class="bi bi-dash-circle me-1"></i><?= t('Min') ?></span>
+                                    <span><?= t('Maks') ?><i class="bi bi-plus-circle ms-1"></i></span>
+                                </div>
                                 <input type="hidden" name="min_price" id="priceMinInput" value="<?= e((string)($minPrice ?? '')) ?>">
                                 <input type="hidden" name="max_price" id="priceMaxInput" value="<?= e((string)($maxPrice ?? '')) ?>">
                                 <button type="submit" class="btn btn-sm btn-primary w-100 mb-3" data-testid="apply-price"><?= t('Terapkan') ?></button>
@@ -225,6 +233,17 @@ renderPageHero(t('Paket Tour'), $total . ' ' . t('tour ditemukan'), [['label' =>
     </div>
 </section>
 <?php require_once 'includes/footer-shared.php'; ?>
+<style>
+.t-dual-range { position: relative; height: 28px; }
+.t-dual-track { position: absolute; top: 50%; left: 0; right: 0; height: 6px; transform: translateY(-50%); background: #dee2e6; border-radius: 999px; }
+.t-dual-fill { position: absolute; top: 0; bottom: 0; background: #0d6efd; border-radius: 999px; }
+.t-dual-input { position: absolute !important; top: 0; left: 0; width: 100%; height: 28px; margin: 0; background: transparent; pointer-events: none; -webkit-appearance: none; appearance: none; }
+.t-dual-input::-webkit-slider-runnable-track { background: transparent; height: 28px; }
+.t-dual-input::-webkit-slider-thumb { pointer-events: auto; -webkit-appearance: none; width: 18px; height: 18px; margin-top: 5px; border-radius: 50%; background: #fff; border: 2px solid #0d6efd; box-shadow: 0 1px 3px rgba(0,0,0,.25); cursor: grab; }
+.t-dual-input::-moz-range-track { background: transparent; }
+.t-dual-input::-moz-range-thumb { pointer-events: auto; width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 2px solid #0d6efd; cursor: grab; }
+.t-dual-input:focus { box-shadow: none; }
+</style>
 <script>
 // Show skeleton initially, then reveal content
 document.addEventListener('DOMContentLoaded', function() {
@@ -313,17 +332,32 @@ document.addEventListener('DOMContentLoaded', function() {
     var minR = document.getElementById('priceMinRange'), maxR = document.getElementById('priceMaxRange');
     var minI = document.getElementById('priceMinInput'), maxI = document.getElementById('priceMaxInput');
     var minL = document.getElementById('priceMinLabel'), maxL = document.getElementById('priceMaxLabel');
+    var fill = document.getElementById('priceFill');
     if (!minR || !maxR) return;
+    var ABS_MIN = parseInt(minR.min, 10) || <?= (int)$priceFloor ?>;
+    var ABS_MAX = parseInt(minR.max, 10) || <?= (int)$priceCeil ?>;
+    var GAP = parseInt(minR.step, 10) || 500000;
     var loc = (window.I18N && window.I18N.locale) || 'id-ID';
     var fmt = function(n) { return 'Rp ' + Number(n).toLocaleString(loc); };
-    function sync() {
-        var lo = parseInt(minR.value), hi = parseInt(maxR.value);
-        if (lo > hi) { var t = lo; lo = hi; hi = t; }
-        minI.value = lo <= <?= $priceFloor ?> ? '' : lo;
-        maxI.value = hi >= <?= $priceCeil ?> ? '' : hi;
+    function sync(from) {
+        var lo = parseInt(minR.value, 10), hi = parseInt(maxR.value, 10);
+        if (lo > hi - GAP) {
+            if (from === 'min') { lo = hi - GAP; if (lo < ABS_MIN) lo = ABS_MIN; minR.value = lo; }
+            else { hi = lo + GAP; if (hi > ABS_MAX) hi = ABS_MAX; maxR.value = hi; }
+        }
+        minI.value = lo <= ABS_MIN ? '' : lo;
+        maxI.value = hi >= ABS_MAX ? '' : hi;
         minL.textContent = fmt(lo); maxL.textContent = fmt(hi);
+        if (fill) {
+            var pLo = ((lo - ABS_MIN) / (ABS_MAX - ABS_MIN)) * 100;
+            var pHi = ((hi - ABS_MIN) / (ABS_MAX - ABS_MIN)) * 100;
+            fill.style.left = pLo + '%'; fill.style.width = Math.max(0, pHi - pLo) + '%';
+        }
+        minR.style.zIndex = (lo > ABS_MAX - (ABS_MAX - ABS_MIN) / 2) ? '4' : '5';
+        maxR.style.zIndex = '3';
     }
-    minR.addEventListener('input', sync); maxR.addEventListener('input', sync);
+    minR.addEventListener('input', function() { sync('min'); });
+    maxR.addEventListener('input', function() { sync('max'); });
     sync();
 })();
 </script>
