@@ -369,7 +369,9 @@ require_once 'includes/header-shared.php';
                                     elseif ($btype === 'hotel') $detailUrl = 'nusatrip-book.php?step=result&booking_id=' . (int)$b['id'];
                                     $resume = bookingResumeInfo($btype, $b);
                                     ?>
+                                    <!-- HIDDEN: tombol Detail disembunyikan sementara (jangan hapus)
                                     <a href="<?= $detailUrl ?>" class="btn btn-sm btn-outline-primary rounded-pill px-3"><i class="bi bi-eye me-1"></i><?= t('Detail') ?></a>
+                                    -->
                                     <?php if ($resume['has_pending']): ?>
                                     <a href="<?= e($resume['resume_url']) ?>" class="btn btn-sm btn-success rounded-pill px-3" data-testid="resume-<?= $b['id'] ?>"><i class="bi bi-credit-card me-1"></i><?= t('Lanjutkan Pembayaran') ?></a>
                                     <?php endif; ?>
