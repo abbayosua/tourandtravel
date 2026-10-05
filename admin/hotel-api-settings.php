@@ -16,10 +16,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_settings'])) {
     $module = isset($_POST['nusatrip_module_enabled']) ? '1' : '0';
     $oyoModule = isset($_POST['oyo_module_enabled']) ? '1' : '0';
     $source = (string)($_POST['hotel_live_source'] ?? 'nusatrip');
+    $order = strtolower(trim((string)($_POST['hotel_source_order'] ?? '')));
+    $orderList = array_values(array_filter(array_map('trim', explode(',', $order))));
     $rkey = trim((string)($_POST['nusatrip_rkey'] ?? ''));
 
-    if (!in_array($source, ['auto', 'nusatrip', 'oyo'], true)) {
+    if (!in_array($source, ['auto', 'nusatrip', 'oyo', 'lokal'], true)) {
         $error = t('Sumber live tidak valid');
+    } elseif ($order !== '' && (empty($orderList) || array_diff($orderList, ['nusatrip', 'oyo', 'lokal']))) {
+        $error = t('Urutan sumber hanya boleh: nusatrip, oyo, lokal (pisah koma)');
     } elseif ($rkey !== '' && !preg_match('/^[a-f0-9]{32,160}$/i', $rkey)) {
         $error = t('rkey NusaTrip harus hex 32–160 karakter');
     } else {
@@ -27,6 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_settings'])) {
         setSetting('nusatrip_module_enabled', $module);
         setSetting('oyo_module_enabled', $oyoModule);
         setSetting('hotel_live_source', $source);
+        setSetting('hotel_source_order', $order !== '' ? implode(',', $orderList) : '');
         setSetting('nusatrip_rkey', $rkey);
         hotelCacheClear();
         $message = t('Pengaturan Hotel API tersimpan');
@@ -37,6 +42,7 @@ $liveEnabled = getSetting('hotel_live_enabled', '1') === '1';
 $nusaModule = getSetting('nusatrip_module_enabled', '1') === '1';
 $oyoModuleOn = getSetting('oyo_module_enabled', '1') === '1';
 $liveSource = (string)getSetting('hotel_live_source', 'nusatrip');
+$liveOrder = (string)getSetting('hotel_source_order', '');
 $rkey = (string)getSetting('nusatrip_rkey', '');
 
 // Uji live (GET ?test=1&city=...)
@@ -78,8 +84,15 @@ require_once 'includes/admin-header.php';
                     <select name="hotel_live_source" class="form-select" data-testid="hotel-live-source">
                         <option value="nusatrip" <?= $liveSource === 'nusatrip' ? 'selected' : '' ?>><?= t('NusaTrip (utamakan)') ?></option>
                         <option value="oyo" <?= $liveSource === 'oyo' ? 'selected' : '' ?>><?= t('OYO') ?></option>
+                        <option value="lokal" <?= $liveSource === 'lokal' ? 'selected' : '' ?>><?= t('Lokal saja (tanpa live)') ?></option>
                         <option value="auto" <?= $liveSource === 'auto' ? 'selected' : '' ?>><?= t('Auto (NusaTrip native, fallback OYO)') ?></option>
                     </select>
+                    <div class="form-text"><?= t('Dipakai bila Urutan kosong.') ?></div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><?= t('Urutan prioritas (menang atas Sumber utama)') ?></label>
+                    <input name="hotel_source_order" class="form-control" value="<?= e($liveOrder) ?>" placeholder="nusatrip,oyo,lokal" data-testid="hotel-source-order">
+                    <div class="form-text"><?= t('Coba berurutan hingga ada hasil. Checkout ikut sumber: NusaTrip native, OYO/Booking link provider, lokal form sendiri. Kosongkan = ikut Sumber utama.') ?></div>
                 </div>
                 <div class="mb-3">
                     <label class="form-label"><?= t('NusaTrip rkey (lama/opsional)') ?></label>

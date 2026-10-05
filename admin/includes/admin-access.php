@@ -83,6 +83,7 @@ function adminPages(): array {
         'email-log'   => ['file' => 'email-log.php', 'section' => 'Settings', 'label' => 'Log Email', 'icon' => 'bi-envelope-paper', 'show' => true, 'via' => null],
         'currency-settings' => ['file' => 'currency-settings.php', 'section' => 'Settings', 'label' => 'Mata Uang', 'icon' => 'bi-currency-exchange', 'show' => true, 'via' => null],
         'hotel-api-settings' => ['file' => 'hotel-api-settings.php', 'section' => 'Settings', 'label' => 'Hotel API', 'icon' => 'bi-building-gear', 'show' => true, 'via' => null],
+        'flight-api-settings' => ['file' => 'flight-api-settings.php', 'section' => 'Settings', 'label' => 'Flight API', 'icon' => 'bi-airplane', 'show' => true, 'via' => null],
         // ===== Team (superadmin only) =====
         'admins'      => ['file' => 'admins.php', 'section' => 'Tim', 'label' => 'Kelola Admin', 'icon' => 'bi-people', 'show' => true, 'via' => null],
     ];

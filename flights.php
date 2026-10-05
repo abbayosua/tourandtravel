@@ -3,7 +3,9 @@ require_once 'includes/config.php';
 require_once 'includes/db.php';
 require_once 'includes/functions.php';
 require_once 'includes/nusatrip.php';
-// FlightList & Duffel dinonaktifkan — pencarian & booking pakai NusaTrip (lihat nusatrip-flight-book.php).
+require_once 'includes/live-source.php';
+// FlightList & Duffel opsional via setting (default mati) — urutan sumber
+// dari flight_source_order, cth "nusatrip,lokal". Tiap sumber kunci checkout-nya.
 require_once 'includes/duffel.php';
 require_once 'includes/flightlist.php';
 
@@ -100,15 +102,15 @@ if ($doSearch && $tripType === 'multicity' && count($legs) >= 2) {
 } elseif ($doSearch && $tripType === 'multicity') {
     $nusaError = t('Minimal 2 leg untuk perjalanan multi-kota.');
 } elseif ($doSearch && $from && $to) {
-    // Primary: NusaTrip (flightlist & duffel dinonaktifkan).
-    if (!nusaModuleEnabled()) {
-        $nusaError = t('Modul NusaTrip nonaktif.');
-    } else {
-        $fromCode = nusaParseIata($from);
-        $toCode = nusaParseIata($to);
-        if (!$fromCode || !$toCode) {
-            $nusaError = t('Kode bandara tidak valid. Contoh: CGK, DPS, atau pilih dari daftar.');
-        } else {
+    // Bertingkat sesuai flight_source_order: coba tiap sumber hingga ada hasil.
+    $offerSource = '';
+    $liveError = null;
+    foreach (flightLiveOrder() as $src) {
+        if ($src === 'nusatrip') {
+            if (!nusaModuleEnabled()) { $liveError = t('Modul NusaTrip nonaktif.'); continue; }
+            $fromCode = nusaParseIata($from);
+            $toCode = nusaParseIata($to);
+            if (!$fromCode || !$toCode) { $liveError = t('Kode bandara tidak valid. Contoh: CGK, DPS, atau pilih dari daftar.'); break; }
             $nusaRes = nusaFlightSearch($fromCode, $toCode, $date, $passengers);
             $nusaData = $nusaRes['data'] ?? null;
             if (($nusaRes['http'] ?? 0) === 200 && is_array($nusaData) && !empty($nusaData['outbounds'])) {
@@ -125,12 +127,32 @@ if ($doSearch && $tripType === 'multicity' && count($legs) >= 2) {
                     $_SESSION['nusa_flight_offers'][$norm['key']] = $norm;
                 }
                 $offerSource = 'nusatrip';
-            } else {
-                $nusaError = (string)($nusaData['messages'][0]['message'] ?? '') ?: t('NusaTrip tidak terjangkau');
+                break;
             }
+            $liveError = (string)($nusaData['messages'][0]['message'] ?? '') ?: t('NusaTrip tidak terjangkau');
+        } elseif ($src === 'duffel') {
+            $cabin = in_array($class, ['economy', 'premium_economy', 'business', 'first'], true) ? $class : 'economy';
+            $dRes = duffelSearchOffers($from, $to, $date, $cabin, $passengers);
+            if (!isset($dRes['error']) && !empty($dRes['offers'])) {
+                $duffelOffers = $dRes['offers'];
+                $offerSource = 'duffel';
+                break;
+            }
+            $liveError = $dRes['error'] ?? t('Duffel kosong.');
+        } elseif ($src === 'flightlist') {
+            $fRes = flightlistSearchOffers($from, $to, $date, $class ?: 'economy', $passengers);
+            if (!isset($fRes['error']) && !empty($fRes['offers'])) {
+                $duffelOffers = $fRes['offers'];
+                $offerSource = 'flightlist';
+                break;
+            }
+            $liveError = $fRes['error'] ?? t('FlightList kosong.');
+        } elseif ($src === 'lokal') {
+            break; // jadwal lokal dimuat di bawah
         }
     }
-    if (empty($nusaOffers)) {
+    $nusaError = $liveError;
+    if (empty($nusaOffers) && empty($duffelOffers)) {
         [$localSchedules, $localTotal] = $loadLocalFlights($from, $to, $date, $class, $localPage);
     }
 } elseif ($doSearch && (!$from || !$to)) {
@@ -421,6 +443,77 @@ require_once 'includes/header-shared.php';
                 <?php endforeach; ?>
             </div>
             <div class="text-center py-4 text-muted d-none" id="flightNoMatch"><i class="bi bi-search fs-1"></i><p class="mt-2"><?= t('Tidak ada penerbangan untuk rute/tanggal tersebut.') ?></p></div>
+            <?php elseif (!empty($duffelOffers)): ?>
+            <?php $badge = $offerSource === 'flightlist' ? 'FlightList' : 'Duffel'; $badgeClass = $offerSource === 'flightlist' ? 'bg-info text-dark' : 'bg-success'; ?>
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <div><h5 class="fw-bold mb-0"><span id="flightResultCount"><?= count($duffelOffers) ?></span> <?= t('Penerbangan') ?> <span class="badge <?= $badgeClass ?> ms-1" style="font-size:11px"><?= $badge ?></span></h5><small class="text-muted"><?= formatDate($date) ?> · <?= e($from) ?> → <?= e($to) ?> · <?= $passengers ?> <?= t('pax') ?></small></div>
+                <div class="d-flex gap-1">
+                    <button type="button" data-flight-sort="price" onclick="sortFlightOffers('price')" class="btn btn-sm <?= $sort === 'price' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Termurah') ?></button>
+                    <button type="button" data-flight-sort="duration" onclick="sortFlightOffers('duration')" class="btn btn-sm <?= $sort === 'duration' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Tercepat') ?></button>
+                </div>
+            </div>
+            <div class="row g-3" id="flightGrid">
+                <?php foreach ($duffelOffers as $o):
+                    $isFL = isset($o['route']) && isset($o['flyFrom']);
+                    if ($isFL) {
+                        $route0 = $o['route'][0] ?? $o;
+                        $airlineCode = $o['airlines'][0] ?? ($route0['airline'] ?? 'ZZ');
+                        $airlineName = $airlineCode;
+                        $flNo = $route0['flight_no'] ?? '';
+                        $dep = date('H:i', strtotime($o['local_departure'] ?? $route0['local_departure'] ?? ''));
+                        $arr = date('H:i', strtotime($o['local_arrival'] ?? $route0['local_arrival'] ?? ''));
+                        $durMin = flightDurationMinutes($o['duration']['departure'] ?? $o['duration']['total'] ?? 0);
+                        $stops = count($o['route']) > 1 ? count($o['route']) - 1 : 0;
+                        $cc = 'economy';
+                        $price = (float)($o['price'] ?? $o['conversion']['USD'] ?? 0);
+                        $priceHtml = flightlistFormatPrice($o['price'] ?? $o['conversion']['USD'] ?? 0);
+                        $fromCode = $o['flyFrom'] ?? $route0['flyFrom'] ?? '';
+                        $toCode = $o['flyTo'] ?? $route0['flyTo'] ?? '';
+                        $pickUrl = 'flight-detail.php?fl_offer_id=' . urlencode((string)$o['id']);
+                    } else {
+                        $slice = $o['slices'][0]; $seg = $slice['segments'][0];
+                        $carrier = $seg['marketing_carrier'] ?? $seg['operating_carrier'] ?? [];
+                        $airlineName = $carrier['name'] ?? 'Penerbangan';
+                        $airlineCode = $carrier['iata_code'] ?? '';
+                        $flNo = $seg['marketing_carrier_flight_number'] ?? '';
+                        $dep = date('H:i', strtotime($seg['departing_at'] ?? ''));
+                        $arr = date('H:i', strtotime($seg['arriving_at'] ?? ''));
+                        $durMin = flightDurationMinutes($slice['duration'] ?? ($seg['duration'] ?? 0));
+                        $stops = count($slice['segments']) > 1 ? count($slice['segments']) - 1 : 0;
+                        $cc = strtolower($seg['passengers'][0]['cabin_class'] ?? 'economy');
+                        $price = (float)($o['total_amount'] ?? 0);
+                        $priceHtml = duffelFormatPrice($o['total_amount'] ?? 0, $o['total_currency'] ?? 'IDR');
+                        $fromCode = $seg['origin']['iata_code'] ?? '';
+                        $toCode = $seg['destination']['iata_code'] ?? '';
+                        $pickUrl = 'flight-detail.php?offer_id=' . urlencode((string)$o['id']);
+                    }
+                    $duration = $durMin > 0 ? floor($durMin / 60) . 'j ' . ($durMin % 60) . 'm' : '-';
+                ?>
+                <div class="col-12 js-nusa-offer" data-airline="<?= e($airlineName) ?>" data-airline-code="<?= e($airlineCode) ?>" data-price="<?= $price ?>" data-dep-hour="<?= (int)date('G', strtotime($dep)) ?>" data-stops="<?= $stops ?>" data-duration="<?= $durMin ?>">
+                    <div class="card border-0 shadow-sm flight-card">
+                        <div class="card-body p-3 p-md-4">
+                            <div class="row align-items-center g-3">
+                                <div class="col-md-2 d-flex align-items-center gap-2">
+                                    <div class="flight-logo d-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary fw-bold rounded-2" style="width:44px;height:44px;"><?= e(substr($airlineCode ?: 'ZZ', 0, 2)) ?></div>
+                                    <div><div class="fw-semibold small"><?= e($airlineName) ?></div><small class="text-muted" style="font-size:11px;"><?= e($flNo) ?></small></div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="d-flex align-items-center justify-content-center gap-2">
+                                        <div class="text-center" style="min-width:70px;"><div class="fs-5 fw-bold"><?= $dep ?></div><small class="text-muted"><?= e($fromCode) ?></small></div>
+                                        <div class="flex-grow-1 text-center px-2"><div class="border-top border-2 border-primary position-relative"><i class="bi bi-airplane-fill text-primary position-absolute top-0 start-50 translate-middle" style="font-size:12px;"></i></div><small class="text-muted d-block mt-1"><?= e($duration) ?></small><?php if ($stops>0): ?><small class="text-warning" style="font-size:11px"><?= $stops ?> <?= t('transit') ?></small><?php else: ?><small class="text-success" style="font-size:11px"><?= t('Langsung') ?></small><?php endif; ?></div>
+                                        <div class="text-center" style="min-width:70px;"><div class="fs-5 fw-bold"><?= $arr ?></div><small class="text-muted"><?= e($toCode) ?></small></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 text-center"><span class="badge bg-<?= $cc==='economy'?'success':($cc==='business'?'warning text-dark':'danger') ?> rounded-pill"><?= e(ucfirst($cc)) ?></span></div>
+                                <div class="col-md-2 text-center"><div class="fs-6 fw-bold text-primary"><?= $priceHtml ?></div><small class="text-muted">/ <?= t('orang') ?></small></div>
+                                <div class="col-md-2 text-md-end"><a href="<?= $pickUrl ?>" class="btn btn-primary rounded-pill px-4 fw-semibold w-100"><?= t('Pilih') ?></a></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            <div class="text-center py-4 text-muted d-none" id="flightNoMatch"><i class="bi bi-search fs-1"></i><p class="mt-2"><?= t('Tidak ada penerbangan untuk rute/tanggal tersebut.') ?></p></div>
             <?php elseif (!empty($localSchedules)): ?>
             <div class="alert alert-info py-2 small"><?= t('Hasil live tidak tersedia, menampilkan jadwal lokal.') ?></div>
             <div class="row g-3" id="flightGrid">
@@ -544,7 +637,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // ===== Filter & sort sisi klien untuk hasil live NusaTrip =====
 // Offer di-fetch SEKALI saat pencarian (from/to/date), lalu filter/sort di browser
 // tanpa memanggil endpoint flight_search lagi.
-var FLIGHT_LIVE = <?= !empty($nusaOffers) ? 'true' : 'false' ?>;
+var FLIGHT_LIVE = <?= (!empty($nusaOffers) || !empty($duffelOffers)) ? 'true' : 'false' ?>;
 
 function flightFilterState() {
     var form = document.getElementById('flightFilterForm');

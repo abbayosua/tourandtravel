@@ -164,6 +164,7 @@
                     'brand-settings' => 'nav-brand-settings',
                     'chat-settings' => 'nav-chat-settings',
                     'hotel-api-settings' => 'nav-hotel-api-settings',
+                    'flight-api-settings' => 'nav-flight-api-settings',
                 ];
                 $shownNav = [];
                 foreach (adminPages() as $pKey => $p) {

@@ -18,6 +18,7 @@
 
 require_once __DIR__ . '/hotel-cache.php';
 require_once __DIR__ . '/nusatrip.php';
+require_once __DIR__ . '/live-source.php';
 
 define('HOTEL_UA', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/120 Safari/537.36');
 define('BOOKING_GQL', 'https://www.booking.com/dml/graphql?lang=en-gb');
@@ -353,26 +354,33 @@ function hotelApiSearch(string $city, array $opts = []): array {
     $city = trim($city);
     if ($city === '') return ['error' => t('Kota kosong'), 'hotels' => [], 'count' => 0];
 
-    $source = hotelApiResolveSource($opts['source'] ?? null);
-    if ($source === '') return ['source' => '', 'count' => 0, 'hotels' => [], 'error' => t('Semua modul live nonaktif')];
-    if ($source === 'nusatrip') {
-        // Native API: butuh tanggal valid utk hotel_search (default +7/+8).
-        $ci = (string)($opts['checkin'] ?? '');
-        $co = (string)($opts['checkout'] ?? '');
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $ci)) $ci = date('Y-m-d', strtotime('+7 days'));
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $co) || strtotime($co) <= strtotime($ci)) $co = date('Y-m-d', strtotime($ci . ' +1 day'));
-        $guests = max(1, (int)($opts['guests'] ?? 2));
-        $res = hotelApiCached('nusatrip', hotelCacheKey('nusatrip', ['native', strtolower($city), $ci, $co, $guests]),
-            fn() => nusaSearchCity($city, $ci, $co, $guests),
-            fn($d) => count($d['hotels'] ?? []));
-        // Fallback ke OYO bila NusaTrip kosong/gagal (hanya bila modul OYO aktif)
-        if (isset($res['error']) || empty($res['hotels'])) {
-            if (!oyoModuleEnabled()) return ['source' => $source, 'count' => 0, 'hotels' => [], 'error' => $res['error'] ?? 'NusaTrip kosong; fallback OYO nonaktif'];
+    // Urutan bertingkat (1 jalur search+beli per sumber): coba tiap sumber live
+    // hingga ada hasil. 'lokal' = lewati live (fallback DB di pemanggil).
+    // $opts['source'] memaksa satu sumber (dipakai admin-test & hotelApiFind).
+    if (!empty($opts['source'])) {
+        $sources = array_values(array_filter([hotelApiResolveSource($opts['source'])]));
+    } else {
+        $sources = array_values(array_filter(hotelLiveOrder(), fn($s) => $s !== 'lokal'));
+    }
+    if (empty($sources)) return ['source' => '', 'count' => 0, 'hotels' => [], 'error' => t('Semua modul live nonaktif')];
+    $source = $sources[0];
+    $res = ['hotels' => []];
+    foreach ($sources as $source) {
+        if ($source === 'nusatrip') {
+            // Native API: butuh tanggal valid utk hotel_search (default +7/+8).
+            $ci = (string)($opts['checkin'] ?? '');
+            $co = (string)($opts['checkout'] ?? '');
+            if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $ci)) $ci = date('Y-m-d', strtotime('+7 days'));
+            if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $co) || strtotime($co) <= strtotime($ci)) $co = date('Y-m-d', strtotime($ci . ' +1 day'));
+            $guests = max(1, (int)($opts['guests'] ?? 2));
+            $res = hotelApiCached('nusatrip', hotelCacheKey('nusatrip', ['native', strtolower($city), $ci, $co, $guests]),
+                fn() => nusaSearchCity($city, $ci, $co, $guests),
+                fn($d) => count($d['hotels'] ?? []));
+        } else {
             $res = hotelApiOyo($city);
             $source = 'oyorooms';
         }
-    } else {
-        $res = hotelApiOyo($city);
+        if (!isset($res['error']) && !empty($res['hotels'])) break;
     }
     if (isset($res['error']) && empty($res['hotels'])) {
         return ['source' => $source, 'count' => 0, 'hotels' => [], 'error' => $res['error']];
