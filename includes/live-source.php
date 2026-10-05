@@ -72,8 +72,9 @@ function liveSourceOn(string $domain, string $src): bool
 }
 
 /**
- * Urutan sumber hotel aktif. Default "nusatrip,oyo" (= perilaku auto lama).
- * Legacy hotel_live_source: auto → default; nusatrip/oyo → kunci satu sumber.
+ * Urutan sumber hotel aktif. Default "nusatrip" (SUNSET OYO: oyo selalu
+ * dikeluarkan dari order efektif; fungsi OYO tetap ada = reversibel).
+ * Legacy hotel_live_source: auto → default; nusatrip/lokal → kunci; oyo (sunset) → nusatrip.
  */
 function hotelLiveOrder(): array
 {
@@ -81,11 +82,13 @@ function hotelLiveOrder(): array
     $raw = function_exists('getSetting') ? trim((string)getSetting('hotel_source_order', '')) : '';
     if ($raw === '' && function_exists('getSetting')) {
         $leg = trim((string)getSetting('hotel_live_source', 'auto'));
-        if ($leg === 'nusatrip' || $leg === 'oyo') return [$leg];
+        if ($leg === 'nusatrip') return ['nusatrip'];
         if ($leg === 'lokal') return ['lokal'];
-        $raw = 'nusatrip,oyo';
+        $raw = 'nusatrip';
     }
-    $order = liveParseOrder($raw === '' ? 'nusatrip,oyo' : $raw, $allowed);
+    $order = liveParseOrder($raw === '' ? 'nusatrip' : $raw, $allowed);
+    // SUNSET OYO: jangan pernah coba OYO di runtime.
+    $order = array_values(array_filter($order, fn($s) => $s !== 'oyo'));
     return array_values(array_filter($order, fn($s) => liveSourceOn('hotel', $s)));
 }
 

@@ -14,16 +14,18 @@ $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_settings'])) {
     $enabled = isset($_POST['hotel_live_enabled']) ? '1' : '0';
     $module = isset($_POST['nusatrip_module_enabled']) ? '1' : '0';
-    $oyoModule = isset($_POST['oyo_module_enabled']) ? '1' : '0';
+    // SUNSET OYO: modul dipaksa mati, input lama diabaikan (jangan hapus — reversibel)
+    $oyoModule = '0';
     $source = (string)($_POST['hotel_live_source'] ?? 'nusatrip');
+    if ($source === 'oyo') $source = 'nusatrip';
     $order = strtolower(trim((string)($_POST['hotel_source_order'] ?? '')));
-    $orderList = array_values(array_filter(array_map('trim', explode(',', $order))));
+    $orderList = array_values(array_filter(array_map('trim', explode(',', $order)), fn($s) => $s !== 'oyo'));
     $rkey = trim((string)($_POST['nusatrip_rkey'] ?? ''));
 
-    if (!in_array($source, ['auto', 'nusatrip', 'oyo', 'lokal'], true)) {
+    if (!in_array($source, ['auto', 'nusatrip', 'lokal'], true)) {
         $error = t('Sumber live tidak valid');
-    } elseif ($order !== '' && (empty($orderList) || array_diff($orderList, ['nusatrip', 'oyo', 'lokal']))) {
-        $error = t('Urutan sumber hanya boleh: nusatrip, oyo, lokal (pisah koma)');
+    } elseif ($order !== '' && (empty($orderList) || array_diff($orderList, ['nusatrip', 'lokal']))) {
+        $error = t('Urutan sumber hanya boleh: nusatrip, lokal (pisah koma)');
     } elseif ($rkey !== '' && !preg_match('/^[a-f0-9]{32,160}$/i', $rkey)) {
         $error = t('rkey NusaTrip harus hex 32–160 karakter');
     } else {
@@ -69,30 +71,34 @@ require_once 'includes/admin-header.php';
                 <input type="hidden" name="save_settings" value="1">
                 <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" name="hotel_live_enabled" id="hotelLiveEnabled" value="1" <?= $liveEnabled ? 'checked' : '' ?>>
-                    <label class="form-check-label" for="hotelLiveEnabled"><?= t('Aktifkan live hotel API (Booking.com/OYO/NusaTrip)') ?></label>
+                    <label class="form-check-label" for="hotelLiveEnabled"><?= t('Aktifkan live hotel API (NusaTrip)') ?></label>
                 </div>
                 <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" name="nusatrip_module_enabled" id="nusaModuleEnabled" value="1" <?= $nusaModule ? 'checked' : '' ?>>
                     <label class="form-check-label" for="nusaModuleEnabled"><?= t('Aktifkan modul NusaTrip (search + booking + VA)') ?></label>
                 </div>
+                <!-- SUNSET OYO: disembunyikan (modul dipaksa mati saat simpan). Jangan hapus.
                 <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" name="oyo_module_enabled" id="oyoModuleEnabled" value="1" <?= $oyoModuleOn ? 'checked' : '' ?>>
                     <label class="form-check-label" for="oyoModuleEnabled"><?= t('Aktifkan modul OYO (fallback listing per kota)') ?></label>
                 </div>
+                -->
                 <div class="mb-3">
                     <label class="form-label"><?= t('Sumber utama') ?></label>
                     <select name="hotel_live_source" class="form-select" data-testid="hotel-live-source">
                         <option value="nusatrip" <?= $liveSource === 'nusatrip' ? 'selected' : '' ?>><?= t('NusaTrip (utamakan)') ?></option>
+                        <!-- SUNSET OYO
                         <option value="oyo" <?= $liveSource === 'oyo' ? 'selected' : '' ?>><?= t('OYO') ?></option>
+                        -->
                         <option value="lokal" <?= $liveSource === 'lokal' ? 'selected' : '' ?>><?= t('Lokal saja (tanpa live)') ?></option>
-                        <option value="auto" <?= $liveSource === 'auto' ? 'selected' : '' ?>><?= t('Auto (NusaTrip native, fallback OYO)') ?></option>
+                        <option value="auto" <?= $liveSource === 'auto' ? 'selected' : '' ?>><?= t('Auto (NusaTrip native)') ?></option>
                     </select>
                     <div class="form-text"><?= t('Dipakai bila Urutan kosong.') ?></div>
                 </div>
                 <div class="mb-3">
                     <label class="form-label"><?= t('Urutan prioritas (menang atas Sumber utama)') ?></label>
-                    <input name="hotel_source_order" class="form-control" value="<?= e($liveOrder) ?>" placeholder="nusatrip,oyo,lokal" data-testid="hotel-source-order">
-                    <div class="form-text"><?= t('Coba berurutan hingga ada hasil. Checkout ikut sumber: NusaTrip native, OYO/Booking link provider, lokal form sendiri. Kosongkan = ikut Sumber utama.') ?></div>
+                    <input name="hotel_source_order" class="form-control" value="<?= e($liveOrder) ?>" placeholder="nusatrip,lokal" data-testid="hotel-source-order">
+                    <div class="form-text"><?= t('Coba berurutan hingga ada hasil. Checkout ikut sumber: NusaTrip native, lokal form sendiri. Kosongkan = ikut Sumber utama.') ?></div>
                 </div>
                 <div class="mb-3">
                     <label class="form-label"><?= t('NusaTrip rkey (lama/opsional)') ?></label>
@@ -118,7 +124,9 @@ require_once 'includes/admin-header.php';
                     <label class="form-label small"><?= t('Sumber') ?></label>
                     <select name="src" class="form-select form-select-sm">
                         <option value="nusatrip" <?= ($_GET['src'] ?? '') === 'nusatrip' ? 'selected' : '' ?>>NusaTrip</option>
+                        <!-- SUNSET OYO
                         <option value="oyo" <?= ($_GET['src'] ?? '') === 'oyo' ? 'selected' : '' ?>>OYO</option>
+                        -->
                         <option value="auto" <?= ($_GET['src'] ?? 'auto') === 'auto' ? 'selected' : '' ?>><?= t('Auto') ?></option>
                     </select>
                 </div>
@@ -150,7 +158,9 @@ require_once 'includes/admin-header.php';
             <?php endif; ?>
             <p class="small text-muted mt-2 mb-1"><?= t('Sumber') ?>: <b><?= e($liveSource) ?></b></p>
             <p class="small text-muted mb-0"><?= t('Modul NusaTrip:') ?> <?= $nusaModule ? '<span class="text-success">' . t('aktif') . '</span>' : '<span class="text-danger">' . t('nonaktif') . '</span>' ?></p>
+            <!-- SUNSET OYO
             <p class="small text-muted mb-0"><?= t('Modul OYO:') ?> <?= $oyoModuleOn ? '<span class="text-success">' . t('aktif') . '</span>' : '<span class="text-danger">' . t('nonaktif') . '</span>' ?></p>
+            -->
             <p class="small text-muted mb-0"><?= t('rkey NusaTrip') ?>: <?= $rkey !== '' ? '<span class="text-success">' . t('terisi') . '</span>' : '<span class="text-danger">' . t('kosong') . '</span>' ?></p>
         </div></div>
     </div>
