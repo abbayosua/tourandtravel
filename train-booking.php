@@ -174,7 +174,7 @@ require_once 'includes/header-shared.php';
                             <small class="text-white d-block opacity-75"><?= ($booking['payment_method'] ?? '') === 'TRANSFER' ? t('Nomor Rekening Tujuan') : t('Nomor Virtual Account') ?> · <?= e($booking['va_bank']) ?></small>
                             <div class="fs-2 fw-bold mb-2" id="vaNumber" style="letter-spacing:1px;"><?= e($booking['va_number']) ?></div>
                             <div class="d-flex justify-content-between align-items-center gap-2 small mb-3 flex-wrap">
-                                <span><?= t('Total Bayar') ?>: <strong><?= formatRupiah($booking['payment_total'] ?: $booking['total_price']) ?></strong></span>
+                                <span><?= t('Total Bayar') ?>: <strong><?= formatCurrencySpan($booking['payment_total'] ?: $booking['total_price'], 'IDR') ?></strong></span>
                                 <?php if (!empty($booking['payment_deadline'])): ?>
                                 <span class="badge bg-warning text-dark"><?= t('Batas Waktu') ?>: <?= e($booking['payment_deadline']) ?></span>
                                 <?php endif; ?>
@@ -203,7 +203,7 @@ require_once 'includes/header-shared.php';
                                         <div><?= $i + 1 ?>. <?= e($p['name']) ?></div>
                                     <?php endforeach; ?>
                                 </td></tr>
-                                <tr><td class="text-muted ps-0"><?= t('Total') ?></td><td class="fw-semibold text-primary text-end"><?= formatRupiah($booking['payment_total'] ?: $booking['total_price']) ?></td></tr>
+                                <tr><td class="text-muted ps-0"><?= t('Total') ?></td><td class="fw-semibold text-primary text-end"><?= formatCurrencySpan($booking['payment_total'] ?: $booking['total_price'], 'IDR') ?></td></tr>
                             </table>
                         </div>
 

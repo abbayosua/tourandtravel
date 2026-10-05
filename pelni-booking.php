@@ -214,9 +214,9 @@ require_once 'includes/header-shared.php';
                             <small class="text-white d-block opacity-75"><?= $supplierMethod === 'TRANSFER' ? t('Nomor Rekening Tujuan') : t('Nomor Virtual Account') ?> · <?= e($supplierBank) ?></small>
                             <div class="fs-2 fw-bold mb-2 text-center" id="pelniVaNumber" data-testid="supplier-va" style="letter-spacing:1px;"><?= e($supplierVa) ?></div>
                             <div class="d-flex justify-content-between align-items-center gap-2 small mb-3 flex-wrap">
-                                <span><?= t('Total Bayar') ?>: <strong><?= formatRupiah((float)($supplierTotal ?: $totalPrice)) ?></strong></span>
+                                <span><?= t('Total Bayar') ?>: <strong><?= formatCurrencySpan((float)($supplierTotal ?: $totalPrice), 'IDR') ?></strong></span>
                                 <?php if ($supplierDeadline): ?>
-                                <span class="badge bg-warning text-dark"><?= t('Batas Bayar') ?>: <?= e($supplierDeadline) ?></span>
+                                <span class="badge bg-warning text-dark"><?= t('Batas Waktu') ?>: <?= e($supplierDeadline) ?></span>
                                 <?php endif; ?>
                             </div>
                             <button type="button" class="btn btn-light w-100 fw-semibold" id="copyPelniVaBtn" data-va="<?= e($supplierVa) ?>"><i class="bi bi-clipboard me-1"></i><?= t('Salin Nomor VA') ?></button>
@@ -256,7 +256,7 @@ require_once 'includes/header-shared.php';
                             <hr>
                             <div class="row">
                                 <div class="col-5 text-muted"><?= t('Total Bayar') ?></div>
-                                <div class="col-7 fw-bold text-primary fs-5"><?= formatRupiah($totalPrice) ?></div>
+                                <div class="col-7 fw-bold text-primary fs-5"><?= formatCurrencySpan($totalPrice, 'IDR') ?></div>
                             </div>
                         </div>
 
