@@ -229,7 +229,7 @@ $tsPhTo = $tsPhTo ?? $tsPhFrom;
                         <?php endif; ?>
                         <div class="search-field voyage-field">
                             <span class="search-field-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> <?= ($tsShowTrip && $tsTrip === 'roundtrip') ? t('Tanggal Pergi') : t('Tanggal') ?></span>
-                            <?php renderDatePicker(['name' => 'date', 'value' => $tsDate, 'min' => 'today', 'max' => date('Y-m-d', strtotime('+360 days')), 'bare' => true, 'prices' => $tsCal, 'priceBase' => 'avg', 'resultId' => 'tsCalHint', 'resultBaseLabel' => t('Harga termurah')]); ?>
+                            <?php renderDatePicker(['name' => 'date', 'value' => $tsDate, 'min' => 'today', 'max' => date('Y-m-d', strtotime('+360 days')), 'bare' => true, 'prices' => ($tsShowCal ? $tsCal : []), 'priceBase' => 'avg', 'resultId' => ($tsShowCal ? 'tsCalHint' : null), 'resultBaseLabel' => t('Harga termurah')]); ?>
                             <?php if ($tsShowCal && !empty($tsCal)): ?>
                             <div class="small fw-semibold mt-1" id="tsCalHint" data-testid="flight-cal-hint"></div>
                             <?php endif; ?>

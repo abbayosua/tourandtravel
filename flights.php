@@ -44,11 +44,10 @@ $stopsFilter = trim($_GET['stops'] ?? '');
 $sortRaw = trim((string)($_GET['sort'] ?? ''));
 $sort = in_array($sortRaw, ['price', 'duration', 'rating']) ? $sortRaw : 'price';
 
-// Kalender harga pasar per tanggal (price_calendar item_type=flight, item_id=0)
+// Harga per tanggal disembunyikan dulu (data price_calendar generik, bukan per rute).
+// Kalender tanggal tetap jalan normal tanpa pewarnaan harga.
 $flightCal = [];
-foreach (db()->query("SELECT date, price FROM price_calendar WHERE item_type = 'flight' AND item_id = 0 AND date >= CURDATE() AND date <= CURDATE() + INTERVAL 90 DAY ORDER BY date")->fetchAll() as $fcRow) {
-    $flightCal[] = ['date' => $fcRow['date'], 'price' => (float)$fcRow['price']];
-}
+$tsShowCal = false;
 
 // Keep past dates when searching so Duffel validation shows
 if (!$doSearch && (!strtotime($date) || $date < date('Y-m-d'))) $date = date('Y-m-d', strtotime('+3 days'));
@@ -539,28 +538,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         observer.observe(loadMoreTrigger);
     }
-});
-</script>
-<script>
-// ===== Harga per tanggal (price_calendar) =====
-var FLIGHT_CAL = <?= json_encode($flightCal) ?>;
-function showFlightCalHint() {
-    var hint = document.getElementById('flightCalHint');
-    if (!hint) return;
-    var d = document.querySelector('input[name="date"]').value;
-    var hit = FLIGHT_CAL.find(function(r) { return r.date === d; });
-    if (hit) {
-        hint.textContent = '<?= t('Harga termurah') ?>: Rp ' + hit.price.toLocaleString(window.I18N && String(window.I18N.locale).indexOf('en') === 0 ? 'en-US' : 'id-ID');
-        hint.classList.remove('d-none');
-    } else {
-        hint.textContent = '';
-        hint.classList.add('d-none');
-    }
-}
-document.addEventListener('DOMContentLoaded', function() {
-    showFlightCalHint();
-    var dateInput = document.querySelector('input[name="date"]');
-    if (dateInput) dateInput.addEventListener('change', showFlightCalHint);
 });
 </script>
 <script>
