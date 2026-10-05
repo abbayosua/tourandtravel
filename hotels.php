@@ -226,7 +226,12 @@ require __DIR__ . '/includes/homepage/hotel-hero.php';
                 <div id="hotelContent" style="display: none;">
                 <?php if (count($displayHotels) > 0): ?>
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <small class="text-muted"><span id="hotelResultCount"><?= count($displayHotels) ?></span> <?= t('hotel ditemukan') ?></small>
+                    <div>
+                        <small class="text-muted"><span id="hotelResultCount"><?= count($displayHotels) ?></span> <?= t('hotel ditemukan') ?></small>
+                        <?php if (!$usingLive): ?>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle ms-1" style="font-size:11px"><i class="bi bi-patch-check-fill me-1"></i><?= t('Hotel mitra langsung — pesan di sini tanpa perantara') ?></span>
+                        <?php endif; ?>
+                    </div>
                     <div class="d-flex gap-1">
                         <?php if ($usingLive): ?>
                         <button type="button" data-hotel-sort="price" onclick="sortLiveHotels('price')" class="btn btn-sm <?= $sort === 'price' ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill"><?= t('Harga Termurah') ?></button>
