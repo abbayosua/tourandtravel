@@ -4,6 +4,9 @@ require_once 'includes/db.php';
 require_once 'includes/functions.php';
 require_once 'includes/kereta.php';
 
+// Pencarian KAI memanggil API penyedia (bisa lambat) — beri waktu lebih.
+@set_time_limit(60);
+
 $pageTitle = t('KAI');
 $routeFrom = $_GET['from'] ?? '';
 $routeTo = $_GET['to'] ?? '';
@@ -24,27 +27,45 @@ if ($search && $routeFrom && $routeTo) {
     $toCode = $KERETA_STATION_CODE_MAP[$routeTo] ?? '';
 
     if ($fromCode && $toCode) {
-        $trips = keretaSearchTrips($fromCode, $toCode, $date, 1, 0, 0);
-        if (!empty($trips)) {
-            foreach ($trips as $t) {
+        $fromLabel = keretaStationLabel($fromCode);
+        $toLabel = keretaStationLabel($toCode);
+        $sess = keretaApiSession();
+        $api = keretaApiSearch($sess, $fromLabel, $toLabel, $date, 1);
+        if (!empty($api['schedules'])) {
+            foreach ($api['schedules'] as $t) {
+                $dt = $t['train_datetime'] ?? '';
+                $dtParts = explode('-', $dt);
+                $token = substr(md5($t['train_code'] . '|' . ($t['train_class'] ?? '') . '|' . ($t['train_subclass'] ?? '') . '|' . $dt), 0, 12);
+                $_SESSION['kereta_sel'][$token] = [
+                    'from' => $fromLabel,
+                    'to' => $toLabel,
+                    'date' => $date,
+                    'code' => $t['train_code'],
+                    'class' => $t['train_class'] ?? '',
+                    'subclass' => $t['train_subclass'] ?? '',
+                    'datetime' => $dt,
+                    'name' => $t['train_name'] ?? '',
+                    'fare' => $t['train_fare'] ?? '',
+                ];
                 $trains[] = [
-                    'id' => 'kereta_' . md5($t['train_code']),
-                    'name' => $t['train_name'],
+                    'id' => 'kereta_' . md5($t['train_code'] . $dt),
+                    'name' => $t['train_name'] ?? '',
                     'slug' => '',
-                    'class' => $t['train_class'],
-                    'route_from' => $t['train_from'],
-                    'route_to' => $t['train_to'],
-                    'departure_time' => $t['departure_time'],
-                    'arrival_time' => $t['arrival_time'],
-                    'duration' => '',
-                    'price' => $t['train_price'],
+                    'class' => $t['train_class'] ?? '',
+                    'route_from' => $t['train_from'] ?? $fromLabel,
+                    'route_to' => $t['train_to'] ?? $toLabel,
+                    'departure_time' => trim($dtParts[0] ?? ''),
+                    'arrival_time' => trim($dtParts[1] ?? ''),
+                    'duration' => $t['train_duration'] ?? '',
+                    'price' => (float)($t['train_fare'] ?? 0),
                     'price_currency' => 'IDR',
                     'is_kereta_api' => true,
                     'train_code' => $t['train_code'],
+                    'book_token' => $token,
                 ];
             }
         } else {
-            $keretaError = t('Tidak ada jadwal kereta ditemukan untuk rute/tanggal ini.');
+            $keretaError = isset($api['error']) ? t('Gagal memuat jadwal kereta. Coba lagi.') : t('Tidak ada jadwal kereta ditemukan untuk rute/tanggal ini.');
         }
     } else {
         $keretaError = t('Stasiun tidak ditemukan. Coba: Jakarta Kota, Bandung, Yogyakarta.');
@@ -180,7 +201,7 @@ require __DIR__ . '/includes/homepage/transport-search.php';
                                         <small class="d-block text-muted">/ <?= t('orang') ?></small>
                                     </div>
                                     <?php if (!empty($tr['is_kereta_api'])): ?>
-                                    <button class="btn btn-sm btn-primary rounded-pill px-3" disabled><?= t('Segera') ?></button>
+                                    <a href="train-booking.php?sel=<?= e($tr['book_token']) ?>" class="btn btn-sm btn-primary rounded-pill px-3"><?= t('Pesan') ?></a>
                                     <?php else: ?>
                                     <a href="train-detail.php?slug=<?= e($tr['slug']) ?>" class="btn btn-sm btn-primary rounded-pill px-3"><?= t('Pesan') ?></a>
                                     <?php endif; ?>

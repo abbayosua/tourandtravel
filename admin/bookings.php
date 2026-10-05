@@ -194,8 +194,8 @@ if (!$typeFilter || $typeFilter === 'transfer') {
 
 // Trains
 if (!$typeFilter || $typeFilter === 'train') {
-    $sql = "SELECT tb.*, tr.name as item_title, 'train' AS btype, CONCAT(tb.seats, ' kursi') AS qty_label, tb.seats AS qty_num, 'kursi' AS qty_unit, tb.travel_date AS date_label
-            FROM train_bookings tb JOIN trains tr ON tb.train_id = tr.id";
+    $sql = "SELECT tb.*, COALESCE(tr.name, tb.train_name) as item_title, 'train' AS btype, CONCAT(tb.seats, ' kursi') AS qty_label, tb.seats AS qty_num, 'kursi' AS qty_unit, tb.travel_date AS date_label
+            FROM train_bookings tb LEFT JOIN trains tr ON tb.train_id = tr.id";
     $params = [];
     if ($statusFilter) { $sql .= " WHERE tb.status = ?"; $params[] = $statusFilter; }
     $sql .= " ORDER BY tb.created_at DESC";

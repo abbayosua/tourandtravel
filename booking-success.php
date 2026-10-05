@@ -76,19 +76,19 @@ if (!$booking) {
 // 4) Train bookings
 if (!$booking) {
     $stmt = db()->prepare("
-        SELECT tb.*, tr.name as item_name, tr.name_en as item_name_en, tr.slug as item_slug
+        SELECT tb.*, COALESCE(tr.name, tb.train_name) as item_name, tr.name_en as item_name_en, tr.slug as item_slug
         FROM train_bookings tb
-        JOIN trains tr ON tb.train_id = tr.id
+        LEFT JOIN trains tr ON tb.train_id = tr.id
         WHERE tb.booking_code = ?
     ");
     $stmt->execute([$code]);
     if ($row = $stmt->fetch()) {
         $booking = $row;
         $btype = 'train';
-        $booking['item_title'] = tContent(['title' => $row['item_name'], 'title_en' => $row['item_name_en'] ?? ''], 'title');
+        $booking['item_title'] = tContent(['title' => (string)($row['item_name'] ?? ''), 'title_en' => $row['item_name_en'] ?? ''], 'title');
         $booking['date_label'] = $row['travel_date'] ?? null;
         $booking['qty_label'] = $row['seats'] . ' ' . t('kursi');
-        $itemLink = 'train-detail.php?slug=' . urlencode($row['item_slug']);
+        $itemLink = !empty($row['item_slug']) ? 'train-detail.php?slug=' . urlencode($row['item_slug']) : 'trains.php';
     }
 }
 

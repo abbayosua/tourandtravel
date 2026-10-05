@@ -285,6 +285,7 @@ foreach ($KERETA_STATION_CODE_MAP as $kaiName => $kaiCode) { $kaiStations[] = ['
 </div>
 <script>
 (function () {
+    function kaiInit() {
     var STATIONS = <?= json_encode($kaiStations, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
     var FORM_SEL = '#<?= e($tsFormId) ?>';
     var modalEl = document.getElementById('kaiStationModal');
@@ -332,6 +333,9 @@ foreach ($KERETA_STATION_CODE_MAP as $kaiName => $kaiCode) { $kaiStations[] = ['
         inp.addEventListener('focus', function () { inp.blur(); openPicker(inp.getAttribute('data-kai-picker')); });
     });
     search.addEventListener('input', function () { render(search.value); });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', kaiInit);
+    else kaiInit();
 })();
 </script>
 <?php endif; ?>
