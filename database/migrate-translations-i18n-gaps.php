@@ -120,6 +120,29 @@ $en = [
     '/malam · harga live dari' => '/night · live price from',
     'Simpan Alert' => 'Save Alert',
     'Nama itinerary, mis: Trip Bali 3 Hari' => 'Itinerary name, e.g. Bali Trip 3 Days',
+    // A/B tour CTA
+    'Booking Sekarang — Gratis Batal' => 'Book Now — Free Cancellation',
+    // Manual payment (bank transfer) + admin settings
+    'Rekening Pembayaran Manual' => 'Manual Payment Account',
+    'Ditampilkan ke pembeli saat pembayaran manual (transfer).' => 'Shown to the buyer for manual (bank transfer) payment.',
+    'Nama Bank' => 'Bank Name',
+    'Nomor Rekening' => 'Account Number',
+    'Atas Nama' => 'Account Holder',
+    'Catatan untuk Pembeli (opsional)' => 'Note for the Buyer (optional)',
+    'mis. Transfer sebelum 24 jam, lalu kirim bukti via WhatsApp.' => 'e.g. Transfer within 24 hours, then send the proof via WhatsApp.',
+    'Pesanan Diterima' => 'Order Received',
+    'Booking Anda sudah dibuat. Silakan selesaikan pembayaran melalui transfer bank berikut.' => 'Your booking has been created. Please complete the payment via the bank transfer below.',
+    'Instruksi Pembayaran' => 'Payment Instructions',
+    'Silakan transfer tepat sebesar' => 'Please transfer exactly',
+    'ke rekening berikut:' => 'to the following account:',
+    'Setelah transfer, konfirmasi melalui WhatsApp dengan mengirim bukti transfer dan kode booking.' => 'After transferring, confirm via WhatsApp by sending the transfer proof and your booking code.',
+    'Selesaikan transfer, lalu konfirmasi via WhatsApp.' => 'Complete the transfer, then confirm via WhatsApp.',
+    'Bank' => 'Bank',
+    // Passport upload errors
+    'Ukuran file terlalu besar' => 'File size too large',
+    'Upload file tidak selesai. Coba lagi.' => 'Upload did not complete. Please try again.',
+    'Tidak ada file yang diunggah' => 'No file was uploaded',
+    'Format JPG/PNG/WebP, max 5MB' => 'JPG/PNG/WebP format, max 5MB',
 ];
 
 $zh = [
@@ -264,6 +287,29 @@ $zh = [
         '部分产品有特殊政策：full_refund（始终 100%）或 non_refundable（始终 0%），已标注在产品详情页。机票、酒店、渡轮和火车遵循各航空公司/提供商的政策。',
     'Buka halaman Booking Saya, pilih booking confirmed, klik Minta Refund, dan isi alasan. Tim kami akan meninjau pengajuan maksimal 3x24 jam hari kerja. Status pengajuan (requested / approved / rejected) dapat dipantau di halaman yang sama.' =>
         '打开“我的预订”页面，选择已确认的订单，点击“申请退款”并填写原因。我们将在最多 3×24 个工作小时内审核。申请状态（requested / approved / rejected）可在同一页面查看。',
+    // A/B tour CTA
+    'Booking Sekarang — Gratis Batal' => '立即预订 — 免费取消',
+    // Manual payment (bank transfer) + admin settings
+    'Rekening Pembayaran Manual' => '手动付款账户',
+    'Ditampilkan ke pembeli saat pembayaran manual (transfer).' => '手动（银行转账）付款时向买家显示。',
+    'Nama Bank' => '银行名称',
+    'Nomor Rekening' => '账号',
+    'Atas Nama' => '账户名称',
+    'Catatan untuk Pembeli (opsional)' => '买家备注（可选）',
+    'mis. Transfer sebelum 24 jam, lalu kirim bukti via WhatsApp.' => '例如：24 小时内转账，然后通过 WhatsApp 发送凭证。',
+    'Pesanan Diterima' => '订单已收到',
+    'Booking Anda sudah dibuat. Silakan selesaikan pembayaran melalui transfer bank berikut.' => '您的预订已创建。请通过以下银行转账完成付款。',
+    'Instruksi Pembayaran' => '付款说明',
+    'Silakan transfer tepat sebesar' => '请准确转账',
+    'ke rekening berikut:' => '至以下账户：',
+    'Setelah transfer, konfirmasi melalui WhatsApp dengan mengirim bukti transfer dan kode booking.' => '转账后，请通过 WhatsApp 发送转账凭证和预订编号进行确认。',
+    'Selesaikan transfer, lalu konfirmasi via WhatsApp.' => '完成转账后，请通过 WhatsApp 确认。',
+    'Bank' => '银行',
+    // Passport upload errors
+    'Ukuran file terlalu besar' => '文件过大',
+    'Upload file tidak selesai. Coba lagi.' => '上传未完成，请重试。',
+    'Tidak ada file yang diunggah' => '没有上传文件',
+    'Format JPG/PNG/WebP, max 5MB' => 'JPG/PNG/WebP 格式，最大 5MB',
 ];
 
 $stored = 0;

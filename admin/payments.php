@@ -33,6 +33,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_settings'])) {
     setSetting('singapay_api_key', trim($_POST['singapay_api_key'] ?? ''));
     setSetting('singapay_account_id', trim($_POST['singapay_account_id'] ?? ''));
     setSetting('payment_enabled', isset($_POST['payment_enabled']) ? '1' : '0');
+    setSetting('manual_bank_name', trim($_POST['manual_bank_name'] ?? ''));
+    setSetting('manual_bank_number', trim($_POST['manual_bank_number'] ?? ''));
+    setSetting('manual_bank_holder', trim($_POST['manual_bank_holder'] ?? ''));
+    foreach (array_keys(getSupportedLanguages()) as $noteLang) {
+        $suffix = $noteLang === 'id' ? '' : '_' . $noteLang;
+        setSetting('manual_payment_note' . $suffix, trim($_POST['manual_payment_note_' . $noteLang] ?? ''));
+    }
     header('Location: payments.php?msg=updated');
     exit;
 }
@@ -114,6 +121,38 @@ require_once __DIR__ . '/includes/admin-header.php';
                 <button type="submit" name="save_settings" class="btn btn-primary"><?= t('Simpan Mode') ?></button>
                 <div class="alert py-2 px-3 mb-0 small flex-fill <?= tripayInstantEnabled() ? 'alert-success' : 'alert-secondary' ?>">
                     <?= tripayInstantEnabled() ? t('Instant AKTIF via ').e(tripayGateway()) : t('Berjalan MANUAL — semua gateway nonaktif') ?>
+                </div>
+            </div>
+        </div>
+        <div class="row g-3 border-top pt-3">
+            <div class="col-12">
+                <h6 class="fw-semibold mb-0"><?= t('Rekening Pembayaran Manual') ?></h6>
+                <small class="text-muted"><?= t('Ditampilkan ke pembeli saat pembayaran manual (transfer).') ?></small>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label small fw-semibold"><?= t('Nama Bank') ?></label>
+                <input type="text" name="manual_bank_name" class="form-control" data-testid="manual-bank-name" value="<?= e(getSetting('manual_bank_name')) ?>" placeholder="BCA">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label small fw-semibold"><?= t('Nomor Rekening') ?></label>
+                <input type="text" name="manual_bank_number" class="form-control" data-testid="manual-bank-number" value="<?= e(getSetting('manual_bank_number')) ?>" placeholder="1234567890">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label small fw-semibold"><?= t('Atas Nama') ?></label>
+                <input type="text" name="manual_bank_holder" class="form-control" data-testid="manual-bank-holder" value="<?= e(getSetting('manual_bank_holder')) ?>" placeholder="PT Travel">
+            </div>
+            <div class="col-12">
+                <label class="form-label small fw-semibold"><?= t('Catatan untuk Pembeli (opsional)') ?></label>
+                <div class="row g-2">
+                    <?php foreach (getSupportedLanguages() as $noteLang => $noteMeta): ?>
+                    <?php $noteKey = $noteLang === 'id' ? 'manual_payment_note' : 'manual_payment_note_' . $noteLang; ?>
+                    <div class="col-md-4">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text"><?= e($noteMeta['flag'] . ' ' . strtoupper($noteLang)) ?></span>
+                            <input type="text" name="manual_payment_note_<?= e($noteLang) ?>" class="form-control" data-testid="manual-payment-note-<?= e($noteLang) ?>" value="<?= e(getSetting($noteKey)) ?>" placeholder="<?= e(t('mis. Transfer sebelum 24 jam, lalu kirim bukti via WhatsApp.')) ?>">
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>

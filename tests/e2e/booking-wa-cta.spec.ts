@@ -38,7 +38,7 @@ test('booking pending manual punya tombol hubungi WhatsApp', async ({ page }) =>
   await expect(wa).toBeVisible();
   const href = await wa.getAttribute('href');
   expect(href).toContain('https://wa.me/6281234567890');
-  expect(href).toContain(encodeURIComponent(`Booking ${CODE}`));
+  expect(href).toContain(encodeURIComponent(`Konfirmasi pembayaran booking ${CODE}`));
 
   await expect(page.locator('.d-flex.gap-2.justify-content-center').first()).toHaveScreenshot('booking-wa-cta.png', {
     maxDiffPixelRatio: 0.15,

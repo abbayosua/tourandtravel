@@ -1,7 +1,8 @@
 import { test, expect, Page } from '@playwright/test';
 import { execFileSync } from 'child_process';
-import { existsSync, readdirSync } from 'fs';
+import { existsSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
+import { tmpdir } from 'os';
 
 /**
  * Regresi alur pembelian paket tour (mission: pastikan Pembelian Paket Tour usable).
@@ -27,6 +28,17 @@ const UNIT_PRICE = 1500000;
 
 function mysql(sql: string): string {
   return execFileSync('mysql', ['-uroot', 'tourandtravel', '-N', '-B', '-e', sql], { encoding: 'utf8' }).trim();
+}
+
+function savedSetting(key: string): string {
+  return mysql(`SELECT setting_value FROM settings WHERE setting_key='${key}'`);
+}
+
+function restoreSettings(prev: Record<string, string>): void {
+  for (const [k, v] of Object.entries(prev)) {
+    if (v) mysql(`INSERT INTO settings (setting_key,setting_value) VALUES ('${k}','${v}') ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)`);
+    else mysql(`DELETE FROM settings WHERE setting_key='${k}'`);
+  }
 }
 
 function passportFixture(): string {
@@ -129,6 +141,15 @@ interface BookOpts {
   insurance?: boolean;
 }
 
+/** Buka kalender ketersediaan dan pilih tanggal keberangkatan pertama yang aktif. */
+async function pickFirstDeparture(page: Page): Promise<void> {
+  await page.locator('#bookingDateCal').click();
+  const cal = page.locator('.flatpickr-calendar.open');
+  await expect(cal).toBeVisible();
+  await cal.locator('.flatpickr-day:not(.flatpickr-disabled):not(.prevMonthDay):not(.nextMonthDay)').first().click();
+  await expect(page.locator('#tourDateId')).not.toHaveValue('');
+}
+
 /** Isi form booking tour lalu submit; return kode booking. */
 async function bookTour(page: Page, opts: BookOpts): Promise<string> {
   await page.goto(`${BASE}/tour-detail.php?slug=${SLUG}&lang=id`);
@@ -151,7 +172,7 @@ async function bookTour(page: Page, opts: BookOpts): Promise<string> {
   await page.locator('[data-testid="pax-done"]').click();
 
   // Isi data pemesan.
-  await page.locator('#tourDateSelect').selectOption({ index: 1 });
+  await pickFirstDeparture(page);
   await page.locator('#bookingName').fill('Buyer Tour');
   await page.locator('#bookingPhone').fill('081234567890');
   if (opts.usePoints) await page.locator('#usePointsTour').check();
@@ -165,7 +186,7 @@ async function bookTour(page: Page, opts: BookOpts): Promise<string> {
   ]);
 
   await expect(page.locator('.klook-booking-code')).toBeVisible();
-  await expect(page.getByText('Booking Berhasil!')).toBeVisible();
+  await expect(page.getByText('Pesanan Diterima')).toBeVisible();
 
   const code = (page.url().match(/code=([^&]+)/)?.[1] ?? '').trim();
   expect(code).not.toBe('');
@@ -194,7 +215,9 @@ test('pembelian 1 peserta berhasil dan tersimpan (mode manual)', async ({ page }
   await page.goto(`${BASE}/booking-success.php?code=${code}`);
   await expect(page.locator('.klook-booking-code')).toContainText(code);
   await expect(page.locator('body')).toContainText('Rp 1.500.000');
-  await expect(page.locator('body')).toContainText('WhatsApp untuk konfirmasi');
+  await expect(page.locator('body')).toContainText('konfirmasi melalui WhatsApp');
+  // Pending manual bukan "sukses".
+  await expect(page.getByText('Booking Berhasil!')).toHaveCount(0);
   // Detail tour (judul + tanggal keberangkatan) tampil di konfirmasi.
   await expect(page.locator('body')).toContainText('E2E Tour Purchase');
   await expect(page.locator('body')).toContainText('Desember 2027');
@@ -404,4 +427,200 @@ test('ajukan refund pada booking confirmed', async ({ page }) => {
   ]);
 
   expect(mysql(`SELECT refund_status FROM bookings WHERE id = ${bookingId}`)).toBe('requested');
+});
+
+test('kalender ketersediaan hanya mengaktifkan tanggal keberangkatan & mengisi tour_date_id', async ({ page }) => {
+  // Pastikan kedua tanggal seed punya slot (booking test sebelumnya mengurangi sisa).
+  mysql(`UPDATE tour_dates SET available_slots = 100 WHERE tour_id = ${tourId}`);
+
+  await page.context().addCookies([{ name: 'lang', value: 'id', url: BASE }]);
+  await page.goto(`${BASE}/tour-detail.php?slug=${SLUG}&lang=id`);
+  await expect(page.locator('#bookingDateCal')).toBeVisible();
+
+  // Buka popup kalender ketersediaan booking.
+  await page.locator('#bookingDateCal').click();
+  const cal = page.locator('.flatpickr-calendar.open');
+  await expect(cal).toBeVisible();
+
+  // Hanya tanggal keberangkatan tour (2 tanggal seed) yang dapat dipilih.
+  const enabledDays = cal.locator('.flatpickr-day:not(.flatpickr-disabled):not(.prevMonthDay):not(.nextMonthDay)');
+  await expect(enabledDays).toHaveCount(2);
+
+  // Klik tanggal keberangkatan kedua -> hidden tour_date_id terisi (regresi format).
+  await enabledDays.filter({ hasText: /^15$/ }).click();
+  const hid = page.locator('#tourDateId');
+  await expect(hid).not.toHaveValue('');
+  const date2Id = mysql(`SELECT id FROM tour_dates WHERE tour_id = ${tourId} AND departure_date = '${DATE2}'`).trim();
+  expect(await hid.inputValue()).toBe(date2Id);
+});
+
+test('booking ditolak bila tanggal keberangkatan belum dipilih di kalender', async ({ page }) => {
+  await page.context().addCookies([{ name: 'lang', value: 'id', url: BASE }]);
+  await page.goto(`${BASE}/tour-detail.php?slug=${SLUG}&lang=id`);
+  await page.locator('#bookingName').fill('Buyer Tour');
+  await page.locator('#bookingPhone').fill('081234567890');
+  await page.locator('#bookingSubmitBtn').click();
+
+  await expect(page.locator('#bookingDateError')).toBeVisible();
+  expect(page.url()).toContain('tour-detail.php');
+});
+
+test('klik baris Jadwal Keberangkatan memilih tanggal', async ({ page }) => {
+  mysql(`UPDATE tour_dates SET available_slots = 100 WHERE tour_id = ${tourId}`);
+  await page.context().addCookies([{ name: 'lang', value: 'id', url: BASE }]);
+  await page.goto(`${BASE}/tour-detail.php?slug=${SLUG}&lang=id`);
+
+  const row = page.locator(`.date-item[data-date="${DATE2}"]`);
+  await row.click();
+
+  const date2Id = mysql(`SELECT id FROM tour_dates WHERE tour_id = ${tourId} AND departure_date = '${DATE2}'`).trim();
+  await expect(page.locator('#tourDateId')).toHaveValue(date2Id);
+  await expect(page.locator('#bookingDateCal')).toHaveValue(DATE2);
+  await expect(row).toHaveClass(/active/);
+});
+
+test('ganti kurs memperbarui subtotal & total di form booking', async ({ page }) => {
+  // Mulai dari IDR agar nilai awal deterministik.
+  await page.addInitScript(() => localStorage.setItem('currency', 'IDR'));
+  await page.context().addCookies([{ name: 'lang', value: 'id', url: BASE }]);
+  await page.goto(`${BASE}/tour-detail.php?slug=${SLUG}&lang=id`);
+
+  const total = page.locator('#sumTotal');
+  const subtotal = page.locator('#sumBase');
+  await expect(total).toContainText('Rp');
+  const before = (await total.textContent()) || '';
+
+  // Ganti kurs ke USD (jalur yang sama dengan tombol toggle mata uang).
+  await page.evaluate(() => (window as any).CurrencySwitcher.switchTo('USD'));
+
+  await expect(total).toContainText('$');
+  await expect(subtotal).toContainText('$');
+  expect(await total.textContent()).not.toBe(before);
+});
+
+test('subtotal menampilkan harga kotor & rekonsiliasi dengan total', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('currency', 'IDR'));
+  await page.context().addCookies([{ name: 'lang', value: 'id', url: BASE }]);
+  await page.goto(`${BASE}/tour-detail.php?slug=${SLUG}&lang=id`);
+
+  // 5 peserta: gross 7.500.000, diskon grup 5% (375.000) -> total 7.125.000.
+  await page.locator('input[name="participants"]').fill('5');
+
+  await expect(page.locator('#sumBase')).toContainText('7.500.000');
+  await expect(page.locator('#sumGroupRow')).toBeVisible();
+  await expect(page.locator('#sumGroup')).toContainText('375.000');
+  await expect(page.locator('#sumTotal')).toContainText('7.125.000');
+});
+
+test('pilih profil tersimpan disembunyikan bila belum ada profil', async ({ page }) => {
+  await login(page);
+  await page.goto(`${BASE}/tour-detail.php?slug=${SLUG}&lang=id`);
+  // User e2e tidak punya passenger_profiles -> blok harus tersembunyi.
+  await expect(page.locator('#passengerSelect')).toBeHidden();
+  await expect(page.locator('#savedProfileWrap')).toBeHidden();
+});
+
+test('validasi frontend menolak submit tanpa foto paspor', async ({ page }) => {
+  mysql(`UPDATE tour_dates SET available_slots = 100 WHERE tour_id = ${tourId}`);
+  await login(page);
+  await page.goto(`${BASE}/tour-detail.php?slug=${SLUG}&lang=id`);
+  await pickFirstDeparture(page);
+  await page.locator('#bookingName').fill('Frontend Guard');
+  await page.locator('#bookingPhone').fill('081234567890');
+  await page.locator('#bookingSubmitBtn').click();
+
+  await expect(page.locator('#bookingClientError')).toBeVisible();
+  await expect(page.locator('#bookingClientError')).toContainText('paspor');
+  expect(page.url()).toContain('tour-detail.php');
+  expect(mysql(`SELECT COUNT(*) FROM bookings WHERE tour_id = ${tourId} AND name = 'Frontend Guard'`)).toBe('0');
+});
+
+test('konfirmasi manual: instruksi transfer + WhatsApp, bukan "sukses"', async ({ page }) => {
+  await login(page);
+  const code = await bookTour(page, { participants: 1 });
+  await page.goto(`${BASE}/booking-success.php?code=${code}&lang=id`);
+
+  await expect(page.getByText('Pesanan Diterima')).toBeVisible();
+  await expect(page.getByText('Booking Berhasil!')).toHaveCount(0);
+  const box = page.locator('[data-testid="manual-payment-instructions"]');
+  await expect(box).toBeVisible();
+  await expect(box).toContainText('Silakan transfer tepat sebesar');
+  const wa = page.locator('[data-testid="wa-contact"]');
+  await expect(wa).toBeVisible();
+  expect(await wa.getAttribute('href')).toContain(encodeURIComponent(code));
+});
+
+test('instruksi manual menampilkan rekening dari pengaturan', async ({ page }) => {
+  const keys = ['manual_bank_name', 'manual_bank_number', 'manual_bank_holder'];
+  const prev: Record<string, string> = {};
+  for (const k of keys) prev[k] = savedSetting(k);
+  mysql(
+    `INSERT INTO settings (setting_key, setting_value) VALUES ` +
+      `('manual_bank_name','BCA E2E'),('manual_bank_number','1234567890'),('manual_bank_holder','PT E2E') ` +
+      `ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)`
+  );
+  try {
+    await login(page);
+    const code = await bookTour(page, { participants: 1 });
+    await page.goto(`${BASE}/booking-success.php?code=${code}&lang=id`);
+
+    const box = page.locator('[data-testid="manual-payment-instructions"]');
+    await expect(box).toContainText('BCA E2E');
+    await expect(box).toContainText('1234567890');
+  } finally {
+    restoreSettings(prev);
+  }
+});
+
+test('catatan pembayaran manual mengikuti bahasa', async ({ page }) => {
+  const keys = ['manual_payment_note', 'manual_payment_note_en', 'manual_payment_note_zh'];
+  const prev: Record<string, string> = {};
+  for (const k of keys) prev[k] = savedSetting(k);
+  mysql(
+    `INSERT INTO settings (setting_key, setting_value) VALUES ` +
+      `('manual_payment_note','Catatan ID'),('manual_payment_note_en','Note EN'),('manual_payment_note_zh','备注 ZH') ` +
+      `ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)`
+  );
+  try {
+    await login(page);
+    const code = await bookTour(page, { participants: 1 });
+    const cases: [string, string][] = [['id', 'Catatan ID'], ['en', 'Note EN'], ['zh', '备注 ZH']];
+    for (const [lang, note] of cases) {
+      await page.goto(`${BASE}/booking-success.php?code=${code}&lang=${lang}`);
+      await expect(page.locator('[data-testid="manual-payment-instructions"]')).toContainText(note);
+    }
+  } finally {
+    restoreSettings(prev);
+  }
+});
+
+test('foto paspor besar tetap berhasil diunggah (dikompres di klien)', async ({ page }) => {
+  mysql(`UPDATE tour_dates SET available_slots = 100 WHERE tour_id = ${tourId}`);
+  const big = join(tmpdir(), 'e2e-pax-big.jpg');
+  execFileSync('php', ['-r', '$im=imagecreatetruecolor(3000,3000);for($i=0;$i<3000;$i+=8){imagefilledrectangle($im,0,$i,3000,$i+4,imagecolorallocate($im,rand(0,255),rand(0,255),rand(0,255)));}imagejpeg($im,$argv[1],100);', big]);
+  expect(statSync(big).size).toBeGreaterThan(2 * 1024 * 1024);
+
+  await login(page);
+  await page.goto(`${BASE}/tour-detail.php?slug=${SLUG}&lang=id`);
+  await page.locator('[data-testid="open-pax-modal"]').click();
+  await expect(page.locator('[data-testid="pax-rows"]')).toBeVisible();
+  await page.locator('input.pax-file[data-idx="1"]').setInputFiles(big);
+
+  // Kompresi klien menurunkan ukuran di bawah batas server -> upload sukses.
+  await expect(page.locator('#passportFile1')).not.toHaveValue('', { timeout: 20000 });
+});
+
+test('nama paket di booking-success mengikuti bahasa', async ({ page }) => {
+  mysql(`UPDATE tours SET title = 'Tur E2E Judul', title_en = 'E2E Title EN', title_zh = 'E2E 标题-ZH' WHERE id = ${tourId}`);
+  try {
+    await login(page);
+    const code = await bookTour(page, { participants: 1 });
+    const cases: [string, string][] = [['id', 'Tur E2E Judul'], ['en', 'E2E Title EN'], ['zh', 'E2E 标题-ZH']];
+    for (const [lang, title] of cases) {
+      await page.goto(`${BASE}/booking-success.php?code=${code}&lang=${lang}`);
+      await expect(page.locator('body')).toContainText(title);
+    }
+  } finally {
+    mysql(`UPDATE tours SET title = 'E2E Tour Purchase', title_en = '', title_zh = '' WHERE id = ${tourId}`);
+  }
 });

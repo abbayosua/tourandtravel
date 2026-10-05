@@ -6,7 +6,7 @@ require_once 'includes/functions.php';
 $code = trim($_GET['code'] ?? '');
 
 $stmt = db()->prepare("
-    SELECT b.*, t.title as tour_title, t.slug as tour_slug, t.price as tour_price,
+    SELECT b.*, t.title as tour_title, t.title_en as tour_title_en, t.title_zh as tour_title_zh, t.slug as tour_slug, t.price as tour_price,
            td.departure_date, td.return_date
     FROM bookings b
     JOIN tours t ON b.tour_id = t.id
@@ -18,6 +18,7 @@ $booking = $stmt->fetch();
 
 $participants = [];
 if ($booking) {
+    $booking['tour_title'] = tContent(['title' => $booking['tour_title'], 'title_en' => $booking['tour_title_en'] ?? '', 'title_zh' => $booking['tour_title_zh'] ?? ''], 'title');
     try {
         $pq = db()->prepare("SELECT full_name, passport_photo FROM booking_participants WHERE booking_id = ? ORDER BY id ASC");
         $pq->execute([(int)$booking['id']]);

@@ -77,6 +77,30 @@ function setSetting($key, $value) {
 }
 
 /**
+ * Rekening bank untuk pembayaran manual (diatur admin di admin/payments.php).
+ * @return array<int, array{bank:string, number:string, holder:string}>
+ */
+function getManualBankAccounts(): array {
+    $bank   = trim((string)getSetting('manual_bank_name', ''));
+    $number = trim((string)getSetting('manual_bank_number', ''));
+    $holder = trim((string)getSetting('manual_bank_holder', ''));
+    if ($bank === '' && $number === '') return [];
+    return [['bank' => $bank, 'number' => $number, 'holder' => $holder]];
+}
+
+/**
+ * Catatan pembayaran manual untuk bahasa aktif (diatur admin per-bahasa).
+ * Key: manual_payment_note (id) / manual_payment_note_en / manual_payment_note_zh.
+ */
+function getManualPaymentNote(?string $lang = null): string {
+    $lang = $lang ?: getCurrentLang();
+    $base = trim((string)getSetting('manual_payment_note', ''));
+    if ($lang === 'id') return $base;
+    $val = trim((string)getSetting('manual_payment_note_' . $lang, ''));
+    return $val !== '' ? $val : $base;
+}
+
+/**
  * Fetch exchange rates from Frankfurter API (EUR base) + store in DB
  */
 function fetchFrankfurterRates() {
@@ -541,6 +565,28 @@ function buatSlug($string) {
 }
 
 /**
+ * Pesan error upload yang jelas dari kode error PHP ($_FILES['x']['error']).
+ * $maxLabel: label ukuran maksimum (mis. '5MB') untuk pesan terlalu besar.
+ */
+function uploadErrorMessage(int $err, string $maxLabel = '2MB'): string {
+    switch ($err) {
+        case UPLOAD_ERR_INI_SIZE:
+        case UPLOAD_ERR_FORM_SIZE:
+            return t('Ukuran file terlalu besar') . ' (maks ' . $maxLabel . ')';
+        case UPLOAD_ERR_PARTIAL:
+            return t('Upload file tidak selesai. Coba lagi.');
+        case UPLOAD_ERR_NO_FILE:
+            return t('Tidak ada file yang diunggah');
+        case UPLOAD_ERR_NO_TMP_DIR:
+        case UPLOAD_ERR_CANT_WRITE:
+        case UPLOAD_ERR_EXTENSION:
+            return t('Gagal menyimpan file');
+        default:
+            return t('Gagal upload');
+    }
+}
+
+/**
  * Upload gambar
  */
 function uploadGambar($file, $targetDir) {
@@ -548,7 +594,7 @@ function uploadGambar($file, $targetDir) {
     $maxSize = 2 * 1024 * 1024; // 2MB
 
     if ($file['error'] !== UPLOAD_ERR_OK) {
-        return ['success' => false, 'message' => t('Gagal upload file')];
+        return ['success' => false, 'message' => uploadErrorMessage((int)$file['error'], '2MB')];
     }
 
     if (!in_array($file['type'], $allowedTypes)) {
@@ -1238,13 +1284,24 @@ function generateBookingCode() {
  */
 function uploadWebP($file, $targetDir, $quality = 70) {
     $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-    if ($file['error'] !== UPLOAD_ERR_OK) return ['success' => false, 'message' => t('Gagal upload')];
-    if (($file['size'] ?? 0) > 2 * 1024 * 1024) return ['success' => false, 'message' => t('Ukuran file maksimal 2MB')];
-    if (!in_array($file['type'], $allowedTypes)) return ['success' => false, 'message' => t('Tipe file harus JPG/PNG/WebP')];
-    
+    $maxSize = 5 * 1024 * 1024; // 5MB
+    $err = (int)($file['error'] ?? UPLOAD_ERR_NO_FILE);
+    if ($err !== UPLOAD_ERR_OK) return ['success' => false, 'message' => uploadErrorMessage($err, '5MB')];
+    if (($file['size'] ?? 0) > $maxSize) return ['success' => false, 'message' => t('Ukuran file terlalu besar') . ' (maks 5MB)'];
+    $type = (string)($file['type'] ?? '');
+    if (!in_array($type, $allowedTypes, true) && is_uploaded_file($file['tmp_name'] ?? '')) {
+        $fi = @finfo_open(FILEINFO_MIME_TYPE);
+        if ($fi) {
+            $detected = @finfo_file($fi, $file['tmp_name']);
+            @finfo_close($fi);
+            if (is_string($detected) && $detected !== '') $type = $detected;
+        }
+    }
+    if (!in_array($type, $allowedTypes, true)) return ['success' => false, 'message' => t('Tipe file harus JPG/PNG/WebP')];
+
     if (!is_dir($targetDir)) mkdir($targetDir, 0755, true);
-    
-    $gd = match ($file['type']) {
+
+    $gd = match ($type) {
         'image/jpeg' => @imagecreatefromjpeg($file['tmp_name']),
         'image/png' => @imagecreatefrompng($file['tmp_name']),
         'image/webp' => @imagecreatefromwebp($file['tmp_name']),

@@ -76,6 +76,9 @@ const CurrencySwitcher = {
         document.querySelectorAll('.currency-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.currency === this.currentCurrency);
         });
+        try {
+            document.dispatchEvent(new CustomEvent('currency:changed', { detail: { currency: this.currentCurrency } }));
+        } catch (e) {}
     },
 
     switchTo(currency) {
@@ -95,5 +98,7 @@ const CurrencySwitcher = {
         });
     }
 };
+
+window.CurrencySwitcher = CurrencySwitcher;
 
 document.addEventListener('DOMContentLoaded', () => CurrencySwitcher.init());

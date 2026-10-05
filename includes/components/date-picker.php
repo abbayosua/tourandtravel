@@ -11,6 +11,7 @@
  *
  * Opsi:
  *   name, id (auto), value, min ('today'|Y-m-d|''), max, placeholder,
+ *   enable (['Y-m-d', ...] — hanya tanggal ini yang dapat dipilih),
  *   label, required (bool), cls (default 'form-control'),
  *   months (default 1), inline (bool, default false),
  *   prices ([['date'=>..,'price'=>..]] untuk pewarnaan hari),
@@ -62,6 +63,7 @@ function renderDatePicker(array $o = []): void {
     if (isset($o['min']) && $o['min'] !== '') $data['dp-min'] = (string)$o['min'];
     if (isset($o['max']) && $o['max'] !== '') $data['dp-max'] = (string)$o['max'];
     if (!empty($o['prices'])) $data['dp-prices'] = json_encode(array_values($o['prices']));
+    if (!empty($o['enable'])) $data['dp-enable'] = json_encode(array_values($o['enable']));
     if (isset($o['priceBase']) && $o['priceBase'] !== null && $o['priceBase'] !== '') $data['dp-base'] = (string)$o['priceBase'];
     if (!empty($o['priceCurrency'])) $data['dp-currency'] = (string)$o['priceCurrency'];
     if (!empty($o['resultId'])) $data['dp-result'] = (string)$o['resultId'];
@@ -163,6 +165,8 @@ document.addEventListener('DOMContentLoaded', function () {
         var mn = el.getAttribute('data-dp-min'), mx = el.getAttribute('data-dp-max');
         if (mn) opts.minDate = mn;
         if (mx) opts.maxDate = mx;
+        var en = el.getAttribute('data-dp-enable');
+        if (en) { try { var enArr = JSON.parse(en); if (enArr && enArr.length) opts.enable = enArr; } catch (e) {} }
         if (el.getAttribute('data-dp-inline') === '1') { opts.inline = true; }
         if (isRange) {
             opts.mode = 'range';

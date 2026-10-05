@@ -134,7 +134,7 @@ if (isset($_GET['cancel']) && (int)$_GET['cancel'] > 0) {
 $all = [];
 
 $tourBookings = db()->prepare("
-    SELECT b.*, t.title as item_title, t.slug as item_slug, t.cover_image, td.departure_date, 'tour' AS btype,
+    SELECT b.*, t.title as item_title, t.title_en as item_title_en, t.title_zh as item_title_zh, t.slug as item_slug, t.cover_image, td.departure_date, 'tour' AS btype,
            b.participants AS qty_num, 'peserta' AS qty_unit, b.total_price,
            (SELECT amount FROM booking_addons ba WHERE ba.booking_type='tour' AND ba.booking_id = b.id AND ba.type='insurance') AS insurance_premi
     FROM bookings b
@@ -144,10 +144,10 @@ $tourBookings = db()->prepare("
     ORDER BY b.created_at DESC
 ");
 $tourBookings->execute([$userId]);
-foreach ($tourBookings->fetchAll() as $b) { $b['img'] = getTourImage($b, 'small'); $all[] = $b; }
+foreach ($tourBookings->fetchAll() as $b) { $b['item_title'] = tContent(['title' => $b['item_title'], 'title_en' => $b['item_title_en'] ?? '', 'title_zh' => $b['item_title_zh'] ?? ''], 'title'); $b['img'] = getTourImage($b, 'small'); $all[] = $b; }
 
 $attrBookings = db()->prepare("
-    SELECT ab.*, a.name as item_title, a.slug as item_slug, 'attraction' AS btype,
+    SELECT ab.*, a.name as item_title, a.name_en as item_title_en, a.name_zh as item_title_zh, a.slug as item_slug, 'attraction' AS btype,
            ab.quantity AS qty_num, 'tiket' AS qty_unit, ab.total_price, ab.visit_date AS date_label
     FROM attraction_bookings ab
     JOIN attractions a ON ab.attraction_id = a.id
@@ -155,10 +155,10 @@ $attrBookings = db()->prepare("
     ORDER BY ab.created_at DESC
 ");
 $attrBookings->execute([$userId]);
-foreach ($attrBookings->fetchAll() as $b) { $b['img'] = 'https://placehold.co/300x200?text=Atraksi'; $all[] = $b; }
+foreach ($attrBookings->fetchAll() as $b) { $b['item_title'] = tContent(['title' => $b['item_title'], 'title_en' => $b['item_title_en'] ?? '', 'title_zh' => $b['item_title_zh'] ?? ''], 'title'); $b['img'] = 'https://placehold.co/300x200?text=Atraksi'; $all[] = $b; }
 
 $transferBookings = db()->prepare("
-    SELECT tb.*, tr.name as item_title, tr.slug as item_slug, 'transfer' AS btype,
+    SELECT tb.*, tr.name as item_title, tr.name_en as item_title_en, tr.name_zh as item_title_zh, tr.slug as item_slug, 'transfer' AS btype,
            tb.passengers AS qty_num, 'pax' AS qty_unit, tb.total_price, tb.pickup_date AS date_label
     FROM transfer_bookings tb
     JOIN transfers tr ON tb.transfer_id = tr.id
@@ -166,10 +166,10 @@ $transferBookings = db()->prepare("
     ORDER BY tb.created_at DESC
 ");
 $transferBookings->execute([$userId]);
-foreach ($transferBookings->fetchAll() as $b) { $b['img'] = 'https://placehold.co/300x200?text=Transfer'; $all[] = $b; }
+foreach ($transferBookings->fetchAll() as $b) { $b['item_title'] = tContent(['title' => $b['item_title'], 'title_en' => $b['item_title_en'] ?? '', 'title_zh' => $b['item_title_zh'] ?? ''], 'title'); $b['img'] = 'https://placehold.co/300x200?text=Transfer'; $all[] = $b; }
 
 $trainBookings = db()->prepare("
-    SELECT tb.*, tr.name as item_title, tr.slug as item_slug, 'train' AS btype,
+    SELECT tb.*, tr.name as item_title, tr.name_en as item_title_en, tr.slug as item_slug, 'train' AS btype,
            tb.seats AS qty_num, 'kursi' AS qty_unit, tb.total_price, tb.travel_date AS date_label
     FROM train_bookings tb
     JOIN trains tr ON tb.train_id = tr.id
@@ -177,10 +177,10 @@ $trainBookings = db()->prepare("
     ORDER BY tb.created_at DESC
 ");
 $trainBookings->execute([$userId]);
-foreach ($trainBookings->fetchAll() as $b) { $b['img'] = 'https://placehold.co/300x200?text=KAI'; $all[] = $b; }
+foreach ($trainBookings->fetchAll() as $b) { $b['item_title'] = tContent(['title' => $b['item_title'], 'title_en' => $b['item_title_en'] ?? ''], 'title'); $b['img'] = 'https://placehold.co/300x200?text=KAI'; $all[] = $b; }
 
 $esimBookings = db()->prepare("
-    SELECT cb.*, cp.name as item_title, cp.slug as item_slug, 'esim' AS btype,
+    SELECT cb.*, cp.name as item_title, cp.name_en as item_title_en, cp.name_zh as item_title_zh, cp.slug as item_slug, 'esim' AS btype,
            cb.quantity AS qty_num, 'pcs' AS qty_unit, cb.total_price
     FROM connectivity_bookings cb
     JOIN connectivity_products cp ON cb.product_id = cp.id
@@ -188,7 +188,7 @@ $esimBookings = db()->prepare("
     ORDER BY cb.created_at DESC
 ");
 $esimBookings->execute([$userId]);
-foreach ($esimBookings->fetchAll() as $b) { $b['img'] = 'https://placehold.co/300x200?text=eSIM'; $b['date_label'] = null; $all[] = $b; }
+foreach ($esimBookings->fetchAll() as $b) { $b['item_title'] = tContent(['title' => $b['item_title'], 'title_en' => $b['item_title_en'] ?? '', 'title_zh' => $b['item_title_zh'] ?? ''], 'title'); $b['img'] = 'https://placehold.co/300x200?text=eSIM'; $b['date_label'] = null; $all[] = $b; }
 
 // Sort combined by created_at desc
 usort($all, function ($a, $b) { return strtotime($b['created_at']) - strtotime($a['created_at']); });

@@ -193,6 +193,20 @@ function testPaymentLabelsLocalized(): void {
 }
 
 /**
+ * CTA A/B (tour_cta_text varian B) berada di dalam ternary t(... ? 'X' : 'Y'),
+ * sehingga tidak terjangkau scanner i18nScanCodeKeys(). Jaga tetap terlokalisasi.
+ */
+function testAbTestCtaLocalized(): void {
+    $key = 'Booking Sekarang — Gratis Batal';
+    foreach (['en', 'zh'] as $lang) {
+        $_SESSION['lang'] = $lang; $_COOKIE['lang'] = $lang;
+        $val = t($key);
+        assertTrue($val !== $key && $val !== '', "$lang CTA '$key' tidak diterjemahkan (got '$val')");
+    }
+    $_SESSION['lang'] = 'id';
+}
+
+/**
  * Tidak boleh ada grup key di `translations` yang hanya berbeda huruf besar/kecil
  * (collation ai_ci membuatnya duplikat lookup). Cegah regresi setelah dedupe.
  */

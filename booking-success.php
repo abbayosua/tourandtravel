@@ -17,7 +17,7 @@ $participants = [];
 
 // 1) Tour bookings
 $stmt = db()->prepare("
-    SELECT b.*, t.title as tour_title, t.slug as tour_slug, td.departure_date, td.return_date
+    SELECT b.*, t.title, t.title_en, t.title_zh, t.slug as tour_slug, td.departure_date, td.return_date
     FROM bookings b
     JOIN tours t ON b.tour_id = t.id
     JOIN tour_dates td ON b.tour_date_id = td.id
@@ -27,7 +27,7 @@ $stmt->execute([$code]);
 if ($row = $stmt->fetch()) {
     $booking = $row;
     $btype = 'tour';
-    $booking['item_title'] = $row['tour_title'];
+    $booking['item_title'] = tContent($row, 'title');
     $booking['date_label'] = $row['departure_date'];
     $booking['qty_label'] = $row['participants'] . ' ' . t('orang');
     $itemLink = 'tour-detail.php?slug=' . urlencode($row['tour_slug']);
@@ -38,7 +38,7 @@ if ($row = $stmt->fetch()) {
 // 2) Attraction bookings
 if (!$booking) {
     $stmt = db()->prepare("
-        SELECT ab.*, a.name as item_title, a.slug as item_slug
+        SELECT ab.*, a.name as item_name, a.name_en as item_name_en, a.name_zh as item_name_zh, a.slug as item_slug
         FROM attraction_bookings ab
         JOIN attractions a ON ab.attraction_id = a.id
         WHERE ab.booking_code = ?
@@ -47,6 +47,7 @@ if (!$booking) {
     if ($row = $stmt->fetch()) {
         $booking = $row;
         $btype = 'attraction';
+        $booking['item_title'] = tContent(['title' => $row['item_name'], 'title_en' => $row['item_name_en'] ?? '', 'title_zh' => $row['item_name_zh'] ?? ''], 'title');
         $booking['date_label'] = $row['visit_date'] ?? null;
         $booking['qty_label'] = $row['quantity'] . ' ' . t('tiket');
         $itemLink = 'attraction-detail.php?slug=' . urlencode($row['item_slug']);
@@ -56,7 +57,7 @@ if (!$booking) {
 // 3) Transfer bookings
 if (!$booking) {
     $stmt = db()->prepare("
-        SELECT tb.*, tr.name as item_title, tr.slug as item_slug
+        SELECT tb.*, tr.name as item_name, tr.name_en as item_name_en, tr.name_zh as item_name_zh, tr.slug as item_slug
         FROM transfer_bookings tb
         JOIN transfers tr ON tb.transfer_id = tr.id
         WHERE tb.booking_code = ?
@@ -65,6 +66,7 @@ if (!$booking) {
     if ($row = $stmt->fetch()) {
         $booking = $row;
         $btype = 'transfer';
+        $booking['item_title'] = tContent(['title' => $row['item_name'], 'title_en' => $row['item_name_en'] ?? '', 'title_zh' => $row['item_name_zh'] ?? ''], 'title');
         $booking['date_label'] = $row['pickup_date'] ?? null;
         $booking['qty_label'] = $row['passengers'] . ' ' . t('pax');
         $itemLink = 'transfer-detail.php?slug=' . urlencode($row['item_slug']);
@@ -74,7 +76,7 @@ if (!$booking) {
 // 4) Train bookings
 if (!$booking) {
     $stmt = db()->prepare("
-        SELECT tb.*, tr.name as item_title, tr.slug as item_slug
+        SELECT tb.*, tr.name as item_name, tr.name_en as item_name_en, tr.slug as item_slug
         FROM train_bookings tb
         JOIN trains tr ON tb.train_id = tr.id
         WHERE tb.booking_code = ?
@@ -83,6 +85,7 @@ if (!$booking) {
     if ($row = $stmt->fetch()) {
         $booking = $row;
         $btype = 'train';
+        $booking['item_title'] = tContent(['title' => $row['item_name'], 'title_en' => $row['item_name_en'] ?? ''], 'title');
         $booking['date_label'] = $row['travel_date'] ?? null;
         $booking['qty_label'] = $row['seats'] . ' ' . t('kursi');
         $itemLink = 'train-detail.php?slug=' . urlencode($row['item_slug']);
@@ -92,7 +95,7 @@ if (!$booking) {
 // 5) eSIM / connectivity bookings
 if (!$booking) {
     $stmt = db()->prepare("
-        SELECT cb.*, cp.name as item_title, cp.slug as item_slug
+        SELECT cb.*, cp.name as item_name, cp.name_en as item_name_en, cp.name_zh as item_name_zh, cp.slug as item_slug
         FROM connectivity_bookings cb
         JOIN connectivity_products cp ON cb.product_id = cp.id
         WHERE cb.booking_code = ?
@@ -101,6 +104,7 @@ if (!$booking) {
     if ($row = $stmt->fetch()) {
         $booking = $row;
         $btype = 'esim';
+        $booking['item_title'] = tContent(['title' => $row['item_name'], 'title_en' => $row['item_name_en'] ?? '', 'title_zh' => $row['item_name_zh'] ?? ''], 'title');
         $booking['date_label'] = null;
         $booking['qty_label'] = $row['quantity'] . ' ' . t('pcs');
         $itemLink = 'esim-detail.php?slug=' . urlencode($row['item_slug']);
@@ -152,9 +156,12 @@ if (!empty($booking['user_id'])) {
 }
 
 // Payment: manual (default) = admin approve; instant = gateway aktif
-$paymentEnabled = tripayInstantEnabled() && ($booking['status'] ?? '') === 'pending';
-// Judul pending vs sukses: bila gateway instant aktif + masih pending → tampil menunggu bayar.
+$isPending = ($booking['status'] ?? '') === 'pending';
+$paymentEnabled = tripayInstantEnabled() && $isPending;
+// Judul pending vs sukses: gateway instant aktif + pending → tampil UI bayar.
 $isAwaitingPayment = $paymentEnabled && $btype === 'tour';
+// Manual: masih pending tanpa gateway → instruksi transfer + verifikasi WhatsApp.
+$manualPending = $isPending && !$isAwaitingPayment;
 $paymentStatus = 'unpaid';
 $paymentOrderId = null;
 if ($paymentEnabled && $btype === 'tour') {
@@ -183,7 +190,7 @@ if (!empty($booking['user_id']) && in_array($btype, ['flight', 'hotel'], true)) 
     $bundle['target'] = $btype === 'flight' ? 'hotels.php' : 'flights.php';
 }
 
-$pageTitle = $isAwaitingPayment ? t('Menunggu Pembayaran') : t('Booking Berhasil');
+$pageTitle = $isPending ? t('Menunggu Pembayaran') : t('Booking Berhasil');
 require_once 'includes/header-shared.php';
 ?>
 <div class="container py-5">
@@ -194,12 +201,12 @@ require_once 'includes/header-shared.php';
 
             <div class="card border-0 shadow-sm text-center position-relative">
                 <div class="card-body py-5">
-                    <?php if ($isAwaitingPayment): ?>
+                    <?php if ($isPending): ?>
                     <div class="display-1 text-warning mb-3">
                         <i class="bi bi-clock-fill"></i>
                     </div>
-                    <h3 class="fw-bold mb-2"><?= t('Menunggu Pembayaran') ?></h3>
-                    <p class="text-muted mb-3"><?= t('Booking Anda sudah dibuat. Silakan pilih metode pembayaran dan selesaikan sebelum batas waktu.') ?></p>
+                    <h3 class="fw-bold mb-2"><?= $isAwaitingPayment ? t('Menunggu Pembayaran') : t('Pesanan Diterima') ?></h3>
+                    <p class="text-muted mb-3"><?= $isAwaitingPayment ? t('Booking Anda sudah dibuat. Silakan pilih metode pembayaran dan selesaikan sebelum batas waktu.') : t('Booking Anda sudah dibuat. Silakan selesaikan pembayaran melalui transfer bank berikut.') ?></p>
                     <?php else: ?>
                     <div class="display-1 text-success mb-3">
                         <i class="bi bi-check-circle-fill"></i>
@@ -298,13 +305,29 @@ require_once 'includes/header-shared.php';
                     <p class="small text-muted mb-3">
                         <i class="bi bi-info-circle me-1"></i>
                         <?= t('Simpan kode booking dan link di atas untuk cek status pemesanan.') ?>
-                        <br><?= $isAwaitingPayment ? t('Pilih metode pembayaran di bawah untuk konfirmasi instan.') : (tripayInstantEnabled() ? t('Lanjutkan pembayaran di bawah untuk konfirmasi instan.') : t('Kami akan menghubungi Anda via WhatsApp untuk konfirmasi.')) ?>
+                        <br><?php if ($manualPending): ?><?= t('Selesaikan transfer, lalu konfirmasi via WhatsApp.') ?><?php elseif ($isAwaitingPayment): ?><?= t('Pilih metode pembayaran di bawah untuk konfirmasi instan.') ?><?php elseif (tripayInstantEnabled()): ?><?= t('Lanjutkan pembayaran di bawah untuk konfirmasi instan.') ?><?php else: ?><?= t('Kami akan menghubungi Anda via WhatsApp untuk konfirmasi.') ?><?php endif; ?>
                     </p>
+
+                    <?php if ($manualPending): $manualBanks = getManualBankAccounts(); $manualNote = getManualPaymentNote(); ?>
+                    <div class="text-start bg-warning bg-opacity-10 border border-warning rounded-4 p-4 mb-4" data-testid="manual-payment-instructions">
+                        <h6 class="fw-semibold mb-3"><i class="bi bi-bank me-1"></i><?= t('Instruksi Pembayaran') ?></h6>
+                        <p class="small mb-2"><?= t('Silakan transfer tepat sebesar') ?> <strong class="text-primary"><?= formatRupiah($booking['total_price']) ?></strong><?= !empty($manualBanks) ? ' ' . t('ke rekening berikut:') : '.' ?></p>
+                        <?php if (!empty($manualBanks)): ?>
+                        <ul class="list-unstyled mb-2 small">
+                            <?php foreach ($manualBanks as $mb): ?>
+                            <li class="mb-1"><span class="text-muted"><?= t('Bank') ?>:</span> <strong><?= e($mb['bank']) ?></strong> — <span class="text-muted"><?= t('Nomor Rekening') ?>:</span> <strong><?= e($mb['number']) ?></strong><?= $mb['holder'] !== '' ? ' (' . e($mb['holder']) . ')' : '' ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                        <?php endif; ?>
+                        <p class="small mb-0 text-muted"><?= t('Setelah transfer, konfirmasi melalui WhatsApp dengan mengirim bukti transfer dan kode booking.') ?></p>
+                        <?php if ($manualNote !== ''): ?><p class="small mb-0 mt-1"><i class="bi bi-info-circle me-1"></i><?= e($manualNote) ?></p><?php endif; ?>
+                    </div>
+                    <?php endif; ?>
 
                     <div class="d-flex gap-2 justify-content-center flex-wrap">
                         <?php $waNum = preg_replace('/[^0-9]/', '', (string)getSetting('company_wa', getSetting('contact_wa', ''))); ?>
-                        <?php if (($booking['status'] ?? '') === 'pending' && !$isAwaitingPayment && $waNum !== ''): ?>
-                        <a href="https://wa.me/<?= e($waNum) ?>?text=<?= rawurlencode('Booking ' . ($booking['booking_code'] ?? '')) ?>" target="_blank" rel="noopener" class="btn btn-success" data-testid="wa-contact"><i class="bi bi-whatsapp me-1"></i><?= t('Hubungi Kami') ?></a>
+                        <?php if ($isPending && !$isAwaitingPayment && $waNum !== ''): ?>
+                        <a href="https://wa.me/<?= e($waNum) ?>?text=<?= rawurlencode('Konfirmasi pembayaran booking ' . ($booking['booking_code'] ?? '') . ' sebesar ' . formatRupiah($booking['total_price'])) ?>" target="_blank" rel="noopener" class="btn btn-success" data-testid="wa-contact"><i class="bi bi-whatsapp me-1"></i><?= t('Hubungi Kami') ?></a>
                         <?php endif; ?>
                         <?php if ($paymentEnabled && $btype === 'tour' && $paymentStatus !== 'paid'): ?>
                             <?php

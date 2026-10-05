@@ -681,12 +681,17 @@ require_once 'includes/header-shared.php';
 
                     <!-- Pilih Tanggal -->
                     <?php if (count($tourDates) > 0): ?>
+                    <style>
+                        .date-item--link{cursor:pointer; transition:background-color .15s}
+                        .date-item--link:hover{background-color:var(--bs-tertiary-bg)}
+                        .date-item.active{background-color:var(--bs-primary-bg-subtle)}
+                    </style>
                     <hr>
                     <h6 class="fw-semibold"><?= t('Jadwal Keberangkatan') ?></h6>
                     <div class="mb-3">
                         <?php foreach ($tourDates as $td): ?>
                             <?php $sisa = getSisaSlot($td['id']); ?>
-                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom date-item" data-date="<?= $td['departure_date'] ?>">
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom date-item<?= $sisa > 0 ? ' date-item--link' : ' opacity-50' ?>" data-date="<?= $td['departure_date'] ?>"<?= $sisa > 0 ? ' data-selectable="1"' : '' ?>>
                                 <div>
                                     <strong><?= formatDate($td['departure_date']) ?></strong>
                                     <span class="d-block small text-muted"><?= formatDate($td['return_date']) ?></span>
@@ -730,30 +735,25 @@ require_once 'includes/header-shared.php';
                                 <label class="form-label small fw-semibold mb-1"><?= t('Kalender Ketersediaan') ?></label>
                                 <?php
                                 $calPrices = [];
+                                $calDateIds = [];
                                 foreach ($tourDates as $td) {
                                     $sisa = getSisaSlot($td['id']);
                                     if ($sisa > 0) {
                                         $calPrices[$td['departure_date']] = $effectivePrices[$td['departure_date']] ?? getFlashSalePrice((float)$tour['price'], 'tour', (int)$tour['id'])['price'];
+                                        $calDateIds[$td['departure_date']] = (int)$td['id'];
                                     }
                                 }
                                 $calPriceCalendar = array_map(fn($d, $p) => ['date' => $d, 'price' => $p], array_keys($calPrices), $calPrices);
-                                renderDatePicker(['id' => 'bookingDateCal', 'cls' => 'form-control form-control-sm', 'noName' => true, 'bare' => true, 'months' => 2, 'min' => !empty($calPriceCalendar) ? $calPriceCalendar[0]['date'] : 'today', 'prices' => $calPriceCalendar, 'priceBase' => (float)$tour['price'], 'priceCurrency' => $tour['price_currency'] ?? 'IDR', 'resultId' => 'bookingDateResult', 'resultBaseLabel' => t('Pilih tanggal di kalender'), 'onChange' => 'onBookingDateSelect']);
+                                renderDatePicker(['id' => 'bookingDateCal', 'cls' => 'form-control form-control-sm', 'noName' => true, 'bare' => true, 'months' => 2, 'min' => !empty($calPriceCalendar) ? $calPriceCalendar[0]['date'] : 'today', 'enable' => array_column($calPriceCalendar, 'date'), 'prices' => $calPriceCalendar, 'priceBase' => (float)$tour['price'], 'priceCurrency' => $tour['price_currency'] ?? 'IDR', 'resultId' => 'bookingDateResult', 'resultBaseLabel' => t('Pilih tanggal di kalender'), 'onChange' => 'onBookingDateSelect']);
                                 ?>
+                                <input type="hidden" name="tour_date_id" id="tourDateId" value="">
                                 <div class="small mt-1" id="bookingDateResult" aria-live="polite"></div>
+                                <div class="small text-danger mt-1 d-none" id="bookingDateError"><?= t('Pilih tanggal keberangkatan.') ?></div>
                             </div>
                             <?php endif; ?>
-                            <select name="tour_date_id" class="form-select form-select-sm" required id="tourDateSelect">
-                                <option value=""><?= t('-- Pilih Tanggal --') ?></option>
-                                <?php foreach ($tourDates as $td): ?>
-                                    <?php $sisa = getSisaSlot($td['id']); ?>
-                                    <?php if ($sisa > 0): ?>
-                                    <option value="<?= $td['id'] ?>" data-price="<?= (float)($effectivePrices[$td['departure_date']] ?? getFlashSalePrice((float)$tour['price'], 'tour', (int)$tour['id'])['price']) ?>" data-cal="<?= isset($datePrices[$td['departure_date']]) ? '1' : '0' ?>"><?= tglIndonesia($td['departure_date']) ?> (<?= $sisa ?> <?= t('slot') ?>)</option>
-                                    <?php endif; ?>
-                                <?php endforeach; ?>
-                            </select>
                         </div>
                         <?php if (isLoggedIn()): ?>
-                        <div class="mb-2">
+                        <div class="mb-2 d-none" id="savedProfileWrap">
                             <label class="form-label small"><?= t('Gunakan Profil Tersimpan') ?></label>
                             <select id="passengerSelect" class="form-select form-select-sm" onchange="fillPassenger(this)">
                                 <option value=""><?= t('-- Pilih Profil --') ?></option>
@@ -807,6 +807,10 @@ require_once 'includes/header-shared.php';
                         <div class="border rounded p-2 mb-3 bg-light small" data-testid="booking-summary">
                             <div class="d-flex justify-content-between"><span><?= t('Subtotal') ?></span><span id="sumBase"><?= formatRupiah($formBasePrice) ?></span></div>
                             <div class="d-flex justify-content-between text-success d-none" id="sumGroupRow"><span><?= t('Diskon Grup') ?> <span id="sumGroupPct"></span></span><span id="sumGroup">-Rp 0</span></div>
+                            <div class="d-flex justify-content-between text-success d-none" id="sumCorporateRow"><span><?= t('Diskon korporat') ?> <span id="sumCorporatePct"></span></span><span id="sumCorporate">-Rp 0</span></div>
+                            <div class="d-flex justify-content-between text-success d-none" id="sumPromoRow"><span><?= t('Promo') ?></span><span id="sumPromo">-Rp 0</span></div>
+                            <div class="d-flex justify-content-between text-success d-none" id="sumPointsRow"><span><?= t('Poin') ?></span><span id="sumPoints">-Rp 0</span></div>
+                            <div class="d-flex justify-content-between text-success d-none" id="sumWalletRow"><span><?= t('Saldo') ?></span><span id="sumWallet">-Rp 0</span></div>
                             <div class="d-flex justify-content-between text-success d-none" id="sumInsRow" data-testid="insurance-row"><span><?= t('Asuransi perjalanan') ?> (3%)</span><span id="sumIns">Rp 0</span></div>
                             <hr class="my-1">
                             <div class="d-flex justify-content-between fw-bold"><span><?= t('Total') ?></span><span id="sumTotal" data-testid="summary-total"><?= formatRupiah($formBasePrice) ?></span></div>
@@ -816,13 +820,23 @@ require_once 'includes/header-shared.php';
                         <script>
                         (function () {
                             var loc = (window.I18N && window.I18N.locale) || 'id-ID';
-                            var fmt = function (n) { return 'Rp ' + Math.round(n).toLocaleString(loc); };
-                            var baseEl = document.querySelector('select[name="tour_date_id"]');
+                            var fromCurrency = <?= json_encode($formCurrency) ?>;
+                            var fmt = function (n) {
+                                var cs = window.CurrencySwitcher;
+                                if (cs && typeof cs.convert === 'function' && typeof cs.format === 'function') {
+                                    var cur = cs.currentCurrency || fromCurrency;
+                                    return cs.format(cs.convert(n, fromCurrency, cur), cur);
+                                }
+                                return 'Rp ' + Math.round(n).toLocaleString(loc);
+                            };
+                            var dateIds = <?= json_encode($calDateIds ?? []) ?>;
+                            var datePrices = <?= json_encode($calPrices ?? []) ?>;
                             var paxEl = document.querySelector('input[name="participants"]');
                             var insEl = document.getElementById('addInsuranceTour');
                             var ptsEl = document.getElementById('usePointsTour');
                             var walletEl = document.getElementById('useWalletTour');
                             var base = <?= json_encode($formBasePrice) ?>;
+                            var unitPrice = base;
                             var corporatePct = <?= json_encode($corporatePct) ?>;
                             var pointsValue = 100 * 100; // 100 point = Rp 10.000 (maks, sinkron dgn backend)
                             var walletBal = <?= json_encode($walletBal) ?>;
@@ -830,57 +844,85 @@ require_once 'includes/header-shared.php';
                             var currentSubtotal = base;
                             function recalc() {
                                 var pax = Math.max(1, parseInt(paxEl && paxEl.value, 10) || 1);
-                                var sel = baseEl && baseEl.selectedOptions && baseEl.selectedOptions[0];
-                                var unit = (sel && parseFloat(sel.getAttribute('data-price'))) || base;
-                                var sub = unit * pax;
-                                currentSubtotal = sub;
+                                var gross = unitPrice * pax;
+                                currentSubtotal = gross;
 
                                 // Group discount (tiered)
                                 var groupPct = 0;
                                 if (pax >= 20) groupPct = 15;
                                 else if (pax >= 10) groupPct = 10;
                                 else if (pax >= 5) groupPct = 5;
-                                var groupDiscount = sub * groupPct / 100;
-                                sub -= groupDiscount;
+                                var groupDiscount = gross * groupPct / 100;
+                                var after = gross - groupDiscount;
 
                                 // Corporate discount (%)
-                                if (corporatePct > 0) sub = sub * (100 - corporatePct) / 100;
+                                var corporateAmount = corporatePct > 0 ? after * corporatePct / 100 : 0;
+                                after -= corporateAmount;
                                 // Promo code
-                                sub -= promoDiscount;
+                                var promoAmount = Math.min(promoDiscount, Math.max(0, after));
+                                after -= promoAmount;
                                 // Points (maks 100 point)
                                 var ptsDeduct = 0;
                                 if (ptsEl && ptsEl.checked) {
-                                    ptsDeduct = Math.min(pointsValue, sub);
-                                    sub -= ptsDeduct;
+                                    ptsDeduct = Math.min(pointsValue, after);
+                                    after -= ptsDeduct;
                                 }
                                 // Wallet (TravelPoints)
                                 var walletDeduct = 0;
                                 if (walletEl && walletEl.checked) {
-                                    walletDeduct = Math.min(walletBal, sub);
-                                    sub -= walletDeduct;
+                                    walletDeduct = Math.min(walletBal, after);
+                                    after -= walletDeduct;
                                 }
-                                sub = Math.max(0, sub);
+                                after = Math.max(0, after);
                                 // Asuransi 3% dari total setelah semua diskon (sinkron dgn backend)
-                                var premi = insEl && insEl.checked ? Math.round(sub * 0.03 / 100) * 100 : 0;
-                                document.getElementById('sumBase').textContent = fmt(sub);
+                                var premi = insEl && insEl.checked ? Math.round(after * 0.03 / 100) * 100 : 0;
+                                document.getElementById('sumBase').textContent = fmt(gross);
                                 document.getElementById('sumGroupPct').textContent = groupPct > 0 ? '(' + groupPct + '%)' : '';
                                 document.getElementById('sumGroup').textContent = '-' + fmt(groupDiscount);
                                 document.getElementById('sumGroupRow').classList.toggle('d-none', groupPct === 0);
+                                document.getElementById('sumCorporatePct').textContent = corporateAmount > 0 ? '(' + corporatePct + '%)' : '';
+                                document.getElementById('sumCorporate').textContent = '-' + fmt(corporateAmount);
+                                document.getElementById('sumCorporateRow').classList.toggle('d-none', corporateAmount === 0);
+                                document.getElementById('sumPromo').textContent = '-' + fmt(promoAmount);
+                                document.getElementById('sumPromoRow').classList.toggle('d-none', promoAmount === 0);
+                                document.getElementById('sumPoints').textContent = '-' + fmt(ptsDeduct);
+                                document.getElementById('sumPointsRow').classList.toggle('d-none', ptsDeduct === 0);
+                                document.getElementById('sumWallet').textContent = '-' + fmt(walletDeduct);
+                                document.getElementById('sumWalletRow').classList.toggle('d-none', walletDeduct === 0);
                                 document.getElementById('sumIns').textContent = fmt(premi);
                                 document.getElementById('sumInsRow').classList.toggle('d-none', premi === 0);
-                                document.getElementById('sumTotal').textContent = fmt(sub + premi);
+                                document.getElementById('sumTotal').textContent = fmt(after + premi);
                             }
-                            window.onBookingDateSelect = function (dateStr, inputEl) {
-                                var select = document.getElementById('tourDateSelect');
-                                if (!select) return;
-                                for (var i = 0; i < select.options.length; i++) {
-                                    var opt = select.options[i];
-                                    if (opt.textContent && opt.textContent.indexOf(dateStr) !== -1) {
-                                        select.selectedIndex = i;
-                                        recalc();
-                                        break;
-                                    }
+                            window.onBookingDateSelect = function (dateStr) {
+                                var hid = document.getElementById('tourDateId');
+                                var errEl = document.getElementById('bookingDateError');
+                                if (dateIds[dateStr]) {
+                                    if (hid) hid.value = dateIds[dateStr];
+                                    unitPrice = parseFloat(datePrices[dateStr]) || base;
+                                } else {
+                                    if (hid) hid.value = '';
+                                    unitPrice = base;
                                 }
+                                if (errEl) errEl.classList.add('d-none');
+                                recalc();
+                            };
+                            function highlightDateItems() {
+                                var hid = document.getElementById('tourDateId');
+                                var val = hid ? hid.value : '';
+                                document.querySelectorAll('.date-item').forEach(function (el) {
+                                    var on = val && dateIds[el.dataset.date] && String(dateIds[el.dataset.date]) === String(val);
+                                    el.classList.toggle('active', !!on);
+                                });
+                            }
+                            window.selectTourDate = function (dateStr) {
+                                if (!dateIds[dateStr]) return;
+                                var cal = document.getElementById('bookingDateCal');
+                                if (cal) {
+                                    cal.value = dateStr;
+                                    if (cal._flatpickr && cal._flatpickr.setDate) { try { cal._flatpickr.setDate(dateStr, false); } catch (e) {} }
+                                }
+                                window.onBookingDateSelect(dateStr);
+                                highlightDateItems();
                             };
                             window.applyTourPromo = function () {
                                 var input = document.getElementById('promoCodeTour');
@@ -900,7 +942,7 @@ require_once 'includes/header-shared.php';
                                     if (d.success) {
                                         promoDiscount = parseFloat(d.discount) || 0;
                                         result.innerHTML = '<i class="bi bi-check-circle-fill text-success me-1"></i>' + d.message +
-                                            ' ' + I18N.t('Diskon:') + ' <strong>Rp ' + promoDiscount.toLocaleString((window.I18N && window.I18N.locale) || 'id-ID') + '</strong>';
+                                            ' ' + I18N.t('Diskon:') + ' <strong>' + fmt(promoDiscount) + '</strong>';
                                         result.className = 'klook-promo-result small mt-1 text-success';
                                     } else {
                                         promoDiscount = 0;
@@ -911,11 +953,80 @@ require_once 'includes/header-shared.php';
                                 })
                                 .catch(function () { result.textContent = I18N.t('Terjadi kesalahan. Coba lagi nanti.'); });
                             };
-                            if (baseEl) baseEl.addEventListener('change', recalc);
+                            var vMsg = {
+                                nameMin: <?= json_encode(t('Nama minimal 3 karakter')) ?>,
+                                nameDigits: <?= json_encode(t('Nama tidak boleh mengandung angka')) ?>,
+                                phoneBad: <?= json_encode(t('No. WhatsApp tidak valid (format: 08xxxxxxxxxx)')) ?>,
+                                paxName: <?= json_encode(t('Nama penumpang')) ?>,
+                                paxRequired: <?= json_encode(t('wajib diisi')) ?>,
+                                passport: <?= json_encode(t('Foto paspor peserta')) ?>,
+                                passportRequired: <?= json_encode(t('wajib diupload')) ?>
+                            };
+                            function validateBookingForm() {
+                                var errs = [];
+                                var firstEl = null;
+                                function add(msg, el) { errs.push(msg); if (!firstEl && el) firstEl = el; }
+                                var nameEl = document.getElementById('bookingName');
+                                var name = nameEl ? nameEl.value.trim() : '';
+                                if (name.length < 3) add(vMsg.nameMin, nameEl);
+                                else if (/[0-9]/.test(name)) add(vMsg.nameDigits, nameEl);
+                                var phoneEl = document.getElementById('bookingPhone');
+                                var phone = phoneEl ? phoneEl.value.trim() : '';
+                                if (!/^08\d{8,11}$/.test(phone)) add(vMsg.phoneBad, phoneEl);
+                                var paxCount = Math.max(1, parseInt(paxEl && paxEl.value, 10) || 1);
+                                var selfChk = document.getElementById('selfIncludedTour');
+                                var selfIncl = !selfChk || selfChk.checked;
+                                for (var i = 1; i <= paxCount; i++) {
+                                    var pe = document.querySelector('input[name="pax_name_' + i + '"]');
+                                    if (!(i === 1 && selfIncl) && (!pe || !pe.value.trim())) {
+                                        add(vMsg.paxName + ' #' + i + ' ' + vMsg.paxRequired, pe);
+                                    }
+                                    var pass = document.querySelector('input[name="passport_file_' + i + '"]');
+                                    if (!pass || !pass.value.trim()) add(vMsg.passport + ' #' + i + ' ' + vMsg.passportRequired, pe || pass);
+                                }
+                                return { errs: errs, firstEl: firstEl };
+                            }
+                            var tourForm = document.getElementById('tourBookingForm');
+                            if (tourForm) {
+                                tourForm.addEventListener('submit', function (e) {
+                                    var errEl = document.getElementById('bookingClientError');
+                                    var dateErrEl = document.getElementById('bookingDateError');
+                                    var hid = document.getElementById('tourDateId');
+                                    var dateMissing = !hid || !hid.value;
+                                    var res = validateBookingForm();
+                                    if (dateMissing || res.errs.length) {
+                                        e.preventDefault();
+                                        if (dateErrEl) dateErrEl.classList.toggle('d-none', !dateMissing);
+                                        if (errEl) {
+                                            if (res.errs.length) {
+                                                errEl.innerHTML = res.errs.map(function (m) { return '<div>' + m + '</div>'; }).join('');
+                                                errEl.classList.remove('d-none');
+                                            } else {
+                                                errEl.classList.add('d-none');
+                                            }
+                                        }
+                                        var target = dateMissing ? document.getElementById('bookingDateCal') : res.firstEl;
+                                        if (target && target.scrollIntoView) target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                                        if (target && target.focus) { try { target.focus(); } catch (er) {} }
+                                    } else {
+                                        if (errEl) errEl.classList.add('d-none');
+                                        if (dateErrEl) dateErrEl.classList.add('d-none');
+                                    }
+                                }, true);
+                            }
+                            document.querySelectorAll('.date-item[data-selectable="1"]').forEach(function (el) {
+                                el.setAttribute('role', 'button');
+                                el.setAttribute('tabindex', '0');
+                                el.addEventListener('click', function () { window.selectTourDate(el.dataset.date); });
+                                el.addEventListener('keydown', function (e) {
+                                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.selectTourDate(el.dataset.date); }
+                                });
+                            });
                             if (paxEl) paxEl.addEventListener('input', recalc);
                             if (insEl) insEl.addEventListener('change', recalc);
                             if (ptsEl) ptsEl.addEventListener('change', recalc);
                             if (walletEl) walletEl.addEventListener('change', recalc);
+                            document.addEventListener('currency:changed', recalc);
                             recalc();
                         })();
                         </script>
@@ -958,6 +1069,7 @@ require_once 'includes/header-shared.php';
                             <a href="reseller-booking.php?tour_id=<?= $tour['id'] ?>" class="btn btn-sm btn-info text-white"><?= t('Bayar dari Saldo') ?></a>
                         </div>
                         <?php endif; ?>
+                        <div class="alert alert-danger py-2 small d-none" id="bookingClientError" role="alert"></div>
                         <button type="submit" class="btn btn-primary w-100 fw-semibold" id="bookingSubmitBtn"><?= t(abVariant('tour_cta_text') === 'B' ? 'Booking Sekarang — Gratis Batal' : 'Pesan Sekarang') ?></button>
                         <?php if (!isLoggedIn()): ?>
                         <div class="alert alert-warning py-2 small mt-2 mb-0"><i class="bi bi-info-circle me-1"></i><?= t('Anda booking sebagai tamu. Masuk akun untuk melacak booking.') ?></div>
@@ -1252,7 +1364,12 @@ document.addEventListener('DOMContentLoaded', function() {
     var sel = document.getElementById('passengerSelect');
     if (!sel) return;
     fetch('profile-ajax.php').then(function(r){return r.json()}).then(function(d){
-        (d.profiles||[]).forEach(function(p){
+        var profiles = d.profiles || [];
+        if (profiles.length) {
+            var wrap = document.getElementById('savedProfileWrap');
+            if (wrap) wrap.classList.remove('d-none');
+        }
+        profiles.forEach(function(p){
             var opt = document.createElement('option');
             opt.value = JSON.stringify(p);
             opt.textContent = p.full_name + (p.passport_no ? ' ('+p.passport_no+')' : '');

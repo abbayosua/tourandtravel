@@ -21,7 +21,7 @@ $paxSelfChecked = $paxSelfChecked ?? true;
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<?= t('Tutup') ?>"></button>
       </div>
       <div class="modal-body">
-        <div class="alert alert-info py-2 small"><i class="bi bi-info-circle me-1"></i><?= t('Isi nama lengkap (sesuai paspor) dan unggah foto paspor untuk setiap peserta.') ?> <span class="text-muted"><?= t('Format JPG/PNG/WebP, max 2MB') ?></span></div>
+        <div class="alert alert-info py-2 small"><i class="bi bi-info-circle me-1"></i><?= t('Isi nama lengkap (sesuai paspor) dan unggah foto paspor untuk setiap peserta.') ?> <span class="text-muted"><?= t('Format JPG/PNG/WebP, max 5MB') ?></span></div>
         <div id="paxRows" data-testid="pax-rows"></div>
       </div>
       <div class="modal-footer py-2">
@@ -70,18 +70,48 @@ $paxSelfChecked = $paxSelfChecked ?? true;
         }
     }
 
+    function compressPax(file) {
+        return new Promise(function (resolve) {
+            if (!file || !/^image\//.test(file.type) || typeof document.createElement('canvas').toBlob !== 'function') { resolve(file); return; }
+            var url = URL.createObjectURL(file);
+            var img = new Image();
+            img.onload = function () {
+                try {
+                    var MAX = 1600, w = img.naturalWidth, h = img.naturalHeight;
+                    if (w > MAX) { var r = MAX / w; h = Math.round(h * r); w = MAX; }
+                    var c = document.createElement('canvas');
+                    c.width = w; c.height = h;
+                    c.getContext('2d').drawImage(img, 0, 0, w, h);
+                    c.toBlob(function (blob) {
+                        URL.revokeObjectURL(url);
+                        if (blob && blob.size > 0 && blob.size < file.size) {
+                            resolve(new File([blob], 'passport.jpg', { type: 'image/jpeg' }));
+                        } else {
+                            resolve(file);
+                        }
+                    }, 'image/jpeg', 0.82);
+                } catch (e) { URL.revokeObjectURL(url); resolve(file); }
+            };
+            img.onerror = function () { URL.revokeObjectURL(url); resolve(file); };
+            img.src = url;
+        });
+    }
+
     function uploadPax(inp) {
         var i = inp.getAttribute('data-idx');
         var hid = document.getElementById('passportFile' + i);
         var st = document.getElementById('paxStatus' + i);
         if (hid) hid.value = '';
         if (!inp.files || !inp.files[0]) { if (st) st.innerHTML = ''; return; }
-        var fd = new FormData();
-        fd.append('csrf_token', CSRF);
-        fd.append('passport', inp.files[0]);
         inp.disabled = true;
         if (st) st.innerHTML = '<span class="text-muted"><span class="spinner-border spinner-border-sm me-1"></span><?= e(t('Mengunggah...')) ?></span>';
-        fetch('pax-upload-ajax.php', { method: 'POST', body: fd })
+        compressPax(inp.files[0])
+            .then(function (file) {
+                var fd = new FormData();
+                fd.append('csrf_token', CSRF);
+                fd.append('passport', file);
+                return fetch('pax-upload-ajax.php', { method: 'POST', body: fd });
+            })
             .then(function (r) { return r.json(); })
             .then(function (d) {
                 inp.disabled = false;
