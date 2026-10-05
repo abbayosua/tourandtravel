@@ -39,6 +39,7 @@ if ($action === 'save') {
     $nationality = trim($_POST['nationality'] ?? '') ?: null;
     $dob = $_POST['dob'] ?: null;
     $phone = trim($_POST['phone'] ?? '') ?: null;
+    $email = trim($_POST['email'] ?? '') ?: null;
     $isDefault = isset($_POST['is_default']) ? 1 : 0;
 
     if (!$fullName) {
@@ -52,15 +53,15 @@ if ($action === 'save') {
     }
 
     if ($id > 0) {
-        db()->prepare("UPDATE passenger_profiles SET full_name = ?, passport_no = ?, nationality = ?, dob = ?, phone = ?, is_default = ? WHERE id = ? AND user_id = ?")
-            ->execute([$fullName, $passportNo, $nationality, $dob, $phone, $isDefault, $id, $userId]);
+        db()->prepare("UPDATE passenger_profiles SET full_name = ?, passport_no = ?, nationality = ?, dob = ?, phone = ?, email = ?, is_default = ? WHERE id = ? AND user_id = ?")
+            ->execute([$fullName, $passportNo, $nationality, $dob, $phone, $email, $isDefault, $id, $userId]);
         echo json_encode(['success' => true, 'id' => $id]);
     } else {
         $hasAny = db()->prepare("SELECT COUNT(*) FROM passenger_profiles WHERE user_id = ?");
         $hasAny->execute([$userId]);
         if ((int)$hasAny->fetchColumn() === 0) $isDefault = 1;
-        db()->prepare("INSERT INTO passenger_profiles (user_id, full_name, passport_no, nationality, dob, phone, is_default) VALUES (?, ?, ?, ?, ?, ?, ?)")
-            ->execute([$userId, $fullName, $passportNo, $nationality, $dob, $phone, $isDefault]);
+        db()->prepare("INSERT INTO passenger_profiles (user_id, full_name, passport_no, nationality, dob, phone, email, is_default) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+            ->execute([$userId, $fullName, $passportNo, $nationality, $dob, $phone, $email, $isDefault]);
         echo json_encode(['success' => true, 'id' => (int)db()->lastInsertId()]);
     }
     exit;

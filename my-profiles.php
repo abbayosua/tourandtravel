@@ -23,6 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $nationality = trim($_POST['nationality'] ?? '') ?: null;
         $dob = $_POST['dob'] ?: null;
         $phone = trim($_POST['phone'] ?? '') ?: null;
+        $email = trim($_POST['email'] ?? '') ?: null;
         $isDefault = isset($_POST['is_default']) ? 1 : 0;
 
         if (!$fullName) {
@@ -32,14 +33,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 db()->prepare("UPDATE passenger_profiles SET is_default = 0 WHERE user_id = ?")->execute([$userId]);
             }
             if ($id > 0) {
-                db()->prepare("UPDATE passenger_profiles SET full_name = ?, passport_no = ?, nationality = ?, dob = ?, phone = ?, is_default = ? WHERE id = ? AND user_id = ?")
-                    ->execute([$fullName, $passportNo, $nationality, $dob, $phone, $isDefault, $id, $userId]);
+                db()->prepare("UPDATE passenger_profiles SET full_name = ?, passport_no = ?, nationality = ?, dob = ?, phone = ?, email = ?, is_default = ? WHERE id = ? AND user_id = ?")
+                    ->execute([$fullName, $passportNo, $nationality, $dob, $phone, $email, $isDefault, $id, $userId]);
             } else {
                 $hasAny = db()->prepare("SELECT COUNT(*) FROM passenger_profiles WHERE user_id = ?");
                 $hasAny->execute([$userId]);
                 if ((int)$hasAny->fetchColumn() === 0) $isDefault = 1;
-                db()->prepare("INSERT INTO passenger_profiles (user_id, full_name, passport_no, nationality, dob, phone, is_default) VALUES (?, ?, ?, ?, ?, ?, ?)")
-                    ->execute([$userId, $fullName, $passportNo, $nationality, $dob, $phone, $isDefault]);
+                db()->prepare("INSERT INTO passenger_profiles (user_id, full_name, passport_no, nationality, dob, phone, email, is_default) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+                    ->execute([$userId, $fullName, $passportNo, $nationality, $dob, $phone, $email, $isDefault]);
             }
             header('Location: my-profiles.php?msg=saved');
             exit;
@@ -123,6 +124,10 @@ require_once 'includes/header-shared.php';
                                 <label class="form-label small fw-semibold"><?= t('No. Telepon') ?></label>
                                 <input type="text" name="phone" class="form-control" value="<?= e($editProfile['phone'] ?? '') ?>">
                             </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold"><?= t('Email') ?></label>
+                                <input type="email" name="email" class="form-control" value="<?= e($editProfile['email'] ?? '') ?>">
+                            </div>
                             <div class="form-check mb-3">
                                 <input class="form-check-input" type="checkbox" name="is_default" value="1" id="isDefault" <?= (!empty($editProfile['is_default']) || empty($profiles)) ? 'checked' : '' ?>>
                                 <label class="form-check-label small" for="isDefault"><?= t('Jadikan default') ?></label>
@@ -156,7 +161,8 @@ require_once 'includes/header-shared.php';
                                             <?php if ($p['passport_no']): ?><span><i class="bi bi-passport me-1"></i><?= e($p['passport_no']) ?></span> · <?php endif; ?>
                                             <?php if ($p['nationality']): ?><span><?= e($p['nationality']) ?></span> · <?php endif; ?>
                                             <?php if ($p['dob']): ?><span><?= date('d M Y', strtotime($p['dob'])) ?></span> · <?php endif; ?>
-                                            <?php if ($p['phone']): ?><span><?= e($p['phone']) ?></span><?php endif; ?>
+                                            <?php if ($p['phone']): ?><span><?= e($p['phone']) ?></span> · <?php endif; ?>
+                                            <?php if (!empty($p['email'])): ?><span><?= e($p['email']) ?></span><?php endif; ?>
                                         </div>
                                     </div>
                                     <div class="d-flex gap-1">

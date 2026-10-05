@@ -81,7 +81,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
     elseif (preg_match('/[0-9]/', $name)) $errors[] = t('Nama tidak boleh mengandung angka');
     if (!$phone) $errors[] = t('No. WhatsApp harus diisi');
     elseif (!preg_match('/^08\d{8,11}$/', $phone)) $errors[] = t('No. WhatsApp tidak valid (format: 08xxxxxxxxxx)');
-    if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = t('Email tidak valid');
+    if (!$email) $errors[] = t('Email harus diisi');
+    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = t('Email tidak valid');
     if ($participants < 1) $errors[] = t('Jumlah peserta minimal 1');
     if ($participants > (int)$tour['max_participants']) $errors[] = t('Jumlah peserta melebihi kapasitas tour');
 
@@ -764,9 +765,20 @@ require_once 'includes/header-shared.php';
                             <label class="form-label small"><?= t('Nama Lengkap') ?></label>
                             <input type="text" name="name" class="form-control form-control-sm" id="bookingName" required>
                         </div>
+                        <?php
+                        $bookingEmailDefault = '';
+                        if (isLoggedIn()) {
+                            $_u = getUser();
+                            if ($_u) {
+                                $_hp = db()->prepare("SELECT COUNT(*) FROM passenger_profiles WHERE user_id = ?");
+                                $_hp->execute([(int)$_SESSION['user_id']]);
+                                if ((int)$_hp->fetchColumn() === 0) $bookingEmailDefault = (string)$_u['email'];
+                            }
+                        }
+                        ?>
                         <div class="mb-2">
-                            <label class="form-label small"><?= t('Email (opsional)') ?></label>
-                            <input type="email" name="email" class="form-control form-control-sm" placeholder="<?= e(t('email@contoh.com')) ?>">
+                            <label class="form-label small"><?= t('Email') ?></label>
+                            <input type="email" name="email" id="bookingEmail" class="form-control form-control-sm" placeholder="<?= e(t('email@contoh.com')) ?>" value="<?= e($bookingEmailDefault) ?>" required>
                         </div>
                         <div class="mb-2">
                             <label class="form-label small"><?= t('No. WhatsApp') ?></label>
@@ -958,6 +970,8 @@ require_once 'includes/header-shared.php';
                                 nameMin: <?= json_encode(t('Nama minimal 3 karakter')) ?>,
                                 nameDigits: <?= json_encode(t('Nama tidak boleh mengandung angka')) ?>,
                                 phoneBad: <?= json_encode(t('No. WhatsApp tidak valid (format: 08xxxxxxxxxx)')) ?>,
+                                emailReq: <?= json_encode(t('Email harus diisi')) ?>,
+                                emailBad: <?= json_encode(t('Email tidak valid')) ?>,
                                 paxName: <?= json_encode(t('Nama penumpang')) ?>,
                                 paxRequired: <?= json_encode(t('wajib diisi')) ?>,
                                 passport: <?= json_encode(t('Foto paspor peserta')) ?>,
@@ -974,6 +988,10 @@ require_once 'includes/header-shared.php';
                                 var phoneEl = document.getElementById('bookingPhone');
                                 var phone = phoneEl ? phoneEl.value.trim() : '';
                                 if (!/^08\d{8,11}$/.test(phone)) add(vMsg.phoneBad, phoneEl);
+                                var emailEl = document.getElementById('bookingEmail');
+                                var email = emailEl ? emailEl.value.trim() : '';
+                                if (!email) add(vMsg.emailReq, emailEl);
+                                else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) add(vMsg.emailBad, emailEl);
                                 var paxCount = Math.max(1, parseInt(paxEl && paxEl.value, 10) || 1);
                                 var selfChk = document.getElementById('selfIncludedTour');
                                 var selfIncl = !selfChk || selfChk.checked;
@@ -1384,8 +1402,10 @@ function fillPassenger(sel) {
         var p = JSON.parse(sel.value);
         var nameEl = document.getElementById('bookingName');
         var phoneEl = document.getElementById('bookingPhone');
+        var emailEl = document.getElementById('bookingEmail');
         if (nameEl) nameEl.value = p.full_name || '';
         if (phoneEl) phoneEl.value = p.phone || '';
+        if (emailEl) emailEl.value = p.email || '';
     } catch(e) { console.warn('profile parse error', e); }
 }
 <?php endif; ?>

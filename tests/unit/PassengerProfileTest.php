@@ -11,7 +11,7 @@ function _ppCleanup(int $userId) {
 function testCreatePassengerProfile() {
     $uid = 1;
     _ppCleanup($uid);
-    $stmt = db()->prepare("INSERT INTO passenger_profiles (user_id, full_name, passport_no, nationality, dob, phone, is_default) VALUES (?, 'Budi Santoso', 'A1234567', 'Indonesia', '1990-05-15', '0812345678', 1)");
+    $stmt = db()->prepare("INSERT INTO passenger_profiles (user_id, full_name, passport_no, nationality, dob, phone, email, is_default) VALUES (?, 'Budi Santoso', 'A1234567', 'Indonesia', '1990-05-15', '0812345678', 'budi@example.com', 1)");
     $stmt->execute([$uid]);
     $id = (int)db()->lastInsertId();
     assertTrue($id > 0, 'profile created');
@@ -23,6 +23,7 @@ function testCreatePassengerProfile() {
     assertEquals('Indonesia', $r['nationality']);
     assertEquals('1990-05-15', $r['dob']);
     assertEquals('0812345678', $r['phone']);
+    assertEquals('budi@example.com', $r['email']);
     assertEquals(1, (int)$r['is_default']);
     _ppCleanup($uid);
 }
@@ -109,7 +110,7 @@ function testProfileAjaxReturnsJson() {
     // Simulate GET request logic
     $uid = 1;
     _ppCleanup($uid);
-    db()->prepare("INSERT INTO passenger_profiles (user_id, full_name, passport_no, phone, is_default) VALUES (?, 'Ajax Test', 'P999', '08999', 1)")->execute([$uid]);
+    db()->prepare("INSERT INTO passenger_profiles (user_id, full_name, passport_no, phone, email, is_default) VALUES (?, 'Ajax Test', 'P999', '08999', 'ajax@example.com', 1)")->execute([$uid]);
     $stmt = db()->prepare("SELECT * FROM passenger_profiles WHERE user_id = ? ORDER BY is_default DESC, created_at ASC");
     $stmt->execute([$uid]);
     $profiles = $stmt->fetchAll();
@@ -117,5 +118,6 @@ function testProfileAjaxReturnsJson() {
     assertEquals('Ajax Test', $profiles[0]['full_name']);
     assertEquals('P999', $profiles[0]['passport_no']);
     assertEquals('08999', $profiles[0]['phone']);
+    assertEquals('ajax@example.com', $profiles[0]['email']);
     _ppCleanup($uid);
 }

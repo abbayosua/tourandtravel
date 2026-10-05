@@ -175,6 +175,8 @@ async function bookTour(page: Page, opts: BookOpts): Promise<string> {
   await pickFirstDeparture(page);
   await page.locator('#bookingName').fill('Buyer Tour');
   await page.locator('#bookingPhone').fill('081234567890');
+  const emailEl = page.locator('#bookingEmail');
+  if ((await emailEl.inputValue()).trim() === '') await emailEl.fill('buyer-e2e@t.local');
   if (opts.usePoints) await page.locator('#usePointsTour').check();
   if (opts.useWallet) await page.locator('#useWalletTour').check();
   if (opts.promoCode) await page.locator('#promoCodeTour').fill(opts.promoCode);
@@ -500,6 +502,7 @@ test('booking ditolak bila tanggal keberangkatan belum dipilih di kalender', asy
   await page.goto(`${BASE}/tour-detail.php?slug=${SLUG}&lang=id`);
   await page.locator('#bookingName').fill('Buyer Tour');
   await page.locator('#bookingPhone').fill('081234567890');
+  await page.locator('#bookingEmail').fill('guest-date@t.local');
   await page.locator('#bookingSubmitBtn').click();
 
   await expect(page.locator('#bookingDateError')).toBeVisible();
@@ -593,6 +596,67 @@ test('pilih profil tersimpan disembunyikan bila belum ada profil', async ({ page
   // User e2e tidak punya passenger_profiles -> blok harus tersembunyi.
   await expect(page.locator('#passengerSelect')).toBeHidden();
   await expect(page.locator('#savedProfileWrap')).toBeHidden();
+});
+
+test('email form booking default dari email pendaftaran bila belum ada profil', async ({ page }) => {
+  mysql(`DELETE FROM passenger_profiles WHERE user_id = ${userId}`);
+  await login(page);
+  await page.goto(`${BASE}/tour-detail.php?slug=${SLUG}&lang=id`);
+  // Tanpa profil tersimpan, email pendaftaran dipakai sebagai nilai awal (editable).
+  await expect(page.locator('#bookingEmail')).toHaveValue(AUTH_EMAIL);
+  await expect(page.locator('#bookingEmail')).toBeEditable();
+});
+
+test('email wajib diisi di form booking tour (klien + server)', async ({ page }) => {
+  mysql(`UPDATE tour_dates SET available_slots = 100 WHERE tour_id = ${tourId}`);
+  mysql(`DELETE FROM passenger_profiles WHERE user_id = ${userId}`);
+  await login(page);
+  await page.goto(`${BASE}/tour-detail.php?slug=${SLUG}&lang=id`);
+  await pickFirstDeparture(page);
+  await page.locator('#bookingName').fill('Email Guard');
+  await page.locator('#bookingPhone').fill('081234567890');
+  await page.locator('#bookingEmail').fill('');
+
+  // Native HTML5 required menahan submit (email kosong).
+  await page.locator('#bookingSubmitBtn').click();
+  expect(await page.locator('#bookingEmail').evaluate((el: HTMLInputElement) => el.validity.valueMissing)).toBe(true);
+  expect(page.url()).toContain('tour-detail.php');
+
+  // Validasi server: submit native (melewati guard JS + required) tetap ditolak.
+  await page.locator('#tourBookingForm').evaluate((f: HTMLFormElement) => f.submit());
+  await page.waitForLoadState('domcontentloaded');
+  await expect(page.locator('.alert-danger', { hasText: 'Email harus diisi' })).toBeVisible();
+  expect(mysql(`SELECT COUNT(*) FROM bookings WHERE tour_id = ${tourId} AND name = 'Email Guard'`)).toBe('0');
+});
+
+test('profil tersimpan menyimpan email', async ({ page }) => {
+  mysql(`DELETE FROM passenger_profiles WHERE user_id = ${userId}`);
+  await login(page);
+  await page.goto(`${BASE}/my-profiles.php`);
+  await page.locator('input[name="full_name"]').fill('Profil Simpan');
+  await page.locator('input[name="phone"]').fill('081200000002');
+  await page.locator('input[name="email"]').fill('simpan-email@t.local');
+  await Promise.all([
+    page.waitForURL(/my-profiles\.php/),
+    page.locator('form:has(input[name="action"][value="save"]) button[type="submit"]').click(),
+  ]);
+  expect(mysql(`SELECT email FROM passenger_profiles WHERE user_id = ${userId} ORDER BY id DESC LIMIT 1`)).toBe('simpan-email@t.local');
+  mysql(`DELETE FROM passenger_profiles WHERE user_id = ${userId}`);
+});
+
+test('profil tersimpan mengisi email di form booking tour', async ({ page }) => {
+  mysql(`DELETE FROM passenger_profiles WHERE user_id = ${userId}`);
+  mysql(`INSERT INTO passenger_profiles (user_id, full_name, phone, email, is_default) VALUES (${userId}, 'Profil Email', '081200000001', 'profil-email@t.local', 1)`);
+  try {
+    await login(page);
+    await page.goto(`${BASE}/tour-detail.php?slug=${SLUG}&lang=id`);
+    await expect(page.locator('#savedProfileWrap')).toBeVisible();
+    await page.locator('#passengerSelect').selectOption({ label: 'Profil Email' });
+    await expect(page.locator('#bookingEmail')).toHaveValue('profil-email@t.local');
+    await expect(page.locator('#bookingPhone')).toHaveValue('081200000001');
+  } finally {
+    mysql(`DELETE FROM passenger_profiles WHERE user_id = ${userId}`);
+  }
 });
 
 test('validasi frontend menolak submit tanpa foto paspor', async ({ page }) => {

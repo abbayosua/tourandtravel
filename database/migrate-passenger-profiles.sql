@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS passenger_profiles (
     nationality VARCHAR(50) DEFAULT NULL,
     dob DATE DEFAULT NULL,
     phone VARCHAR(20) DEFAULT NULL,
+    email VARCHAR(200) DEFAULT NULL,
     is_default TINYINT(1) NOT NULL DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_pp_user (user_id),
