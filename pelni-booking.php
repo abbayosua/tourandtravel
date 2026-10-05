@@ -16,16 +16,41 @@ $passengers   = max(1, (int)($_GET['passengers'] ?? 1));
 $shipClass    = trim($_GET['ship_class'] ?? '');
 $shipNumber   = trim($_GET['ship_number'] ?? '');
 $arrivalTime  = trim($_GET['arrival_time'] ?? '');
+$fromCode     = trim($_GET['from_code'] ?? '');
+$toCode       = trim($_GET['to_code'] ?? '');
 
 if (!$shipName || !$routeFrom || !$routeTo || !$departDate || $pricePerPax <= 0) {
     header('Location: pelni.php');
     exit;
 }
 
+// Fallback kode pelabuhan bila link lama tidak menyertakannya (dipakai untuk booking ke penyedia).
+if ($fromCode === '') {
+    $ports = pelniSearchPort($routeFrom);
+    if (!empty($ports)) $fromCode = $ports[0]['label_code'] ?? '';
+}
+if ($toCode === '') {
+    $ports = pelniSearchPort($routeTo);
+    if (!empty($ports)) $toCode = $ports[0]['label_code'] ?? '';
+}
+
 $totalPrice = $pricePerPax * $passengers;
 $pageTitle  = t('Pesan Kapal PELNI') . ' — ' . e($shipName);
 $errors     = [];
 $success    = false;
+$supplierInvoice = $supplierVa = $supplierBank = $supplierDeadline = $supplierStatus = null;
+$supplierTotal = null;
+$supplierMethod = null;
+$payMethodOptions = [
+    'VA:BSI'           => t('Virtual Account') . ' — BSI',
+    'VA:Permata'       => t('Virtual Account') . ' — Permata',
+    'VA:Muamalat'      => t('Virtual Account') . ' — Muamalat',
+    'TRANSFER:Mandiri' => t('Transfer Bank') . ' — Mandiri',
+    'TRANSFER:BCA'     => t('Transfer Bank') . ' — BCA',
+    'TRANSFER:BRI'     => t('Transfer Bank') . ' — BRI',
+    'TRANSFER:BNI'     => t('Transfer Bank') . ' — BNI',
+];
+$defaultPayMethod = 'VA:Permata';
 
 $defaultName  = $_SESSION['user_name'] ?? '';
 $defaultEmail = $_SESSION['user_email'] ?? '';
@@ -44,12 +69,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (strlen($phone) < 8) $errors[] = t('Nomor telepon tidak valid.');
 
     $paxData = [];
+    $paxForSupplier = [];
     for ($i = 1; $i <= $passengers; $i++) {
-        $paxName = ($passengers === 1) ? $name : trim($_POST["pax_name_$i"] ?? '');
-        if (strlen($paxName) < 2) {
-            $errors[] = t('Nama penumpang') . " #$i " . t('wajib diisi.');
-        }
-        $paxData[] = ['name' => $paxName, 'seat' => $i];
+        $paxName  = trim($_POST["pax_name_$i"] ?? '');
+        if ($passengers === 1 && $paxName === '') $paxName = $name;
+        $paxTitle = trim($_POST["pax_title_$i"] ?? 'Mr');
+        if (!in_array($paxTitle, ['Mr', 'Mrs', 'Ms'], true)) $paxTitle = 'Mr';
+        $paxDob   = trim($_POST["pax_dob_$i"] ?? '');
+        $paxId    = trim($_POST["pax_id_$i"] ?? '');
+
+        if (strlen($paxName) < 2) $errors[] = t('Nama penumpang') . " #$i " . t('wajib diisi.');
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $paxDob)) $errors[] = t('Tanggal lahir penumpang') . " #$i " . t('tidak valid.');
+        if (strlen($paxId) < 6) $errors[] = t('Nomor identitas penumpang') . " #$i " . t('wajib diisi.');
+
+        $paxData[] = ['title' => $paxTitle, 'name' => $paxName, 'dob' => $paxDob, 'id' => $paxId, 'seat' => $i];
+        $paxForSupplier[] = [
+            'title' => $paxTitle,
+            'name'  => $paxName,
+            'dob'   => date('d-m-Y', strtotime($paxDob)), // penyedia: dd-mm-yyyy
+            'id'    => $paxId,
+        ];
     }
 
     if (empty($errors)) {
@@ -68,8 +107,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
 
         $pelniBookingId = (int)db()->lastInsertId();
-        $success = true;
-        $pageTitle = t('Booking Berhasil');
+
+        // Booking langsung ke penyedia (klikmbc.biz) — pembeli bayar via VA/transfer dari penyedia.
+        $payMethod = trim($_POST['pay_method'] ?? $defaultPayMethod);
+        if (!isset($payMethodOptions[$payMethod])) $payMethod = $defaultPayMethod;
+        $supplier = pelniSupplierBook($routeFrom, $routeTo, $fromCode, $toCode, $departDate, $shipCode, $paxForSupplier, $phone, $email, $passengers, $payMethod);
+        if (!empty($supplier['ok'])) {
+            $supplierTotal = null;
+            if (!empty($supplier['total'])) {
+                $digits = preg_replace('/[^0-9]/', '', (string)$supplier['total']);
+                $supplierTotal = $digits !== '' ? (float)$digits : null;
+            }
+            db()->prepare("UPDATE pelni_bookings SET supplier_invoice=?, supplier_va=?, supplier_bank=?, supplier_method=?, supplier_total=?, supplier_deadline=?, supplier_status=? WHERE id=?")
+                ->execute([
+                    $supplier['invoice'] ?? null,
+                    $supplier['va'] ?? null,
+                    $supplier['bank'] ?? null,
+                    $supplier['method'] ?? null,
+                    $supplierTotal,
+                    $supplier['deadline'] ?? null,
+                    $supplier['status'] ?? null,
+                    $pelniBookingId,
+                ]);
+        } else {
+            $errText = mb_substr(trim(preg_replace('/\s+/', ' ', strip_tags((string)($supplier['error'] ?? 'unknown')))), 0, 240);
+            db()->prepare("UPDATE pelni_bookings SET supplier_status=? WHERE id=?")
+                ->execute([t('Gagal ke penyedia') . ': ' . $errText, $pelniBookingId]);
+        }
 
         // PRG: redirect ke GET agar refresh tidak membuat booking ganda.
         $redirectQuery = $_GET;
@@ -103,6 +167,13 @@ if (!$success && $_SERVER['REQUEST_METHOD'] !== 'POST' && !empty($_GET['booking'
         $passengers     = (int)$bk['passengers'];
         $pricePerPax    = (float)$bk['price_per_pax'];
         $totalPrice     = (float)$bk['total_price'];
+        $supplierInvoice  = $bk['supplier_invoice'] ?? null;
+        $supplierVa       = $bk['supplier_va'] ?? null;
+        $supplierBank     = $bk['supplier_bank'] ?? null;
+        $supplierMethod   = $bk['supplier_method'] ?? null;
+        $supplierTotal    = $bk['supplier_total'] ?? null;
+        $supplierDeadline = $bk['supplier_deadline'] ?? null;
+        $supplierStatus   = $bk['supplier_status'] ?? null;
         $pageTitle      = t('Booking Berhasil');
     }
 }
@@ -170,15 +241,15 @@ require_once 'includes/header-shared.php';
                         </div>
 
                         <?php
+                        $pelniGatewayEnabled = false; // PELNI: payment gateway dinonaktifkan sementara → bayar langsung ke penyedia (klikmbc)
                         $pelniPayment = null;
                         if ($success) {
                             $pp = db()->prepare("SELECT * FROM payments WHERE booking_type='pelni' AND booking_id=? ORDER BY id DESC LIMIT 1");
                             $pp->execute([$pelniBookingId]);
                             $pelniPayment = $pp->fetch();
                         }
-                        $pelniPayEnabled = tripayInstantEnabled();
                         ?>
-                        <?php if ($pelniPayEnabled): ?>
+                        <?php if ($pelniGatewayEnabled && tripayInstantEnabled()): ?>
                         <div class="w-100 mb-3" data-testid="pelni-payment">
                             <?php if (tripayGateway() === 'tripay'): ?>
                             <label class="form-label small fw-semibold" for="pelniTripayMethod"><?= t('Pilih channel pembayaran') ?></label>
@@ -196,13 +267,58 @@ require_once 'includes/header-shared.php';
                                 <?php if ($pelniPayment): ?><span class="text-muted"><?= t('Menunggu pembayaran...') ?></span><?php endif; ?>
                             </div>
                         </div>
-                        <?php elseif (!empty($pelniPayment['pay_code']) && ($pelniPayment['gateway'] ?? '') === 'tripay'): ?>
+                        <?php elseif ($pelniGatewayEnabled && !empty($pelniPayment['pay_code']) && ($pelniPayment['gateway'] ?? '') === 'tripay'): ?>
                         <div class="alert alert-info text-start mb-3" data-testid="pelni-paycode">
                             <div class="small text-muted"><?= t('Kode bayar Tripay') ?></div>
                             <div class="fs-4 fw-bold"><?= e($pelniPayment['pay_code']) ?></div>
                             <?php if (!empty($pelniPayment['checkout_url'])): ?>
                             <a href="<?= e($pelniPayment['checkout_url']) ?>" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary mt-2"><?= t('Buka halaman checkout') ?></a>
                             <?php endif; ?>
+                        </div>
+                        <?php elseif (!empty($supplierInvoice)): ?>
+                        <div class="alert alert-warning text-start mb-3" data-testid="pelni-supplier-payment">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-semibold"><i class="bi bi-cash-coin me-1"></i><?= t('Pembayaran ke penyedia PELNI') ?></span>
+                                <?php if ($supplierStatus): ?><span class="badge bg-secondary"><?= e($supplierStatus) ?></span><?php endif; ?>
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <div class="small text-muted"><?= t('Kode Invoice') ?></div>
+                                    <div class="fw-bold" data-testid="supplier-invoice"><?= e($supplierInvoice) ?></div>
+                                </div>
+                                <?php if ($supplierBank): ?>
+                                <div class="col-6">
+                                    <div class="small text-muted"><?= t('Bank') ?></div>
+                                    <div class="fw-semibold"><?= e($supplierBank) ?></div>
+                                </div>
+                                <?php endif; ?>
+                                <?php if ($supplierVa): ?>
+                                <div class="col-12">
+                                    <div class="small text-muted"><?= $supplierMethod === 'TRANSFER' ? t('Nomor Rekening Tujuan') : t('Nomor Virtual Account') ?></div>
+                                    <div class="fs-4 fw-bold text-primary" data-testid="supplier-va"><?= e($supplierVa) ?></div>
+                                </div>
+                                <?php endif; ?>
+                                <?php if (!empty($supplierTotal)): ?>
+                                <div class="col-6">
+                                    <div class="small text-muted"><?= t('Total Bayar') ?></div>
+                                    <div class="fw-bold"><?= formatRupiah((float)$supplierTotal) ?></div>
+                                </div>
+                                <?php endif; ?>
+                                <?php if ($supplierDeadline): ?>
+                                <div class="col-6">
+                                    <div class="small text-muted"><?= t('Batas Bayar') ?></div>
+                                    <div class="fw-semibold"><?= e($supplierDeadline) ?></div>
+                                </div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="small text-muted mt-3">
+                                <i class="bi bi-info-circle me-1"></i><?= t('Bayar sesuai nomor Virtual Account di atas sebelum batas waktu. E-ticket PELNI diterbitkan otomatis setelah pembayaran diterima penyedia.') ?>
+                            </div>
+                        </div>
+                        <?php else: ?>
+                        <div class="alert alert-info text-start mb-3" data-testid="pelni-no-supplier">
+                            <i class="bi bi-exclamation-triangle me-1"></i><?= t('Booking Anda tercatat. Konfirmasi tiket sedang diproses oleh tim kami.') ?>
+                            <?php if ($supplierStatus): ?><div class="small text-muted mt-1"><?= e($supplierStatus) ?></div><?php endif; ?>
                         </div>
                         <?php endif; ?>
 
@@ -308,16 +424,55 @@ require_once 'includes/header-shared.php';
                         <div class="card-body">
                             <div class="row g-3" id="paxFields">
                                 <?php for ($i = 1; $i <= 9; $i++): ?>
-                                <div class="col-md-6 pax-field <?= $i > (int)$passengers ? 'd-none' : '' ?>" data-pax="<?= $i ?>">
-                                    <label class="form-label fw-semibold" for="pax_name_<?= $i ?>">
-                                        <?= t('Penumpang') ?> #<?= $i ?> <span class="text-danger">*</span>
-                                    </label>
-                                    <input type="text" id="pax_name_<?= $i ?>" name="pax_name_<?= $i ?>"
-                                           class="form-control pax-input <?= $i > (int)$passengers ? 'd-none' : '' ?>"
-                                           <?= $i <= (int)$passengers ? 'required' : '' ?> data-testid="input-pax-<?= $i ?>">
+                                <div class="col-12 pax-field <?= $i > (int)$passengers ? 'd-none' : '' ?>" data-pax="<?= $i ?>">
+                                    <div class="border rounded-3 p-3">
+                                        <div class="fw-semibold small mb-2"><?= t('Penumpang') ?> #<?= $i ?></div>
+                                        <div class="row g-2">
+                                            <div class="col-4 col-md-2">
+                                                <label class="form-label small text-muted" for="pax_title_<?= $i ?>"><?= t('Gelar') ?></label>
+                                                <select id="pax_title_<?= $i ?>" name="pax_title_<?= $i ?>" class="form-select form-select-sm pax-input <?= $i > (int)$passengers ? 'd-none' : '' ?>" data-testid="input-pax-title-<?= $i ?>">
+                                                    <option value="Mr">Mr</option>
+                                                    <option value="Mrs">Mrs</option>
+                                                    <option value="Ms">Ms</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-8 col-md-4">
+                                                <label class="form-label small text-muted" for="pax_name_<?= $i ?>"><?= t('Nama Lengkap') ?></label>
+                                                <input type="text" id="pax_name_<?= $i ?>" name="pax_name_<?= $i ?>"
+                                                       class="form-control form-control-sm pax-input <?= $i > (int)$passengers ? 'd-none' : '' ?>"
+                                                       <?= $i <= (int)$passengers ? 'required' : '' ?> data-testid="input-pax-<?= $i ?>">
+                                            </div>
+                                            <div class="col-6 col-md-3">
+                                                <label class="form-label small text-muted" for="pax_dob_<?= $i ?>"><?= t('Tanggal Lahir') ?></label>
+                                                <input type="date" id="pax_dob_<?= $i ?>" name="pax_dob_<?= $i ?>"
+                                                       class="form-control form-control-sm pax-input <?= $i > (int)$passengers ? 'd-none' : '' ?>"
+                                                       <?= $i <= (int)$passengers ? 'required' : '' ?> data-testid="input-pax-dob-<?= $i ?>">
+                                            </div>
+                                            <div class="col-6 col-md-3">
+                                                <label class="form-label small text-muted" for="pax_id_<?= $i ?>"><?= t('No. Identitas (NIK/Paspor)') ?></label>
+                                                <input type="text" id="pax_id_<?= $i ?>" name="pax_id_<?= $i ?>"
+                                                       class="form-control form-control-sm pax-input <?= $i > (int)$passengers ? 'd-none' : '' ?>"
+                                                       <?= $i <= (int)$passengers ? 'required' : '' ?> data-testid="input-pax-id-<?= $i ?>">
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <?php endfor; ?>
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white border-bottom fw-semibold">
+                            <i class="bi bi-credit-card me-2"></i><?= t('Metode Pembayaran') ?>
+                        </div>
+                        <div class="card-body">
+                            <label class="form-label small text-muted" for="pay_method"><?= t('Pilih metode pembayaran ke penyedia') ?></label>
+                            <select id="pay_method" name="pay_method" class="form-select" data-testid="select-pay-method">
+                                <?php foreach ($payMethodOptions as $pmVal => $pmLabel): ?>
+                                <option value="<?= e($pmVal) ?>" <?= $pmVal === $defaultPayMethod ? 'selected' : '' ?>><?= e($pmLabel) ?></option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
                     </div>
 
@@ -376,17 +531,18 @@ document.getElementById('passengers').addEventListener('change', function() {
 
     document.querySelectorAll('.pax-field').forEach(function(el) {
         var n = parseInt(el.dataset.pax);
-        var input = el.querySelector('.pax-input');
-        if (n <= count) {
-            el.classList.remove('d-none');
-            input.classList.remove('d-none');
-            input.required = true;
-        } else {
-            el.classList.add('d-none');
-            input.classList.add('d-none');
-            input.required = false;
-            input.value = '';
-        }
+        var show = n <= count;
+        el.classList.toggle('d-none', !show);
+        el.querySelectorAll('.pax-input').forEach(function(input) {
+            if (show) {
+                input.classList.remove('d-none');
+                input.required = true;
+            } else {
+                input.classList.add('d-none');
+                input.required = false;
+                if (input.tagName !== 'SELECT') input.value = '';
+            }
+        });
     });
 });
 </script>

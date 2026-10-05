@@ -16,6 +16,8 @@ $passengers = $adults + $children;
 
 $fromCode = '';
 $toCode = '';
+$fromName = '';
+$toName = '';
 
 if ($from && !$fromCode) {
     $ports = pelniSearchPort($from);
@@ -23,11 +25,13 @@ if ($from && !$fromCode) {
         foreach ($ports as $p) {
             if (stripos($p['label'] ?? '', $from) !== false) {
                 $fromCode = $p['label_code'] ?? '';
+                $fromName = $p['label'] ?? '';
                 break;
             }
         }
         if (!$fromCode && !empty($ports[0])) {
             $fromCode = $ports[0]['label_code'] ?? '';
+            $fromName = $ports[0]['label'] ?? '';
         }
     }
 }
@@ -38,11 +42,13 @@ if ($to && !$toCode) {
         foreach ($ports as $p) {
             if (stripos($p['label'] ?? '', $to) !== false) {
                 $toCode = $p['label_code'] ?? '';
+                $toName = $p['label'] ?? '';
                 break;
             }
         }
         if (!$toCode && !empty($ports[0])) {
             $toCode = $ports[0]['label_code'] ?? '';
+            $toName = $ports[0]['label'] ?? '';
         }
     }
 }
@@ -51,7 +57,7 @@ $trips = [];
 $pelniError = null;
 
 if ($search && $fromCode && $toCode) {
-    $trips = pelniSearchTrips($fromCode, $toCode, $date, $adults, $children, $adults, $children);
+    $trips = pelniSearchTrips($fromCode, $toCode, $date, $adults, $children, $adults, $children, $fromName, $toName);
     if (empty($trips)) {
         $pelniError = t('Tidak ada jadwal kapal ditemukan untuk rute/tanggal ini.');
     }
@@ -101,7 +107,7 @@ require __DIR__ . '/includes/homepage/transport-search.php';
             <?php foreach ($trips as $t):
                 $isCheapest = (float)$t['ship_price'] === (float)$minPrice;
                 $logo = pelniLogo();
-                $bookUrl = 'pelni-booking.php?ship_name=' . urlencode($t['ship_name']) . '&ship_code=' . urlencode($t['ship_code']) . '&from=' . urlencode($t['ship_from'] ?: $from) . '&to=' . urlencode($t['ship_to'] ?: $to) . '&date=' . e($t['ship_date'] ?? $date) . '&time=' . urlencode($t['departure_time']) . '&price=' . (float)$t['ship_price'] . '&passengers=' . $passengers . '&ship_class=' . urlencode($t['ship_class'] ?? '') . '&ship_number=' . urlencode($t['ship_number'] ?? '') . '&arrival_time=' . urlencode($t['arrival_time'] ?? '');
+                $bookUrl = 'pelni-booking.php?ship_name=' . urlencode($t['ship_name']) . '&ship_code=' . urlencode($t['ship_code']) . '&from=' . urlencode($t['ship_from'] ?: $from) . '&to=' . urlencode($t['ship_to'] ?: $to) . '&date=' . e($t['ship_date'] ?? $date) . '&time=' . urlencode($t['departure_time']) . '&price=' . (float)$t['ship_price'] . '&passengers=' . $passengers . '&ship_class=' . urlencode($t['ship_class'] ?? '') . '&ship_number=' . urlencode($t['ship_number'] ?? '') . '&from_code=' . urlencode($t['ship_from_code'] ?? $fromCode) . '&to_code=' . urlencode($t['ship_to_code'] ?? $toCode) . '&arrival_time=' . urlencode($t['arrival_time'] ?? '');
             ?>
             <div class="col-12">
                 <div class="card border-0 shadow-sm flight-card">
