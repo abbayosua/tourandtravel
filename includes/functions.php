@@ -204,6 +204,37 @@ function formatCurrencySpan($amount, $sourceCurrency = null, $extraClass = '') {
 }
 
 /**
+ * FX buffer global (persen) — bantalan margin terhadap pergerakan kurs.
+ * 0 = nonaktif. Saat ini hanya berlaku untuk tour.
+ */
+function getFxBufferPct(): float {
+    try {
+        $stmt = db()->prepare("SELECT setting_value FROM settings WHERE setting_key = 'fx_buffer_pct'");
+        $stmt->execute();
+        $v = $stmt->fetchColumn();
+        return ($v === false || $v === null || $v === '') ? 0.0 : min(50.0, max(0.0, (float)$v));
+    } catch (Throwable $e) {
+        return 0.0;
+    }
+}
+
+/** Terapkan FX buffer ke sebuah nominal (default hanya tour). */
+function applyFxBuffer(float $amount, string $itemType = 'tour'): float {
+    if ($itemType !== 'tour') return $amount;
+    $pct = getFxBufferPct();
+    if ($pct <= 0) return $amount;
+    return round($amount * (1 + $pct / 100), 2);
+}
+
+/** Kurs from->to saat ini (EUR pivot); null bila tidak tersedia. */
+function getFxRate(string $from, string $to): ?float {
+    if ($from === $to) return 1.0;
+    if (!getExchangeRates()) return null;
+    $r = convertCurrency(1.0, $from, $to);
+    return ($r !== null && $r > 0) ? (float)$r : null;
+}
+
+/**
  * =====================
  * TRANSLATION FUNCTIONS
  * =====================

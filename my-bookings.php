@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'modif
     $fail = function (string $m) { header('Location: my-bookings.php?msg=modify_fail&rmsg=' . urlencode($m)); exit; };
 
     // Verify booking belongs to user and is modifiable
-    $checkBooking = db()->prepare("SELECT b.*, t.max_participants, t.price AS tour_price FROM bookings b JOIN tours t ON b.tour_id = t.id WHERE b.id = ? AND b.user_id = ? AND b.status IN ('pending','confirmed')");
+    $checkBooking = db()->prepare("SELECT b.*, t.max_participants, t.price AS tour_price, t.price_currency FROM bookings b JOIN tours t ON b.tour_id = t.id WHERE b.id = ? AND b.user_id = ? AND b.status IN ('pending','confirmed')");
     $checkBooking->execute([$bookingId, $userId]);
     $booking = $checkBooking->fetch();
 
@@ -78,9 +78,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'modif
     if (getCorporateDiscount((int)$userId) > 0) $newTotalPrice = applyCorporateDiscount((int)$userId, $newTotalPrice);
     $newTotalPrice = max(0, round($newTotalPrice, 2));
 
+    // FX buffer (global, %) — konsisten dengan pembuatan booking baru.
+    $bufferPct = getFxBufferPct();
+    $bufferAmount = $bufferPct > 0 ? round($newTotalPrice * $bufferPct / 100, 2) : 0.0;
+    $newTotalPrice = max(0, round($newTotalPrice + $bufferAmount, 2));
+
+    // Rate-lock ulang (source -> IDR) setelah perubahan.
+    // Harga dihitung ulang dari harga tour (mata uang tour), jadi source = mata uang tour.
+    $srcCurrency = $booking['price_currency'] ?? 'IDR';
+    $fxRate = ($srcCurrency === 'IDR') ? 1.0 : (getFxRate($srcCurrency, 'IDR') ?? 1.0);
+    $chargedAmount = round($newTotalPrice * $fxRate, 2);
+
     // Update booking
-    db()->prepare("UPDATE bookings SET tour_date_id = ?, participants = ?, total_price = ?, name = ?, email = ?, phone = ? WHERE id = ?")
-        ->execute([$newDateId, $newCount, $newTotalPrice, $cName, $cEmail, $cPhone, $bookingId]);
+    db()->prepare("UPDATE bookings SET tour_date_id = ?, participants = ?, total_price = ?, name = ?, email = ?, phone = ?, source_amount = ?, source_currency = ?, charged_amount = ?, charged_currency = 'IDR', fx_rate = ?, rate_locked_at = NOW(), fx_buffer_amount = ? WHERE id = ?")
+        ->execute([$newDateId, $newCount, $newTotalPrice, $cName, $cEmail, $cPhone, $newTotalPrice, $srcCurrency, $chargedAmount, $fxRate, $bufferAmount, $bookingId]);
 
     // Tulis peserta: hapus → ubah nama/paspor → tambah.
     foreach ($removeIds as $rid) deleteParticipant($bookingId, $rid);
@@ -164,7 +175,7 @@ if (isset($_GET['cancel']) && (int)$_GET['cancel'] > 0) {
 $all = [];
 
 $tourBookings = db()->prepare("
-    SELECT b.*, t.title as item_title, t.title_en as item_title_en, t.title_zh as item_title_zh, t.slug as item_slug, t.cover_image, t.max_participants, t.price as tour_price, td.departure_date, 'tour' AS btype,
+    SELECT b.*, t.title as item_title, t.title_en as item_title_en, t.title_zh as item_title_zh, t.slug as item_slug, t.cover_image, t.max_participants, t.price as tour_price, t.price_currency, td.departure_date, 'tour' AS btype,
            b.participants AS qty_num, 'peserta' AS qty_unit, b.total_price,
            (SELECT amount FROM booking_addons ba WHERE ba.booking_type='tour' AND ba.booking_id = b.id AND ba.type='insurance') AS insurance_premi
     FROM bookings b
@@ -177,7 +188,7 @@ $tourBookings->execute([$userId]);
 foreach ($tourBookings->fetchAll() as $b) { $b['item_title'] = tContent(['title' => $b['item_title'], 'title_en' => $b['item_title_en'] ?? '', 'title_zh' => $b['item_title_zh'] ?? ''], 'title'); $b['img'] = getTourImage($b, 'small'); $all[] = $b; }
 
 $attrBookings = db()->prepare("
-    SELECT ab.*, a.name as item_title, a.name_en as item_title_en, a.name_zh as item_title_zh, a.slug as item_slug, 'attraction' AS btype,
+    SELECT ab.*, a.name as item_title, a.name_en as item_title_en, a.name_zh as item_title_zh, a.slug as item_slug, a.price_currency, 'attraction' AS btype,
            ab.quantity AS qty_num, 'tiket' AS qty_unit, ab.total_price, ab.visit_date AS date_label
     FROM attraction_bookings ab
     JOIN attractions a ON ab.attraction_id = a.id
@@ -188,7 +199,7 @@ $attrBookings->execute([$userId]);
 foreach ($attrBookings->fetchAll() as $b) { $b['item_title'] = tContent(['title' => $b['item_title'], 'title_en' => $b['item_title_en'] ?? '', 'title_zh' => $b['item_title_zh'] ?? ''], 'title'); $b['img'] = 'https://placehold.co/300x200?text=Atraksi'; $all[] = $b; }
 
 $transferBookings = db()->prepare("
-    SELECT tb.*, tr.name as item_title, tr.name_en as item_title_en, tr.name_zh as item_title_zh, tr.slug as item_slug, 'transfer' AS btype,
+    SELECT tb.*, tr.name as item_title, tr.name_en as item_title_en, tr.name_zh as item_title_zh, tr.slug as item_slug, tr.price_currency, 'transfer' AS btype,
            tb.passengers AS qty_num, 'pax' AS qty_unit, tb.total_price, tb.pickup_date AS date_label
     FROM transfer_bookings tb
     JOIN transfers tr ON tb.transfer_id = tr.id
@@ -199,7 +210,7 @@ $transferBookings->execute([$userId]);
 foreach ($transferBookings->fetchAll() as $b) { $b['item_title'] = tContent(['title' => $b['item_title'], 'title_en' => $b['item_title_en'] ?? '', 'title_zh' => $b['item_title_zh'] ?? ''], 'title'); $b['img'] = 'https://placehold.co/300x200?text=Transfer'; $all[] = $b; }
 
 $trainBookings = db()->prepare("
-    SELECT tb.*, COALESCE(tr.name, tb.train_name) as item_title, tr.name_en as item_title_en, tr.slug as item_slug, 'train' AS btype,
+    SELECT tb.*, COALESCE(tr.name, tb.train_name) as item_title, tr.name_en as item_title_en, tr.slug as item_slug, COALESCE(tr.price_currency, 'IDR') as price_currency, 'train' AS btype,
            tb.seats AS qty_num, 'kursi' AS qty_unit, tb.total_price, tb.travel_date AS date_label
     FROM train_bookings tb
     LEFT JOIN trains tr ON tb.train_id = tr.id
@@ -210,7 +221,7 @@ $trainBookings->execute([$userId]);
 foreach ($trainBookings->fetchAll() as $b) { $b['item_title'] = tContent(['title' => $b['item_title'], 'title_en' => $b['item_title_en'] ?? ''], 'title'); $b['img'] = 'https://placehold.co/300x200?text=KAI'; $all[] = $b; }
 
 $esimBookings = db()->prepare("
-    SELECT cb.*, cp.name as item_title, cp.name_en as item_title_en, cp.name_zh as item_title_zh, cp.slug as item_slug, 'esim' AS btype,
+    SELECT cb.*, cp.name as item_title, cp.name_en as item_title_en, cp.name_zh as item_title_zh, cp.slug as item_slug, cp.price_currency, 'esim' AS btype,
            cb.quantity AS qty_num, 'pcs' AS qty_unit, cb.total_price
     FROM connectivity_bookings cb
     JOIN connectivity_products cp ON cb.product_id = cp.id
@@ -222,7 +233,7 @@ foreach ($esimBookings->fetchAll() as $b) { $b['item_title'] = tContent(['title'
 
 $pelniBookings = db()->prepare("
     SELECT pb.*, CONCAT(pb.ship_name, ' · ', pb.route_from, ' → ', pb.route_to) as item_title,
-           '' as item_slug, 'pelni' AS btype,
+           '' as item_slug, 'IDR' as price_currency, 'pelni' AS btype,
            pb.passengers AS qty_num, 'orang' AS qty_unit, pb.total_price, pb.departure_date AS date_label
     FROM pelni_bookings pb
     WHERE pb.user_id = ?
@@ -232,7 +243,7 @@ $pelniBookings->execute([$userId]);
 foreach ($pelniBookings->fetchAll() as $b) { $b['img'] = 'https://placehold.co/300x200?text=PELNI'; $all[] = $b; }
 
 $nusaBookings = db()->prepare("
-    SELECT nb.*, nb.hotel_name as item_title, '' as item_slug, 'hotel' AS btype,
+    SELECT nb.*, nb.hotel_name as item_title, '' as item_slug, 'IDR' as price_currency, 'hotel' AS btype,
            nb.guests AS qty_num, 'tamu' AS qty_unit, nb.total_price, nb.checkin AS date_label
     FROM nusatrip_bookings nb
     WHERE nb.user_id = ?
@@ -243,7 +254,7 @@ foreach ($nusaBookings->fetchAll() as $b) { $b['img'] = 'https://placehold.co/30
 
 $nusaFlightBookings = db()->prepare("
     SELECT nfb.*, CONCAT(nfb.airline, ' ', nfb.flight_number, ' ', nfb.origin, '→', nfb.destination) as item_title,
-           '' as item_slug, 'flight' AS btype,
+           '' as item_slug, 'IDR' as price_currency, 'flight' AS btype,
            nfb.passengers AS qty_num, 'kursi' AS qty_unit, nfb.total_price, nfb.departure_date AS date_label
     FROM nusatrip_flight_bookings nfb
     WHERE nfb.user_id = ?
@@ -253,7 +264,7 @@ $nusaFlightBookings->execute([$userId]);
 foreach ($nusaFlightBookings->fetchAll() as $b) { $b['img'] = 'https://placehold.co/300x200?text=Pesawat'; $all[] = $b; }
 
 $flightBookings = db()->prepare("
-    SELECT fb.*, COALESCE(NULLIF(fb.title, ''), fb.name) as item_title, '' as item_slug, 'flight' AS btype,
+    SELECT fb.*, COALESCE(NULLIF(fb.title, ''), fb.name) as item_title, '' as item_slug, 'IDR' as price_currency, 'flight' AS btype,
            fb.seats AS qty_num, 'kursi' AS qty_unit, fb.total_price, fb.departure_date AS date_label
     FROM flight_bookings fb
     WHERE fb.user_id = ?
@@ -334,9 +345,9 @@ require_once 'includes/header-shared.php';
                                         <i class="bi bi-people me-1"></i><?= $b['qty_num'] . ' ' . t($b['qty_unit']) ?>
                                     </div>
                                     <div class="col-6">
-                                        <i class="bi bi-cash me-1"></i><?= formatRupiah($b['total_price']) ?>
+                                        <i class="bi bi-cash me-1"></i><?= formatCurrencySpan($b['total_price'], $b['source_currency'] ?? $b['price_currency'] ?? 'IDR') ?>
                                         <?php if (!empty($b['insurance_premi'])): ?>
-                                        <span class="badge bg-success-subtle text-success ms-1" data-testid="insurance-badge-<?= $b['id'] ?>" title="<?= t('Termasuk asuransi perjalanan') ?>"><i class="bi bi-shield-check"></i> +<?= formatRupiah((float)$b['insurance_premi']) ?></span>
+                                        <span class="badge bg-success-subtle text-success ms-1" data-testid="insurance-badge-<?= $b['id'] ?>" title="<?= t('Termasuk asuransi perjalanan') ?>"><i class="bi bi-shield-check"></i> +<?= formatCurrencySpan((float)$b['insurance_premi'], $b['source_currency'] ?? $b['price_currency'] ?? 'IDR') ?></span>
                                         <?php endif; ?>
                                     </div>
                                     <div class="col-6">
@@ -380,7 +391,7 @@ require_once 'includes/header-shared.php';
                                     $rs = $b['refund_status'];
                                     $timeline = [
                                         'requested' => ['bg-warning text-dark', t('Menunggu persetujuan admin')],
-                                        'approved'  => ['bg-success', t('Disetujui') . ' — refund ' . formatRupiah((float)($b['refund_amount'] ?? 0)) . ' ' . t('ke TravelPoints')],
+                                        'approved'  => ['bg-success', t('Disetujui') . ' — refund ' . formatCurrencySpan((float)($b['refund_amount'] ?? 0), $b['source_currency'] ?? $b['price_currency'] ?? 'IDR') . ' ' . t('ke TravelPoints')],
                                         'rejected'  => ['bg-danger', t('Ditolak admin')],
                                     ];
                                 ?>
@@ -464,7 +475,7 @@ $modPaxRows = $participantMap[$b['id']] ?? [];
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <form method="POST" action="my-bookings.php" data-submit-once data-modify-form
-                  data-units='<?= e(json_encode($modUnitByDate)) ?>' data-corp="<?= (float)$modCorpPct ?>">
+                  data-units='<?= e(json_encode($modUnitByDate)) ?>' data-corp="<?= (float)$modCorpPct ?>" data-currency="<?= e($b['source_currency'] ?? $b['price_currency'] ?? 'IDR') ?>">
                 <input type="hidden" name="action" value="modify_booking">
                 <input type="hidden" name="booking_id" value="<?= (int)$b['id'] ?>">
                 <div class="modal-header">
@@ -531,6 +542,7 @@ $modPaxRows = $participantMap[$b['id']] ?? [];
                         <div class="d-flex justify-content-between"><span><?= t('Subtotal') ?></span><span class="mod-sum-sub">-</span></div>
                         <div class="d-flex justify-content-between text-success d-none mod-sum-group-row"><span><?= t('Diskon Grup') ?> <span class="mod-sum-group-pct"></span></span><span class="mod-sum-group">-</span></div>
                         <div class="d-flex justify-content-between text-success d-none mod-sum-corp-row"><span><?= t('Diskon korporat') ?></span><span class="mod-sum-corp">-</span></div>
+                        <div class="d-flex justify-content-between text-secondary d-none mod-sum-buffer-row"><span><?= t('Penyesuaian kurs') ?> <span class="mod-sum-buffer-pct"></span></span><span class="mod-sum-buffer">+</span></div>
                         <hr class="my-1">
                         <div class="d-flex justify-content-between fw-bold"><span><?= t('Total') ?></span><span class="mod-sum-total">-</span></div>
                     </div>
@@ -548,11 +560,21 @@ $modPaxRows = $participantMap[$b['id']] ?? [];
 <script>
 (function () {
     var CSRF = <?= json_encode(csrfToken()) ?>;
-    function fmtRp(n) { return 'Rp ' + Math.round(n).toLocaleString('id-ID'); }
+    var bufferPct = <?= json_encode(getFxBufferPct()) ?>;
+    function fmtRp(n, fromCur) {
+        fromCur = fromCur || 'IDR';
+        var cs = window.CurrencySwitcher;
+        if (cs && typeof cs.format === 'function' && typeof cs.convert === 'function') {
+            var cur = cs.currentCurrency || fromCur;
+            return cs.format(cs.convert(n, fromCur, cur), cur);
+        }
+        return 'Rp ' + Math.round(n).toLocaleString('id-ID');
+    }
     function recalc(form) {
         var units = {};
         try { units = JSON.parse(form.getAttribute('data-units') || '{}'); } catch (e) {}
         var corp = parseFloat(form.getAttribute('data-corp') || '0') || 0;
+        var fromCur = form.getAttribute('data-currency') || 'IDR';
         var sel = form.querySelector('.mod-date');
         var unit = sel ? units[sel.value] : null;
         if (unit == null) { var keys = Object.keys(units); unit = keys.length ? units[keys[0]] : 0; }
@@ -563,14 +585,19 @@ $modPaxRows = $participantMap[$b['id']] ?? [];
         var after = gross - gAmt;
         var cAmt = corp > 0 ? after * corp / 100 : 0;
         var total = after - cAmt;
-        form.querySelector('.mod-sum-sub').textContent = fmtRp(gross);
+        var bufferAmt = bufferPct > 0 ? total * bufferPct / 100 : 0;
+        total += bufferAmt;
+        form.querySelector('.mod-sum-sub').textContent = fmtRp(gross, fromCur);
         var gRow = form.querySelector('.mod-sum-group-row');
-        if (gPct > 0) { gRow.classList.remove('d-none'); form.querySelector('.mod-sum-group-pct').textContent = '(' + gPct + '%)'; form.querySelector('.mod-sum-group').textContent = '-' + fmtRp(gAmt); }
+        if (gPct > 0) { gRow.classList.remove('d-none'); form.querySelector('.mod-sum-group-pct').textContent = '(' + gPct + '%)'; form.querySelector('.mod-sum-group').textContent = '-' + fmtRp(gAmt, fromCur); }
         else gRow.classList.add('d-none');
         var cRow = form.querySelector('.mod-sum-corp-row');
-        if (cAmt > 0) { cRow.classList.remove('d-none'); form.querySelector('.mod-sum-corp').textContent = '-' + fmtRp(cAmt); }
+        if (cAmt > 0) { cRow.classList.remove('d-none'); form.querySelector('.mod-sum-corp').textContent = '-' + fmtRp(cAmt, fromCur); }
         else cRow.classList.add('d-none');
-        form.querySelector('.mod-sum-total').textContent = fmtRp(total);
+        var bRow = form.querySelector('.mod-sum-buffer-row');
+        if (bufferAmt > 0) { bRow.classList.remove('d-none'); form.querySelector('.mod-sum-buffer-pct').textContent = '(' + bufferPct + '%)'; form.querySelector('.mod-sum-buffer').textContent = '+' + fmtRp(bufferAmt, fromCur); }
+        else bRow.classList.add('d-none');
+        form.querySelector('.mod-sum-total').textContent = fmtRp(total, fromCur);
     }
     function uploadPassport(inp) {
         var row = inp.closest('.mod-pax-row');
@@ -611,6 +638,11 @@ $modPaxRows = $participantMap[$b['id']] ?? [];
             if (e.target.classList && e.target.classList.contains('mod-date')) recalc(form);
         });
         recalc(form);
+    });
+    document.addEventListener('currency:changed', function() {
+        document.querySelectorAll('[data-modify-form]').forEach(function(form) {
+            recalc(form);
+        });
     });
 })();
 </script>

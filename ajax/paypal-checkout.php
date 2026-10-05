@@ -32,7 +32,7 @@ if (!isset($typeMap[$bookingType]) || $bookingId < 1) {
 }
 
 $table = $typeMap[$bookingType];
-$stmt = db()->prepare("SELECT total_price, status FROM `$table` WHERE id = ? AND user_id = ?");
+$stmt = db()->prepare("SELECT total_price, charged_amount, status FROM `$table` WHERE id = ? AND user_id = ?");
 $stmt->execute([$bookingId, $_SESSION['user_id']]);
 $booking = $stmt->fetch();
 if (!$booking) {
@@ -44,7 +44,11 @@ if ($booking['status'] !== 'pending') {
     exit;
 }
 
-$result = paypalCreateOrder($bookingType, $bookingId, (string)$booking['total_price']);
+$grossIdr = (isset($booking['charged_amount']) && $booking['charged_amount'] !== null && (float)$booking['charged_amount'] > 0)
+    ? (float)$booking['charged_amount']
+    : (float)$booking['total_price'];
+
+$result = paypalCreateOrder($bookingType, $bookingId, (string)$grossIdr);
 if (isset($result['error'])) {
     echo json_encode(['success' => false, 'error' => $result['error']]);
     exit;
@@ -53,7 +57,7 @@ if (isset($result['error'])) {
 // Catat payments row (status pending) supaya capture bisa idempotent
 db()->prepare("INSERT IGNORE INTO payments (order_id, booking_type, booking_id, gross_amount, status, payment_type)
     VALUES (?, ?, ?, ?, 'pending', 'paypal')")
-    ->execute([$result['id'], $bookingType, $bookingId, $booking['total_price']]);
+    ->execute([$result['id'], $bookingType, $bookingId, $grossIdr]);
 
 echo json_encode([
     'success' => true,

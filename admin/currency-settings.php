@@ -17,6 +17,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = sprintf(t('Mata uang default berhasil disimpan: %s'), $currency);
     }
 
+    if (isset($_POST['save_fx_buffer'])) {
+        $pct = min(50.0, max(0.0, (float)($_POST['fx_buffer_pct'] ?? 0)));
+        setSetting('fx_buffer_pct', (string)$pct);
+        $message = sprintf(t('FX buffer disimpan: %s%%'), number_format($pct, 2));
+    }
+
     if (isset($_POST['refresh_rates'])) {
         $rates = fetchFrankfurterRates();
         if ($rates) {
@@ -64,6 +70,24 @@ $currencies = getSupportedCurrencies();
                         </select>
                     </div>
                     <button type="submit" name="save_currency" class="btn btn-primary">
+                        <i class="bi bi-check-lg"></i> <?= t('Simpan') ?>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-white">
+                <h6 class="fw-bold mb-0"><i class="bi bi-shield-check me-2"></i><?= t('FX Buffer (Tour)') ?></h6>
+            </div>
+            <div class="card-body">
+                <form method="POST" data-submit-once>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold"><?= t('Buffer kurs (%)') ?></label>
+                        <input type="number" name="fx_buffer_pct" class="form-control" min="0" max="50" step="0.1" value="<?= e((string)getFxBufferPct()) ?>">
+                        <div class="form-text"><?= t('Bantalan margin terhadap pergerakan kurs. Ditambahkan setelah diskon, sebelum poin/saldo. 0 = nonaktif. Hanya berlaku untuk paket tour.') ?></div>
+                    </div>
+                    <button type="submit" name="save_fx_buffer" class="btn btn-primary">
                         <i class="bi bi-check-lg"></i> <?= t('Simpan') ?>
                     </button>
                 </form>

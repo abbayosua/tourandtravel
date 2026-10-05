@@ -61,7 +61,11 @@ if (!empty($booking['user_id']) && (int)$booking['user_id'] !== (int)($_SESSION[
     exit;
 }
 
-$gross = (float)$booking[$priceCol[$bookingType]];
+// Nominal yang ditagih: pakai snapshot charged_amount (IDR) bila ada,
+// fallback ke total_price (produk yang memang IDR).
+$gross = (isset($booking['charged_amount']) && $booking['charged_amount'] !== null && (float)$booking['charged_amount'] > 0)
+    ? (float)$booking['charged_amount']
+    : (float)$booking[$priceCol[$bookingType]];
 $customer = [
     'name' => $booking['name'] ?? null,
     'email' => $booking['email'] ?? null,

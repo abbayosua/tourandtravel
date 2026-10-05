@@ -141,6 +141,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
             }
         }
 
+        // FX buffer (persen, global) — bantalan margin terhadap pergerakan kurs.
+        $bufferPct = getFxBufferPct();
+        $bufferAmount = $bufferPct > 0 ? round($totalPrice * $bufferPct / 100, 2) : 0.0;
+        if ($bufferAmount > 0) $totalPrice += $bufferAmount;
+
         $bookingCode = generateBookingCode();
 
         // Points redeem sederhana: checkbox use_points → tukar maksimal 100 point (Rp 10.000)
@@ -175,8 +180,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_submitted'])) {
             $totalPrice += $insurancePremi;
         }
 
-        $stmt = db()->prepare("INSERT INTO bookings (booking_code, tour_id, tour_date_id, name, email, phone, participants, total_price, notes, passport_photo, user_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
-        $stmt->execute([$bookingCode, $tour['id'], $tourDateId, $name, $email, $phone, $participants, $totalPrice, $notes, $passportFile, $_SESSION['user_id'] ?? null]);
+        // Rate-lock: kunci kurs saat booking (source -> IDR) untuk pembayaran & audit.
+        $srcCurrency = $tour['price_currency'] ?? 'IDR';
+        $fxRate = ($srcCurrency === 'IDR') ? 1.0 : (getFxRate($srcCurrency, 'IDR') ?? 1.0);
+        $chargedAmount = round($totalPrice * $fxRate, 2);
+
+        $stmt = db()->prepare("INSERT INTO bookings (booking_code, tour_id, tour_date_id, name, email, phone, participants, total_price, notes, passport_photo, user_id, status, source_amount, source_currency, charged_amount, charged_currency, fx_rate, rate_locked_at, fx_buffer_amount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, 'IDR', ?, NOW(), ?)");
+        $stmt->execute([$bookingCode, $tour['id'], $tourDateId, $name, $email, $phone, $participants, $totalPrice, $notes, $passportFile, $_SESSION['user_id'] ?? null, $totalPrice, $srcCurrency, $chargedAmount, $fxRate, $bufferAmount]);
 
         // Flash sale: catat penjualan (stok berkurang)
         $fsNow = getActiveFlashSale('tour', (int)$tour['id']);
@@ -821,6 +831,7 @@ require_once 'includes/header-shared.php';
                             <div class="d-flex justify-content-between text-success d-none" id="sumGroupRow"><span><?= t('Diskon Grup') ?> <span id="sumGroupPct"></span></span><span id="sumGroup">-Rp 0</span></div>
                             <div class="d-flex justify-content-between text-success d-none" id="sumCorporateRow"><span><?= t('Diskon korporat') ?> <span id="sumCorporatePct"></span></span><span id="sumCorporate">-Rp 0</span></div>
                             <div class="d-flex justify-content-between text-success d-none" id="sumPromoRow"><span><?= t('Promo') ?></span><span id="sumPromo">-Rp 0</span></div>
+                            <div class="d-flex justify-content-between text-secondary d-none" id="sumBufferRow"><span><?= t('Penyesuaian kurs') ?> <span id="sumBufferPct"></span></span><span id="sumBuffer">+Rp 0</span></div>
                             <div class="d-flex justify-content-between text-success d-none" id="sumPointsRow"><span><?= t('Poin') ?></span><span id="sumPoints">-Rp 0</span></div>
                             <div class="d-flex justify-content-between text-success d-none" id="sumWalletRow"><span><?= t('Saldo') ?></span><span id="sumWallet">-Rp 0</span></div>
                             <div class="d-flex justify-content-between text-success d-none" id="sumInsRow" data-testid="insurance-row"><span><?= t('Asuransi perjalanan') ?> (3%)</span><span id="sumIns">Rp 0</span></div>
@@ -853,6 +864,7 @@ require_once 'includes/header-shared.php';
                             var pointsValue = 100 * 100; // 100 point = Rp 10.000 (maks, sinkron dgn backend)
                             var walletBal = <?= json_encode($walletBal) ?>;
                             var promoDiscount = 0;
+                            var bufferPct = <?= json_encode(getFxBufferPct()) ?>;
                             var currentSubtotal = base;
                             function recalc() {
                                 var pax = Math.max(1, parseInt(paxEl && paxEl.value, 10) || 1);
@@ -873,6 +885,9 @@ require_once 'includes/header-shared.php';
                                 // Promo code
                                 var promoAmount = Math.min(promoDiscount, Math.max(0, after));
                                 after -= promoAmount;
+                                // FX buffer (global, %) — sinkron dgn backend
+                                var bufferAmount = bufferPct > 0 ? after * bufferPct / 100 : 0;
+                                after += bufferAmount;
                                 // Points (maks 100 point)
                                 var ptsDeduct = 0;
                                 if (ptsEl && ptsEl.checked) {
@@ -897,6 +912,9 @@ require_once 'includes/header-shared.php';
                                 document.getElementById('sumCorporateRow').classList.toggle('d-none', corporateAmount === 0);
                                 document.getElementById('sumPromo').textContent = '-' + fmt(promoAmount);
                                 document.getElementById('sumPromoRow').classList.toggle('d-none', promoAmount === 0);
+                                document.getElementById('sumBufferPct').textContent = bufferPct > 0 ? '(' + bufferPct + '%)' : '';
+                                document.getElementById('sumBuffer').textContent = '+' + fmt(bufferAmount);
+                                document.getElementById('sumBufferRow').classList.toggle('d-none', bufferAmount === 0);
                                 document.getElementById('sumPoints').textContent = '-' + fmt(ptsDeduct);
                                 document.getElementById('sumPointsRow').classList.toggle('d-none', ptsDeduct === 0);
                                 document.getElementById('sumWallet').textContent = '-' + fmt(walletDeduct);
