@@ -107,9 +107,14 @@ function renderDatePicker(array $o = []): void {
     ?>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    function dpFmt(v, cur) {
-        var sym = { IDR: 'Rp', SGD: 'S$', USD: '$' }[cur] || cur || '';
-        var dec = cur === 'IDR' ? 0 : 2;
+    function dpFmt(v, fromCur) {
+        var cs = window.CurrencySwitcher;
+        var to = (cs && cs.currentCurrency) ? cs.currentCurrency : (fromCur || 'IDR');
+        if (cs && typeof cs.convert === 'function' && typeof cs.format === 'function') {
+            return cs.format(cs.convert(v, fromCur || 'IDR', to), to);
+        }
+        var sym = { IDR: 'Rp', SGD: 'S$', USD: '$' }[to] || to || '';
+        var dec = to === 'IDR' ? 0 : 2;
         var loc = (window.I18N && String(window.I18N.locale || '').indexOf('en') === 0) ? 'en-US' : 'id-ID';
         try { return sym + ' ' + new Intl.NumberFormat(loc, { minimumFractionDigits: dec, maximumFractionDigits: dec }).format(v); }
         catch (e) { return sym + ' ' + v; }
@@ -185,6 +190,20 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         if (anchorSel) { var anchorEl = document.querySelector(anchorSel); if (anchorEl) opts.positionElement = anchorEl; }
         flatpickr(el, opts);
+        // Ikuti perubahan kurs: repaint harga di hari kalender + ringkasan tanggal terpilih.
+        document.addEventListener('currency:changed', function () {
+            var fp = el._flatpickr;
+            if (!fp || !fp.calendarContainer) return;
+            fp.calendarContainer.querySelectorAll('.flatpickr-day').forEach(function (d) {
+                if (d.dateObj) paintDay(null, null, fp, d);
+            });
+            var sel = fp.selectedDates && fp.selectedDates[0];
+            var dateStr = sel ? flatpickr.formatDate(sel, 'Y-m-d') : '';
+            if (resultEl) {
+                if (dateStr && (dateStr in map)) resultEl.textContent = dpFmt(map[dateStr], cur);
+                else if (dateStr && baseLabel && !isNaN(baseNum)) resultEl.textContent = baseLabel + ' · ' + dpFmt(baseNum, cur);
+            }
+        });
     }
     document.querySelectorAll('.dp-flat').forEach(dpBind);
     if (typeof MutationObserver !== 'undefined' && document.body) {

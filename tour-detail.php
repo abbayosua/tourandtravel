@@ -905,6 +905,7 @@ require_once 'includes/header-shared.php';
                                 }
                                 if (errEl) errEl.classList.add('d-none');
                                 recalc();
+                                highlightDateItems();
                             };
                             function highlightDateItems() {
                                 var hid = document.getElementById('tourDateId');

@@ -520,6 +520,40 @@ test('klik baris Jadwal Keberangkatan memilih tanggal', async ({ page }) => {
   await expect(row).toHaveClass(/active/);
 });
 
+test('pilih tanggal di kalender menyorot baris Jadwal Keberangkatan', async ({ page }) => {
+  mysql(`UPDATE tour_dates SET available_slots = 100 WHERE tour_id = ${tourId}`);
+  await page.context().addCookies([{ name: 'lang', value: 'id', url: BASE }]);
+  await page.goto(`${BASE}/tour-detail.php?slug=${SLUG}&lang=id`);
+
+  await page.locator('#bookingDateCal').click();
+  const cal = page.locator('.flatpickr-calendar.open');
+  await expect(cal).toBeVisible();
+  await cal.locator('.flatpickr-day:not(.flatpickr-disabled):not(.prevMonthDay):not(.nextMonthDay)').first().click();
+
+  // Regresi: memilih lewat kalender juga harus menyorot baris jadwal keberangkatan.
+  await expect(page.locator(`.date-item[data-date="${DATE}"]`)).toHaveClass(/active/);
+});
+
+test('harga di kalender ketersediaan mengikuti kurs', async ({ page }) => {
+  mysql(`UPDATE tour_dates SET available_slots = 100 WHERE tour_id = ${tourId}`);
+  await page.addInitScript(() => localStorage.setItem('currency', 'IDR'));
+  await page.context().addCookies([{ name: 'lang', value: 'id', url: BASE }]);
+  await page.goto(`${BASE}/tour-detail.php?slug=${SLUG}&lang=id`);
+
+  await page.locator('#bookingDateCal').click();
+  const cal = page.locator('.flatpickr-calendar.open');
+  await expect(cal).toBeVisible();
+
+  // Tooltip harga tiap hari mengikuti kurs (dicek sebelum kalender ditutup oleh pemilihan).
+  await expect(cal.locator('.flatpickr-day[title*="Rp"]').first()).toBeAttached();
+  await page.evaluate(() => (window as any).CurrencySwitcher.switchTo('USD'));
+  await expect(cal.locator('.flatpickr-day[title*="$"]').first()).toBeAttached();
+
+  // Pilih tanggal → ringkasan harga di bawah kalender juga ikut kurs aktif (USD).
+  await cal.locator('.flatpickr-day:not(.flatpickr-disabled):not(.prevMonthDay):not(.nextMonthDay)').first().click();
+  await expect(page.locator('#bookingDateResult')).toContainText('$');
+});
+
 test('ganti kurs memperbarui subtotal & total di form booking', async ({ page }) => {
   // Mulai dari IDR agar nilai awal deterministik.
   await page.addInitScript(() => localStorage.setItem('currency', 'IDR'));
