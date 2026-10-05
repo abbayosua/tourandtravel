@@ -4,6 +4,7 @@
  * Fokus TOUR: cari destinasi + tanggal keberangkatan + peserta → submit GET ke tours.php.
  * Data: $heroSlides, $heroHeadline, $heroSub, $categories, $featuredTours (dari index.php).
  */
+require_once __DIR__ . '/../tripay.php';
 $voyageBg = $heroSlides[0]['image'] ?? 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=2070&q=80';
 $voyageTitle = !empty($heroSlides[0]['title']) ? $heroSlides[0]['title'] : $heroHeadline;
 $voyageSub = !empty($heroSlides[0]['subtitle']) ? $heroSlides[0]['subtitle'] : $heroSub;
@@ -126,7 +127,7 @@ require_once __DIR__ . '/../components/date-picker.php';
                         <span class="voyage-tcard-badges">
                             <?php if ($vDisc > 0): ?><span class="voyage-badge voyage-badge-disc">-<?= $vDisc ?>%</span><?php endif; ?>
                             <?php if (!empty($vc['best_seller'])): ?><span class="voyage-badge voyage-badge-best"><?= t('Bestseller') ?></span><?php endif; ?>
-                            <?php if (!empty($vc['instant_confirmation'])): ?><span class="voyage-badge voyage-badge-instant">&#9889; <?= t('Instan') ?></span><?php endif; ?>
+                            <?php if (!empty($vc['instant_confirmation']) && tripayInstantEnabled()): ?><span class="voyage-badge voyage-badge-instant">&#9889; <?= t('Instan') ?></span><?php endif; ?>
                         </span>
                         <?php if (function_exists('isLoggedIn')): ?>
                         <button type="button" class="voyage-wish wishlist-btn <?= (!empty($wishlistIds) && in_array($vc['id'] ?? 0, $wishlistIds)) ? 'on' : '' ?>" data-tour-id="<?= (int)($vc['id'] ?? 0) ?>" onclick="if(typeof toggleWishlist==='function')toggleWishlist(this, <?= (int)($vc['id'] ?? 0) ?>)" aria-label="<?= e(t('Wishlist')) ?>"><i class="bi bi-heart<?= (!empty($wishlistIds) && in_array($vc['id'] ?? 0, $wishlistIds)) ? '-fill' : '' ?>"></i></button>

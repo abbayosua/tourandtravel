@@ -676,7 +676,7 @@ require_once 'includes/header-shared.php';
                                 <?php if ($walletBal > 0): ?>
                                 <div class="form-check mb-3">
                                     <input class="form-check-input" type="checkbox" name="use_wallet" value="1" id="useWalletHotel">
-                                    <label class="form-check-label small" for="useWalletHotel"><?= t('Gunakan TravelPoints') ?> <strong><?= formatRupiah($walletBal) ?></strong></label>
+                                    <label class="form-check-label small" for="useWalletHotel"><?= t('Gunakan TravelPoints') ?> <strong><?= formatCurrencySpan($walletBal, 'IDR') ?></strong></label>
                                 </div>
                                 <?php endif; ?>
                             <?php endif; ?>

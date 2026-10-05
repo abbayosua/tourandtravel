@@ -9,6 +9,7 @@
  * @param array $wishlistIds Array of wishlisted tour IDs for current user
  * @param array $options    Optional: 'show_description' => bool, 'show_wishlist' => bool, 'link_target' => string
  */
+require_once __DIR__ . '/../tripay.php';
 function renderTourCard($tour, $wishlistIds = [], $options = []) {
     $defaults = [
         'show_description' => true,
@@ -40,7 +41,7 @@ function renderTourCard($tour, $wishlistIds = [], $options = []) {
                 <?php endif; ?>
 
                 <!-- Badge Instant Confirmation -->
-                <?php if (!empty($tour['instant_confirmation'])): ?>
+                <?php if (!empty($tour['instant_confirmation']) && tripayInstantEnabled()): ?>
                     <span class="badge bg-success position-absolute top-0 end-0 m-2 shadow-sm" style="font-size: 10px; margin-top: 28px !important;">
                         <i class="bi bi-lightning-charge-fill me-1"></i><?= t('Instan') ?>
                     </span>

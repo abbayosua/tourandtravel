@@ -374,7 +374,12 @@ require_once 'includes/header-shared.php';
                                     <a href="<?= e($resume['resume_url']) ?>" class="btn btn-sm btn-success rounded-pill px-3" data-testid="resume-<?= $b['id'] ?>"><i class="bi bi-credit-card me-1"></i><?= t('Lanjutkan Pembayaran') ?></a>
                                     <?php endif; ?>
                                     <?php if ($btype === 'tour' && !empty($b['booking_code'])): ?>
+                                    <?php $tourUnpaid = !in_array($b['status'], ['cancelled', 'canceled'], true) && ($b['payment_status'] ?? null) !== 'paid'; ?>
+                                    <?php if ($tourUnpaid): ?>
+                                    <a href="booking-success.php?code=<?= urlencode($b['booking_code']) ?>" class="btn btn-sm btn-success rounded-pill px-3" data-testid="btn-resume-<?= $b['id'] ?>"><i class="bi bi-credit-card me-1"></i><?= t('Lanjutkan Pembayaran') ?></a>
+                                    <?php else: ?>
                                     <a href="track.php?code=<?= urlencode($b['booking_code']) ?>" class="btn btn-sm btn-outline-secondary rounded-pill px-3" data-testid="btn-track-<?= $b['id'] ?>"><i class="bi bi-geo-alt me-1"></i><?= t('Lacak Booking') ?></a>
+                                    <?php endif; ?>
                                     <?php endif; ?>
                                     <?php if ($btype === 'tour' && ($b['status'] === 'pending' || $b['status'] === 'confirmed') && ($b['payment_status'] ?? null) !== 'paid'): ?>
                                     <button type="button" class="btn btn-sm btn-outline-info rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modifyModal<?= $b['id'] ?>"><i class="bi bi-pencil me-1"></i><?= t('Ubah') ?></button>

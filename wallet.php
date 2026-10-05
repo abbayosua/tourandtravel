@@ -79,7 +79,7 @@ require_once 'includes/header-shared.php';
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <small class="text-white"><?= t('Saldo TravelPoints') ?></small>
-                        <div class="text-white fs-2 fw-bold"><?= formatRupiah($balance) ?></div>
+                        <div class="text-white fs-2 fw-bold"><?= formatCurrencySpan($balance, 'IDR') ?></div>
                         <small class="text-white"><?= t('Gunakan untuk potongan booking berikutnya') ?></small>
                     </div>
                     <div class="text-white text-center">
@@ -124,7 +124,7 @@ require_once 'includes/header-shared.php';
                 <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                     <div>
                         <small class="text-white"><?= t('Saldo Reseller') ?></small>
-                        <div class="text-white fs-2 fw-bold" data-testid="reseller-balance"><?= formatRupiah(getResellerBalance($userId)) ?></div>
+                        <div class="text-white fs-2 fw-bold" data-testid="reseller-balance"><?= formatCurrencySpan(getResellerBalance($userId), 'IDR') ?></div>
                         <small class="text-white"><?= t('Untuk booking paket wisata dengan harga reseller') ?></small>
                     </div>
                     <a href="reseller-topup.php" class="btn btn-light btn-sm fw-semibold"><i class="bi bi-plus-circle me-1"></i><?= t('Topup') ?></a>
@@ -198,7 +198,7 @@ require_once 'includes/header-shared.php';
                                 </td>
                                 <td><small><?= e($t['description'] ?? '-') ?></small></td>
                                 <td class="fw-bold <?= $t['amount'] >= 0 ? 'text-success' : 'text-danger' ?>">
-                                    <?= $t['amount'] >= 0 ? '+' : '' ?><?= formatRupiah(abs($t['amount'])) ?>
+                                    <?= $t['amount'] >= 0 ? '+' : '' ?><?= formatCurrencySpan(abs($t['amount']), 'IDR') ?>
                                 </td>
                                 <td><small class="text-muted"><?= date('d M Y H:i', strtotime($t['created_at'])) ?></small></td>
                             </tr>

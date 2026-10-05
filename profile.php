@@ -118,7 +118,7 @@ require_once 'includes/header-shared.php';
                             </div>
                             <div class="col-3">
                                 <a href="wallet.php" class="text-decoration-none">
-                                    <div class="fw-bold text-success fs-4"><?= formatRupiah($walletBalance) ?></div>
+                                    <div class="fw-bold text-success fs-4"><?= formatCurrencySpan($walletBalance, 'IDR') ?></div>
                                     <small class="text-muted"><?= t('TravelPoints') ?></small>
                                 </a>
                             </div>
@@ -199,7 +199,7 @@ require_once 'includes/header-shared.php';
                                 <small class="text-muted"><?= t('Referral') ?></small>
                             </div>
                             <div class="text-center">
-                                <div class="fw-bold text-success fs-5"><?= formatRupiah($refReward) ?></div>
+                                <div class="fw-bold text-success fs-5"><?= formatCurrencySpan($refReward, 'IDR') ?></div>
                                 <small class="text-muted"><?= t('Reward') ?></small>
                             </div>
                             <div class="flex-grow-1">

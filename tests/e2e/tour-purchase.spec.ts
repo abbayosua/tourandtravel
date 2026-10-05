@@ -189,7 +189,10 @@ async function bookTour(page: Page, opts: BookOpts): Promise<string> {
   if ((await emailEl.inputValue()).trim() === '') await emailEl.fill('buyer-e2e@t.local');
   if (opts.usePoints) await page.locator('#usePointsTour').check();
   if (opts.useWallet) await page.locator('#useWalletTour').check();
-  if (opts.promoCode) await page.locator('#promoCodeTour').fill(opts.promoCode);
+  if (opts.promoCode) {
+    await page.locator('#hasPromoTour').check();
+    await page.locator('#promoCodeTour').fill(opts.promoCode);
+  }
   if (opts.insurance) await page.locator('#addInsuranceTour').check();
 
   await Promise.all([

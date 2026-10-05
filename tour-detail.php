@@ -732,14 +732,6 @@ require_once 'includes/header-shared.php';
                         <?php $totalSisa = 0; foreach ($tourDates as $td) { $totalSisa += max(0, getSisaSlot($td['id'])); } ?>
                         <?php if ($totalSisa >= 1): ?>
                         <div class="mb-2">
-                            <label class="form-label small"><?= t('Kode Promo (opsional)') ?></label>
-                            <div class="input-group input-group-sm">
-                                <input type="text" name="promo_code" class="form-control klook-promo-input" placeholder="HEMAT10" id="promoCodeTour" autocomplete="off">
-                                <button type="button" class="btn btn-outline-primary klook-promo-btn" onclick="applyTourPromo()"><?= t('Pakai') ?></button>
-                            </div>
-                            <div class="klook-promo-result small mt-1" id="promoResultTour"></div>
-                        </div>
-                        <div class="mb-2">
                             <label class="form-label small"><?= t('Pilih Tanggal') ?></label>
                             <?php if (count($tourDates) > 0): ?>
                             <div class="mb-2 p-2 rounded border bg-light" id="bookingCalendar">
@@ -1050,6 +1042,20 @@ require_once 'includes/header-shared.php';
                                         if (dateErrEl) dateErrEl.classList.add('d-none');
                                     }
                                 }, true);
+                                tourForm.addEventListener('change', function (e) {
+                                    if (e.target && e.target.id === 'hasPromoTour') {
+                                        var promoWrap = document.getElementById('promoWrapTour');
+                                        if (promoWrap) promoWrap.classList.toggle('d-none', !e.target.checked);
+                                        if (!e.target.checked) {
+                                            var promoInput = document.getElementById('promoCodeTour');
+                                            var promoRes = document.getElementById('promoResultTour');
+                                            if (promoInput) promoInput.value = '';
+                                            if (promoRes) { promoRes.textContent = ''; promoRes.className = 'klook-promo-result small mt-1'; }
+                                            promoDiscount = 0;
+                                            recalc();
+                                        }
+                                    }
+                                });
                             }
                             document.querySelectorAll('.date-item[data-selectable="1"]').forEach(function (el) {
                                 el.setAttribute('role', 'button');
@@ -1080,14 +1086,14 @@ require_once 'includes/header-shared.php';
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" name="use_points" value="1" id="usePointsTour">
                                 <label class="form-check-label small" for="usePointsTour">
-                                    <?= t('Gunakan') ?> 100 <?= t('points') ?> (<?= formatRupiah(10000) ?> <?= t('diskon') ?>) · <?= t('Saldo') ?>: <?= $ptBal ?>
+                                    <?= t('Gunakan') ?> 100 <?= t('points') ?> (<?= formatCurrencySpan(10000, 'IDR') ?> <?= t('diskon') ?>) · <?= t('Saldo') ?>: <?= $ptBal ?>
                                 </label>
                             </div>
                             <?php endif; ?>
                             <div class="form-check mb-3">
                                 <input class="form-check-input" type="checkbox" name="use_wallet" value="1" id="useWalletTour">
                                 <label class="form-check-label small" for="useWalletTour">
-                                    <?= t('Gunakan TravelPoints') ?> <strong><?= formatRupiah($walletBal) ?></strong>
+                                    <?= t('Gunakan TravelPoints') ?> <strong><?= formatCurrencySpan($walletBal, 'IDR') ?></strong>
                                 </label>
                             </div>
                             <?php endif; ?>
@@ -1106,6 +1112,20 @@ require_once 'includes/header-shared.php';
                             <a href="reseller-booking.php?tour_id=<?= $tour['id'] ?>" class="btn btn-sm btn-info text-white"><?= t('Bayar dari Saldo') ?></a>
                         </div>
                         <?php endif; ?>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" value="1" id="hasPromoTour">
+                            <label class="form-check-label small" for="hasPromoTour">
+                                <i class="bi bi-tag me-1"></i><?= t('Saya punya Kode promo') ?>
+                            </label>
+                        </div>
+                        <div class="mb-3 d-none" id="promoWrapTour">
+                            <label class="form-label small"><?= t('Kode Promo (opsional)') ?></label>
+                            <div class="input-group input-group-sm">
+                                <input type="text" name="promo_code" class="form-control klook-promo-input" placeholder="HEMAT10" id="promoCodeTour" autocomplete="off">
+                                <button type="button" class="btn btn-outline-primary klook-promo-btn" onclick="applyTourPromo()"><?= t('Pakai') ?></button>
+                            </div>
+                            <div class="klook-promo-result small mt-1" id="promoResultTour"></div>
+                        </div>
                         <div class="alert alert-danger py-2 small d-none" id="bookingClientError" role="alert"></div>
                         <button type="submit" class="btn btn-primary w-100 fw-semibold" id="bookingSubmitBtn"><?= t(abVariant('tour_cta_text') === 'B' ? 'Booking Sekarang — Gratis Batal' : 'Pesan Sekarang') ?></button>
                         <?php if (!isLoggedIn()): ?>
