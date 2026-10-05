@@ -120,6 +120,21 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['book_duffel'])) {
                             $bookingSuccess = t('Penerbangan berhasil dipesan! Booking ref: ') . ($order['booking_reference'] ?? $order['id']);
                         }
                         $bookingResult = $order;
+                        // Simpan order Duffel agar muncul di my-bookings (Duffel = bayar instan → paid).
+                        try {
+                            $seg = $offer['slices'][0]['segments'][0] ?? [];
+                            $depDate = substr((string)($seg['departing_at'] ?? ''), 0, 10) ?: date('Y-m-d');
+                            $carrier = (string)($seg['marketing_carrier']['name'] ?? 'Penerbangan');
+                            $flNo = (string)($seg['marketing_carrier_flight_number'] ?? '');
+                            $orig = (string)($offer['slices'][0]['origin']['iata_code'] ?? '');
+                            $dest = (string)($offer['slices'][0]['destination']['iata_code'] ?? '');
+                            $title = trim($carrier . ' ' . $flNo . ($orig && $dest ? " $orig→$dest" : ''));
+                            $bc = (string)($order['booking_reference'] ?? $order['id'] ?? '');
+                            db()->prepare("INSERT INTO flight_bookings (schedule_id, provider, title, booking_code, offer_id, user_id, name, email, phone, departure_date, seats, total_price, status, payment_status) VALUES (NULL, 'duffel', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'confirmed', 'paid')")
+                                ->execute([$title, $bc, $offerId, $_SESSION['user_id'], $name, $email, $phone, $depDate, count($passengersData), (float)($offer['total_amount'] ?? 0)]);
+                        } catch (Throwable $e) {
+                            error_log('flight_bookings (duffel) persist gagal: ' . $e->getMessage());
+                        }
                     }
                 }
             }
@@ -132,9 +147,12 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['book_duffel'])) {
     if ($name && $phone && $passengers>0) {
         $total = $schedule['price'] * $passengers;
         if (isLoggedIn()) {
-            $insFb = db()->prepare("INSERT INTO flight_bookings (schedule_id, user_id, name, email, phone, departure_date, total_price, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'confirmed')");
-            $insFb->execute([$schedule['id'], $_SESSION['user_id'], $name, getUser()['email'] ?? '', $phone, $schedule['departure_date'], $total]);
-            $bookingCode = 'FLB-' . (int)db()->lastInsertId();
+            $title = trim(($schedule['airline'] ?? '') . ' ' . ($schedule['flight_number'] ?? '') . ' ' . ($schedule['from_city'] ?? '') . '→' . ($schedule['to_city'] ?? ''));
+            $insFb = db()->prepare("INSERT INTO flight_bookings (schedule_id, provider, title, user_id, name, email, phone, departure_date, seats, total_price, status, payment_status) VALUES (?, 'local', ?, ?, ?, ?, ?, ?, ?, ?, 'confirmed', 'unpaid')");
+            $insFb->execute([$schedule['id'], $title, $_SESSION['user_id'], $name, getUser()['email'] ?? '', $phone, $schedule['departure_date'], $passengers, $total]);
+            $newFbId = (int)db()->lastInsertId();
+            $bookingCode = 'FLB-' . $newFbId;
+            db()->prepare("UPDATE flight_bookings SET booking_code = ? WHERE id = ?")->execute([$bookingCode, $newFbId]);
             header('Location: booking-success.php?code=' . urlencode($bookingCode) . '&btype=flight');
             exit;
         }

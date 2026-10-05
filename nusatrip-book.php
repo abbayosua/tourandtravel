@@ -1,7 +1,7 @@
 <?php
 /**
- * nusatrip-book.php — Booking hotel NusaTrip native (search → rates → submit → result).
- * Pembayaran diteruskan langsung ke Nusatrip (guest checkout, tanpa login).
+ * nusatrip-book.php — Booking hotel native (search → rates → submit → result).
+ * Pembayaran diteruskan langsung (guest checkout, tanpa login).
  *
  * Alur:
  *   1. GET ?hotel_id=&checkin=&checkout=&guests=&city=&room_idx=
@@ -22,9 +22,62 @@ if (!nusaModuleEnabled()) {
 $step = $_GET['step'] ?? ($_POST['action'] ?? 'form');
 $err = '';
 
-/** Ambil session booking Nusatrip. */
+/** Ambil session booking. */
 function nusaBookSess(): array {
     return $_SESSION['nusa_book'] ?? [];
+}
+
+/** Simpan/update booking NusaTrip agar muncul & bisa dilanjutkan dari my-bookings (idempotent by task_id). */
+function nusaPersistBooking(array $b, array $res, ?array $summary): void {
+    if (empty($_SESSION['user_id']) || empty($b['taskId'])) return;
+    $bookingCode = (string)($res['bookingCode'] ?? $summary['bookingCode'] ?? '');
+    if ($bookingCode === '') return;
+    $va = $summary['paymentTransfer'] ?? null;
+    $payStatus = (int)($res['paymentResult']['paymentStatus'] ?? -1);
+    $isPaid = $payStatus === 1;
+    $amountDue = (float)($summary['amountDue'] ?? ($b['validate']['totalPrice']['IDR'] ?? 0));
+    $expires = null;
+    $tl = (int)($res['timeLimit'] ?? 0);
+    if ($tl > 0) $expires = date('Y-m-d H:i:s', $tl > 1000000000000 ? (int)($tl / 1000) : $tl);
+    try {
+        db()->prepare("INSERT INTO nusatrip_bookings
+            (user_id, hotel_id, hotel_name, city, checkin, checkout, guests, room_category, room_board, room_rate,
+             booking_code, provider_ref, task_id, checkout_id, total_price, va_bank, va_number, va_expires_at,
+             payment_status, status, raw_summary)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+            ON DUPLICATE KEY UPDATE booking_code=VALUES(booking_code), provider_ref=VALUES(provider_ref),
+             checkout_id=VALUES(checkout_id), total_price=VALUES(total_price), va_bank=VALUES(va_bank),
+             va_number=VALUES(va_number), va_expires_at=VALUES(va_expires_at), payment_status=VALUES(payment_status),
+             status=VALUES(status), raw_summary=VALUES(raw_summary)")
+            ->execute([
+                (int)$_SESSION['user_id'], (string)$b['hotel_id'], $b['hotel_name'] ?? null, $b['city'] ?? null,
+                $b['checkin'], $b['checkout'], (int)($b['guests'] ?? 1),
+                $b['room']['category'] ?? null, $b['room']['board'] ?? null, (float)($b['room']['rate'] ?? 0),
+                $bookingCode, (string)($res['ref'] ?? ''), (string)$b['taskId'], (string)($b['checkoutId'] ?? ''),
+                $amountDue, $va['bank'] ?? null, $va['accountNo'] ?? null, $expires,
+                $isPaid ? 'paid' : 'unpaid', $isPaid ? 'confirmed' : 'pending',
+                $summary ? json_encode($summary, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : null,
+            ]);
+    } catch (Throwable $e) {
+        error_log('nusatrip_bookings persist gagal: ' . $e->getMessage());
+    }
+}
+
+// Lanjutkan booking tersimpan dari my-bookings (rehidrasi session lalu tampilkan VA/status).
+$resumeId = (int)($_GET['booking_id'] ?? 0);
+if ($resumeId > 0 && !empty($_SESSION['user_id'])) {
+    $rs = db()->prepare("SELECT * FROM nusatrip_bookings WHERE id = ? AND user_id = ? LIMIT 1");
+    $rs->execute([$resumeId, (int)$_SESSION['user_id']]);
+    if ($row = $rs->fetch()) {
+        $_SESSION['nusa_book'] = array_merge($_SESSION['nusa_book'] ?? [], [
+            'hotel_id' => $row['hotel_id'], 'hotel_name' => $row['hotel_name'],
+            'checkin' => $row['checkin'], 'checkout' => $row['checkout'],
+            'guests' => (int)$row['guests'], 'city' => $row['city'],
+            'room' => ['category' => $row['room_category'], 'board' => $row['room_board'], 'rate' => $row['room_rate']],
+            'taskId' => $row['task_id'], 'checkoutId' => $row['checkout_id'],
+        ]);
+        $step = 'result';
+    }
 }
 
 if ($step === 'form') {
@@ -58,14 +111,14 @@ if ($step === 'form') {
             $it = nusaHotelItem($hotelId, $checkin, $checkout, $roomItems);
             $sess = $it['data'] ?? null;
             if (($it['http'] ?? 0) !== 200 || empty($sess['cartSession'])) {
-                error_log('NusaTrip hotel_item gagal: ' . mb_substr((string)($it['raw'] ?? ''), 0, 300));
+                error_log('hotel_item gagal: ' . mb_substr((string)($it['raw'] ?? ''), 0, 300));
                 $err = t('Gagal membuat sesi booking. Silakan coba lagi atau pilih kamar lain.');
             } else {
                 $attr = nusaCheckoutAttributes($sess['cartSession'], $sess['checkoutId'], $sess['bookingTime']);
                 $val = nusaValidate($sess['cartSession'], $sess['checkoutId'], $sess['bookingTime']);
                 $vd = $val['data'] ?? [];
                 if (!empty($vd['error']) || empty($vd['totalPrice']['IDR'])) {
-                    $err = t('Harga kamar ini tidak tersedia di NusaTrip') . ' (' . ($vd['error'][0]['message'] ?? t('validasi gagal')) . '). ' . t('Pilih kamar lain.');
+                    $err = t('Harga kamar ini tidak tersedia') . ' (' . ($vd['error'][0]['message'] ?? t('validasi gagal')) . '). ' . t('Pilih kamar lain.');
                     $b = nusaBookSess();
                 } else {
                 $_SESSION['nusa_book'] = [
@@ -107,7 +160,7 @@ if ($step === 'submit' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     if (!hash_equals($_SESSION['nusa_csrf'] ?? '', (string)($_POST['csrf'] ?? ''))) { $err = t('Sesi tidak valid. Kembali dan ulangi.'); $step = 'form'; }
     elseif (empty($b['cartSession'])) { $err = t('Sesi booking kedaluwarsa. Ulangi dari halaman hotel.'); $step = 'form'; }
-    elseif (empty($b['validate']['totalPrice']['IDR'])) { $err = t('Harga belum tervalidasi NusaTrip. Ulangi dari halaman hotel.'); $step = 'form'; }
+    elseif (empty($b['validate']['totalPrice']['IDR'])) { $err = t('Harga belum tervalidasi. Ulangi dari halaman hotel.'); $step = 'form'; }
     elseif ($payMethod !== 'cc' && !in_array($payMethod, $allowedMethods, true)) { $err = t('Metode pembayaran tidak valid.'); $step = 'form'; }
     else {
         $phoneCc = (string)($_POST['phone_cc'] ?? '62');
@@ -140,7 +193,7 @@ if ($step === 'submit' && $_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: nusatrip-book.php?step=result');
             exit;
         }
-        error_log('NusaTrip submit gagal: ' . mb_substr((string)($r['raw'] ?? 'HTTP ' . ($r['http'] ?? 0)), 0, 300));
+        error_log('submit gagal: ' . mb_substr((string)($r['raw'] ?? 'HTTP ' . ($r['http'] ?? 0)), 0, 300));
         $err = t('Submit gagal. Silakan coba lagi.');
         $step = 'form';
         $b = nusaBookSess();
@@ -163,14 +216,15 @@ if ($step === 'result') {
             $sm = nusaSummary((string)$res['ref']);
             $summary = $sm['data'] ?? null;
         }
+        if (is_array($res) && !isset($res['raw_error'])) nusaPersistBooking($b, $res, $summary);
     } else $err = t('Tidak ada taskId. Ulangi booking.');
 }
 
-$pageTitle = t('Booking Hotel NusaTrip');
+$pageTitle = t('Booking Hotel');
 require_once 'includes/header-shared.php';
 ?>
 <section class="py-4 bg-light"><div class="container" style="max-width:720px">
-<h4 class="fw-bold mb-3"><i class="bi bi-building me-2"></i><?= t('Booking Hotel') ?> <span class="badge bg-dark" style="font-size:11px">NusaTrip</span></h4>
+<h4 class="fw-bold mb-3"><i class="bi bi-building me-2"></i><?= t('Booking Hotel') ?></h4>
 <?php if ($err): ?><div class="alert alert-danger"><?= e($err) ?></div><?php endif; ?>
 <?php if ($step === 'result' && !empty($res)): ?>
     <?php $payStatus = (int)($res['paymentResult']['paymentStatus'] ?? -1); $msgs = $res['messages'] ?? []; ?>
@@ -183,7 +237,7 @@ require_once 'includes/header-shared.php';
             <div class="alert alert-info text-start mt-3 mb-0">
                 <div><b><?= e((string)($va['bank'] ?? 'VA')) ?></b> <?= t('Virtual Account') ?></div>
                 <h4 class="fw-bold my-1"><?= e((string)$va['accountNo']) ?></h4>
-                <small class="text-muted">a.n. NusaTrip · Rp<?= number_format((float)($summary['amountDue'] ?? 0), 0, ',', '.') ?><?php $tl = (int)($res['timeLimit'] ?? 0); ?><?= $tl > 0 ? ' · batas ' . e($tl > 1000000000000 ? date('d M Y H:i', (int)($tl / 1000)) : date('d M Y H:i', $tl)) : '' ?></small>
+                <small class="text-muted">Rp<?= number_format((float)($summary['amountDue'] ?? 0), 0, ',', '.') ?><?php $tl = (int)($res['timeLimit'] ?? 0); ?><?= $tl > 0 ? ' · batas ' . e($tl > 1000000000000 ? date('d M Y H:i', (int)($tl / 1000)) : date('d M Y H:i', $tl)) : '' ?></small>
             </div>
         <?php elseif ($payStatus === 1): ?>
             <i class="bi bi-check-circle-fill text-success" style="font-size:48px"></i>
@@ -229,7 +283,7 @@ require_once 'includes/header-shared.php';
                 <small class="text-muted" style="font-size:11px;"><?= t('Contoh: pilih +62 lalu tulis 08517488415 — otomatis dikirim "62 8517488415"') ?></small>
             </div>
         </div>
-        <h6 class="fw-semibold"><?= t('Pembayaran (langsung ke NusaTrip)') ?></h6>
+        <h6 class="fw-semibold"><?= t('Pembayaran') ?></h6>
         <div class="mb-2">
             <div class="form-check"><input class="form-check-input" type="radio" name="pay_method" value="cc" id="pmCC" checked>
             <label class="form-check-label" for="pmCC"><?= t('Kartu Kredit / Debit') ?></label></div>
@@ -245,7 +299,6 @@ require_once 'includes/header-shared.php';
             <?php endforeach; ?>
         </div>
         <button class="btn btn-primary rounded-pill w-100"><?= t('Bayar Sekarang') ?></button>
-        <p class="text-muted small mt-2 mb-0"><?= t('Kartu dummy akan ditolak bank (kode 12101) — booking tercatat tapi tidak terbayar.') ?></p>
     </form>
     </div></div>
 <?php endif; ?>

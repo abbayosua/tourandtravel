@@ -50,6 +50,7 @@ Daftar lengkap (36 file):
 | 34 | migrate-reseller-topups.sql | Reseller topup requests (reseller_topups) |
 | 35 | migrate-reseller-pricing.sql | Reseller tour pricing (reseller_tour_prices) |
 | 36 | migrate-reseller-bookings.sql | Reseller booking tracking (bookings.booking_source, bookings.reseller_id) |
+| 37 | migrate-live-bookings.sql | Booking live tersimpan: tabel nusatrip_bookings + kolom VA/provider di flight_bookings |
 
 Catatan khusus:
 - `migrate-review-lang.sql` — juga membuat `reviews.tour_id` nullable (wajib untuk review hotel).
