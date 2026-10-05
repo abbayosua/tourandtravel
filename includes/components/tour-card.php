@@ -42,23 +42,24 @@ function renderTourCard($tour, $wishlistIds = [], $options = []) {
 
                 <!-- Badge Instant Confirmation -->
                 <?php if (!empty($tour['instant_confirmation']) && tripayInstantEnabled()): ?>
-                    <span class="badge bg-success position-absolute top-0 end-0 m-2 shadow-sm" style="font-size: 10px; margin-top: 28px !important;">
+                    <span class="badge bg-success position-absolute top-0 start-0 m-2 shadow-sm" style="font-size: 10px; margin-top: 38px !important;">
                         <i class="bi bi-lightning-charge-fill me-1"></i><?= t('Instan') ?>
                     </span>
                 <?php endif; ?>
 
                 <!-- Badge Free Cancellation -->
                 <?php if (!empty($tour['free_cancellation'])): ?>
-                    <span class="badge bg-info text-white position-absolute top-0 end-0 m-2 shadow-sm" style="font-size: 10px; margin-top: 52px !important;">
+                    <span class="badge bg-info text-white position-absolute top-0 start-0 m-2 shadow-sm" style="font-size: 10px; margin-top: 64px !important;">
                         <i class="bi bi-shield-check me-1"></i><?= t('Batal Gratis') ?>
                     </span>
                 <?php endif; ?>
 
-                <!-- Wishlist button -->
+                <!-- Wishlist button (kanan-atas, sama seperti landing) -->
                 <?php if ($opts['show_wishlist']): ?>
-                <button class="btn btn-sm position-absolute bottom-0 end-0 m-2 like-btn wishlist-btn klook-wishlist-btn <?= $isWishlisted ? 'text-danger' : 'text-white' ?>"
+                <button type="button" class="voyage-wish wishlist-btn <?= $isWishlisted ? 'on' : '' ?>"
                     data-tour-id="<?= $tour['id'] ?>"
-                    onclick="return toggleWishlist(this, <?= $tour['id'] ?>, 'tour', event)">
+                    onclick="return toggleWishlist(this, <?= $tour['id'] ?>, 'tour', event)"
+                    title="<?= e(t('Simpan ke wishlist')) ?>" aria-label="<?= e(t('Wishlist')) ?>">
                     <i class="bi bi-heart<?= $isWishlisted ? '-fill' : '' ?>"></i>
                 </button>
                 <?php endif; ?>

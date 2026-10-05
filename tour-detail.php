@@ -19,6 +19,7 @@ if (!$tour) {
 }
 
 $pageTitle = tContent($tour, 'title');
+$detailWishlisted = isLoggedIn() ? isWishlistedItem((int)$_SESSION['user_id'], 'tour', (int)$tour['id']) : false;
 $tourDates = getTourDates($tour['id']);
 $itineraries = getItineraries($tour['id']);
 $datePrices = [];
@@ -348,7 +349,10 @@ require_once 'includes/header-shared.php';
             </div>
 
             <!-- Info Tour -->
-            <h2 class="fw-bold"><?= e(tContent($tour, 'title')) ?></h2>
+            <div class="d-flex align-items-start gap-2">
+                <h2 class="fw-bold flex-grow-1 mb-0"><?= e(tContent($tour, 'title')) ?></h2>
+                <button type="button" class="voyage-wish wishlist-btn <?= $detailWishlisted ? 'on' : '' ?>" style="position:static;flex:none;width:38px;height:38px;font-size:16px;" data-tour-id="<?= (int)$tour['id'] ?>" data-testid="detail-wishlist-btn" onclick="return toggleWishlist(this, <?= (int)$tour['id'] ?>, 'tour', event)" title="<?= e(t('Simpan ke wishlist')) ?>" aria-label="<?= e(t('Wishlist')) ?>" aria-pressed="<?= $detailWishlisted ? 'true' : 'false' ?>"><i class="bi bi-heart<?= $detailWishlisted ? '-fill' : '' ?>"></i></button>
+            </div>
             <div class="d-flex flex-wrap gap-3 mb-3">
                 <span class="badge bg-primary"><?= e(tContent($tour, 'category')) ?></span>
                 <span class="text-muted"><i class="bi bi-people-fill me-1"></i> <?= t('Max') ?> <?= $tour['max_participants'] ?> <?= t('peserta') ?></span>

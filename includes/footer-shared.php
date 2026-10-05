@@ -154,16 +154,23 @@ document.addEventListener('DOMContentLoaded', function() {
 <script>
 function wlTr(key) { return (window.I18N && typeof window.I18N.t === 'function') ? window.I18N.t(key) : key; }
 var _wlToastTimer = null;
-function showWlToast(msg, type) {
+function showWlToast(msg, type, duration) {
     var wrap = document.getElementById('wlToast');
     var txt = document.getElementById('wlToastMsg');
     var ico = document.getElementById('wlToastIcon');
     if (!wrap || !txt) return;
     txt.textContent = msg;
-    if (ico) ico.className = 'bi ' + (type === 'removed' ? 'bi-heart text-white-50' : type === 'error' ? 'bi-exclamation-triangle-fill text-warning' : 'bi-heart-fill text-danger');
+    if (ico) ico.className = 'bi ' + (type === 'removed' ? 'bi-heart text-white-50' : type === 'error' ? 'bi-exclamation-triangle-fill text-warning' : type === 'login' ? 'bi-box-arrow-in-right text-info' : 'bi-heart-fill text-danger');
+    if (type === 'login') {
+        wrap.style.cursor = 'pointer';
+        wrap.onclick = function() { window.location.href = 'login.php?redirect=' + encodeURIComponent(window.location.pathname + window.location.search); };
+    } else {
+        wrap.style.cursor = 'default';
+        wrap.onclick = null;
+    }
     wrap.classList.remove('d-none');
     if (_wlToastTimer) clearTimeout(_wlToastTimer);
-    _wlToastTimer = setTimeout(function() { wrap.classList.add('d-none'); }, 2500);
+    _wlToastTimer = setTimeout(function() { wrap.classList.add('d-none'); }, duration || (type === 'login' ? 3500 : 2500));
 }
 function toggleWishlist(btn, tourId, itemType, ev) {
     try {
@@ -176,7 +183,7 @@ function toggleWishlist(btn, tourId, itemType, ev) {
     } catch (e) {}
     itemType = itemType || 'tour';
     <?php if (!isLoggedIn()): ?>
-    window.location.href = 'login.php?redirect=' + encodeURIComponent(window.location.href);
+    showWlToast(wlTr('Klik Login untuk menambahkan wishlist'), 'login');
     return false;
     <?php endif; ?>
     var icon = btn.querySelector('i');

@@ -532,6 +532,7 @@ function getJsI18nKeys() {
         'Ditambahkan ke wishlist',
         'Dihapus dari wishlist',
         'Gagal menyimpan wishlist. Coba lagi.',
+        'Klik Login untuk menambahkan wishlist',
     ];
 }
 

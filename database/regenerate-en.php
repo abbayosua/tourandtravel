@@ -71,6 +71,7 @@ $manual = [
     'Riwayat Booking' => 'Booking History', 'Wishlist Saya' => 'My Wishlist',
     'Ditambahkan ke wishlist' => 'Added to wishlist',
     'Dihapus dari wishlist' => 'Removed from wishlist',
+    'Klik Login untuk menambahkan wishlist' => 'Click Login to add to wishlist',
     'Gagal menyimpan wishlist. Coba lagi.' => 'Failed to save wishlist. Try again.',
     'TravelPoints Saya' => 'My TravelPoints', 'Referral Saya' => 'My Referrals',
     'Ganti Password' => 'Change Password', 'Simpan Perubahan' => 'Save Changes',
