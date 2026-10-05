@@ -353,7 +353,7 @@ require_once 'includes/admin-header.php';
                                 <small class="d-block" data-testid="flight-offer-detail"><?= e($b['from_city'] ?? '') ?> → <?= e($b['to_city'] ?? '') ?></small>
                                 <small class="d-block text-muted"><?= t('Jadwal') ?> #<?= (int)($b['schedule_id'] ?? 0) ?><?= !empty($b['offer_id']) ? ' · ' . t('Offer') . ' ' . e($b['offer_id']) : '' ?></small>
                             <?php elseif (!empty($b['passport_photo'])): ?>
-                                <a href="../uploads/passports/<?= e($b['passport_photo']) ?>" target="_blank" class="text-primary small"><?= t('Foto') ?></a>
+                                <button type="button" class="btn btn-link p-0 text-primary small align-baseline" data-passport="../uploads/passports/<?= e($b['passport_photo']) ?>"><?= t('Foto') ?></button>
                             <?php endif; ?>
                             <a href="https://wa.me/<?= preg_replace('/[^0-9]/', '', $b['phone']) ?>" target="_blank" class="text-success small"><?= e($b['phone']) ?></a>
                             <?php if ($btype === 'tour' && !empty($participantMap[$b['id']])): ?>
@@ -389,7 +389,7 @@ require_once 'includes/admin-header.php';
                                           <div class="d-flex justify-content-between align-items-center mb-2">
                                             <span class="badge bg-light text-dark">#<?= $pi + 1 ?></span>
                                             <div class="d-flex gap-1 align-items-center">
-                                              <?php if ($p['passport_photo']): ?><a href="../uploads/passports/<?= e($p['passport_photo']) ?>" target="_blank" class="btn btn-sm btn-outline-primary"><?= t('Foto') ?></a><?php else: ?><span class="text-muted small"><?= t('Tanpa paspor') ?></span><?php endif; ?>
+                                              <?php if ($p['passport_photo']): ?><button type="button" class="btn btn-sm btn-outline-primary" data-passport="../uploads/passports/<?= e($p['passport_photo']) ?>"><?= t('Foto') ?></button><?php else: ?><span class="text-muted small"><?= t('Tanpa paspor') ?></span><?php endif; ?>
                                               <a href="bookings.php?delete_pax=<?= (int)$p['id'] ?>&booking=<?= (int)$b['id'] ?>" class="btn btn-sm btn-outline-danger" data-testid="pax-del-<?= (int)$p['id'] ?>" onclick="return confirm('<?= t('Hapus peserta ini?') ?>')"><i class="bi bi-trash"></i></a>
                                             </div>
                                           </div>
@@ -468,4 +468,5 @@ require_once 'includes/admin-header.php';
                             </div>
 <?php endforeach; ?>
 
+<?php require_once __DIR__ . '/../includes/components/passport-modal.php'; ?>
 <?php require_once 'includes/admin-footer.php'; ?>

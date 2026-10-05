@@ -2,8 +2,13 @@
 require_once 'includes/config.php';
 require_once 'includes/db.php';
 require_once 'includes/functions.php';
+require_once __DIR__ . '/includes/payments.php';
+require_once __DIR__ . '/includes/tripay.php';
 
 $code = trim($_GET['code'] ?? '');
+
+// QR voucher disembunyikan sementara (belum ada fitur scan). Ubah ke true untuk menampilkan kembali.
+$showTrackQr = false;
 
 $stmt = db()->prepare("
     SELECT b.*, t.title as tour_title, t.title_en as tour_title_en, t.title_zh as tour_title_zh, t.slug as tour_slug, t.price as tour_price,
@@ -25,6 +30,10 @@ if ($booking) {
         $participants = $pq->fetchAll();
     } catch (Throwable $e) { $participants = []; }
 }
+
+// Pembayaran manual (transfer bank): pending tanpa gateway instant → tampilkan rekening + konfirmasi.
+$isPending = $booking && ($booking['status'] ?? '') === 'pending';
+$manualPending = $isPending && !tripayInstantEnabled();
 
 $pageTitle = $booking ? t('Tracking') . ': ' . $booking['booking_code'] : t('Tracking Booking');
 require_once 'includes/components/breadcrumb.php';
@@ -74,6 +83,7 @@ require_once 'includes/header-shared.php';
                             </div>
                         </div>
 
+                        <?php if ($showTrackQr): ?>
                         <!-- QR Voucher (kode booking dari DB) -->
                         <div class="d-flex justify-content-center mb-3">
                             <div class="bg-white border rounded-3 p-3 text-center" style="width: 140px;">
@@ -81,6 +91,7 @@ require_once 'includes/header-shared.php';
                                 <small class="d-block text-muted mt-2" style="font-size: 10px;"><?= t('Scan voucher') ?></small>
                             </div>
                         </div>
+                        <?php endif; ?>
 
                         <div class="mb-0">
                             <?php if ($booking['status'] === 'pending'): ?>
@@ -109,19 +120,39 @@ require_once 'includes/header-shared.php';
                                 <?php foreach ($participants as $pi => $p): ?>
                                 <div class="d-flex justify-content-between align-items-center border-bottom py-1">
                                     <span class="fw-semibold small"><?= $pi + 1 ?>. <?= e($p['full_name']) ?></span>
-                                    <?php if ($p['passport_photo']): ?><a href="uploads/passports/<?= e($p['passport_photo']) ?>" target="_blank" class="btn btn-sm btn-outline-primary py-0"><?= t('Lihat') ?></a><?php endif; ?>
+                                    <?php if ($p['passport_photo']): ?><button type="button" class="btn btn-sm btn-outline-primary py-0" data-passport="uploads/passports/<?= e($p['passport_photo']) ?>"><?= t('Lihat') ?></button><?php endif; ?>
                                 </div>
                                 <?php endforeach; ?>
                             </td></tr>
                             <?php elseif ($booking['passport_photo']): ?>
                             <tr><td class="text-muted ps-0"><?= t('Foto Paspor') ?></td>
-                                <td><a href="uploads/passports/<?= e($booking['passport_photo']) ?>" target="_blank" class="btn btn-sm btn-outline-primary"><?= t('Lihat') ?> <i class="bi bi-box-arrow-up-right ms-1"></i></a></td>
+                                <td><button type="button" class="btn btn-sm btn-outline-primary" data-passport="uploads/passports/<?= e($booking['passport_photo']) ?>"><?= t('Lihat') ?> <i class="bi bi-eye ms-1"></i></button></td>
                             </tr>
                             <?php endif; ?>
                             <?php if ($booking['notes']): ?>
                             <tr><td class="text-muted ps-0"><?= t('Catatan') ?></td><td class="fw-semibold"><?= nl2br(e($booking['notes'])) ?></td></tr>
                             <?php endif; ?>
                         </table>
+
+                        <?php if ($manualPending): $manualBanks = getManualBankAccounts(); $manualNote = getManualPaymentNote(); ?>
+                        <div class="bg-warning bg-opacity-10 border border-warning rounded-4 p-3 mt-4 text-start" data-testid="track-manual-payment">
+                            <h6 class="fw-semibold mb-3"><i class="bi bi-bank me-1"></i><?= t('Instruksi Pembayaran') ?></h6>
+                            <p class="small mb-2"><?= t('Silakan transfer tepat sebesar') ?> <strong class="text-primary"><?= formatRupiah($booking['total_price']) ?></strong><?= !empty($manualBanks) ? ' ' . t('ke rekening berikut:') : '.' ?></p>
+                            <?php if (!empty($manualBanks)): ?>
+                            <ul class="list-unstyled mb-2 small">
+                                <?php foreach ($manualBanks as $mb): ?>
+                                <li class="mb-1"><span class="text-muted"><?= t('Bank') ?>:</span> <strong><?= e($mb['bank']) ?></strong> — <span class="text-muted"><?= t('Nomor Rekening') ?>:</span> <strong><?= e($mb['number']) ?></strong><?= $mb['holder'] !== '' ? ' (' . e($mb['holder']) . ')' : '' ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                            <?php endif; ?>
+                            <p class="small mb-0 text-muted"><?= t('Setelah transfer, konfirmasi melalui WhatsApp dengan mengirim bukti transfer dan kode booking.') ?></p>
+                            <?php if ($manualNote !== ''): ?><p class="small mb-0 mt-1"><i class="bi bi-info-circle me-1"></i><?= e($manualNote) ?></p><?php endif; ?>
+                            <?php $waNum = preg_replace('/[^0-9]/', '', (string)getSetting('company_wa', getSetting('contact_wa', ''))); ?>
+                            <?php if ($waNum !== ''): ?>
+                            <a href="https://wa.me/<?= e($waNum) ?>?text=<?= rawurlencode('Konfirmasi pembayaran booking ' . ($booking['booking_code'] ?? '') . ' sebesar ' . formatRupiah($booking['total_price'])) ?>" target="_blank" rel="noopener" class="btn btn-success btn-sm mt-3" data-testid="track-wa-confirm"><i class="bi bi-whatsapp me-1"></i><?= t('Hubungi Kami') ?></a>
+                            <?php endif; ?>
+                        </div>
+                        <?php endif; ?>
                     </div>
                 </div>
 
@@ -151,4 +182,5 @@ require_once 'includes/header-shared.php';
     </div>
 </section>
 
+<?php require_once 'includes/components/passport-modal.php'; ?>
 <?php require_once 'includes/footer-shared.php'; ?>
