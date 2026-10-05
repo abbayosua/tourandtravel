@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/admin-access.php'; ?>
 <!DOCTYPE html>
 <html lang="<?= getCurrentLang() ?>">
 <head>
