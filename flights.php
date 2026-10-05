@@ -409,8 +409,8 @@ require_once 'includes/header-shared.php';
             </div>
             <div class="row g-3" id="flightGrid">
                 <?php foreach ($nusaOffers as $o):
-                    $dep = !empty($o['dep']) ? date('H:i', strtotime(substr($o['dep'], 0, 8))) : '--:--';
-                    $arr = !empty($o['arr']) ? date('H:i', strtotime(substr($o['arr'], 0, 8))) : '--:--';
+                    $dep = nusaFlightTime((string)($o['dep'] ?? '')) ?: '--:--';
+                    $arr = nusaFlightTime((string)($o['arr'] ?? '')) ?: '--:--';
                     $durMin = (int)($o['duration'] ?? 0);
                     $duration = $durMin > 0 ? floor($durMin / 60) . 'j ' . ($durMin % 60) . 'm' : '-';
                     $stops = (int)($o['stops'] ?? 0);

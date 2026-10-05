@@ -72,3 +72,18 @@ function testNusaParseIataExtractsCode() {
     assertSame(null, nusaParseIata('Batam'), 'tanpa kode IATA → null');
     assertSame(null, nusaParseIata(''));
 }
+
+function testNusaFlightTimeExtractsClock() {
+    // Regresi: dulu substr(0,8) mengambil tanggal → jam selalu 00:00.
+    assertSame('07:00', nusaFlightTime('20261012070000'));
+    assertSame('08:45', nusaFlightTime('20261012084500'));
+    assertSame('23:59', nusaFlightTime('20261012235900'));
+    assertSame('', nusaFlightTime('20261012'), 'tanpa jam → kosong');
+    assertSame('', nusaFlightTime(''));
+}
+
+function testNusaFlightDateExtractsDate() {
+    assertSame('2026-10-12', nusaFlightDate('20261012070000'));
+    assertSame('2026-10-12', nusaFlightDate('20261012'));
+    assertSame('', nusaFlightDate('abc'));
+}

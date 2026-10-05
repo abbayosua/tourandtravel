@@ -172,6 +172,20 @@ function nusaParseIata(string $str): ?string {
     return null;
 }
 
+/** NusaTrip datetime "20261012070000" (yyyymmddhhmmss) → "07:00". Kosong bila tak valid. */
+function nusaFlightTime(string $v): string {
+    $v = trim($v);
+    if (strlen($v) >= 12 && ctype_digit($v)) return substr($v, 8, 2) . ':' . substr($v, 10, 2);
+    return '';
+}
+
+/** NusaTrip datetime "20261012070000" → "2026-10-12". Kosong bila tak valid. */
+function nusaFlightDate(string $v): string {
+    $v = trim($v);
+    if (strlen($v) >= 8 && ctype_digit(substr($v, 0, 8))) return substr($v, 0, 4) . '-' . substr($v, 4, 2) . '-' . substr($v, 6, 2);
+    return '';
+}
+
 /** Normalisasi satu outbound flight_search → struktur kartu live kita. */
 function nusaNormalizeFlight(array $o, array $airlines = [], string $from = '', string $to = ''): array {
     $segs = array_values((array)($o['segments'] ?? []));

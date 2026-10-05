@@ -112,7 +112,9 @@ if ($step === 'form') {
                     'from' => $offer['from'] ?? '', 'to' => $offer['to'] ?? '',
                     'dep' => $offer['dep'] ?? '', 'arr' => $offer['arr'] ?? '',
                     'duration' => $offer['duration'] ?? 0, 'stops' => $offer['stops'] ?? 0,
-                    'departure_date' => !empty($offer['dep']) ? date('Y-m-d', strtotime(substr($offer['dep'], 0, 8))) : null,
+                    'departure_date' => nusaFlightDate((string)($offer['dep'] ?? '')) ?: null,
+                    'dep_time' => nusaFlightTime((string)($offer['dep'] ?? '')),
+                    'arr_time' => nusaFlightTime((string)($offer['arr'] ?? '')),
                     'class_type' => $offer['class_type'] ?? '', 'flight_route' => $offer['flight_route'] ?? 'domestic',
                     'pax' => $pax,
                     'cartSession' => $sess['cartSession'], 'checkoutId' => $sess['checkoutId'],
@@ -251,7 +253,7 @@ require_once 'includes/header-shared.php';
         <div class="d-flex justify-content-between align-items-start">
             <div>
                 <h6 class="fw-bold mb-1"><?= e($b['airline_name'] ?? '') ?> · <?= e($b['flight_number'] ?? '') ?></h6>
-                <small class="text-muted d-block"><?= e($b['from'] ?? '') ?> → <?= e($b['to'] ?? '') ?> · <?= e($b['departure_date'] ?? '') ?></small>
+                <small class="text-muted d-block"><?= e($b['from'] ?? '') ?> → <?= e($b['to'] ?? '') ?> · <?= e($b['departure_date'] ?? '') ?><?php if (!empty($b['dep_time'])): ?> <?= e($b['dep_time']) ?><?php if (!empty($b['arr_time'])): ?>–<?= e($b['arr_time']) ?><?php endif; ?><?php endif; ?></small>
                 <small class="text-muted d-block"><?= (int)($b['pax'] ?? 1) ?> <?= t('Penumpang') ?> · <?= e($b['class_type'] ?? '') ?></small>
             </div>
             <span class="badge bg-primary">NusaTrip</span>
