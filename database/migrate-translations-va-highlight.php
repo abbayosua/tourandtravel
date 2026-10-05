@@ -20,6 +20,7 @@ $dict = [
         'Pesanan Diterima' => 'Order Received',
         'Konfirmasi pembayaran kapal PELNI ' => 'Confirm PELNI ship payment ',
         'Hubungi kami via WhatsApp untuk mendapatkan nomor pembayaran.' => 'Contact us via WhatsApp to get the payment number.',
+        'Salin Nomor Rekening' => 'Copy Account Number',
     ],
     'zh' => [
         'pakai untuk lacak / konfirmasi WA' => '用于订单追踪 / WhatsApp确认',
@@ -28,6 +29,7 @@ $dict = [
         'Pesanan Diterima' => '订单已收到',
         'Konfirmasi pembayaran kapal PELNI ' => '确认PELNI船票付款 ',
         'Hubungi kami via WhatsApp untuk mendapatkan nomor pembayaran.' => '请通过WhatsApp联系我们获取付款号码。',
+        'Salin Nomor Rekening' => '复制银行账号',
     ],
 ];
 

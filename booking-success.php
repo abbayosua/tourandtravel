@@ -233,6 +233,37 @@ require_once 'includes/header-shared.php';
                         </div>
                     </div>
 
+                    <!-- Instruksi bayar dulu (aksi utama), kode booking di bawahnya -->
+                    <?php if ($manualPending): $manualBanks = getManualBankAccounts(); $manualNote = getManualPaymentNote(); $tourCur = $booking['source_currency'] ?? 'IDR'; ?>
+                    <div class="bg-primary text-white rounded-4 p-4 mb-3 text-start" data-testid="manual-payment-instructions">
+                        <h6 class="fw-semibold mb-3"><i class="bi bi-bank me-1"></i><?= t('Instruksi Pembayaran') ?></h6>
+                        <p class="small mb-3 opacity-75"><?= t('Silakan transfer tepat sebesar') ?> <strong class="text-white"><?= formatCurrencySpan($booking['total_price'], $tourCur) ?></strong><?= !empty($manualBanks) ? ' ' . t('ke rekening berikut:') : '.' ?></p>
+                        <?php foreach ($manualBanks as $bi => $mb): ?>
+                        <div class="<?= $bi > 0 ? 'mt-3 pt-3 border-top border-white border-opacity-25' : '' ?>">
+                            <small class="text-white d-block opacity-75"><?= t('Nomor Rekening') ?> · <?= e($mb['bank']) ?><?= $mb['holder'] !== '' ? ' · ' . e($mb['holder']) : '' ?></small>
+                            <div class="fs-2 fw-bold mb-2 text-center"<?= $bi === 0 ? ' id="manualVaNumber" data-testid="manual-va"' : '' ?> style="letter-spacing:1px;"><?= e($mb['number']) ?></div>
+                        </div>
+                        <?php endforeach; ?>
+                        <?php if (!empty($manualBanks)): ?>
+                        <button type="button" class="btn btn-light w-100 fw-semibold" id="copyManualBtn" data-va="<?= e($manualBanks[0]['number']) ?>"><i class="bi bi-clipboard me-1"></i><?= t('Salin Nomor Rekening') ?></button>
+                        <?php endif; ?>
+                        <p class="small mb-0 mt-3 opacity-75"><?= t('Setelah transfer, konfirmasi melalui WhatsApp dengan mengirim bukti transfer dan kode booking.') ?></p>
+                        <?php if ($manualNote !== ''): ?><p class="small mb-0 mt-1 opacity-75"><i class="bi bi-info-circle me-1"></i><?= e($manualNote) ?></p><?php endif; ?>
+                    </div>
+                    <script>
+                    (function () {
+                        var btn = document.getElementById('copyManualBtn');
+                        if (!btn) return;
+                        btn.addEventListener('click', function () {
+                            navigator.clipboard.writeText(btn.dataset.va || '').then(function () {
+                                btn.innerHTML = '<i class="bi bi-check2 me-1"></i><?= t('Tersalin') ?>';
+                                setTimeout(function () { btn.innerHTML = '<i class="bi bi-clipboard me-1"></i><?= t('Salin Nomor Rekening') ?>'; }, 2000);
+                            });
+                        });
+                    })();
+                    </script>
+                    <?php endif; ?>
+
                     <!-- Booking Code -->
                     <div class="bg-primary text-white rounded-4 p-4 mb-4 klook-booking-code">
                         <small class="text-white"><?= t('Kode Booking') ?></small>
@@ -286,7 +317,7 @@ require_once 'includes/header-shared.php';
                                 <?php endforeach; ?>
                             </td></tr>
                             <?php endif; ?>
-                            <tr><td class="text-muted ps-0"><?= t('Total Harga') ?></td><td class="fw-semibold text-primary"><?= formatRupiah($booking['total_price']) ?></td></tr>
+                            <tr><td class="text-muted ps-0"><?= t('Total Harga') ?></td><td class="fw-semibold text-primary"><?= formatCurrencySpan($booking['total_price'], $booking['source_currency'] ?? 'IDR') ?></td></tr>
                             <tr><td class="text-muted ps-0"><?= t('Status') ?></td><td>
                                 <?php if ($paymentStatus === 'paid'): ?>
                                     <span class="badge bg-success"><?= t('Lunas') ?></span>
@@ -302,22 +333,6 @@ require_once 'includes/header-shared.php';
                         <?= t('Simpan kode booking dan link di atas untuk cek status pemesanan.') ?>
                         <br><?php if ($manualPending): ?><?= t('Selesaikan transfer, lalu konfirmasi via WhatsApp.') ?><?php elseif ($isAwaitingPayment): ?><?= t('Pilih metode pembayaran di bawah untuk konfirmasi instan.') ?><?php elseif (tripayInstantEnabled()): ?><?= t('Lanjutkan pembayaran di bawah untuk konfirmasi instan.') ?><?php else: ?><?= t('Kami akan menghubungi Anda via WhatsApp untuk konfirmasi.') ?><?php endif; ?>
                     </p>
-
-                    <?php if ($manualPending): $manualBanks = getManualBankAccounts(); $manualNote = getManualPaymentNote(); ?>
-                    <div class="text-start bg-warning bg-opacity-10 border border-warning rounded-4 p-4 mb-4" data-testid="manual-payment-instructions">
-                        <h6 class="fw-semibold mb-3"><i class="bi bi-bank me-1"></i><?= t('Instruksi Pembayaran') ?></h6>
-                        <p class="small mb-2"><?= t('Silakan transfer tepat sebesar') ?> <strong class="text-primary"><?= formatRupiah($booking['total_price']) ?></strong><?= !empty($manualBanks) ? ' ' . t('ke rekening berikut:') : '.' ?></p>
-                        <?php if (!empty($manualBanks)): ?>
-                        <ul class="list-unstyled mb-2 small">
-                            <?php foreach ($manualBanks as $mb): ?>
-                            <li class="mb-1"><span class="text-muted"><?= t('Bank') ?>:</span> <strong><?= e($mb['bank']) ?></strong> — <span class="text-muted"><?= t('Nomor Rekening') ?>:</span> <strong><?= e($mb['number']) ?></strong><?= $mb['holder'] !== '' ? ' (' . e($mb['holder']) . ')' : '' ?></li>
-                            <?php endforeach; ?>
-                        </ul>
-                        <?php endif; ?>
-                        <p class="small mb-0 text-muted"><?= t('Setelah transfer, konfirmasi melalui WhatsApp dengan mengirim bukti transfer dan kode booking.') ?></p>
-                        <?php if ($manualNote !== ''): ?><p class="small mb-0 mt-1"><i class="bi bi-info-circle me-1"></i><?= e($manualNote) ?></p><?php endif; ?>
-                    </div>
-                    <?php endif; ?>
 
                     <div class="d-flex gap-2 justify-content-center flex-wrap">
                         <?php $waNum = preg_replace('/[^0-9]/', '', (string)getSetting('company_wa', getSetting('contact_wa', ''))); ?>
