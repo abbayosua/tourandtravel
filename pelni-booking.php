@@ -20,8 +20,19 @@ $fromCode     = trim($_GET['from_code'] ?? '');
 $toCode       = trim($_GET['to_code'] ?? '');
 
 if (!$shipName || !$routeFrom || !$routeTo || !$departDate || $pricePerPax <= 0) {
-    header('Location: pelni.php');
-    exit;
+    // Izinkan standalone ?booking=KODE (link Detail / Lanjutkan Pembayaran) —
+    // kereta (train-booking.php?done=) juga bisa dibuka hanya dengan kode.
+    $standaloneOk = false;
+    $standaloneCode = trim($_GET['booking'] ?? '');
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST' && $standaloneCode !== '') {
+        $chk = db()->prepare("SELECT id FROM pelni_bookings WHERE booking_code = ?");
+        $chk->execute([$standaloneCode]);
+        $standaloneOk = (bool)$chk->fetch();
+    }
+    if (!$standaloneOk) {
+        header('Location: pelni.php');
+        exit;
+    }
 }
 
 // Fallback kode pelabuhan bila link lama tidak menyertakannya (dipakai untuk booking ke penyedia).
@@ -174,7 +185,7 @@ if (!$success && $_SERVER['REQUEST_METHOD'] !== 'POST' && !empty($_GET['booking'
         $supplierTotal    = $bk['supplier_total'] ?? null;
         $supplierDeadline = $bk['supplier_deadline'] ?? null;
         $supplierStatus   = $bk['supplier_status'] ?? null;
-        $pageTitle      = t('Booking Berhasil');
+        $pageTitle      = t('Pesanan Diterima');
     }
 }
 
@@ -194,14 +205,28 @@ require_once 'includes/header-shared.php';
             <div class="col-lg-7">
                 <div class="card border-0 shadow-sm">
                     <div class="card-body text-center py-5 px-4">
-                        <div class="mb-3">
-                            <i class="bi bi-check-circle-fill text-success" style="font-size:64px;"></i>
+                        <div class="display-1 text-warning mb-3"><i class="bi bi-clock-fill"></i></div>
+                        <h3 class="fw-bold mb-2"><?= t('Pesanan Diterima') ?></h3>
+                        <p class="text-muted mb-4"><?= t('Selesaikan pembayaran ke Virtual Account di bawah. Tiket diproses otomatis oleh penyedia.') ?></p>
+
+                        <?php if (!empty($supplierVa)): ?>
+                        <div class="bg-primary text-white rounded-4 p-4 mb-3 text-start" data-testid="pelni-supplier-payment">
+                            <small class="text-white d-block opacity-75"><?= $supplierMethod === 'TRANSFER' ? t('Nomor Rekening Tujuan') : t('Nomor Virtual Account') ?> · <?= e($supplierBank) ?></small>
+                            <div class="fs-2 fw-bold mb-2 text-center" id="pelniVaNumber" data-testid="supplier-va" style="letter-spacing:1px;"><?= e($supplierVa) ?></div>
+                            <div class="d-flex justify-content-between align-items-center gap-2 small mb-3 flex-wrap">
+                                <span><?= t('Total Bayar') ?>: <strong><?= formatRupiah((float)($supplierTotal ?: $totalPrice)) ?></strong></span>
+                                <?php if ($supplierDeadline): ?>
+                                <span class="badge bg-warning text-dark"><?= t('Batas Bayar') ?>: <?= e($supplierDeadline) ?></span>
+                                <?php endif; ?>
+                            </div>
+                            <button type="button" class="btn btn-light w-100 fw-semibold" id="copyPelniVaBtn" data-va="<?= e($supplierVa) ?>"><i class="bi bi-clipboard me-1"></i><?= t('Salin Nomor VA') ?></button>
                         </div>
-                        <h3 class="fw-bold mb-2"><?= t('Booking Berhasil!') ?></h3>
-                        <p class="text-muted mb-4"><?= t('Kode booking Anda:') ?></p>
-                        <div class="bg-light rounded-pill px-4 py-2 d-inline-block mb-4">
-                            <span class="fs-4 fw-bold text-primary" data-testid="booking-code"><?= e($bookingCode) ?></span>
+                        <div class="small text-muted mb-4"><?= t('Kode Booking') ?>: <span class="fw-semibold text-dark" data-testid="booking-code"><?= e($bookingCode) ?></span><?php if (!empty($supplierInvoice)): ?> <span class="opacity-75">· <?= t('Kode Invoice') ?>: <span class="fw-semibold text-dark" data-testid="supplier-invoice"><?= e($supplierInvoice) ?></span></span><?php endif; ?> <span class="opacity-75">· <?= t('pakai untuk lacak / konfirmasi WA') ?></span></div>
+                        <?php else: ?>
+                        <div class="bg-light rounded-4 p-3 mb-3 small">
+                            <?= t('Kode Booking') ?>: <strong data-testid="booking-code"><?= e($bookingCode) ?></strong><?php if (!empty($supplierInvoice)): ?> · <?= t('Kode Invoice') ?>: <strong data-testid="supplier-invoice"><?= e($supplierInvoice) ?></strong><?php endif; ?>
                         </div>
+                        <?php endif; ?>
 
                         <div class="text-start bg-light rounded-3 p-4 mb-4">
                             <div class="row mb-3">
@@ -275,54 +300,30 @@ require_once 'includes/header-shared.php';
                             <a href="<?= e($pelniPayment['checkout_url']) ?>" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary mt-2"><?= t('Buka halaman checkout') ?></a>
                             <?php endif; ?>
                         </div>
-                        <?php elseif (!empty($supplierInvoice)): ?>
+                        <?php elseif (!empty($supplierInvoice) && empty($supplierVa)): ?>
                         <div class="alert alert-warning text-start mb-3" data-testid="pelni-supplier-payment">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span class="fw-semibold"><i class="bi bi-cash-coin me-1"></i><?= t('Pembayaran ke penyedia PELNI') ?></span>
                                 <?php if ($supplierStatus): ?><span class="badge bg-secondary"><?= e($supplierStatus) ?></span><?php endif; ?>
                             </div>
-                            <div class="row g-2">
-                                <div class="col-6">
-                                    <div class="small text-muted"><?= t('Kode Invoice') ?></div>
-                                    <div class="fw-bold" data-testid="supplier-invoice"><?= e($supplierInvoice) ?></div>
-                                </div>
-                                <?php if ($supplierBank): ?>
-                                <div class="col-6">
-                                    <div class="small text-muted"><?= t('Bank') ?></div>
-                                    <div class="fw-semibold"><?= e($supplierBank) ?></div>
-                                </div>
-                                <?php endif; ?>
-                                <?php if ($supplierVa): ?>
-                                <div class="col-12">
-                                    <div class="small text-muted"><?= $supplierMethod === 'TRANSFER' ? t('Nomor Rekening Tujuan') : t('Nomor Virtual Account') ?></div>
-                                    <div class="fs-4 fw-bold text-primary" data-testid="supplier-va"><?= e($supplierVa) ?></div>
-                                </div>
-                                <?php endif; ?>
-                                <?php if (!empty($supplierTotal)): ?>
-                                <div class="col-6">
-                                    <div class="small text-muted"><?= t('Total Bayar') ?></div>
-                                    <div class="fw-bold"><?= formatRupiah((float)$supplierTotal) ?></div>
-                                </div>
-                                <?php endif; ?>
-                                <?php if ($supplierDeadline): ?>
-                                <div class="col-6">
-                                    <div class="small text-muted"><?= t('Batas Bayar') ?></div>
-                                    <div class="fw-semibold"><?= e($supplierDeadline) ?></div>
-                                </div>
-                                <?php endif; ?>
-                            </div>
+                            <div class="small text-muted"><?= t('Kode Invoice') ?></div>
+                            <div class="fw-bold" data-testid="supplier-invoice"><?= e($supplierInvoice) ?></div>
                             <div class="small text-muted mt-3">
-                                <i class="bi bi-info-circle me-1"></i><?= t('Bayar sesuai nomor Virtual Account di atas sebelum batas waktu. E-ticket PELNI diterbitkan otomatis setelah pembayaran diterima penyedia.') ?>
+                                <i class="bi bi-info-circle me-1"></i><?= t('Hubungi kami via WhatsApp untuk mendapatkan nomor pembayaran.') ?>
                             </div>
                         </div>
-                        <?php else: ?>
+                        <?php elseif (empty($supplierVa)): ?>
                         <div class="alert alert-info text-start mb-3" data-testid="pelni-no-supplier">
                             <i class="bi bi-exclamation-triangle me-1"></i><?= t('Booking Anda tercatat. Konfirmasi tiket sedang diproses oleh tim kami.') ?>
                             <?php if ($supplierStatus): ?><div class="small text-muted mt-1"><?= e($supplierStatus) ?></div><?php endif; ?>
                         </div>
                         <?php endif; ?>
 
-                        <div class="d-flex gap-2 justify-content-center">
+                        <?php $waNum = preg_replace('/[^0-9]/', '', (string)getSetting('company_wa', getSetting('contact_wa', ''))); ?>
+                        <div class="d-flex gap-2 justify-content-center flex-wrap">
+                            <?php if ($waNum !== ''): ?>
+                            <a href="https://wa.me/<?= e($waNum) ?>?text=<?= rawurlencode(t('Konfirmasi pembayaran kapal PELNI ') . ($supplierInvoice ?: $bookingCode)) ?>" target="_blank" rel="noopener" class="btn btn-success rounded-pill px-4"><i class="bi bi-whatsapp me-1"></i><?= t('Hubungi Kami') ?></a>
+                            <?php endif; ?>
                             <a href="my-bookings.php" class="btn btn-primary rounded-pill px-4" data-testid="btn-my-bookings">
                                 <i class="bi bi-ticket-perforated me-1"></i><?= t('Lihat Booking') ?>
                             </a>
@@ -330,6 +331,18 @@ require_once 'includes/header-shared.php';
                                 <i class="bi bi-arrow-left me-1"></i><?= t('Cari Kapal Lagi') ?>
                             </a>
                         </div>
+                        <script>
+                        (function () {
+                            var btn = document.getElementById('copyPelniVaBtn');
+                            if (!btn) return;
+                            btn.addEventListener('click', function () {
+                                navigator.clipboard.writeText(btn.dataset.va || '').then(function () {
+                                    btn.innerHTML = '<i class="bi bi-check2 me-1"></i><?= t('Tersalin') ?>';
+                                    setTimeout(function () { btn.innerHTML = '<i class="bi bi-clipboard me-1"></i><?= t('Salin Nomor VA') ?>'; }, 2000);
+                                });
+                            });
+                        })();
+                        </script>
                     </div>
                 </div>
             </div>
