@@ -4,6 +4,7 @@ require_once '../includes/db.php';
 require_once '../includes/functions.php';
 require_once '../includes/auth.php';
 require_once 'includes/admin-access.php';
+require_once '../includes/live-source.php';
 requireAdminPage();
 
 $msg = '';
@@ -21,7 +22,13 @@ if ($q !== '') {
 
 $pageTitle = t('Kelola Hotel');
 require_once 'includes/admin-header.php';
+$hotelLiveOn = (string)getSetting('hotel_live_enabled', '1') === '1';
+$hotelOrder = function_exists('hotelLiveOrder') ? hotelLiveOrder() : [];
 ?>
+<div class="alert <?= $hotelLiveOn && !empty($hotelOrder) ? 'alert-info' : 'alert-secondary' ?> py-2 small d-flex justify-content-between align-items-center" data-testid="admin-hotel-live-bar">
+    <span><span class="badge <?= $hotelLiveOn && !empty($hotelOrder) ? 'bg-success' : 'bg-secondary' ?> me-1">●</span><?= $hotelLiveOn && !empty($hotelOrder) ? t('Live hotel:') . ' <b>' . e(implode(' → ', $hotelOrder)) . '</b>' : t('Live hotel nonaktif — hanya inventori lokal') ?></span>
+    <a href="hotel-api-settings.php" class="btn btn-sm btn-outline-primary"><?= t('Ubah') ?></a>
+</div>
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h4 class="fw-bold mb-0"><?= t('Hotel') ?></h4>
     <div class="d-flex gap-2 align-items-center">

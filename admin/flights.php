@@ -1,13 +1,20 @@
 <?php
 require_once '../includes/config.php'; require_once '../includes/db.php'; require_once '../includes/functions.php'; require_once '../includes/auth.php';
 require_once 'includes/admin-access.php'; requireAdminPage();
+require_once '../includes/live-source.php';
 $msg=''; if(isset($_GET['msg'])) $msg=match($_GET['msg']){'added'=>'OK','updated'=>'OK','deleted'=>'OK',default=>''};
 if(isset($_GET['delete'])){$id=(int)$_GET['delete'];db()->prepare("DELETE FROM flights WHERE id=?")->execute([$id]);header('Location: flights.php?msg=deleted');exit;}
 $items=db()->query("SELECT * FROM flights ORDER BY airline,flight_number")->fetchAll();
 $q = trim($_GET['q'] ?? '');
 if ($q !== '') $items = array_values(array_filter($items, fn($r) => stripos(json_encode($r), $q) !== false));
 $pageTitle=t('Kelola Pesawat'); require_once 'includes/admin-header.php';
+$flightLiveOn = function_exists('flightApiEnabled') ? flightApiEnabled() : true;
+$flightOrder = function_exists('flightLiveOrder') ? flightLiveOrder() : [];
 ?>
+<div class="alert <?= $flightLiveOn && $flightOrder !== ['lokal'] ? 'alert-info' : 'alert-secondary' ?> py-2 small d-flex justify-content-between align-items-center" data-testid="admin-flight-live-bar">
+    <span><span class="badge <?= $flightLiveOn && $flightOrder !== ['lokal'] ? 'bg-success' : 'bg-secondary' ?> me-1">●</span><?= $flightLiveOn && $flightOrder !== ['lokal'] ? t('Live flight:') . ' <b>' . e(implode(' → ', $flightOrder)) . '</b>' : t('Live flight nonaktif — hanya jadwal lokal') ?></span>
+    <a href="flight-api-settings.php" class="btn btn-sm btn-outline-primary"><?= t('Ubah') ?></a>
+</div>
 <div class="d-flex justify-content-between align-items-center mb-3"><h4 class="fw-bold mb-0"><?= t('Pesawat') ?></h4>
 <a href="flight-add.php" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> <?= t('Tambah') ?></a></div>
 <form method="GET" class="mb-3" style="max-width:340px;"><div class="input-group input-group-sm"><input type="text" name="q" class="form-control" placeholder="<?= t('Cari') ?>" value="<?= e($q) ?>" data-testid="admin-list-search"><button type="submit" class="btn btn-outline-primary"><?= t('Cari') ?></button></div></form>
