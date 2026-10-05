@@ -102,6 +102,14 @@ $footMenus = getNavMenus();
     </div>
 </footer>
 
+<!-- Wishlist toast -->
+<div id="wlToast" class="position-fixed top-0 start-50 translate-middle-x mt-3 d-none" style="z-index: 1090;" data-testid="wishlist-toast" role="status" aria-live="polite">
+    <div id="wlToastInner" class="d-flex align-items-center gap-2 px-3 py-2 rounded-pill shadow text-white bg-dark">
+        <i id="wlToastIcon" class="bi bi-heart-fill text-danger"></i>
+        <span id="wlToastMsg" class="small fw-semibold"></span>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="<?= BASE_URL ?>/assets/js/script.js"></script>
 <script src="<?= BASE_URL ?>/assets/js/currency.js?v=<?= filemtime(__DIR__ . '/../assets/js/currency.js') ?>"></script>
@@ -144,14 +152,35 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <script>
-function toggleWishlist(btn, tourId, itemType) {
+function wlTr(key) { return (window.I18N && typeof window.I18N.t === 'function') ? window.I18N.t(key) : key; }
+var _wlToastTimer = null;
+function showWlToast(msg, type) {
+    var wrap = document.getElementById('wlToast');
+    var txt = document.getElementById('wlToastMsg');
+    var ico = document.getElementById('wlToastIcon');
+    if (!wrap || !txt) return;
+    txt.textContent = msg;
+    if (ico) ico.className = 'bi ' + (type === 'removed' ? 'bi-heart text-white-50' : type === 'error' ? 'bi-exclamation-triangle-fill text-warning' : 'bi-heart-fill text-danger');
+    wrap.classList.remove('d-none');
+    if (_wlToastTimer) clearTimeout(_wlToastTimer);
+    _wlToastTimer = setTimeout(function() { wrap.classList.add('d-none'); }, 2500);
+}
+function toggleWishlist(btn, tourId, itemType, ev) {
+    try {
+        ev = ev || (typeof window !== 'undefined' && window.event ? window.event : null);
+        if (ev) {
+            if (ev.preventDefault) ev.preventDefault();
+            if (ev.stopPropagation) ev.stopPropagation();
+            ev.cancelBubble = true;
+        }
+    } catch (e) {}
     itemType = itemType || 'tour';
     <?php if (!isLoggedIn()): ?>
     window.location.href = 'login.php?redirect=' + encodeURIComponent(window.location.href);
-    return;
+    return false;
     <?php endif; ?>
     var icon = btn.querySelector('i');
-    if (btn.dataset.wlBusy === '1') return;
+    if (btn.dataset.wlBusy === '1') return false;
     btn.dataset.wlBusy = '1';
     var prevIcon = icon ? icon.className : '';
     var prevCls = btn.className;
@@ -164,11 +193,21 @@ function toggleWishlist(btn, tourId, itemType) {
         .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
         .then(function(d) {
             if (d.status === 'added') {
-                icon.className = 'bi bi-heart-fill';
-                btn.className = btn.className.replace(/text-\w+/g, '').trim() + ' text-danger';
+                if (icon) icon.className = 'bi bi-heart-fill';
+                if (btn.classList.contains('voyage-wish')) {
+                    btn.classList.add('on');
+                } else {
+                    btn.className = btn.className.replace(/text-\w+/g, '').trim() + ' text-danger';
+                }
+                showWlToast(wlTr('Ditambahkan ke wishlist'), 'added');
             } else if (d.status === 'removed') {
-                icon.className = 'bi bi-heart';
-                btn.className = btn.className.replace(/text-\w+/g, '').trim() + ' text-white';
+                if (icon) icon.className = 'bi bi-heart';
+                if (btn.classList.contains('voyage-wish')) {
+                    btn.classList.remove('on');
+                } else {
+                    btn.className = btn.className.replace(/text-\w+/g, '').trim() + ' text-white';
+                }
+                showWlToast(wlTr('Dihapus dari wishlist'), 'removed');
             }
         })
         .catch(function() {
@@ -176,6 +215,7 @@ function toggleWishlist(btn, tourId, itemType) {
             if (icon) icon.className = 'bi bi-exclamation-triangle-fill';
             btn.classList.add('text-warning');
             btn.title = '<?= t('Gagal menyimpan wishlist. Coba lagi.') ?>';
+            showWlToast(wlTr('Gagal menyimpan wishlist. Coba lagi.'), 'error');
             setTimeout(function() {
                 if (icon) icon.className = prevIcon;
                 btn.className = prevCls;
@@ -185,6 +225,7 @@ function toggleWishlist(btn, tourId, itemType) {
             btn.dataset.wlBusy = '0';
             btn.classList.remove('opacity-50');
         });
+    return false;
 }
 </script>
 <?php require_once __DIR__ . '/components/social-proof.php'; ?>

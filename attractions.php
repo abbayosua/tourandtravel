@@ -69,7 +69,7 @@ require_once 'includes/header-shared.php';
                             <div class="position-relative overflow-hidden rounded-top" style="height: 180px;">
                                 <img src="<?= e($a['cover_image'] ?: 'https://placehold.co/640x480?text=' . urlencode($a['name'])) ?>" class="w-100 h-100" style="object-fit: cover;" alt="<?= e(tContent($a, 'name')) ?>">
                                 <button class="btn btn-sm position-absolute top-0 end-0 m-1 like-btn wishlist-btn klook-wishlist-btn text-white <?= in_array((int)$a['id'], $attractionWishlistIds) ? 'text-danger' : '' ?>" style="margin-top: 38px !important; z-index:5;"
-                                    onclick="toggleWishlist(this, <?= (int)$a['id'] ?>, 'attraction')" title="<?= t('Simpan ke wishlist') ?>">
+                                    onclick="return toggleWishlist(this, <?= (int)$a['id'] ?>, 'attraction', event)" title="<?= t('Simpan ke wishlist') ?>">
                                     <i class="bi bi-heart<?= in_array((int)$a['id'], $attractionWishlistIds) ? '-fill' : '' ?>"></i>
                                 </button>
                                 <?php if (!empty($a['best_seller'])): ?>

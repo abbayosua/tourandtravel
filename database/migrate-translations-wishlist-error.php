@@ -12,8 +12,16 @@ require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/db.php';
 
 $dict = [
-    'en' => ['Gagal menyimpan wishlist. Coba lagi.' => 'Failed to save wishlist. Try again.'],
-    'zh' => ['Gagal menyimpan wishlist. Coba lagi.' => '保存收藏失败，请重试。'],
+    'en' => [
+        'Gagal menyimpan wishlist. Coba lagi.' => 'Failed to save wishlist. Try again.',
+        'Ditambahkan ke wishlist' => 'Added to wishlist',
+        'Dihapus dari wishlist' => 'Removed from wishlist',
+    ],
+    'zh' => [
+        'Gagal menyimpan wishlist. Coba lagi.' => '保存收藏失败，请重试。',
+        'Ditambahkan ke wishlist' => '已加入心愿单',
+        'Dihapus dari wishlist' => '已从心愿单移除',
+    ],
 ];
 
 $stmt = db()->prepare("INSERT INTO translations (`key`, lang, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)");

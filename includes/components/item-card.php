@@ -21,7 +21,7 @@ function renderItemCard(array $item, string $itemType, array $wishlistedIds = []
             </a>
             <button class="btn btn-sm position-absolute top-0 end-0 m-1 like-btn wishlist-btn klook-wishlist-btn <?= $isWl ? 'text-danger' : 'text-white' ?>"
                 data-item-type="<?= e($itemType) ?>"
-                onclick="toggleWishlist(this, <?= (int)$item['id'] ?>, '<?= e($itemType) ?>')">
+                onclick="return toggleWishlist(this, <?= (int)$item['id'] ?>, '<?= e($itemType) ?>', event)">
                 <i class="bi bi-heart<?= $isWl ? '-fill' : '' ?>"></i>
             </button>
             <div class="card-body p-2">

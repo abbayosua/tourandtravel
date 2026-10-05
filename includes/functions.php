@@ -529,6 +529,9 @@ function getJsI18nKeys() {
         'Gagal memuat hasil. Coba lagi.',
         'Memeriksa kode promo...',
         'Login Google gagal',
+        'Ditambahkan ke wishlist',
+        'Dihapus dari wishlist',
+        'Gagal menyimpan wishlist. Coba lagi.',
     ];
 }
 

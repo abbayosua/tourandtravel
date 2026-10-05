@@ -121,6 +121,7 @@ require_once __DIR__ . '/../components/date-picker.php';
                     }
                 ?>
                 <div class="voyage-tcard">
+                    <div class="position-relative">
                     <a class="voyage-tcard-media" href="tour-detail.php?slug=<?= urlencode($vSlug) ?>" aria-label="<?= e($vTitle) ?>">
                         <img src="<?= e(getTourImage($vc, 'medium')) ?>" alt="<?= e($vTitle) ?>" loading="lazy" onerror="this.src='<?= e(getTourImageFallback($vc, 'medium')) ?>'">
                         <span class="voyage-tcard-shade"></span>
@@ -129,14 +130,15 @@ require_once __DIR__ . '/../components/date-picker.php';
                             <?php if (!empty($vc['best_seller'])): ?><span class="voyage-badge voyage-badge-best"><?= t('Bestseller') ?></span><?php endif; ?>
                             <?php if (!empty($vc['instant_confirmation']) && tripayInstantEnabled()): ?><span class="voyage-badge voyage-badge-instant">&#9889; <?= t('Instan') ?></span><?php endif; ?>
                         </span>
-                        <?php if (function_exists('isLoggedIn')): ?>
-                        <button type="button" class="voyage-wish wishlist-btn <?= (!empty($wishlistIds) && in_array($vc['id'] ?? 0, $wishlistIds)) ? 'on' : '' ?>" data-tour-id="<?= (int)($vc['id'] ?? 0) ?>" onclick="if(typeof toggleWishlist==='function')toggleWishlist(this, <?= (int)($vc['id'] ?? 0) ?>)" aria-label="<?= e(t('Wishlist')) ?>"><i class="bi bi-heart<?= (!empty($wishlistIds) && in_array($vc['id'] ?? 0, $wishlistIds)) ? '-fill' : '' ?>"></i></button>
-                        <?php endif; ?>
                         <span class="voyage-tcard-pills">
                             <span class="voyage-pill">&#9733; <?= e($vRating) ?> <em><?php if ($vRev > 0): ?>&bull; <?= number_format($vRev) ?><?php endif; ?></em></span>
                             <span class="voyage-pill"><?= e($vDur) ?></span>
                         </span>
                     </a>
+                        <?php if (function_exists('isLoggedIn')): ?>
+                        <button type="button" class="voyage-wish wishlist-btn <?= (!empty($wishlistIds) && in_array($vc['id'] ?? 0, $wishlistIds)) ? 'on' : '' ?>" data-tour-id="<?= (int)($vc['id'] ?? 0) ?>" onclick="return toggleWishlist(this, <?= (int)($vc['id'] ?? 0) ?>, 'tour', event)" aria-label="<?= e(t('Wishlist')) ?>"><i class="bi bi-heart<?= (!empty($wishlistIds) && in_array($vc['id'] ?? 0, $wishlistIds)) ? '-fill' : '' ?>"></i></button>
+                        <?php endif; ?>
+                    </div>
                     <div class="voyage-tcard-b">
                         <a class="voyage-tcard-t" href="tour-detail.php?slug=<?= urlencode($vSlug) ?>"><?= e(mb_strimwidth($vTitle, 0, 64, '...')) ?></a>
                         <?php if ($vLoc !== ''): ?><div class="voyage-tcard-loc"><i class="bi bi-geo-alt"></i> <?= e(mb_strimwidth($vLoc, 0, 40, '...')) ?></div><?php endif; ?>

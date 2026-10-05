@@ -89,7 +89,7 @@ foreach ($hotels as $h):
 <div class="col-12" data-page="<?= $page ?>">
     <div class="card border-0 shadow-sm mb-3 overflow-hidden klook-hover-card position-relative">
         <button class="btn btn-sm position-absolute top-0 end-0 m-1 like-btn wishlist-btn klook-wishlist-btn text-white bg-dark bg-opacity-25" style="z-index:5;"
-            onclick="toggleWishlist(this, <?= (int)$h['id'] ?>, 'hotel')" title="<?= t('Simpan ke wishlist') ?>">
+            onclick="return toggleWishlist(this, <?= (int)$h['id'] ?>, 'hotel', event)" title="<?= t('Simpan ke wishlist') ?>">
             <i class="bi bi-heart<?= in_array((int)$h['id'], $hotelWishlistIds) ? '-fill text-danger' : '' ?>"></i>
         </button>
         <div class="row g-0">

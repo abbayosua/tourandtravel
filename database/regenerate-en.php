@@ -42,6 +42,10 @@ foreach ($iterator as $f) {
     }
 }
 $codeKeys = array_keys($codeKeys);
+foreach (function_exists('getJsI18nKeys') ? getJsI18nKeys() : [] as $jk) {
+    if (trim((string)$jk) !== '') $codeKeys[] = (string)$jk;
+}
+$codeKeys = array_values(array_unique($codeKeys));
 sort($codeKeys);
 echo "Key t() di codebase: " . count($codeKeys) . "\n";
 
@@ -65,6 +69,9 @@ $manual = [
     // halaman akun
     'Profil Saya' => 'My Profile', 'Profil' => 'Profile', 'Booking Saya' => 'My Bookings',
     'Riwayat Booking' => 'Booking History', 'Wishlist Saya' => 'My Wishlist',
+    'Ditambahkan ke wishlist' => 'Added to wishlist',
+    'Dihapus dari wishlist' => 'Removed from wishlist',
+    'Gagal menyimpan wishlist. Coba lagi.' => 'Failed to save wishlist. Try again.',
     'TravelPoints Saya' => 'My TravelPoints', 'Referral Saya' => 'My Referrals',
     'Ganti Password' => 'Change Password', 'Simpan Perubahan' => 'Save Changes',
     // status

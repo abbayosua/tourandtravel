@@ -58,7 +58,7 @@ function renderTourCard($tour, $wishlistIds = [], $options = []) {
                 <?php if ($opts['show_wishlist']): ?>
                 <button class="btn btn-sm position-absolute bottom-0 end-0 m-2 like-btn wishlist-btn klook-wishlist-btn <?= $isWishlisted ? 'text-danger' : 'text-white' ?>"
                     data-tour-id="<?= $tour['id'] ?>"
-                    onclick="toggleWishlist(this, <?= $tour['id'] ?>)">
+                    onclick="return toggleWishlist(this, <?= $tour['id'] ?>, 'tour', event)">
                     <i class="bi bi-heart<?= $isWishlisted ? '-fill' : '' ?>"></i>
                 </button>
                 <?php endif; ?>
