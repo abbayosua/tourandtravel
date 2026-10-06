@@ -1,9 +1,10 @@
 <?php
 /**
- * AJAX: mulai pembayaran untuk satu booking (gateway: midtrans|tripay).
+ * AJAX: mulai pembayaran untuk satu booking (gateway: midtrans|tripay|xendit).
  * POST: booking_type, booking_id, [method utk tripay: BRIVA|BCAVA|QRIS|...]
  * Response midtrans: {ok, redirect_url?, order_id?, error?}
  * Response tripay: {ok, gateway:'tripay', pay_code?, pay_url?, checkout_url?, reference?, error?}
+ * Response xendit: {ok, gateway:'xendit', invoice_id?, invoice_url?, redirect_url?, error?}
  */
 require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/db.php';
@@ -76,6 +77,10 @@ if (tripayGateway() === 'tripay') {
     $tripayMethod = preg_replace('/[^A-Z0-9_]/', '', strtoupper((string)($_POST['method'] ?? 'BRIVA')));
     $result = createTripayTransaction($bookingId, $gross, $customer, $tripayMethod ?: 'BRIVA', $bookingType);
     $result['gateway'] = 'tripay';
+} elseif (tripayGateway() === 'xendit') {
+    require_once __DIR__ . '/../includes/xendit.php';
+    $result = createXenditInvoice($bookingId, $gross, $customer, $bookingType);
+    $result['gateway'] = 'xendit';
 } elseif (singapayEnabled()) {
     if (($_POST['pay_kind'] ?? 'va') === 'card' && !empty($_POST['card_number'])) {
         $result = singapayCreateCard($bookingId, $gross, $customer, [

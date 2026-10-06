@@ -23,10 +23,10 @@ function tripayMode(): string {
     return $mode === 'instant' ? 'instant' : 'manual';
 }
 
-/** Gateway aktif saat mode instant: midtrans | tripay | singapay */
+/** Gateway aktif saat mode instant: midtrans | tripay | singapay | xendit */
 function tripayGateway(): string {
     $gw = (string)getSetting('payment_gateway', 'midtrans');
-    return in_array($gw, ['tripay', 'singapay'], true) ? $gw : 'midtrans';
+    return in_array($gw, ['tripay', 'singapay', 'xendit'], true) ? $gw : 'midtrans';
 }
 
 /**
@@ -127,6 +127,10 @@ function tripayConfigured(): bool {
 function tripayInstantEnabled(): bool {
     if (tripayMode() !== 'instant') return false;
     if (tripayGateway() === 'tripay') return tripayConfigured();
+    if (tripayGateway() === 'xendit') {
+        require_once __DIR__ . '/xendit.php';
+        return xenditConfigured();
+    }
     if (tripayGateway() === 'singapay') {
         require_once __DIR__ . '/singapay.php';
         return singapayConfigured();

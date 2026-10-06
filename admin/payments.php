@@ -15,7 +15,7 @@ $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_settings'])) {
     $mode = ($_POST['payment_mode'] ?? 'manual') === 'instant' ? 'instant' : 'manual';
     $gwPost = $_POST['payment_gateway'] ?? 'midtrans';
-    $gateway = in_array($gwPost, ['tripay', 'singapay'], true) ? $gwPost : 'midtrans';
+    $gateway = in_array($gwPost, ['tripay', 'singapay', 'xendit'], true) ? $gwPost : 'midtrans';
     setSetting('payment_mode', $mode);
     setSetting('payment_gateway', $gateway);
     $env = ($_POST['midtrans_env'] ?? 'sandbox') === 'production' ? 'production' : 'sandbox';
@@ -33,6 +33,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_settings'])) {
     setSetting('singapay_client_secret', trim($_POST['singapay_client_secret'] ?? ''));
     setSetting('singapay_api_key', trim($_POST['singapay_api_key'] ?? ''));
     setSetting('singapay_account_id', trim($_POST['singapay_account_id'] ?? ''));
+    $xndEnv = ($_POST['xendit_env'] ?? 'sandbox') === 'production' ? 'production' : 'sandbox';
+    setSetting('xendit_env', $xndEnv);
+    if (trim((string)($_POST['xendit_secret_key'] ?? '')) !== '') setSetting('xendit_secret_key', trim((string)$_POST['xendit_secret_key']));
+    if (trim((string)($_POST['xendit_public_key'] ?? '')) !== '') setSetting('xendit_public_key', trim((string)$_POST['xendit_public_key']));
+    if (trim((string)($_POST['xendit_callback_token'] ?? '')) !== '') setSetting('xendit_callback_token', trim((string)$_POST['xendit_callback_token']));
     setSetting('payment_enabled', isset($_POST['payment_enabled']) ? '1' : '0');
     setSetting('manual_bank_name', trim($_POST['manual_bank_name'] ?? ''));
     setSetting('manual_bank_number', trim($_POST['manual_bank_number'] ?? ''));
@@ -116,6 +121,7 @@ require_once __DIR__ . '/includes/admin-header.php';
                     <option value="midtrans" <?= getSetting('payment_gateway','midtrans') === 'midtrans' ? 'selected' : '' ?>>Midtrans Snap</option>
                     <option value="tripay" <?= getSetting('payment_gateway') === 'tripay' ? 'selected' : '' ?>>Tripay</option>
                     <option value="singapay" <?= getSetting('payment_gateway') === 'singapay' ? 'selected' : '' ?>>Singapay (VA)</option>
+                    <option value="xendit" <?= getSetting('payment_gateway') === 'xendit' ? 'selected' : '' ?>>Xendit Sandbox (VA + Kartu)</option>
                 </select>
             </div>
             <div class="col-md-4 d-flex align-items-end gap-2">
@@ -230,8 +236,30 @@ require_once __DIR__ . '/includes/admin-header.php';
                 <input type="text" name="singapay_account_id" class="form-control" data-testid="singapay-account-id" value="<?= e(getSetting('singapay_account_id')) ?>">
             </div>
             <div class="col-12 mt-3">
+                <h6 class="fw-semibold mb-3 mt-2"><?= t('Pengaturan Xendit Sandbox (VA + Kartu)') ?></h6>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-semibold"><?= t('Environment') ?></label>
+                <select name="xendit_env" class="form-select" autocomplete="off">
+                    <option value="sandbox" <?= getSetting('xendit_env','sandbox') === 'sandbox' ? 'selected' : '' ?>>Sandbox</option>
+                    <option value="production" <?= getSetting('xendit_env') === 'production' ? 'selected' : '' ?>><?= t('Production') ?></option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-semibold"><?= t('Secret Key') ?></label>
+                <input type="password" name="xendit_secret_key" class="form-control" data-testid="xendit-secret-key" autocomplete="new-password" value="<?= e(getSetting('xendit_secret_key')) ?>">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-semibold"><?= t('Public Key') ?></label>
+                <input type="text" name="xendit_public_key" class="form-control" data-testid="xendit-public-key" autocomplete="off" readonly onfocus="this.removeAttribute('readonly')" value="<?= e(getSetting('xendit_public_key')) ?>">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-semibold"><?= t('Callback Token') ?></label>
+                <input type="password" name="xendit_callback_token" class="form-control" data-testid="xendit-callback-token" autocomplete="new-password" value="<?= e(getSetting('xendit_callback_token')) ?>">
+            </div>
+            <div class="col-12 mt-3">
                 <button type="submit" name="save_settings" class="btn btn-primary"><?= t('Simpan') ?></button>
-                <small class="text-muted ms-2"><?= t('Webhook Midtrans:') ?> <code><?= e(BASE_URL . '/webhook-midtrans.php') ?></code> · <?= t('Webhook Tripay:') ?> <code><?= e(BASE_URL . '/webhook-tripay.php') ?></code> · <?= t('Webhook Singapay:') ?> <code><?= e(BASE_URL . '/webhook-singapay.php') ?></code></small>
+                <small class="text-muted ms-2"><?= t('Webhook Midtrans:') ?> <code><?= e(BASE_URL . '/webhook-midtrans.php') ?></code> · <?= t('Webhook Tripay:') ?> <code><?= e(BASE_URL . '/webhook-tripay.php') ?></code> · <?= t('Webhook Singapay:') ?> <code><?= e(BASE_URL . '/webhook-singapay.php') ?></code> · <?= t('Webhook Xendit Sandbox:') ?> <code><?= e(BASE_URL . '/webhook-xendit.php') ?></code></small>
             </div>
         </form>
     </div>

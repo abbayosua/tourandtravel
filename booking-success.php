@@ -427,6 +427,12 @@ require_once 'includes/header-shared.php';
                         <a href="<?= e($paymentCheckoutUrl) ?>" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary mt-2"><?= t('Buka halaman checkout') ?></a>
                         <?php endif; ?>
                     </div>
+                    <?php elseif (($paymentGateway ?? '') === 'xendit' && !empty($paymentCheckoutUrl)): ?>
+                    <div class="alert alert-info text-start mt-3" data-testid="paycode">
+                        <div class="small text-muted"><?= t('Bayar via Xendit Sandbox (VA / Kartu)') ?></div>
+                        <div class="small mb-2"><?= t('Pilih Virtual Account bank atau kartu kredit di halaman checkout.') ?></div>
+                        <a href="<?= e($paymentCheckoutUrl) ?>" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary mt-1"><?= t('Buka halaman checkout') ?></a>
+                    </div>
                     <?php endif; ?>
                     <div id="paymentStatusArea" class="small mt-3" data-order-id="<?= e($paymentOrderId ?? '') ?>">
                         <span class="text-muted"><?= $paymentOrderId ? t('Menunggu pembayaran...') : '' ?></span>
