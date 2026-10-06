@@ -13,18 +13,31 @@ function analyticsRange(?string $from = null, ?string $to = null): array {
     return [$from, $to];
 }
 
-function analyticsBookingsPerDay(string $from, string $to): array {
-    $st = db()->prepare("SELECT DATE(created_at) d, COUNT(*) n FROM bookings WHERE created_at BETWEEN ? AND ? + INTERVAL 1 DAY GROUP BY DATE(created_at) ORDER BY d");
+/**
+ * Tabel booking untuk satu vertikal (null = semua/tour default per fungsi).
+ * Kunci tak dikenal → null agar pemanggil tak perlu validasi ulang.
+ */
+function analyticsTableFor(?string $type): ?string {
+    if ($type === null || $type === '') return null;
+    $map = analyticsBookingTables();
+    return $map[$type] ?? null;
+}
+
+function analyticsBookingsPerDay(string $from, string $to, ?string $type = null): array {
+    $table = analyticsTableFor($type) ?? 'bookings';
+    $st = db()->prepare("SELECT DATE(created_at) d, COUNT(*) n FROM `$table` WHERE created_at BETWEEN ? AND ? + INTERVAL 1 DAY GROUP BY DATE(created_at) ORDER BY d");
     $st->execute([$from, $to]);
     return $st->fetchAll();
 }
 
-function analyticsRevenuePerVertical(string $from, string $to): array {
+function analyticsRevenuePerVertical(string $from, string $to, ?string $type = null): array {
     // revenue = total_price booking paid/confirmed (tour) + vertikal lain dgn payment_status paid
     $out = [];
     $map = ['tour' => 'bookings', 'hotel' => 'hotel_bookings', 'flight' => 'flight_bookings',
             'train' => 'train_bookings', 'transfer' => 'transfer_bookings',
-            'attraction' => 'attraction_bookings', 'esim' => 'connectivity_bookings'];
+            'attraction' => 'attraction_bookings', 'esim' => 'connectivity_bookings',
+            'ferry' => 'ferry_bookings'];
+    if ($type !== null && $type !== '' && isset($map[$type])) $map = [$type => $map[$type]];
     foreach ($map as $type => $table) {
         try {
             $st = db()->prepare("SELECT COUNT(*) n, COALESCE(SUM(total_price),0) total FROM `$table` WHERE created_at BETWEEN ? AND ? + INTERVAL 1 DAY AND status != 'cancelled'");
@@ -37,22 +50,25 @@ function analyticsRevenuePerVertical(string $from, string $to): array {
     return $out;
 }
 
-function analyticsTopTours(string $from, string $to, int $limit = 5): array {
+function analyticsTopTours(string $from, string $to, int $limit = 5, ?string $type = null): array {
+    if ($type !== null && $type !== '' && $type !== 'tour') return [];
     $st = db()->prepare("SELECT t.title, COUNT(b.id) n, COALESCE(SUM(b.total_price),0) total FROM bookings b JOIN tours t ON b.tour_id=t.id WHERE b.created_at BETWEEN ? AND ? + INTERVAL 1 DAY AND b.status != 'cancelled' GROUP BY t.id ORDER BY n DESC LIMIT " . (int)$limit);
     $st->execute([$from, $to]);
     return $st->fetchAll();
 }
 
-function analyticsFunnel(string $from, string $to): array {
-    $st = db()->prepare("SELECT status, COUNT(*) n FROM bookings WHERE created_at BETWEEN ? AND ? + INTERVAL 1 DAY GROUP BY status");
+function analyticsFunnel(string $from, string $to, ?string $type = null): array {
+    $table = analyticsTableFor($type) ?? 'bookings';
+    $st = db()->prepare("SELECT status, COUNT(*) n FROM `$table` WHERE created_at BETWEEN ? AND ? + INTERVAL 1 DAY GROUP BY status");
     $st->execute([$from, $to]);
     $out = [];
     foreach ($st->fetchAll() as $r) $out[$r['status']] = (int)$r['n'];
     return $out;
 }
 
-function analyticsKpi(string $from, string $to): array {
-    $b = db()->prepare("SELECT COUNT(*) bookings, COALESCE(SUM(total_price),0) revenue FROM bookings WHERE created_at BETWEEN ? AND ? + INTERVAL 1 DAY AND status != 'cancelled'");
+function analyticsKpi(string $from, string $to, ?string $type = null): array {
+    $table = analyticsTableFor($type) ?? 'bookings';
+    $b = db()->prepare("SELECT COUNT(*) bookings, COALESCE(SUM(total_price),0) revenue FROM `$table` WHERE created_at BETWEEN ? AND ? + INTERVAL 1 DAY AND status != 'cancelled'");
     $b->execute([$from, $to]);
     $row = $b->fetch();
     $u = db()->query("SELECT COUNT(*) FROM users")->fetchColumn();
@@ -178,13 +194,16 @@ function analyticsRevenueTrend(string $from, string $to): array {
 
 /**
  * Count booking per vertikal untuk horizontal bar chart dashboard.
- * Return: [ ['type'=>'tour','n'=>int], ... ] (semua 8 vertikal, 0 jika kosong)
+ * Return: [ ['type'=>'tour','n'=>int], ... ] (semua 8 vertikal, 0 jika kosong;
+ *          bila $type diisi hanya vertikal itu yang dikembalikan)
  */
-function analyticsBookingsPerVertical(string $from, string $to): array {
+function analyticsBookingsPerVertical(string $from, string $to, ?string $type = null): array {
     $out = [];
     $parts = [];
     $params = [];
-    foreach (analyticsBookingTables() as $typeKey => $table) {
+    $tables = analyticsBookingTables();
+    if ($type !== null && $type !== '' && isset($tables[$type])) $tables = [$type => $tables[$type]];
+    foreach ($tables as $typeKey => $table) {
         $parts[] = "SELECT '$typeKey' btype, COUNT(*) n FROM `$table` WHERE created_at BETWEEN ? AND ? + INTERVAL 1 DAY";
         $params[] = $from;
         $params[] = $to;
@@ -195,7 +214,7 @@ function analyticsBookingsPerVertical(string $from, string $to): array {
         foreach ($st->fetchAll() as $r) $out[$r['btype']] = (int)$r['n'];
     } catch (Throwable $e) {}
     $final = [];
-    foreach (array_keys(analyticsBookingTables()) as $typeKey) {
+    foreach (array_keys($tables) as $typeKey) {
         $final[] = ['type' => $typeKey, 'n' => $out[$typeKey] ?? 0];
     }
     return $final;

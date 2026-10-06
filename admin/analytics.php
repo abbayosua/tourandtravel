@@ -11,11 +11,11 @@ $pageTitle = t('Analytics');
 [$from, $to] = analyticsRange($_GET['from'] ?? null, $_GET['to'] ?? null);
 $vertFilter = $_GET['type'] ?? '';
 if ($vertFilter !== '' && !array_key_exists($vertFilter, analyticsBookingTables())) $vertFilter = '';
-$kpi = analyticsKpi($from, $to);
-$perDay = analyticsBookingsPerDay($from, $to);
-$verticals = analyticsRevenuePerVertical($from, $to);
-$topTours = analyticsTopTours($from, $to);
-$funnel = analyticsFunnel($from, $to);
+$kpi = analyticsKpi($from, $to, $vertFilter ?: null);
+$perDay = analyticsBookingsPerDay($from, $to, $vertFilter ?: null);
+$verticals = analyticsRevenuePerVertical($from, $to, $vertFilter ?: null);
+$topTours = analyticsTopTours($from, $to, 5, $vertFilter ?: null);
+$funnel = analyticsFunnel($from, $to, $vertFilter ?: null);
 $verticalLabels = ['tour' => t('Tour'), 'hotel' => t('Hotel'), 'flight' => t('Pesawat'), 'attraction' => t('Atraksi'), 'transfer' => t('Transfer'), 'train' => t('Kereta'), 'esim' => 'eSIM', 'ferry' => t('Ferry')];
 // Top produk lintas vertikal (Top 10)
 $topProducts = [];
@@ -28,7 +28,7 @@ foreach (analyticsSalesUnion($from, $to, $vertFilter ?: null) as $r) {
 }
 usort($topProducts, fn($a, $b) => $b['total'] <=> $a['total']);
 $topProducts = array_slice($topProducts, 0, 10);
-$perVerticalCounts = analyticsBookingsPerVertical($from, $to);
+$perVerticalCounts = analyticsBookingsPerVertical($from, $to, $vertFilter ?: null);
 
 require_once __DIR__ . '/includes/admin-header.php';
 ?>
