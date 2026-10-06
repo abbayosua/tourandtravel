@@ -59,7 +59,7 @@ function nusaFlightPersist(array $b, array $res, ?array $summary): void {
             ]);
         $freshId = (int)db()->lastInsertId();
         if ($freshId > 0) {
-            require_once __DIR__ . '/notifications.php';
+            require_once __DIR__ . '/includes/notifications.php';
             $nfTitle = trim(($b['airline_name'] ?? '') . ' ' . ($b['flight_number'] ?? '') . ' ' . ($b['from'] ?? '') . '→' . ($b['to'] ?? ''));
             $nfDetail = trim(($b['departure_date'] ?? '') . ' • ' . (int)($b['pax'] ?? 1) . ' ' . (function_exists('t') ? t('pax') : 'pax'));
             notifyBookingCreated((int)$_SESSION['user_id'], function_exists('t') ? t('Pesawat') : 'Pesawat', $nfTitle, $nfDetail, $bookingCode, 'my-bookings.php');

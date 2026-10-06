@@ -60,7 +60,7 @@ function nusaPersistBooking(array $b, array $res, ?array $summary): void {
             ]);
         $freshId = (int)db()->lastInsertId();
         if ($freshId > 0) {
-            require_once __DIR__ . '/notifications.php';
+            require_once __DIR__ . '/includes/notifications.php';
             $nbDetail = $b['checkin'] . ' → ' . $b['checkout'] . ' • ' . (int)($b['guests'] ?? 1) . ' ' . (function_exists('t') ? t('pax') : 'pax');
             notifyBookingCreated((int)$_SESSION['user_id'], function_exists('t') ? t('Hotel') : 'Hotel', (string)($b['hotel_name'] ?? ''), $nbDetail, $bookingCode, 'my-bookings.php');
         }
