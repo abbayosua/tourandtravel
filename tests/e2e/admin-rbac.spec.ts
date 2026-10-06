@@ -60,6 +60,17 @@ test('superadmin melihat Kelola Admin + semua menu', async ({ page }) => {
   await expect(page.locator('#adminSidebar a[href="admins.php"]')).toBeVisible();
 });
 
+test('appearance disembunyikan total (tech debt)', async ({ page }) => {
+  await adminLogin(page, SUPER_USER, SUPER_PASS);
+  await page.goto(`${BASE}/admin/dashboard.php?lang=id`);
+  await expect(page.locator('#adminSidebar a[href="appearance.php"]')).toHaveCount(0);
+  await page.goto(`${BASE}/admin/appearance.php?lang=id`);
+  await expect(page).toHaveURL(/dashboard\.php/);
+  await expect(page.locator('[data-testid="admin-flash"]')).toContainText('tidak memiliki akses');
+  await page.goto(`${BASE}/admin/admins.php?lang=id`);
+  await expect(page.locator('#g-appearance')).toHaveCount(0);
+});
+
 test('staff dibatasi: menu disaring + URL langsung ditolak', async ({ page }) => {
   await adminLogin(page, STAFF_USER, STAFF_PASS);
   await page.goto(`${BASE}/admin/dashboard.php?lang=id`);

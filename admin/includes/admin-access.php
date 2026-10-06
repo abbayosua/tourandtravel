@@ -70,7 +70,11 @@ function adminPages(): array {
         'faq-edit'    => ['file' => 'faq-edit.php', 'section' => 'Content', 'label' => 'Kelola FAQ', 'icon' => 'bi-question-circle', 'show' => false, 'via' => 'faq'],
         'faq-category' => ['file' => 'faq-category.php', 'section' => 'Content', 'label' => 'Kelola FAQ', 'icon' => 'bi-question-circle', 'show' => false, 'via' => 'faq'],
         'faq-category-edit' => ['file' => 'faq-category-edit.php', 'section' => 'Content', 'label' => 'Kelola FAQ', 'icon' => 'bi-question-circle', 'show' => false, 'via' => 'faq'],
-        'appearance'  => ['file' => 'appearance.php', 'section' => 'Content', 'label' => 'Tampilan Homepage', 'icon' => 'bi-layout-text-window-reverse', 'show' => true, 'via' => null],
+        // TECH DEBT (2026-10-05): halaman appearance disembunyikan TOTAL dari
+        // semua akun (sidebar, form grant, guard) atas permintaan pemilik.
+        // File appearance.php TIDAK dihapus — akan dikembalikan lagi suatu
+        // saat. Untuk mengaktifkan kembali: hapus flag 'hidden' di bawah.
+        'appearance'  => ['file' => 'appearance.php', 'section' => 'Content', 'label' => 'Tampilan Homepage', 'icon' => 'bi-layout-text-window-reverse', 'show' => true, 'via' => null, 'hidden' => true],
         'brand-settings' => ['file' => 'brand-settings.php', 'section' => 'Content', 'label' => 'Brand & Logo', 'icon' => 'bi-award', 'show' => true, 'via' => null],
         'nav-menus'   => ['file' => 'nav-menus.php', 'section' => 'Content', 'label' => 'Menu Navigasi', 'icon' => 'bi-menu-button-wide', 'show' => true, 'via' => null],
         'hero-slides' => ['file' => 'hero-slides.php', 'section' => 'Content', 'label' => 'Hero Slides', 'icon' => 'bi-images', 'show' => false, 'via' => null],
@@ -156,10 +160,20 @@ function adminPermissions(?int $adminId = null): array {
     }
 }
 
+/** Apakah key halaman disembunyikan total (tech debt, tak bisa dibuka siapa pun). */
+function adminPageHidden(string $key): bool {
+    $pages = adminPages();
+    $key = adminCanonicalKey($key);
+    return !empty($pages[$key]['hidden']);
+}
+
 /** Apakah akun boleh membuka key halaman (sudah dikanonikalisasi). */
 function canAccessPage(string $key, ?int $adminId = null): bool {
     $adminId = $adminId ?? (int)($_SESSION['admin_id'] ?? 0);
     if ($adminId <= 0) return false;
+    // TECH DEBT: halaman berflag hidden ditolak untuk semua peran,
+    // termasuk superadmin (lihat entry mapping).
+    if (adminPageHidden($key)) return false;
     if (isSuperadmin($adminId)) return true;
     $key = adminCanonicalKey($key);
     if ($key === 'dashboard') return true;
@@ -215,6 +229,7 @@ function setAdminPermissions(int $adminId, array $keys): void {
     foreach ($keys as $k) {
         $k = (string)$k;
         if (!isset($pages[$k]) || $k === 'admins') continue;
+        if (adminPageHidden($k)) continue; // TECH DEBT: grant halaman hidden dibuang
         $valid[adminCanonicalKey($k)] = true;
     }
     db()->prepare("DELETE FROM admin_permissions WHERE admin_id = ?")->execute([$adminId]);

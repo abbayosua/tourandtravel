@@ -124,6 +124,7 @@ if ($action === 'edit' && $editId > 0) {
 $formKeys = [];
 foreach (adminPages() as $k => $p) {
     if (adminCanonicalKey($k) !== $k || $k === 'admins' || $k === 'dashboard') continue;
+    if (!empty($p['hidden'])) continue; // TECH DEBT: halaman hidden tak bisa di-grant
     $formKeys[$p['section']][] = $k;
 }
 

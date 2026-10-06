@@ -170,6 +170,7 @@
                 $shownNav = [];
                 foreach (adminPages() as $pKey => $p) {
                     if (empty($p['show'])) continue;
+                    if (!empty($p['hidden'])) continue; // TECH DEBT: halaman hidden tak tampil
                     if (!canAccessPage($pKey)) continue;
                     $shownNav[$p['section']][] = $pKey;
                 }
