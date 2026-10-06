@@ -16,6 +16,7 @@ $dict = [
         'Buffer kurs (%)' => 'Currency buffer (%)',
         'Bantalan margin terhadap pergerakan kurs. Ditambahkan setelah diskon, sebelum poin/saldo. 0 = nonaktif. Hanya berlaku untuk paket tour.' => 'Margin buffer against exchange-rate movement. Added after discounts, before points/wallet. 0 = disabled. Applies to tour packages only.',
         'FX buffer disimpan: %s%%' => 'FX buffer saved: %s%%',
+        'Service charge' => 'Service charge',
     ],
     'zh' => [
         'Penyesuaian kurs' => '汇率调整',
@@ -23,6 +24,7 @@ $dict = [
         'Buffer kurs (%)' => '汇率缓冲（%）',
         'Bantalan margin terhadap pergerakan kurs. Ditambahkan setelah diskon, sebelum poin/saldo. 0 = nonaktif. Hanya berlaku untuk paket tour.' => '应对汇率波动的利润缓冲。在折扣之后、积分/余额之前加入。0 = 禁用。仅适用于旅游套餐。',
         'FX buffer disimpan: %s%%' => '汇率缓冲已保存：%s%%',
+        'Service charge' => '服务费',
     ],
 ];
 

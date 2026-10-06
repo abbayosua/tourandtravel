@@ -549,7 +549,7 @@ $modPaxRows = $participantMap[$b['id']] ?? [];
                         <div class="d-flex justify-content-between"><span><?= t('Subtotal') ?></span><span class="mod-sum-sub">-</span></div>
                         <div class="d-flex justify-content-between text-success d-none mod-sum-group-row"><span><?= t('Diskon Grup') ?> <span class="mod-sum-group-pct"></span></span><span class="mod-sum-group">-</span></div>
                         <div class="d-flex justify-content-between text-success d-none mod-sum-corp-row"><span><?= t('Diskon korporat') ?></span><span class="mod-sum-corp">-</span></div>
-                        <div class="d-flex justify-content-between text-secondary d-none mod-sum-buffer-row"><span><?= t('Penyesuaian kurs') ?> <span class="mod-sum-buffer-pct"></span></span><span class="mod-sum-buffer">+</span></div>
+                        <div class="d-flex justify-content-between text-secondary d-none mod-sum-buffer-row"><span><?= t('Service charge') ?> <span class="mod-sum-buffer-pct"></span></span><span class="mod-sum-buffer">+</span></div>
                         <hr class="my-1">
                         <div class="d-flex justify-content-between fw-bold"><span><?= t('Total') ?></span><span class="mod-sum-total">-</span></div>
                     </div>

@@ -828,7 +828,7 @@ require_once 'includes/header-shared.php';
                             <div class="d-flex justify-content-between text-success d-none" id="sumGroupRow"><span><?= t('Diskon Grup') ?> <span id="sumGroupPct"></span></span><span id="sumGroup">-Rp 0</span></div>
                             <div class="d-flex justify-content-between text-success d-none" id="sumCorporateRow"><span><?= t('Diskon korporat') ?> <span id="sumCorporatePct"></span></span><span id="sumCorporate">-Rp 0</span></div>
                             <div class="d-flex justify-content-between text-success d-none" id="sumPromoRow"><span><?= t('Promo') ?></span><span id="sumPromo">-Rp 0</span></div>
-                            <div class="d-flex justify-content-between text-secondary d-none" id="sumBufferRow"><span><?= t('Penyesuaian kurs') ?> <span id="sumBufferPct"></span></span><span id="sumBuffer">+Rp 0</span></div>
+                            <div class="d-flex justify-content-between text-secondary d-none" id="sumBufferRow"><span><?= t('Service charge') ?> <span id="sumBufferPct"></span></span><span id="sumBuffer">+Rp 0</span></div>
                             <div class="d-flex justify-content-between text-success d-none" id="sumPointsRow"><span><?= t('Poin') ?></span><span id="sumPoints">-Rp 0</span></div>
                             <div class="d-flex justify-content-between text-success d-none" id="sumWalletRow"><span><?= t('Saldo') ?></span><span id="sumWallet">-Rp 0</span></div>
                             <div class="d-flex justify-content-between text-success d-none" id="sumInsRow" data-testid="insurance-row"><span><?= t('Asuransi perjalanan') ?> (3%)</span><span id="sumIns">Rp 0</span></div>
