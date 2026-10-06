@@ -19,6 +19,8 @@ $dict = [
         'Bayar via Xendit Sandbox (VA / Kartu)' => 'Pay via Xendit Sandbox (VA / Card)',
         'Pilih Virtual Account bank atau kartu kredit di halaman checkout.' => 'Choose a bank Virtual Account or credit card on the checkout page.',
         'Pengaturan Xendit Sandbox (VA + Kartu)' => 'Xendit Sandbox Settings (VA + Card)',
+        'Otomatis dialihkan dalam' => 'Auto-redirecting in',
+        'detik…' => 'seconds…',
     ],
     'zh' => [
         'Secret Key' => '密钥',
@@ -28,6 +30,8 @@ $dict = [
         'Bayar via Xendit Sandbox (VA / Kartu)' => '通过Xendit沙盒支付（虚拟账户/银行卡）',
         'Pilih Virtual Account bank atau kartu kredit di halaman checkout.' => '在结账页面选择银行虚拟账户或信用卡。',
         'Pengaturan Xendit Sandbox (VA + Kartu)' => 'Xendit沙盒设置（虚拟账户+银行卡）',
+        'Otomatis dialihkan dalam' => '自动跳转，还有',
+        'detik…' => '秒…',
     ],
 ];
 

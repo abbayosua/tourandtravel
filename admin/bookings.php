@@ -327,7 +327,7 @@ require_once 'includes/admin-header.php';
                         <th><?= t('Tanggal') ?></th>
                         <th><?= t('Qty') ?></th>
                         <th><?= t('Total') ?></th>
-                        <th><?= t('COGS') ?></th>
+                        <th class="d-none"><?= t('COGS') ?></th>
                         <th><?= t('Kontak') ?></th>
                         <th><?= t('Status') ?></th>
                         <th><?= t('Aksi') ?></th>
@@ -345,7 +345,7 @@ require_once 'includes/admin-header.php';
                         <td><small><?= !empty($b['date_label']) ? tglIndonesia($b['date_label']) : '-' ?></small></td>
                         <td><?= e($b['qty_num'] ?? '') ?><?= isset($b['qty_num']) ? ' ' . t($b['qty_unit'] ?? '') : e($b['qty_label']) ?></td>
                         <td><?= formatRupiah($b['total_price']) ?><?= $btype === 'tour' && !empty($b['insurance_premi']) ? ' <span class="badge bg-success-subtle text-success" title="' . t('Asuransi perjalanan') . '"><i class="bi bi-shield-check"></i> +' . formatRupiah((float)$b['insurance_premi']) . '</span>' : '' ?></td>
-                        <td data-testid="cogs-cell">
+                        <td data-testid="cogs-cell" class="d-none">
                             <small class="text-muted"><?= formatRupiah($b['cogs'] ?? 0) ?></small>
                             <form method="POST" data-submit-once action="bookings.php?update_status=<?= $b['id'] ?>&status=<?= e($b['status']) ?>&type=<?= $btype ?>" class="d-flex gap-1 mt-1" style="max-width:130px;">
                                 <input type="number" name="cogs" class="form-control form-control-sm" value="<?= e($b['cogs'] ?? 0) ?>" min="0" step="0.01" aria-label="<?= t('COGS') ?>">

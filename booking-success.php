@@ -159,7 +159,9 @@ $isAwaitingPayment = $paymentEnabled && $btype === 'tour';
 $manualPending = $isPending && !$isAwaitingPayment;
 $paymentStatus = 'unpaid';
 $paymentOrderId = null;
-if ($paymentEnabled && $btype === 'tour') {
+// Status payment selalu dibaca untuk tour (bukan cuma saat pending) agar badge
+// tetap "Lunas" setelah booking confirmed; aksi bayar tetap digerbang $paymentEnabled.
+if ($btype === 'tour') {
     $pst = db()->prepare("SELECT order_id, gateway, pay_code, checkout_url, status FROM payments WHERE booking_type='tour' AND booking_id=? ORDER BY id DESC LIMIT 1");
     $pst->execute([$booking['id']]);
     if ($prow = $pst->fetch()) {
@@ -223,12 +225,12 @@ require_once 'includes/header-shared.php';
                         </div>
                         <div class="d-flex align-items-center" style="width: 40px;"><div class="border-top border-2 border-success w-100"></div></div>
                         <div class="text-center">
-                            <div class="rounded-circle bg-warning d-flex align-items-center justify-content-center mx-auto mb-1" style="width: 32px; height: 32px;"><i class="bi bi-clock text-white"></i></div>
+                            <div class="rounded-circle <?= $isPending ? 'bg-warning' : 'bg-success' ?> d-flex align-items-center justify-content-center mx-auto mb-1" style="width: 32px; height: 32px;"><i class="bi bi-<?= $isPending ? 'clock' : 'check-lg' ?> text-white"></i></div>
                             <small class="d-block text-muted" style="font-size: 10px;"><?= t('Konfirmasi') ?></small>
                         </div>
-                        <div class="d-flex align-items-center" style="width: 40px;"><div class="border-top border-2 border-secondary w-100"></div></div>
+                        <div class="d-flex align-items-center" style="width: 40px;"><div class="border-top border-2 <?= $isPending ? 'border-secondary' : 'border-success' ?> w-100"></div></div>
                         <div class="text-center">
-                            <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto mb-1" style="width: 32px; height: 32px;"><i class="bi bi-check2-all text-white"></i></div>
+                            <div class="rounded-circle <?= $isPending ? 'bg-secondary' : 'bg-success' ?> d-flex align-items-center justify-content-center mx-auto mb-1" style="width: 32px; height: 32px;"><i class="bi bi-check2-all text-white"></i></div>
                             <small class="d-block text-muted" style="font-size: 10px;"><?= t('Selesai') ?></small>
                         </div>
                     </div>
@@ -431,8 +433,23 @@ require_once 'includes/header-shared.php';
                     <div class="alert alert-info text-start mt-3" data-testid="paycode">
                         <div class="small text-muted"><?= t('Bayar via Xendit Sandbox (VA / Kartu)') ?></div>
                         <div class="small mb-2"><?= t('Pilih Virtual Account bank atau kartu kredit di halaman checkout.') ?></div>
-                        <a href="<?= e($paymentCheckoutUrl) ?>" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary mt-1"><?= t('Buka halaman checkout') ?></a>
+                        <div class="d-flex gap-2 align-items-center flex-wrap">
+                            <a href="<?= e($paymentCheckoutUrl) ?>" class="btn btn-sm btn-success" data-testid="xendit-paynow"><?= t('Bayar Sekarang') ?></a>
+                            <span class="small text-muted" data-testid="xendit-autoredirect"><?= t('Otomatis dialihkan dalam') ?> <strong id="xenditCd">5</strong> <?= t('detik…') ?></span>
+                        </div>
                     </div>
+                    <script>
+                    (function () {
+                        var url = <?= json_encode($paymentCheckoutUrl) ?>;
+                        var el = document.getElementById('xenditCd');
+                        var n = 5;
+                        var timer = setInterval(function () {
+                            n--;
+                            if (n <= 0) { clearInterval(timer); window.location.href = url; return; }
+                            if (el) el.textContent = n;
+                        }, 1000);
+                    })();
+                    </script>
                     <?php endif; ?>
                     <div id="paymentStatusArea" class="small mt-3" data-order-id="<?= e($paymentOrderId ?? '') ?>">
                         <span class="text-muted"><?= $paymentOrderId ? t('Menunggu pembayaran...') : '' ?></span>
