@@ -10,10 +10,11 @@ if (getenv('BASE_URL')) {
     define('BASE_URL', getenv('BASE_URL'));
 } elseif (($_SERVER['HTTP_HOST'] ?? '') === 'localhost' || str_starts_with($_SERVER['HTTP_HOST'] ?? '', '127.')) {
     // Detect subdirectory from SCRIPT_NAME (e.g. /tourandtravel/index.php → /tourandtravel)
-    // Turunkan '/admin' agar BASE tetap root aplikasi walau dipanggil dari admin/*
+    // Potong segmen '/admin' beserta apapun di bawahnya agar BASE tetap root aplikasi
+    // walau dipanggil dari admin/* (mis. admin/ajax/tour-translate-ai.php)
     $scriptDir = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/\\');
-    if (preg_match('#/admin$#', $scriptDir)) {
-        $scriptDir = substr($scriptDir, 0, -6);
+    if (preg_match('#^(.*)/admin(/|$)#', $scriptDir, $m)) {
+        $scriptDir = $m[1];
     }
     define('BASE_URL', 'http://localhost' . $scriptDir);
 } else {
@@ -33,6 +34,12 @@ if (!defined('FCM_SERVER_KEY')) {
 if (!defined('DUFFEL_TOKEN') && getenv('DUFFEL_TOKEN')) {
     define('DUFFEL_TOKEN', getenv('DUFFEL_TOKEN'));
 }
+
+// Atria AI (fitur AI AUTO translate paket tour) — isi via env / .env.
+// Fallback hardcoded agar e2e/lokal jalan tanpa export env (disetujui pemilik).
+if (!defined('ATRIA_API_KEY')) define('ATRIA_API_KEY', getenv('ATRIA_API_KEY') ?: 'atr_EzTU80XJOaQXM3PzZtC3odkTcUIsANqf');
+if (!defined('ATRIA_BASE_URL')) define('ATRIA_BASE_URL', getenv('ATRIA_BASE_URL') ?: 'https://api.atria-asi.ai/v1');
+if (!defined('ATRIA_MODEL')) define('ATRIA_MODEL', getenv('ATRIA_MODEL') ?: 'Atria-Dawn-Preview');
 
 // Session
 if (session_status() === PHP_SESSION_NONE) {

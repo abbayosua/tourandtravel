@@ -92,6 +92,70 @@ test.describe('tour AI AUTO mode toggle', () => {
   });
 });
 
+test.describe('tour AI AUTO edge cases', () => {
+  test('preview: field kosong → 400', async ({ page }) => {
+    await adminLogin(page);
+    const res = await page.request.post(`${BASE}/admin/ajax/tour-translate-ai.php`, {
+      data: { source_lang: 'id', fields: {} },
+    });
+    expect(res.status()).toBe(400);
+    const body = await res.json();
+    expect(body.ok).toBe(false);
+  });
+
+  test('preview: source_lang invalid → 400', async ({ page }) => {
+    await adminLogin(page);
+    const res = await page.request.post(`${BASE}/admin/ajax/tour-translate-ai.php`, {
+      data: { source_lang: 'xx', fields: { title: 'Halo' } },
+    });
+    expect(res.status()).toBe(400);
+  });
+
+  test('preview: teks raksasa ditolak cepat tanpa panggil AI', async ({ page }) => {
+    await adminLogin(page);
+    const big = 'x'.repeat(13000);
+    const t0 = Date.now();
+    const res = await page.request.post(`${BASE}/admin/ajax/tour-translate-ai.php`, {
+      data: { source_lang: 'id', fields: { description: big } },
+    });
+    expect(res.status()).toBe(500);
+    const body = await res.json();
+    expect(body.ok).toBe(false);
+    expect(body.error).toContain('terlalu panjang');
+    expect(Date.now() - t0, 'ditolak lokal < 10 dtk').toBeLessThan(10000);
+  });
+
+  test('preview: GET → 405', async ({ page }) => {
+    await adminLogin(page);
+    const res = await page.request.get(`${BASE}/admin/ajax/tour-translate-ai.php`);
+    expect(res.status()).toBe(405);
+  });
+
+  test('preview: tanpa login → redirect login', async ({ browser }) => {
+    const ctx = await browser.newContext();
+    const anon = await ctx.newPage();
+    const res = await anon.request.post(`${BASE}/admin/ajax/tour-translate-ai.php`, {
+      data: { source_lang: 'id', fields: { title: 'Halo' } },
+      maxRedirects: 0,
+    });
+    expect(res.status()).toBe(302);
+    expect(res.headers()['location'] || '').toContain('admin/login.php');
+    await ctx.close();
+  });
+
+  test('simpan auto sumber kosong → validasi, tak ada tour nyasar', async ({ page }) => {
+    await adminLogin(page);
+    await page.goto(`${BASE}/admin/tour-add.php?lang=id`);
+    await page.waitForLoadState('domcontentloaded');
+    await page.check('#modeAuto');
+    await page.fill('input[name="price"]', '1000000');
+    await page.click('button[type="submit"].btn-primary');
+    await expect(page.locator('body')).toContainText('Judul tour harus diisi');
+    const n = mysql(`SELECT COUNT(*) FROM tours WHERE price = 1000000 AND title = ''`);
+    expect(n).toBe('0');
+  });
+});
+
 test.describe('tour AI AUTO translate (API asli)', () => {
   test('pratinjau AJAX mengisi EN+ZH', async ({ page }) => {
     test.setTimeout(120_000);
