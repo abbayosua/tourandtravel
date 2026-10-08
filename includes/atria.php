@@ -114,8 +114,10 @@ function atriaTranslateTour(array $sourceFields, string $sourceLang, array $targ
         . implode('/', $targetLangs) . ' and the exact same field names as input. '
         . 'Keep line breaks (one item per line stays one per line). Keep proper nouns '
         . '(hotel names, city names, airline codes) untranslated unless a standard '
-        . 'translation exists. Tone: marketing-friendly tour brochure. '
-        . 'For zh use Simplified Chinese (简体中文).';
+        . 'translation exists. NEVER convert currencies, numbers, dates, times, phone '
+        . 'numbers, URLs, emails, or codes — copy them verbatim (e.g. "Rp 15.000.000" '
+        . 'stays as-is, "GA-123" stays, "+62 812-3456" stays). Tone: marketing-friendly '
+        . 'tour brochure. For zh use Simplified Chinese (简体中文).';
     $user = 'Source language: ' . $sourceLang . "\n"
         . 'Target languages: ' . implode(',', $targetLangs) . "\n"
         . 'Translate this JSON: ' . json_encode($sourceFields, JSON_UNESCAPED_UNICODE);
