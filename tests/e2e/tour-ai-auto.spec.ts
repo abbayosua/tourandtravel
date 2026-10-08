@@ -65,6 +65,14 @@ test.describe('tour AI AUTO mode toggle', () => {
     await expect(page.locator('input[name="title_en"]')).toBeVisible();
     await expect(page.locator('input[name="title"]')).toBeHidden();
     await expect(page.locator('input[name="title_zh"]')).toBeHidden();
+
+    // Kolom sumber wajib diisi → placeholder fallback manual harus hilang
+    await expect(page.locator('input[name="title_en"]')).toHaveAttribute('placeholder', '');
+    await expect(page.locator('textarea[name="description_en"]')).toHaveAttribute('placeholder', '');
+
+    // Kembali ke manual → placeholder fallback muncul lagi
+    await page.check('#modeManual');
+    await expect(page.locator('input[name="title_en"]')).not.toHaveAttribute('placeholder', '');
   });
 
   test('label mode tersedia di 3 bahasa', async ({ page }) => {

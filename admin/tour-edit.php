@@ -568,7 +568,21 @@ require_once 'includes/admin-header.php';
             ['id', 'en', 'zh'].forEach(l => {
                 const input = form.querySelector(`[name="${f}${suffixFor(l)}"]`);
                 const wrap = input?.closest('.mb-3');
-                if (wrap) wrap.style.display = (!auto || l === src) ? '' : 'none';
+                if (!input || !wrap) return;
+                const show = !auto || l === src;
+                wrap.style.display = show ? '' : 'none';
+                // Placeholder "kosongkan untuk memakai versi ID" hanya masuk akal
+                // di mode manual (kolom target opsional). Di mode auto, kolom
+                // sumber WAJIB diisi → placeholder menyesatkan, kosongkan saja.
+                if (auto && l === src) {
+                    if (input.placeholder && input.dataset.phManual === undefined) {
+                        input.dataset.phManual = input.placeholder;
+                    }
+                    input.placeholder = '';
+                } else if (input.dataset.phManual !== undefined) {
+                    input.placeholder = input.dataset.phManual;
+                    delete input.dataset.phManual;
+                }
             });
         });
         if (!auto) aiStatus.textContent = '';
