@@ -143,6 +143,16 @@ test.describe('tour AI AUTO edge cases', () => {
     await ctx.close();
   });
 
+  test('preview: hanya field asing → 400 tanpa panggil AI', async ({ page }) => {
+    await adminLogin(page);
+    const t0 = Date.now();
+    const res = await page.request.post(`${BASE}/admin/ajax/tour-translate-ai.php`, {
+      data: { source_lang: 'id', fields: { price: '100', hacked: 'x' } },
+    });
+    expect(res.status()).toBe(400);
+    expect(Date.now() - t0, 'ditolak lokal < 10 dtk').toBeLessThan(10000);
+  });
+
   test('simpan auto sumber kosong → validasi, tak ada tour nyasar', async ({ page }) => {
     await adminLogin(page);
     await page.goto(`${BASE}/admin/tour-add.php?lang=id`);
@@ -153,6 +163,35 @@ test.describe('tour AI AUTO edge cases', () => {
     await expect(page.locator('body')).toContainText('Judul tour harus diisi');
     const n = mysql(`SELECT COUNT(*) FROM tours WHERE price = 1000000 AND title = ''`);
     expect(n).toBe('0');
+  });
+
+  test('simpan auto minimal (tanpa deskripsi) → baris valid, NULL tak crash', async ({ page }) => {
+    test.setTimeout(300_000);
+    const title = `E2E MINIMAL ${Date.now()}`;
+    await adminLogin(page);
+    await page.goto(`${BASE}/admin/tour-add.php?lang=id`);
+    await page.waitForLoadState('domcontentloaded');
+    await page.check('#modeAuto');
+    await page.fill('input[name="title"]', title);
+    await page.fill('input[name="category"]', 'Jawa Timur');
+    await page.fill('input[name="price"]', '999000');
+    await page.uncheck('#isActive');
+    await Promise.all([
+      page.waitForURL('**/tour-edit.php?id=*&msg=added*', { timeout: 60_000 }),
+      page.click('button[type="submit"].btn-primary'),
+    ]);
+    // Background hanya menerjemahkan yang terisi → polling title_en
+    const deadline = Date.now() + 270_000;
+    let en = '';
+    for (;;) {
+      en = mysql(`SELECT COALESCE(title_en,'') FROM tours WHERE title = '${title}' LIMIT 1`);
+      if (en !== '' || Date.now() > deadline) break;
+      await new Promise((r) => setTimeout(r, 5000));
+    }
+    expect(en.length, 'title_en terisi').toBeGreaterThan(0);
+    const desc = mysql(`SELECT COALESCE(description_zh,'EMPTY') FROM tours WHERE title = '${title}' LIMIT 1`);
+    expect(desc, 'deskripsi kosong tetap kosong, bukan sampah AI').toBe('EMPTY');
+    mysql(`DELETE FROM tours WHERE title = '${title}'`);
   });
 });
 
@@ -177,7 +216,7 @@ test.describe('tour AI AUTO translate (API asli)', () => {
   });
 
   test('simpan auto: tour tersimpan 3 bahasa + edit-auto tampil', async ({ page }) => {
-    test.setTimeout(180_000);
+    test.setTimeout(300_000);
     await adminLogin(page);
     await page.goto(`${BASE}/admin/tour-add.php?lang=id`);
     await page.waitForLoadState('domcontentloaded');
@@ -197,7 +236,7 @@ test.describe('tour AI AUTO translate (API asli)', () => {
     ]);
     // AI jalan background setelah redirect → polling DB sampai terisi (maks ~3 mnt)
     let row: string[] = [];
-    const deadline = Date.now() + 180_000;
+    const deadline = Date.now() + 270_000;
     for (;;) {
       // COALESCE: mysql -B mencetak NULL sebagai string "NULL" — samarkan jadi ''
       row = mysql(
