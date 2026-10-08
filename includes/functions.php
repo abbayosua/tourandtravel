@@ -486,6 +486,60 @@ function i18nSaveRow($table, $idCol, $id, $values) {
     db()->prepare("UPDATE `$table` SET " . implode(', ', $sets) . " WHERE `$idCol` = ?")->execute($params);
 }
 
+/**
+ * Isi slot terjemahan yang masih kosong via Atria AI (dipakai setelah redirect
+ * cepat — lihat tour-add.php/tour-edit.php mode AI AUTO). Baca ulang baris agar
+ * tidak menimpa nilai yang sudah diisi (mis. hasil pratinjau). Return true bila
+ * ada yang terisi. Lempar RuntimeException bila AI gagal (pemanggil log).
+ */
+function i18nFillEmptyTranslated(string $table, string $idCol, int $id, array $needAi, string $src): bool {
+    $targets = array_values(array_filter(['id', 'en', 'zh'], fn($l) => $l !== $src));
+    if (!$needAi || !$targets) return false;
+    require_once __DIR__ . '/atria.php';
+    $tr = atriaTranslateTour($needAi, $src, $targets);
+    $stmt = db()->prepare("SELECT * FROM `$table` WHERE `$idCol` = ? LIMIT 1");
+    $stmt->execute([$id]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$row) return false;
+    $fill = [];
+    foreach ($needAi as $f => $_) {
+        foreach ($targets as $tl) {
+            $col = $tl === 'id' ? $f : $f . '_' . $tl;
+            if (trim((string)($row[$col] ?? '')) === '' && !empty($tr[$tl][$f])) {
+                $fill[$f][$tl] = $tr[$tl][$f];
+            }
+        }
+    }
+    if (!$fill) return false;
+    i18nSaveRow($table, $idCol, $id, $fill);
+    return true;
+}
+
+/**
+ * Redirect lalu lanjutkan kerja berat (translate AI) setelah respons terkirim.
+ * Mencegah proxy timeout saat AI lambat. Bila fastcgi tidak tersedia,
+ * callback dijalankan sinkron (perilaku lama).
+ */
+function redirectThenBackground(string $url, callable $job): void {
+    if (function_exists('fastcgi_finish_request')) {
+        if (session_status() === PHP_SESSION_ACTIVE) session_write_close();
+        ignore_user_abort(true);
+        header('Location: ' . $url);
+        header('Content-Length: 0');
+        header('Connection: close');
+        fastcgi_finish_request();
+        try {
+            $job();
+        } catch (Throwable $e) {
+            error_log('background job: ' . $e->getMessage());
+        }
+        exit;
+    }
+    $job();
+    header('Location: ' . $url);
+    exit;
+}
+
 function i18nInputs($label, $field, $row, $type = 'text', $rows = 3) {
     $langs = ['id' => 'ID'];
     foreach (i18nLangs() as $l) $langs[$l] = strtoupper($l);

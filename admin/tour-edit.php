@@ -16,9 +16,41 @@ if (!$tour) {
 
 $error = '';
 
+// Mode input: manual (seperti sekarang) | auto (tulis 1 bahasa, AI terjemahkan sisanya)
+$inputMode = ($_POST['input_mode'] ?? 'manual') === 'auto' ? 'auto' : 'manual';
+$tourFields = ['title', 'description', 'category', 'route_cities', 'highlights', 'includes', 'excludes', 'flight_info', 'meeting_point', 'important_notes'];
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['add_itinerary']) && !isset($_POST['add_date']) && !isset($_POST['add_gallery'])) {
     $ti = [];
-    foreach (['title', 'description', 'category', 'route_cities', 'highlights', 'includes', 'excludes', 'flight_info', 'meeting_point', 'important_notes'] as $f) $ti[$f] = i18nPost($f);
+    foreach ($tourFields as $f) $ti[$f] = i18nPost($f);
+    $contentLanguage = isValidLang($_POST['content_language'] ?? '') ? $_POST['content_language'] : 'id';
+
+    // AI AUTO: sumber = 1 bahasa (sesuai Bahasa Konten). Simpan cepat, slot kosong
+    // diisi AI via background setelah redirect (respons Atria bisa > batas proxy).
+    $needAi = [];
+    $aiSrc = $contentLanguage;
+    if ($inputMode === 'auto') {
+        $src = $contentLanguage;
+        foreach ($tourFields as $f) {
+            foreach (['id', 'en', 'zh'] as $l) {
+                if ($l !== $src && $ti[$f][$l] === '' && $ti[$f][$src] !== '') {
+                    $needAi[$f] = $ti[$f][$src];
+                    break;
+                }
+            }
+        }
+        if ($src !== 'id') {
+            foreach (['title', 'category'] as $f) {
+                if ($ti[$f][$src] !== '' && $ti[$f]['id'] === '' && !isset($needAi[$f])) {
+                    $needAi[$f] = $ti[$f][$src];
+                }
+            }
+        }
+        // Kolom dasar (id) jangan kosong bila sumber terisi (fallback = sumber)
+        foreach ($tourFields as $f) {
+            if ($ti[$f]['id'] === '') $ti[$f]['id'] = $ti[$f][$src];
+        }
+    }
     $title = $ti['title']['id'];
     $category = $ti['category']['id'];
     $description = $ti['description']['id'];
@@ -35,7 +67,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['add_itinerary']) && 
     $priceCurrency = in_array($_POST['price_currency'] ?? '', ['IDR', 'SGD', 'USD']) ? $_POST['price_currency'] : 'IDR';
     $maxParticipants = (int)($_POST['max_participants'] ?? 1);
     $isActive = isset($_POST['is_active']) ? 1 : 0;
-    $contentLanguage = isValidLang($_POST['content_language'] ?? '') ? $_POST['content_language'] : 'id';
 
     if (!$title) $error = t('Judul tour harus diisi');
     elseif (!$category) $error = t('Kategori harus diisi');
@@ -74,7 +105,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['add_itinerary']) && 
             'important_notes' => $ti['important_notes'],
         ]);
 
-        header('Location: tours.php?msg=updated');
+        $afterUrl = "tour-edit.php?id=$id&msg=updated";
+        if ($needAi) {
+            $jobNeed = $needAi;
+            $jobSrc = $aiSrc;
+            redirectThenBackground($afterUrl . '&ai=1', function () use ($id, $jobNeed, $jobSrc) {
+                i18nFillEmptyTranslated('tours', 'id', $id, $jobNeed, $jobSrc);
+            });
+        }
+        header('Location: ' . $afterUrl);
         exit;
     }
 }
@@ -173,6 +212,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_gallery'])) {
 $msg = '';
 if (isset($_GET['msg'])) {
     $msgs = [
+        'added' => t('Tour berhasil ditambahkan'),
+        'updated' => t('Tour berhasil diperbarui'),
         'itinerary_added' => t('Itinerary berhasil ditambahkan'),
         'itinerary_deleted' => t('Itinerary berhasil dihapus'),
         'date_added' => t('Tanggal keberangkatan berhasil ditambahkan'),
@@ -190,12 +231,34 @@ require_once 'includes/admin-header.php';
 <?php if ($msg): ?>
     <div class="alert alert-success alert-dismissible py-2"><?= $msg ?><button class="btn-close" data-bs-dismiss="alert"></button></div>
 <?php endif; ?>
+<?php if (isset($_GET['ai'])): ?>
+    <div class="alert alert-info alert-dismissible py-2">⏳ <?= t('Menerjemahkan via AI...') ?> <?= t('Refresh halaman untuk melihat hasil.') ?><button class="btn-close" data-bs-dismiss="alert"></button></div>
+<?php endif; ?>
 <?php if ($error): ?>
     <div class="alert alert-danger py-2"><?= $error ?></div>
 <?php endif; ?>
 
 <!-- Form Edit Tour -->
-<form method="POST" data-submit-once enctype="multipart/form-data">
+<form method="POST" data-submit-once enctype="multipart/form-data" id="tourEditForm">
+    <!-- Mode input: Manual vs AI AUTO -->
+    <div class="card border-0 shadow-sm mb-3">
+        <div class="card-body py-3">
+            <div class="d-flex align-items-center gap-4 flex-wrap">
+                <strong class="small"><?= t('Mode Input:') ?></strong>
+                <div class="form-check">
+                    <input type="radio" name="input_mode" value="manual" id="modeManual" class="form-check-input" <?= $inputMode !== 'auto' ? 'checked' : '' ?>>
+                    <label class="form-check-label" for="modeManual">📝 <?= t('Manual (isi 3 bahasa sendiri)') ?></label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" name="input_mode" value="auto" id="modeAuto" class="form-check-input" <?= $inputMode === 'auto' ? 'checked' : '' ?>>
+                    <label class="form-check-label" for="modeAuto">✨ <?= t('AI AUTO (tulis 1 bahasa, auto translate)') ?></label>
+                </div>
+                <button type="button" id="btnAiPreview" class="btn btn-sm btn-outline-primary d-none">✨ <?= t('Terjemahkan Otomatis (pratinjau)') ?></button>
+                <span id="aiStatus" class="small text-muted"></span>
+            </div>
+            <div id="aiHint" class="form-text mt-2 d-none"><?= t('Ubah teks dalam 1 bahasa (lihat Bahasa Konten), klik pratinjau untuk cek hasil, lalu Update — kolom yang masih kosong otomatis diterjemahkan AI saat disimpan.') ?></div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-8">
             <div class="card border-0 shadow-sm mb-3">
@@ -248,8 +311,8 @@ require_once 'includes/admin-header.php';
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold"><?= t('Bahasa Konten') ?></label>
-                        <select name="content_language" class="form-select">
+                        <label class="form-label fw-semibold" id="contentLangLabel"><?= t('Bahasa Konten') ?></label>
+                        <select name="content_language" id="contentLangSelect" class="form-select">
                             <?php foreach (getSupportedLanguages() as $langCode => $langMeta): ?>
                             <option value="<?= e($langCode) ?>" <?= ($tour['content_language'] ?? 'id') === $langCode ? 'selected' : '' ?>><?= $langMeta['flag'] ?> <?= e($langMeta['label']) ?><?= $langCode === 'id' ? ' (' . t('asli') . ')' : '' ?></option>
                             <?php endforeach; ?>
@@ -479,5 +542,86 @@ require_once 'includes/admin-header.php';
         <?php endif; ?>
     </div>
 </div>
+
+<script>
+// Mode Manual vs AI AUTO — AI AUTO: hanya tampilkan input bahasa sumber
+(function() {
+    const form = document.getElementById('tourEditForm');
+    if (!form) return;
+    const btnPreview = document.getElementById('btnAiPreview');
+    const aiHint = document.getElementById('aiHint');
+    const aiStatus = document.getElementById('aiStatus');
+    const langSelect = document.getElementById('contentLangSelect');
+    const FIELDS = ['title', 'description', 'category', 'route_cities', 'highlights', 'includes', 'excludes', 'flight_info', 'meeting_point', 'important_notes'];
+
+    const isAuto = () => form.querySelector('input[name="input_mode"]:checked')?.value === 'auto';
+    const srcLang = () => langSelect.value || 'id';
+    const suffixFor = (l) => l === 'id' ? '' : '_' + l;
+
+    function applyMode() {
+        const auto = isAuto(), src = srcLang();
+        btnPreview.classList.toggle('d-none', !auto);
+        aiHint.classList.toggle('d-none', !auto);
+        document.getElementById('contentLangLabel').textContent =
+            auto ? '<?= t('Bahasa sumber (yang kamu tulis)') ?>' : '<?= t('Bahasa Konten') ?>';
+        FIELDS.forEach(f => {
+            ['id', 'en', 'zh'].forEach(l => {
+                const input = form.querySelector(`[name="${f}${suffixFor(l)}"]`);
+                const wrap = input?.closest('.mb-3');
+                if (wrap) wrap.style.display = (!auto || l === src) ? '' : 'none';
+            });
+        });
+        if (!auto) aiStatus.textContent = '';
+    }
+
+    function collectSource() {
+        const src = srcLang(), out = {};
+        FIELDS.forEach(f => {
+            const input = form.querySelector(`[name="${f}${suffixFor(src)}"]`);
+            if (input && input.value.trim() !== '') out[f] = input.value.trim();
+        });
+        return out;
+    }
+
+    btnPreview.addEventListener('click', async () => {
+        const fields = collectSource();
+        if (!Object.keys(fields).length) {
+            aiStatus.textContent = '<?= t('Isi dulu minimal 1 kolom dalam bahasa sumber.') ?>';
+            aiStatus.className = 'small text-danger';
+            return;
+        }
+        btnPreview.disabled = true;
+        aiStatus.textContent = '⏳ ' + <?= json_encode(t('Menerjemahkan via AI...')) ?>;
+        aiStatus.className = 'small text-muted';
+        try {
+            const res = await fetch('ajax/tour-translate-ai.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({source_lang: srcLang(), fields})
+            });
+            const data = await res.json();
+            if (!data.ok) throw new Error(data.error || 'AI error');
+            let n = 0;
+            Object.entries(data.translations || {}).forEach(([lang, vals]) => {
+                Object.entries(vals || {}).forEach(([f, v]) => {
+                    const input = form.querySelector(`[name="${f}${suffixFor(lang)}"]`);
+                    if (input) { input.value = v; n++; }
+                });
+            });
+            aiStatus.textContent = '✅ ' + n + ' ' + <?= json_encode(t('kolom terisi otomatis — cek dengan pindah ke mode Manual.')) ?>;
+            aiStatus.className = 'small text-success';
+        } catch (e) {
+            aiStatus.textContent = '❌ ' + (e.message || e);
+            aiStatus.className = 'small text-danger';
+        } finally {
+            btnPreview.disabled = false;
+        }
+    });
+
+    form.querySelectorAll('input[name="input_mode"]').forEach(r => r.addEventListener('change', applyMode));
+    langSelect.addEventListener('change', applyMode);
+    applyMode();
+})();
+</script>
 
 <?php require_once 'includes/admin-footer.php'; ?>
