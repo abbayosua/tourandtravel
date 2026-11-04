@@ -76,6 +76,7 @@ function adminPages(): array {
         // saat. Untuk mengaktifkan kembali: hapus flag 'hidden' di bawah.
         'appearance'  => ['file' => 'appearance.php', 'section' => 'Content', 'label' => 'Tampilan Homepage', 'icon' => 'bi-layout-text-window-reverse', 'show' => true, 'via' => null, 'hidden' => true],
         'brand-settings' => ['file' => 'brand-settings.php', 'section' => 'Content', 'label' => 'Brand & Logo', 'icon' => 'bi-award', 'show' => true, 'via' => null],
+        'panduan' => ['file' => 'panduan.php', 'section' => 'Content', 'label' => 'Panduan Branding', 'icon' => 'bi-book', 'show' => true, 'via' => null],
         'nav-menus'   => ['file' => 'nav-menus.php', 'section' => 'Content', 'label' => 'Menu Navigasi', 'icon' => 'bi-menu-button-wide', 'show' => true, 'via' => null],
         'hero-slides' => ['file' => 'hero-slides.php', 'section' => 'Content', 'label' => 'Hero Slides', 'icon' => 'bi-images', 'show' => false, 'via' => null],
         'hero-slide-edit' => ['file' => 'hero-slide-edit.php', 'section' => 'Content', 'label' => 'Hero Slides', 'icon' => 'bi-images', 'show' => false, 'via' => 'hero-slides'],
