@@ -745,6 +745,38 @@ function siteLogoUrl(): string {
     return (defined('BASE_URL') ? BASE_URL : '') . '/' . $p;
 }
 
+/** Path relatif favicon custom (uploads/brand/...) atau '' bila belum dipasang. */
+function siteFaviconPath(): string {
+    if (!function_exists('getSetting')) return '';
+    $p = trim((string)getSetting('site_favicon', ''));
+    if ($p === '' || str_contains($p, '..')) return '';
+    return ltrim($p, '/');
+}
+
+/** URL penuh favicon custom atau '' bila belum dipasang. */
+function siteFaviconUrl(): string {
+    $p = siteFaviconPath();
+    if ($p === '') return '';
+    if (preg_match('#^https?://#i', $p)) return $p;
+    return (defined('BASE_URL') ? BASE_URL : '') . '/' . $p;
+}
+
+/** URL penuh OG image custom atau '' bila belum dipasang. */
+function siteOgImageUrl(): string {
+    if (!function_exists('getSetting')) return '';
+    $p = trim((string)getSetting('site_og_image', ''));
+    if ($p === '' || str_contains($p, '..')) return '';
+    $p = ltrim($p, '/');
+    if (preg_match('#^https?://#i', $p)) return $p;
+    return (defined('BASE_URL') ? BASE_URL : '') . '/' . $p;
+}
+
+/** Warna tema brand (default Bootstrap blue), validasi hex. */
+function siteThemeColor(): string {
+    $c = trim((string)getSetting('theme_color', '#0d6efd'));
+    return preg_match('/^#[0-9a-fA-F]{6}$/', $c) ? $c : '#0d6efd';
+}
+
 /** Ganti varian brand statis dalam teks (termasuk hasil t()) dengan nama custom. */
 function brandText(string $s): string {
     $b = siteName();

@@ -28,5 +28,5 @@ $target = $tplData['target_price'] ?? '';
 <p style="font-size:16px;font-weight:bold;color:#198754;"><?= htmlspecialchars($m['title']) ?></p>
 <p><?= htmlspecialchars(sprintf($m['body'], $itemTitle, $current, $target)) ?></p>
 <?php if (!empty($tplData['link'])): ?>
-<p style="margin-top:16px;"><a href="<?= htmlspecialchars($tplData['link']) ?>" style="display:inline-block;padding:10px 20px;background:#0d6efd;color:#fff;text-decoration:none;border-radius:6px;"><?= htmlspecialchars($m['cta']) ?></a></p>
+<p style="margin-top:16px;"><a href="<?= htmlspecialchars($tplData['link']) ?>" style="display:inline-block;padding:10px 20px;background:<?= e(siteThemeColor()) ?>;color:#fff;text-decoration:none;border-radius:6px;"><?= htmlspecialchars($m['cta']) ?></a></p>
 <?php endif; ?>

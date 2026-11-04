@@ -20,5 +20,5 @@ $MESSAGES = [
 $m = $MESSAGES[$lang] ?? $MESSAGES['id'];
 ?>
 <p><?= $m[0] ?></p>
-<p><a href="<?= htmlspecialchars($tplData['reset_link'] ?? '#') ?>" style="background:#0d6efd;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;display:inline-block;"><?= $m[1] ?></a></p>
+<p><a href="<?= htmlspecialchars($tplData['reset_link'] ?? '#') ?>" style="background:<?= e(siteThemeColor()) ?>;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;display:inline-block;"><?= $m[1] ?></a></p>
 <p style="color:#9ca3af;font-size:12px;"><?= $m[2] ?></p>

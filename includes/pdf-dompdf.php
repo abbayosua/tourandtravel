@@ -198,26 +198,26 @@ function pdfUiLabels(string $lang = 'en'): array
 
 function pdfBaseCss(): string
 {
-    return <<<CSS
+    $accent = function_exists('pdfAccentColor') ? pdfAccentColor() : trim((string)getSetting('pdf_accent_color', '#0064d2')); if (!preg_match('/^#[0-9a-fA-F]{6}$/', $accent)) $accent = '#0064d2'; return <<<CSS
     body { font-family: 'DejaVu Sans', sans-serif; font-size: 10pt; color: #1a1a2e; margin: 0; word-break: break-word; }
-    .topbar { background: #0064d2; color: #fff; text-align: center; font-size: 11pt; font-weight: bold; padding: 10px 0; margin: 0 0 14px 0; }
+    .topbar { background: {$accent}; color: #fff; text-align: center; font-size: 11pt; font-weight: bold; padding: 10px 0; margin: 0 0 14px 0; } .pdf-brand-logo { text-align: center; margin-bottom: 8px; }
     .cover { width: 100%; display: block; margin-bottom: 10px; }
     h1 { font-size: 20pt; margin: 0 0 4px 0; color: #1a1a2e; }
     .meta { color: #5a6178; font-size: 9pt; margin-bottom: 8px; }
-    hr.blue { border: 0; border-top: 2px solid #0064d2; margin: 8px 0 14px 0; }
-    .day { background: #f0f5fa; border-left: 4px solid #0064d2; padding: 6px 10px; margin: 14px 0 8px 0; page-break-inside: avoid; page-break-after: avoid; }
-    .day h2 { font-size: 12pt; color: #0064d2; margin: 0; }
+    hr.blue { border: 0; border-top: 2px solid {$accent}; margin: 8px 0 14px 0; }
+    .day { background: #f0f5fa; border-left: 4px solid {$accent}; padding: 6px 10px; margin: 14px 0 8px 0; page-break-inside: avoid; page-break-after: avoid; }
+    .day h2 { font-size: 12pt; color: {$accent}; margin: 0; }
     .desc { color: #3c3c50; font-size: 10pt; margin: 4px 0 6px 0; }
     .badge { display: inline-block; color: #fff; font-size: 8pt; padding: 2px 8px; margin: 0 4px 4px 0; }
     .badge.meal { background: #28a745; }
     .badge.acc { background: #17a2b8; }
-    .badge.type-tour { background: #0064d2; }
+    .badge.type-tour { background: {$accent}; }
     .badge.type-hotel { background: #dc3545; }
     .badge.type-flight { background: #212529; }
     .badge.type-custom { background: #0dcaf0; }
     table.item { width: 100%; border: 1px solid #dcdce1; background: #fcfcfe; margin: 6px 0; border-collapse: collapse; page-break-inside: avoid; }
     table.item td { vertical-align: top; padding: 6px 8px; }
-    table.item td.bar-tour { background: #0064d2; width: 4px; padding: 0; }
+    table.item td.bar-tour { background: {$accent}; width: 4px; padding: 0; }
     table.item td.bar-hotel { background: #dc3545; width: 4px; padding: 0; }
     table.item td.bar-flight { background: #212529; width: 4px; padding: 0; }
     table.item td.bar-custom { background: #0dcaf0; width: 4px; padding: 0; }
@@ -237,7 +237,7 @@ function pdfTourHtml(string $title, string $meta, string $coverImgTag, array $da
 {
     $lang = getCurrentLang();
     $L = pdfUiLabels($lang);
-    $h = '<html><head><meta charset="utf-8"><style>' . pdfBaseCss() . '</style></head><body>';
+    $h = '<html><head><meta charset="utf-8"><style>' . pdfBaseCss() . '</style></head><body>'; $brandItin = ''; try { $lpItin = function_exists('siteLogoPath') ? siteLogoPath() : ''; if ($lpItin !== '') $brandItin = pdfLocalImg($lpItin, 'width="90"'); } catch (Throwable $e) { $brandItin = ''; } if ($brandItin !== '') $h .= '<div class="pdf-brand-logo">' . $brandItin . '</div>';
     $h .= '<div class="topbar">' . e(siteName()) . ' &mdash; ' . e($L['tour_itinerary']) . '</div>';
     if ($coverImgTag !== '') $h .= '<div>' . $coverImgTag . '</div>';
     $h .= '<h1>' . e($title) . '</h1>';
@@ -266,7 +266,7 @@ function pdfUserHtml(string $title, string $sub, string $userName, array $days):
     $lang = getCurrentLang();
     $L = pdfUiLabels($lang);
     $labels = ['tour' => $L['tour'], 'hotel' => $L['hotel'], 'flight' => $L['flight'], 'custom' => $L['activity']];
-    $h = '<html><head><meta charset="utf-8"><style>' . pdfBaseCss() . '</style></head><body>';
+    $h = '<html><head><meta charset="utf-8"><style>' . pdfBaseCss() . '</style></head><body>'; $brandItin2 = ''; try { $lpItin2 = function_exists('siteLogoPath') ? siteLogoPath() : ''; if ($lpItin2 !== '') $brandItin2 = pdfLocalImg($lpItin2, 'width="90"'); } catch (Throwable $e) { $brandItin2 = ''; } if ($brandItin2 !== '') $h .= '<div class="pdf-brand-logo">' . $brandItin2 . '</div>';
     $h .= '<div class="topbar">' . e(siteName()) . ' &mdash; ' . e($userName) . ' | ' . e($L['itinerary']) . '</div>';
     $h .= '<h1>' . e($title) . '</h1>';
     if ($sub !== '') $h .= '<div class="meta">' . e($sub) . '</div>';

@@ -12,27 +12,27 @@
 
 function pdfBrochureCss(string $lang = 'id'): string
 {
-    $font = $lang === 'zh' ? "'NotoSansSC', 'DejaVu Sans', sans-serif" : "'DejaVu Sans', sans-serif";
+    $font = $lang === 'zh' ? "'NotoSansSC', 'DejaVu Sans', sans-serif" : "'DejaVu Sans', sans-serif"; $accent = pdfAccentColor(); $gold = pdfGoldColor();
     return <<<CSS
     @page { size: A4 portrait; margin: 9mm 8mm 12mm 8mm; }
     body { font-family: $font; font-size: 9pt; color: #1a1a2e; margin: 0; word-break: break-word; }
-    .page { border: 2.5px solid #d4b86a; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; page-break-inside: auto; }
+    .page { border: 2.5px solid {$gold}; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; page-break-inside: auto; }
     .secbar, .secbar-green, .secbar-red { page-break-after: avoid; }
     table.itin tr, table.price tr { page-break-inside: avoid; }
     table.head { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
     table.head td { vertical-align: top; padding: 0; }
-    .brand { font-size: 13pt; font-weight: bold; color: #0f2b6b; letter-spacing: 2px; }
-    .brand-sub { font-size: 7pt; letter-spacing: 3px; color: #0f2b6b; font-weight: bold; }
+    .brand { font-size: 13pt; font-weight: bold; color: {$accent}; letter-spacing: 2px; }
+    .brand-sub { font-size: 7pt; letter-spacing: 3px; color: {$accent}; font-weight: bold; }
     .head-right { text-align: right; font-size: 7pt; color: #888; width: 170px; }
-    .hero { background: #0f2b6b; border-radius: 8px; padding: 12px 14px; margin: 6px 0 8px 0; }
+    .hero { background: {$accent}; border-radius: 8px; padding: 12px 14px; margin: 6px 0 8px 0; }
     .hero table { width: 100%; border-collapse: collapse; }
     .hero table td { vertical-align: middle; padding: 0; }
-    .dur { color: #d4b86a; font-size: 34pt; font-weight: bold; width: 130px; }
+    .dur { color: {$gold}; font-size: 34pt; font-weight: bold; width: 130px; }
     .hero-title { color: #ffffff; font-size: 13pt; font-weight: bold; }
-    .hero-sub { color: #d4b86a; font-size: 8pt; margin-top: 2px; }
+    .hero-sub { color: {$gold}; font-size: 8pt; margin-top: 2px; }
     .tagline { font-size: 9pt; color: #33334d; margin: 6px 0 8px 0; }
     .coverimg { width: 100%; display: block; border-radius: 6px; margin: 4px 0 8px 0; }
-    .secbar { background: #0f2b6b; color: #fff; font-weight: bold; font-size: 9pt;
+    .secbar { background: {$accent}; color: #fff; font-weight: bold; font-size: 9pt;
       letter-spacing: 1px; text-align: center; border-radius: 6px; padding: 6px 0; margin: 10px 0 6px 0; }
     .secbar-green { background: #1a7a33; color: #fff; font-weight: bold; font-size: 9pt;
       letter-spacing: 1px; text-align: center; border-radius: 6px; padding: 6px 0; margin: 10px 0 6px 0; }
@@ -40,23 +40,23 @@ function pdfBrochureCss(string $lang = 'id'): string
       letter-spacing: 1px; text-align: center; border-radius: 6px; padding: 6px 0; margin: 10px 0 6px 0; }
     table.chips { width: 100%; border-collapse: collapse; }
     table.chips td { width: 50%; vertical-align: top; padding: 2px 3px; }
-    .chip { background: #faf6ea; border: 1px solid #d4b86a; border-radius: 6px;
+    .chip { background: #faf6ea; border: 1px solid {$gold}; border-radius: 6px;
       padding: 4px 7px; font-size: 8pt; color: #5a4a1a; }
     table.info { width: 100%; border-collapse: collapse; margin-top: 4px; }
-    table.info td { border: 1px solid #d4b86a; background: #faf6ea; padding: 5px 8px; font-size: 8pt; width: 25%; }
+    table.info td { border: 1px solid {$gold}; background: #faf6ea; padding: 5px 8px; font-size: 8pt; width: 25%; }
     table.info .k { color: #888; font-size: 7pt; }
-    table.info .v { font-weight: bold; color: #0f2b6b; font-size: 9pt; }
-    .flight { background: #0f2b6b; color: #ffffff; border-radius: 6px; padding: 5px 9px; font-size: 8.5pt; margin: 3px 0; }
-    .meet { background: #faf6ea; border: 1px solid #d4b86a; border-radius: 6px; padding: 5px 9px; font-size: 8pt; color: #5a4a1a; margin-top: 4px; }
+    table.info .v { font-weight: bold; color: {$accent}; font-size: 9pt; }
+    .flight { background: {$accent}; color: #ffffff; border-radius: 6px; padding: 5px 9px; font-size: 8.5pt; margin: 3px 0; }
+    .meet { background: #faf6ea; border: 1px solid {$gold}; border-radius: 6px; padding: 5px 9px; font-size: 8pt; color: #5a4a1a; margin-top: 4px; }
     table.itin { width: 100%; border-collapse: collapse; }
-    table.itin th { background: #0f2b6b; color: #fff; font-size: 7.5pt; padding: 5px 5px; }
+    table.itin th { background: {$accent}; color: #fff; font-size: 7.5pt; padding: 5px 5px; }
     table.itin td { border: 1px solid #ddd; vertical-align: top; padding: 4px 5px; font-size: 7.5pt; }
-    .daybadge { background: #d4b86a; color: #0f2b6b; font-weight: bold; border-radius: 4px;
+    .daybadge { background: {$gold}; color: {$accent}; font-weight: bold; border-radius: 4px;
       padding: 2px 6px; font-size: 8pt; white-space: nowrap; }
-    .daytitle { font-weight: bold; color: #0f2b6b; }
+    .daytitle { font-weight: bold; color: {$accent}; }
     .prog { color: #33334d; margin-top: 2px; }
     table.price { width: 100%; border-collapse: collapse; }
-    table.price th { background: #0f2b6b; color: #fff; font-size: 7pt; padding: 5px 3px; }
+    table.price th { background: {$accent}; color: #fff; font-size: 7pt; padding: 5px 3px; }
     table.price td { border: 1px solid #ddd; padding: 4px 3px; font-size: 7.5pt; text-align: center; }
     table.price td.l { text-align: left; }
     .avail { color: #1a7a33; font-weight: bold; }
@@ -65,32 +65,32 @@ function pdfBrochureCss(string $lang = 'id'): string
     ul.tick li { margin-bottom: 3px; }
     ul.notes { margin: 4px 0 4px 16px; padding: 0; font-size: 8.5pt; color: #33334d; }
     ul.notes li { margin-bottom: 2px; }
-    .cta { background: #0f2b6b; border-radius: 8px; padding: 10px 14px; margin-top: 10px; text-align: center; }
-    .cta .t1 { color: #d4b86a; font-weight: bold; font-size: 11pt; }
+    .cta { background: {$accent}; border-radius: 8px; padding: 10px 14px; margin-top: 10px; text-align: center; }
+    .cta .t1 { color: {$gold}; font-weight: bold; font-size: 11pt; }
     .cta .t2 { color: #fff; font-size: 8pt; margin-top: 2px; }
     .foot { text-align: center; color: #999; font-size: 7pt; margin-top: 8px; }
     table.route { width: 100%; border-collapse: collapse; margin: 6px 0; }
     table.route td { width: 20%; vertical-align: top; padding: 2px; text-align: center; }
     .route-img { display: block; border-radius: 6px; margin-bottom: 2px; }
-    .route-cap { font-size: 7pt; color: #0f2b6b; font-weight: bold; }
+    .route-cap { font-size: 7pt; color: {$accent}; font-weight: bold; }
     .route-num { display: inline-block; background: #b02a37; color: #fff; font-weight: bold; font-size: 7pt; border-radius: 50%; width: 14px; height: 14px; line-height: 14px; text-align: center; margin-right: 2px; }
     .meal-ic { display: inline-block; border-radius: 4px; padding: 1px 5px; font-size: 7.5pt; font-weight: bold; margin-right: 2px; }
-    .meal-b { background: #e8f4fd; color: #0f2b6b; border: 1px solid #0f2b6b; }
+    .meal-b { background: #e8f4fd; color: {$accent}; border: 1px solid {$accent}; }
     .meal-l { background: #fff3e0; color: #b26a00; border: 1px solid #b26a00; }
     .meal-d { background: #fce4ec; color: #b02a37; border: 1px solid #b02a37; }
     .stars { color: #d4a017; font-size: 8pt; letter-spacing: 1px; }
     .visa-band { background: #b02a37; color: #fff; font-weight: bold; font-size: 9pt; text-align: center; border-radius: 6px; padding: 5px 0; margin: 6px 0; letter-spacing: 1px; }
-    .flightno { background: #0f2b6b; color: #fff; font-weight: bold; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; white-space: nowrap; }
+    .flightno { background: {$accent}; color: #fff; font-weight: bold; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; white-space: nowrap; }
     table.contact { width: 100%; border-collapse: collapse; margin-top: 8px; }
     table.contact td { font-size: 7pt; color: #555; padding: 1px 4px; vertical-align: top; }
-    .corner { font-size: 14pt; color: #d4b86a; line-height: 1; }
+    .corner { font-size: 14pt; color: {$gold}; line-height: 1; }
     .promo-date { color: #b02a37; font-weight: bold; }
     .was { text-decoration: line-through; color: #999; font-size: 7pt; }
     .tick-ic { display: inline-block; width: 15px; height: 15px; line-height: 15px; text-align: center; border-radius: 50%; color: #fff; font-size: 9pt; font-weight: bold; margin-right: 4px; }
     .tick-ok { background: #1a7a33; }
     .tick-no { background: #b02a37; }
     .route-arrow { color: #b02a37; font-size: 12pt; font-weight: bold; }
-    .flight-route { background: #eef2f7; border: 1px solid #0f2b6b; border-radius: 6px; padding: 5px 9px; font-size: 8pt; color: #0f2b6b; font-weight: bold; text-align: center; margin: 4px 0; }
+    .flight-route { background: #eef2f7; border: 1px solid {$accent}; border-radius: 6px; padding: 5px 9px; font-size: 8pt; color: {$accent}; font-weight: bold; text-align: center; margin: 4px 0; }
     CSS;
 }
 
@@ -148,14 +148,33 @@ function pdfMealIcons(?string $meals, string $lang): string {
 }
 
 /** Kontak perusahaan dari settings (dengan default placeholder). */
+/** Warna aksen PDF brosur (default navy), validasi hex. */
+function pdfAccentColor(): string {
+    $c = trim((string)getSetting('pdf_accent_color', '#0f2b6b'));
+    return preg_match('/^#[0-9a-fA-F]{6}$/', $c) ? $c : '#0f2b6b';
+}
+
+/** Warna emas PDF brosur (default gold), validasi hex. */
+function pdfGoldColor(): string {
+    $c = trim((string)getSetting('pdf_gold_color', '#d4b86a'));
+    return preg_match('/^#[0-9a-fA-F]{6}$/', $c) ? $c : '#d4b86a';
+}
+
+/** Kontak perusahaan untuk PDF, sumber tunggal settings contact dan social. */
 function pdfCompanyContact(): array {
+    $wa = function_exists('siteContact') ? siteContact('wa') : trim((string)getSetting('contact_wa', ''));
+    if ($wa === '') $wa = trim((string)getSetting('company_wa', ''));
+    $addr = function_exists('siteContact') ? siteContact('address') : trim((string)getSetting('contact_address', ''));
+    if ($addr === '') $addr = trim((string)getSetting('company_address', ''));
+    $phone = function_exists('siteContact') ? siteContact('phone') : trim((string)getSetting('contact_phone', ''));
+    if ($phone === '') $phone = trim((string)getSetting('company_phone', ''));
     return [
-        'name' => function_exists('siteName') ? siteName() : getSetting('company_name', 'TourAndTravel'),
-        'address' => getSetting('company_address', ''),
-        'phone' => getSetting('company_phone', ''),
-        'wa' => getSetting('company_wa', ''),
-        'ig' => getSetting('company_ig', ''),
-        'fb' => getSetting('company_fb', ''),
+        'name' => siteName(), 
+        'address' => $addr,
+        'phone' => $phone,
+        'wa' => $wa,
+        'ig' => trim((string)getSetting('social_instagram', getSetting('company_ig', ''))),
+        'fb' => trim((string)getSetting('social_facebook', getSetting('company_fb', ''))),
     ];
 }
 
@@ -278,10 +297,10 @@ function pdfBrochureLabels(string $lang): array
         'cta_sub' => ['id' => 'Syarat & Ketentuan Berlaku', 'en' => 'Terms & Conditions Apply', 'zh' => '须遵守条款和条件'],
         'route' => ['id' => 'RUTE PERJALANAN', 'en' => 'TRAVEL ROUTE', 'zh' => '行程路线'],
         'direct_flight' => ['id' => 'PENERBANGAN LANGSUNG', 'en' => 'DIRECT FLIGHT', 'zh' => '直飞航班'],
-        'foot' => ['id' => 'Generated by TourAndTravel — Your World of Joy', 'en' => 'Generated by TourAndTravel — Your World of Joy', 'zh' => '由 TourAndTravel 生成 — Your World of Joy'],
+        'foot' => ['id' => 'FOOT-BRAND', 'en' => 'FOOT-BRAND', 'zh' => 'FOOT-BRAND'],
     ];
     $o = [];
-    foreach ($d as $k => $v) $o[$k] = $v[$lang] ?? $v['id'];
+    foreach ($d as $k => $v) $o[$k] = $v[$lang] ?? $v['id']; $brandFt = siteName(); $tagFt = trim((string)getSetting('site_tagline', '')); $o['foot'] = $brandFt . ($tagFt !== '' ? ' — ' . $tagFt : '');
     return $o;
 }
 
@@ -313,9 +332,9 @@ function pdfTourBrochureHtml(array $tour, array $days, string $coverImgTag, arra
     $h = '<html><head><meta charset="utf-8"><style>' . pdfBrochureCss($lang) . '</style></head><body>';
 
     // ===== Halaman 1: cover =====
-    $h .= '<div class="page">';
-    $h .= '<table class="head"><tr><td class="corner" width="20">&#10022;</td><td><div class="brand">' . e(mb_strtoupper(siteName())) . '</div>'
-        . '<div class="brand-sub">' . e(mb_strtoupper((string)getSetting('site_tagline', 'TOUR & TRAVEL'))) . '</div></td>'
+    $h .= '<div class="page">'; $brandLogo = ''; try { $lp = function_exists('siteLogoPath') ? siteLogoPath() : ''; if ($lp !== '' && function_exists('pdfLocalImg')) $brandLogo = pdfLocalImg($lp, 'width="90"'); } catch (Throwable $e) { $brandLogo = ''; }
+    $h .= '<table class="head"><tr><td class="corner" width="20">&#10022;</td><td>' . ($brandLogo !== '' ? $brandLogo . '<br>' : '') . '<div class="brand">' . e(mb_strtoupper(siteName())) . '</div>'
+        . '<div class="brand-sub">' . e(mb_strtoupper((string)getSetting('site_tagline', 'TRAVEL'))) . '</div></td>'
         . '<td class="head-right">' . e((string)getSetting('site_tagline', 'YOUR WORLD OF JOY')) . '<br>' . e($web) . '</td><td class="corner" width="20" style="text-align:right">&#10022;</td></tr></table>';
     $h .= '<div class="hero"><table><tr><td class="dur">' . $dur . '</td>'
         . '<td><div class="hero-title">' . e($tourTitle) . '</div>'

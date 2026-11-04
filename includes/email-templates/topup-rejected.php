@@ -30,4 +30,4 @@ $m = $MESSAGES[$lang] ?? $MESSAGES['id'];
 <?php if ($note): ?>
 <p><strong><?= $m[3] ?>:</strong> <?= htmlspecialchars($note) ?></p>
 <?php endif; ?>
-<p style="margin-top:16px;"><a href="<?= htmlspecialchars($tplData['track_link'] ?? BASE_URL . '/reseller-topup.php') ?>" style="display:inline-block;padding:10px 20px;background:#0d6efd;color:#fff;text-decoration:none;border-radius:6px;"><?= $m[4] ?></a></p>
+<p style="margin-top:16px;"><a href="<?= htmlspecialchars($tplData['track_link'] ?? BASE_URL . '/reseller-topup.php') ?>" style="display:inline-block;padding:10px 20px;background:<?= e(siteThemeColor()) ?>;color:#fff;text-decoration:none;border-radius:6px;"><?= $m[4] ?></a></p>

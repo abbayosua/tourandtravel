@@ -213,7 +213,7 @@ require_once 'includes/header-shared.php';
                             </table>
                         </div>
 
-                        <?php $waNum = preg_replace('/[^0-9]/', '', (string)getSetting('company_wa', getSetting('contact_wa', ''))); ?>
+                        <?php $waNum = preg_replace('/[^0-9]/', '', (string)siteContact('wa')); ?>
                         <div class="d-flex gap-2 justify-content-center flex-wrap">
                             <?php if ($waNum !== ''): ?>
                             <a href="https://wa.me/<?= e($waNum) ?>?text=<?= rawurlencode(t('Konfirmasi pembayaran tiket KAI ') . $booking['booking_code']) ?>" target="_blank" rel="noopener" class="btn btn-success"><i class="bi bi-whatsapp me-1"></i><?= t('Hubungi Kami') ?></a>

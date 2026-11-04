@@ -27,4 +27,4 @@ $m = $MESSAGES[$lang] ?? $MESSAGES['id'];
 <?php if ($note): ?>
 <p><small style="color:#6c757d;"><?= $m[2] ?>: <?= htmlspecialchars($note) ?></small></p>
 <?php endif; ?>
-<p style="margin-top:16px;"><a href="<?= htmlspecialchars($tplData['track_link'] ?? BASE_URL . '/reseller-dashboard.php') ?>" style="display:inline-block;padding:10px 20px;background:#0d6efd;color:#fff;text-decoration:none;border-radius:6px;"><?= $m[3] ?></a></p>
+<p style="margin-top:16px;"><a href="<?= htmlspecialchars($tplData['track_link'] ?? BASE_URL . '/reseller-dashboard.php') ?>" style="display:inline-block;padding:10px 20px;background:<?= e(siteThemeColor()) ?>;color:#fff;text-decoration:none;border-radius:6px;"><?= $m[3] ?></a></p>

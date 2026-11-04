@@ -324,7 +324,7 @@ require_once 'includes/header-shared.php';
                         </div>
                         <?php endif; ?>
 
-                        <?php $waNum = preg_replace('/[^0-9]/', '', (string)getSetting('company_wa', getSetting('contact_wa', ''))); ?>
+                        <?php $waNum = preg_replace('/[^0-9]/', '', (string)siteContact('wa')); ?>
                         <div class="d-flex gap-2 justify-content-center flex-wrap">
                             <?php if ($waNum !== ''): ?>
                             <a href="https://wa.me/<?= e($waNum) ?>?text=<?= rawurlencode(t('Konfirmasi pembayaran kapal PELNI ') . ($supplierInvoice ?: $bookingCode)) ?>" target="_blank" rel="noopener" class="btn btn-success rounded-pill px-4"><i class="bi bi-whatsapp me-1"></i><?= t('Hubungi Kami') ?></a>

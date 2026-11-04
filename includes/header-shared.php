@@ -18,8 +18,8 @@ $voyageNoSpacer = !empty($voyageNoSpacer) || in_array($voyagePage, $voyageHeroPa
 <html lang="<?= getCurrentLang() ?>">
 <head>
     <meta charset="UTF-8">
-    <link rel="manifest" href="<?= BASE_URL ?>/manifest.php">
-    <meta name="theme-color" content="#0d6efd">
+    <?php $favIcon = function_exists('siteFaviconUrl') ? siteFaviconUrl() : ''; if ($favIcon !== ''): ?><link rel="icon" href="<?= e($favIcon) ?>" data-testid="brand-favicon"><?php endif; ?>
+    <meta name="theme-color" content="<?= e(function_exists('siteThemeColor') ? siteThemeColor() : '#0d6efd') ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="base-url" content="<?= BASE_URL ?>">
     <title><?= e($pageTitle ?? siteName()) ?> - <?= siteName() ?></title>

@@ -11,8 +11,8 @@ echo json_encode([
     'short_name' => $short,
     'start_url' => '/tourandtravel/index.php',
     'display' => 'standalone',
-    'background_color' => '#0d6efd',
-    'theme_color' => '#0d6efd',
+    'background_color' => siteThemeColor(),
+    'theme_color' => siteThemeColor(),
     'icons' => [
         ['src' => '/tourandtravel/assets/img/icon-192.png', 'sizes' => '192x192', 'type' => 'image/png'],
         ['src' => '/tourandtravel/assets/img/icon-512.png', 'sizes' => '512x512', 'type' => 'image/png'],

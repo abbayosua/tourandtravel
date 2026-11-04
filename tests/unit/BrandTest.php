@@ -11,6 +11,12 @@ function brandTestBackup(): array {
         'site_name' => getSetting('site_name', ''),
         'site_logo' => getSetting('site_logo', ''),
         'site_tagline' => getSetting('site_tagline', ''),
+        'contact_address' => getSetting('contact_address', ''),
+        'contact_phone' => getSetting('contact_phone', ''),
+        'contact_wa' => getSetting('contact_wa', ''),
+        'contact_email' => getSetting('contact_email', ''),
+        'contact_hours_weekday' => getSetting('contact_hours_weekday', ''),
+        'contact_hours_sunday' => getSetting('contact_hours_sunday', ''),
     ];
 }
 
@@ -18,6 +24,7 @@ function brandTestRestore(array $b): void {
     setSetting('site_name', $b['site_name']);
     setSetting('site_logo', $b['site_logo']);
     setSetting('site_tagline', $b['site_tagline']);
+    foreach (['address', 'phone', 'wa', 'email', 'hours_weekday', 'hours_sunday'] as $k) { $ck = 'contact_' . $k; if (array_key_exists($ck, $b)) setSetting($ck, $b[$ck]); }
 }
 
 function testSiteNameFollowsSetting() {
@@ -54,6 +61,35 @@ function testSiteLogoPathRejectsTraversal() {
     try {
         setSetting('site_logo', '../includes/config.php');
         assertSame('', siteLogoPath(), 'path traversal ditolak');
+    } finally { brandTestRestore($b); }
+}
+
+function testSiteContactFollowsSetting() {
+    $b = brandTestBackup();
+    try {
+        setSetting('contact_address', 'Jl. E2E Royal No. 99, Batam');
+        setSetting('contact_phone', '08119990011');
+        setSetting('contact_wa', '628119990011');
+        setSetting('contact_email', 'hello@royaldream.test');
+        setSetting('contact_hours_weekday', 'Senin - Jumat: 09:00 - 17:00');
+        setSetting('contact_hours_sunday', 'Sabtu: 09:00 - 12:00');
+        assertSame('Jl. E2E Royal No. 99, Batam', siteContact('address'), 'alamat ikut setting');
+        assertSame('08119990011', siteContact('phone'), 'telepon ikut setting');
+        assertSame('628119990011', siteContact('wa'), 'WA ikut setting');
+        assertSame('hello@royaldream.test', siteContact('email'), 'email ikut setting');
+        assertSame('Senin - Jumat: 09:00 - 17:00', siteContact('hours_weekday'), 'jam weekday ikut setting');
+        assertSame('Sabtu: 09:00 - 12:00', siteContact('hours_sunday'), 'jam sunday ikut setting');
+        assertSame('', siteContact('unknown_key'), 'key tak dikenal kosong');
+    } finally { brandTestRestore($b); }
+}
+
+function testSiteContactFallbackToDefault() {
+    $b = brandTestBackup();
+    try {
+        foreach (['address', 'phone', 'wa', 'email', 'hours_weekday', 'hours_sunday'] as $k) { setSetting('contact_' . $k, ''); }
+        assertTrue(siteContact('address') !== '', 'fallback alamat ada');
+        assertTrue(siteContact('phone') !== '', 'fallback telepon ada');
+        assertTrue(siteContact('wa') !== '', 'fallback WA ada');
     } finally { brandTestRestore($b); }
 }
 

@@ -17,4 +17,4 @@ $stLabel = $STATUS[$lang][$st] ?? $st;
 <p><?= $m[0] ?></p>
 <p><strong><?= $m[1] ?>:</strong> <?= htmlspecialchars($tplData['booking_code'] ?? '-') ?></p>
 <p><strong><?= $m[2] ?>:</strong> <?= htmlspecialchars($stLabel) ?></p>
-<p><a href="<?= htmlspecialchars($tplData['track_link'] ?? '') ?>" style="color:#0d6efd;"><?= $m[3] ?></a></p>
+<p><a href="<?= htmlspecialchars($tplData['track_link'] ?? '') ?>" style="color:<?= e(siteThemeColor()) ?>;"><?= $m[3] ?></a></p>

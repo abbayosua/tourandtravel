@@ -15,7 +15,7 @@ function seoCanonical(): string {
 function seoHead(?string $metaDesc = null, ?string $ogImage = null, ?array $jsonLd = null): void {
     $desc = $metaDesc ?: brandText(t('TourAndTravel — paket tour, hotel, tiket pesawat, dan aktivitas wisata terbaik dengan harga transparan.'));
     $canon = seoCanonical();
-    $ogImg = $ogImage ?: BASE_URL . '/assets/img/og-default.jpg';
+    $ogImg = $ogImage ?: (function_exists('siteOgImageUrl') && siteOgImageUrl() !== '' ? siteOgImageUrl() : BASE_URL . '/assets/img/og-default.jpg');
     echo '<meta name="description" content="' . e(mb_substr($desc, 0, 160)) . '">' . "\n";
     echo '<link rel="canonical" href="' . e($canon) . '">' . "\n";
     // hreflang alternates per bahasa yang didukung (query ?lang= per varian)

@@ -87,7 +87,7 @@ $m = $messages[$lang] ?? $messages['id'];
     <?php endif; ?>
     <tr style="background:#e7f3ff;">
         <td style="padding:8px 12px;border:1px solid #dee2e6;font-weight:bold;"><?= $m['total'] ?></td>
-        <td style="padding:8px 12px;border:1px solid #dee2e6;font-weight:bold;color:#0d6efd;"><?= htmlspecialchars($tplData['total'] ?? '-') ?></td>
+        <td style="padding:8px 12px;border:1px solid #dee2e6;font-weight:bold;color:<?= e(siteThemeColor()) ?>;"><?= htmlspecialchars($tplData['total'] ?? '-') ?></td>
     </tr>
 </table>
 <?php if (!empty($tplData['pay_link'])): ?>

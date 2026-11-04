@@ -337,7 +337,7 @@ require_once 'includes/header-shared.php';
                     </p>
 
                     <div class="d-flex gap-2 justify-content-center flex-wrap">
-                        <?php $waNum = preg_replace('/[^0-9]/', '', (string)getSetting('company_wa', getSetting('contact_wa', ''))); ?>
+                        <?php $waNum = preg_replace('/[^0-9]/', '', (string)siteContact('wa')); ?>
                         <?php if ($isPending && !$isAwaitingPayment && $waNum !== ''): ?>
                         <a href="https://wa.me/<?= e($waNum) ?>?text=<?= rawurlencode('Konfirmasi pembayaran booking ' . ($booking['booking_code'] ?? '') . ' sebesar ' . formatRupiah($booking['total_price'])) ?>" target="_blank" rel="noopener" class="btn btn-success" data-testid="wa-contact"><i class="bi bi-whatsapp me-1"></i><?= t('Hubungi Kami') ?></a>
                         <?php endif; ?>

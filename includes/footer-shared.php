@@ -72,14 +72,15 @@ $footMenus = getNavMenus();
             <div class="col-md-3">
                 <h6 class="fw-bold mb-3"><?= t('Kontak') ?></h6>
                 <ul class="list-unstyled small">
-                    <li class="mb-2"><i class="bi bi-geo-alt-fill me-2"></i> <?= t('Taman Mediterania Blok JJ3 no 19, Batam, Kepulauan Riau, Indonesia') ?></li>
-                    <li class="mb-2"><i class="bi bi-telephone-fill me-2"></i> 08117774884</li>
-                    <li class="mb-2"><i class="bi bi-whatsapp me-2"></i> 08117774884</li>
-                    <li class="mb-2"><i class="bi bi-envelope-fill me-2"></i> hello@tourandtravel.web.id</li>
+                    <?php $fcWa = preg_replace('/[^0-9]/', '', (string)siteContact('wa')); $fcPhone = preg_replace('/[^0-9+]/', '', (string)siteContact('phone')); ?>
+                    <li class="mb-2" data-testid="brand-contact-address"><i class="bi bi-geo-alt-fill me-2"></i><?= e(siteContact('address')) ?></li>
+                    <li class="mb-2" data-testid="brand-contact-phone"><i class="bi bi-telephone-fill me-2"></i><a href="tel:<?= e($fcPhone) ?>" class="text-secondary text-decoration-none"><?= e(siteContact('phone')) ?></a></li>
+                    <li class="mb-2" data-testid="brand-contact-wa"><i class="bi bi-whatsapp me-2"></i><a href="https://wa.me/<?= e($fcWa) ?>" target="_blank" rel="noopener" class="text-secondary text-decoration-none"><?= e(siteContact('wa')) ?></a></li>
+                    <li class="mb-2" data-testid="brand-contact-email"><i class="bi bi-envelope-fill me-2"></i><a href="mailto:<?= e(siteContact('email')) ?>" class="text-secondary text-decoration-none"><?= e(siteContact('email')) ?></a></li>
                 </ul>
                 <h6 class="fw-bold mt-3"><?= t('Jam Operasional') ?></h6>
-                <p class="mb-0 text-secondary small"><?= t('Senin - Sabtu: 08:00 - 20:00') ?></p>
-                <p class="text-secondary small"><?= t('Minggu: 09:00 - 15:00') ?></p>
+                <p class="mb-0 text-secondary small" data-testid="brand-contact-hours-weekday"><?= e(siteContact('hours_weekday')) ?></p>
+                <p class="text-secondary small" data-testid="brand-contact-hours-sunday"><?= e(siteContact('hours_sunday')) ?></p>
             </div>
         </div>
 

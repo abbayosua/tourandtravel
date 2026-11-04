@@ -121,11 +121,8 @@ function renderEmailTemplate(string $event, array $data = [], ?string $lang = nu
     }
 
     $brand = siteName();
-    $shell = '<div style="font-family:Arial,Helvetica,sans-serif;max-width:600px;margin:0 auto;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;">
-      <div style="background:#0d6efd;color:#fff;padding:16px 24px;font-weight:bold;font-size:18px;">' . $brand . '</div>
-      <div style="padding:24px;color:#111827;font-size:14px;line-height:1.6;">' . $body . '</div>
-      <div style="padding:16px 24px;background:#f3f4f6;color:#6b7280;font-size:12px;">&copy; ' . date('Y') . ' ' . $brand . '</div>
-    </div>';
+    $tc = siteThemeColor();
+    $shell = '<div style="font-family:Arial,Helvetica,sans-serif;max-width:600px;margin:0 auto;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;"><div style="background:' . $tc . ';color:#fff;padding:16px 24px;font-weight:bold;font-size:18px;">' . $brand . '</div><div style="padding:24px;color:#111827;font-size:14px;line-height:1.6;">' . $body . '</div><div style="padding:16px 24px;background:#f3f4f6;color:#6b7280;font-size:12px;">&copy; ' . date('Y') . ' ' . $brand . '</div></div>';
 
     return ['subject' => $subject, 'html' => $shell];
 }

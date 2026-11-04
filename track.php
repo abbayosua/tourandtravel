@@ -147,7 +147,7 @@ require_once 'includes/header-shared.php';
                             <?php endif; ?>
                             <p class="small mb-0 text-muted"><?= t('Setelah transfer, konfirmasi melalui WhatsApp dengan mengirim bukti transfer dan kode booking.') ?></p>
                             <?php if ($manualNote !== ''): ?><p class="small mb-0 mt-1"><i class="bi bi-info-circle me-1"></i><?= e($manualNote) ?></p><?php endif; ?>
-                            <?php $waNum = preg_replace('/[^0-9]/', '', (string)getSetting('company_wa', getSetting('contact_wa', ''))); ?>
+                            <?php $waNum = preg_replace('/[^0-9]/', '', (string)siteContact('wa')); ?>
                             <?php if ($waNum !== ''): ?>
                             <a href="https://wa.me/<?= e($waNum) ?>?text=<?= rawurlencode('Konfirmasi pembayaran booking ' . ($booking['booking_code'] ?? '') . ' sebesar ' . formatRupiah($booking['total_price'])) ?>" target="_blank" rel="noopener" class="btn btn-success btn-sm mt-3" data-testid="track-wa-confirm"><i class="bi bi-whatsapp me-1"></i><?= t('Hubungi Kami') ?></a>
                             <?php endif; ?>
