@@ -9,7 +9,7 @@
  * Konfigurasi via env (lihat .env.example):
  *   AI_API_KEY    (wajib) — key Meta/OpenAI-compatible
  *   AI_BASE_URL   (default https://api.meta.ai/v1)
- *   AI_MODEL      (default muse-spark-1.3)
+ *   AI_MODEL      (default muse-spark-1.3-contributor)
  * Alias lama ATRIA_* tetap dibaca sebagai fallback.
  */
 
@@ -17,7 +17,7 @@ if (!defined('AI_BASE_URL')) {
     define('AI_BASE_URL', getenv('AI_BASE_URL') ?: getenv('ATRIA_BASE_URL') ?: 'https://api.meta.ai/v1');
 }
 if (!defined('AI_MODEL')) {
-    define('AI_MODEL', getenv('AI_MODEL') ?: getenv('ATRIA_MODEL') ?: 'muse-spark-1.3');
+    define('AI_MODEL', getenv('AI_MODEL') ?: getenv('ATRIA_MODEL') ?: 'muse-spark-1.3-contributor');
 }
 if (!defined('AI_API_KEY')) {
     define('AI_API_KEY', getenv('AI_API_KEY') ?: getenv('ATRIA_API_KEY') ?: '');

@@ -197,7 +197,7 @@ Catatan: halaman brand-settings panjang → ambil per-seksi (full-page sekaligus
 ### 9.2 Desain (keputusan)
 
 1. Bungkus SEMUA string user-facing di `panduan.php` dengan `t('...')` — judul, intro, langkah, tips, warning, header tabel, isi tabel error. Kecuali: nama brand/contoh (`Royal Dream`, `62812...`, `https://...`, nama tombol bila tombolnya sendiri belum diterjemahkan).
-2. Seed en+zh via Meta LLM (sudah hidup: `muse-spark-1.3`, key di `.env`) memakai pola `database/regenerate-en.php` + kamus manual bernada awam — JANGAN translate mentah tanpa review (mis. "klik Simpan" harus konsisten dengan label tombol terjemahan).
+2. Seed en+zh via Meta LLM (sudah hidup: `muse-spark-1.3-contributor`, key di `.env`) memakai pola `database/regenerate-en.php` + kamus manual bernada awam — JANGAN translate mentah tanpa review (mis. "klik Simpan" harus konsisten dengan label tombol terjemahan).
 3. Verifikasi per MULTILINGUAL.md: `php scripts/audit-translations.php` → missing en/zh untuk key panduan = 0; buka `panduan.php?lang=en` dan `?lang=zh`, pastikan tak ada string Indonesia nyasar (kecuali brand/contoh).
 4. Screenshot: tetap 7 PNG Indonesia. Tambah caption di bawah tiap gambar: "Tampilan menu dalam Bahasa Indonesia — posisi tombol sama di semua bahasa." (juga via `t()`).
 5. E2E: tambah spec ringan `panduan-i18n.spec.ts` — login, buka `?lang=en` assert judul EN, `?lang=zh` assert judul ZH, assert 7 `.panduan-img` naturalWidth > 0. Tanpa snapshot visual (hindari flaky).

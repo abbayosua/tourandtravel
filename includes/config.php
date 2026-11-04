@@ -55,7 +55,7 @@ if (!defined('DUFFEL_TOKEN') && getenv('DUFFEL_TOKEN')) {
 // AI AUTO translate paket tour (Meta LLM, OpenAI-compatible) — isi via env / .env.
 if (!defined('AI_API_KEY')) define('AI_API_KEY', getenv('AI_API_KEY') ?: getenv('ATRIA_API_KEY') ?: '');
 if (!defined('AI_BASE_URL')) define('AI_BASE_URL', getenv('AI_BASE_URL') ?: getenv('ATRIA_BASE_URL') ?: 'https://api.meta.ai/v1');
-if (!defined('AI_MODEL')) define('AI_MODEL', getenv('AI_MODEL') ?: getenv('ATRIA_MODEL') ?: 'muse-spark-1.3');
+if (!defined('AI_MODEL')) define('AI_MODEL', getenv('AI_MODEL') ?: getenv('ATRIA_MODEL') ?: 'muse-spark-1.3-contributor');
 
 // Session
 if (session_status() === PHP_SESSION_NONE) {
