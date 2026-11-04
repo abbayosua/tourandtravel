@@ -28,6 +28,11 @@ test('panduan multilingual EN tampil penuh', async ({ page }) => {
   await page.waitForLoadState('domcontentloaded');
   await expect(page.locator('h4').first()).toContainText('Admin Panel Guide');
   await expect(page.locator('#adminContent')).toContainText('Chapter 4');
+  await expect(page.locator('#adminContent')).toContainText('Chapter 5');
+  await expect(page.locator('#adminContent')).toContainText('Chapter 7');
+  await expect(page.locator('#adminContent')).toContainText('Chapter 8');
+  await expect(page.locator('#adminContent')).toContainText('Chapter 9');
+  await expect(page.locator('#adminContent')).toContainText('Chapter 10');
   await expect(page.locator('#adminContent')).toContainText('Step 1');
   await expect(page.locator('#adminContent')).toContainText('Step 7');
   await expect(page.locator('#adminContent')).toContainText('If it fails');
@@ -39,6 +44,11 @@ test('panduan multilingual ZH tampil penuh', async ({ page }) => {
   await page.goto(BASE + '/admin/panduan.php?lang=zh');
   await page.waitForLoadState('domcontentloaded');
   await expect(page.locator('h4').first()).toContainText('管理面板指南');
+  await expect(page.locator('#adminContent')).toContainText('第5章');
+  await expect(page.locator('#adminContent')).toContainText('第7章');
+  await expect(page.locator('#adminContent')).toContainText('第8章');
+  await expect(page.locator('#adminContent')).toContainText('第9章');
+  await expect(page.locator('#adminContent')).toContainText('第10章');
   await imgOk(page);
 });
 
@@ -48,5 +58,10 @@ test('panduan ID tetap tampil penuh', async ({ page }) => {
   await page.waitForLoadState('domcontentloaded');
   await expect(page.locator('h4').first()).toContainText('Panduan Admin Panel');
   await expect(page.locator('#adminContent')).toContainText('Bab 4');
+  await expect(page.locator('#adminContent')).toContainText('Bab 5');
+  await expect(page.locator('#adminContent')).toContainText('Bab 7');
+  await expect(page.locator('#adminContent')).toContainText('Bab 8');
+  await expect(page.locator('#adminContent')).toContainText('Bab 9');
+  await expect(page.locator('#adminContent')).toContainText('Bab 10');
   await imgOk(page);
 });
