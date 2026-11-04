@@ -1,4 +1,21 @@
 <?php
+// Muat .env lokal bila ada (tanpa dependensi composer). Env server tetap menang bila sudah diset.
+(function () {
+    $f = __DIR__ . '/../.env';
+    if (!is_readable($f)) return;
+    foreach (file($f, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+        $line = trim($line);
+        if ($line === '' || $line[0] === '#') continue;
+        $pos = strpos($line, '=');
+        if ($pos === false) continue;
+        $k = trim(substr($line, 0, $pos));
+        $v = trim(substr($line, $pos + 1));
+        if ($k === '' || getenv($k) !== false) continue;
+        putenv($k . '=' . $v);
+        $_ENV[$k] = $v;
+    }
+})();
+
 // Konfigurasi database — override via environment variables (lihat DEPLOY.md)
 define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
 define('DB_NAME', getenv('DB_NAME') ?: 'tourandtravel');
@@ -35,11 +52,10 @@ if (!defined('DUFFEL_TOKEN') && getenv('DUFFEL_TOKEN')) {
     define('DUFFEL_TOKEN', getenv('DUFFEL_TOKEN'));
 }
 
-// Atria AI (fitur AI AUTO translate paket tour) — isi via env / .env.
-// Fallback hardcoded agar e2e/lokal jalan tanpa export env (disetujui pemilik).
-if (!defined('ATRIA_API_KEY')) define('ATRIA_API_KEY', getenv('ATRIA_API_KEY') ?: 'atr_EzTU80XJOaQXM3PzZtC3odkTcUIsANqf');
-if (!defined('ATRIA_BASE_URL')) define('ATRIA_BASE_URL', getenv('ATRIA_BASE_URL') ?: 'https://api.atria-asi.ai/v1');
-if (!defined('ATRIA_MODEL')) define('ATRIA_MODEL', getenv('ATRIA_MODEL') ?: 'Atria-Dawn-Preview');
+// AI AUTO translate paket tour (Meta LLM, OpenAI-compatible) — isi via env / .env.
+if (!defined('AI_API_KEY')) define('AI_API_KEY', getenv('AI_API_KEY') ?: getenv('ATRIA_API_KEY') ?: '');
+if (!defined('AI_BASE_URL')) define('AI_BASE_URL', getenv('AI_BASE_URL') ?: getenv('ATRIA_BASE_URL') ?: 'https://api.meta.ai/v1');
+if (!defined('AI_MODEL')) define('AI_MODEL', getenv('AI_MODEL') ?: getenv('ATRIA_MODEL') ?: 'muse-spark-1.3');
 
 // Session
 if (session_status() === PHP_SESSION_NONE) {

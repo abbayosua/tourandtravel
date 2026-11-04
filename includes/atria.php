@@ -1,25 +1,30 @@
 <?php
 /**
- * includes/atria.php — wrapper Atria AI (OpenAI-compatible Chat Completions).
+ * includes/atria.php — wrapper LLM OpenAI-compatible untuk AI AUTO translate.
  *
- * Dipakai fitur AI AUTO tambah/edit paket tour: tulis 1 bahasa, auto
- * terjemahkan ke 2 bahasa lain (id/en/zh) dalam 1x request batch.
+ * Riwayat: dulu Atria (api.atria-asi.ai). Sejak kuota Atria habis, default
+ * pindah ke Meta (api.meta.ai/v1). Nama file & fungsi dipertahankan agar
+ * pemanggil (tour-translate-ai.php, i18nFillEmptyTranslated) tak berubah.
  *
  * Konfigurasi via env (lihat .env.example):
- *   ATRIA_API_KEY   (wajib)
- *   ATRIA_BASE_URL  (default https://api.atria-asi.ai/v1)
- *   ATRIA_MODEL     (default Atria-Dawn-Preview)
+ *   AI_API_KEY    (wajib) — key Meta/OpenAI-compatible
+ *   AI_BASE_URL   (default https://api.meta.ai/v1)
+ *   AI_MODEL      (default muse-spark-1.3)
+ * Alias lama ATRIA_* tetap dibaca sebagai fallback.
  */
 
-if (!defined('ATRIA_BASE_URL')) {
-    define('ATRIA_BASE_URL', getenv('ATRIA_BASE_URL') ?: 'https://api.atria-asi.ai/v1');
+if (!defined('AI_BASE_URL')) {
+    define('AI_BASE_URL', getenv('AI_BASE_URL') ?: getenv('ATRIA_BASE_URL') ?: 'https://api.meta.ai/v1');
 }
-if (!defined('ATRIA_MODEL')) {
-    define('ATRIA_MODEL', getenv('ATRIA_MODEL') ?: 'Atria-Dawn-Preview');
+if (!defined('AI_MODEL')) {
+    define('AI_MODEL', getenv('AI_MODEL') ?: getenv('ATRIA_MODEL') ?: 'muse-spark-1.3');
 }
-if (!defined('ATRIA_API_KEY')) {
-    define('ATRIA_API_KEY', getenv('ATRIA_API_KEY') ?: '');
+if (!defined('AI_API_KEY')) {
+    define('AI_API_KEY', getenv('AI_API_KEY') ?: getenv('ATRIA_API_KEY') ?: '');
 }
+if (!defined('ATRIA_BASE_URL')) define('ATRIA_BASE_URL', AI_BASE_URL);
+if (!defined('ATRIA_MODEL')) define('ATRIA_MODEL', AI_MODEL);
+if (!defined('ATRIA_API_KEY')) define('ATRIA_API_KEY', AI_API_KEY);
 
 /** Label bahasa manusia untuk prompt. */
 function atriaLangName(string $code): string {
@@ -31,20 +36,20 @@ function atriaLangName(string $code): string {
  * @throws RuntimeException bila key kosong / HTTP / API error.
  */
 function atriaChat(array $messages, array $opts = []): string {
-    $key = defined('ATRIA_API_KEY') ? ATRIA_API_KEY : '';
+    $key = defined('AI_API_KEY') ? AI_API_KEY : '';
     if ($key === '') {
-        throw new RuntimeException('ATRIA_API_KEY belum dikonfigurasi (isi .env).');
+        throw new RuntimeException('AI_API_KEY belum dikonfigurasi (isi .env).');
     }
     // Respons model bisa 20-60 dtk; jangan sampai dibunuh max_execution_time web (30 dtk).
     if (function_exists('set_time_limit')) @set_time_limit(150);
     $payload = [
-        'model' => $opts['model'] ?? ATRIA_MODEL,
+        'model' => $opts['model'] ?? AI_MODEL,
         'messages' => $messages,
         'temperature' => $opts['temperature'] ?? 0.2,
     ];
     if (isset($opts['max_tokens'])) $payload['max_tokens'] = (int)$opts['max_tokens'];
 
-    $ch = curl_init(rtrim(ATRIA_BASE_URL, '/') . '/chat/completions');
+    $ch = curl_init(rtrim(AI_BASE_URL, '/') . '/chat/completions');
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_POST => true,
@@ -59,16 +64,16 @@ function atriaChat(array $messages, array $opts = []): string {
     curl_close($ch);
 
     if ($errno !== 0 || $raw === false) {
-        throw new RuntimeException('Atria API tidak terjangkau (curl errno ' . $errno . ').');
+        throw new RuntimeException('AI API tidak terjangkau (curl errno ' . $errno . ').');
     }
     $data = json_decode($raw, true);
     if ($http < 200 || $http >= 300) {
         $msg = is_array($data) ? ($data['error']['message'] ?? $data['message'] ?? $raw) : $raw;
-        throw new RuntimeException('Atria API error HTTP ' . $http . ': ' . mb_substr((string)$msg, 0, 300));
+        throw new RuntimeException('AI API error HTTP ' . $http . ': ' . mb_substr((string)$msg, 0, 300));
     }
     $content = $data['choices'][0]['message']['content'] ?? null;
     if (!is_string($content) || trim($content) === '') {
-        throw new RuntimeException('Atria API mengembalikan respons kosong.');
+        throw new RuntimeException('AI API mengembalikan respons kosong.');
     }
     return $content;
 }

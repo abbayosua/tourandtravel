@@ -7,7 +7,7 @@ import { execFileSync } from 'child_process';
  * 1. Mode Manual (default): 3 input bahasa tampil, tombol AI hidden.
  * 2. Mode AI AUTO: hanya input bahasa sumber tampil + tombol pratinjau.
  * 3. Label mode tersedia di 3 bahasa (id/en/zh).
- * 4. Pratinjau AJAX mengisi kolom target via Atria (API asli).
+ * 4. Pratinjau AJAX mengisi kolom target via Meta LLM (API asli).
  * 5. Simpan mode auto → tour tersimpan + kolom _en/_zh terisi (API asli).
  */
 
