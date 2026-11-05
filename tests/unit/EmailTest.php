@@ -106,7 +106,7 @@ function testRenderEmailTemplateZhSubjectAndShell() {
     $t = renderEmailTemplate('booking-created', ['booking_code' => 'TAT-ZH', 'total' => 'Rp 1', 'subject' => '您的预订已收到'], 'zh');
     assertSame('您的预订已收到', $t['subject'], 'subject custom dipakai apa pun bahasanya');
     assertContains(siteName(), $t['html'], 'brand shell tetap tampil untuk zh');
-    assertContains('<div style="background:#0d6efd', $t['html'], 'shell html utuh');
+    assertContains('<div style="background:' . siteThemeColor(), $t['html'], 'shell html utuh');
 
     $t2 = renderEmailTemplate('welcome', [], 'zh');
     assertContains('欢迎来到', $t2['html']);

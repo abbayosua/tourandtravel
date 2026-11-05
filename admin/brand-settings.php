@@ -109,7 +109,7 @@ require_once 'includes/admin-header.php';
                         <div class="col-7"><input name="email_from" class="form-control form-control-sm" type="email" maxlength="160" value="<?= e($emailFrom) ?>" placeholder="noreply@royaldream.example" data-testid="brand-email-from"></div>
                         <div class="col-5"><select name="email_driver" class="form-select form-select-sm" data-testid="brand-email-driver"><option value="log"<?= $emailDriver === 'log' ? ' selected' : '' ?>>log (dev)</option><option value="api"<?= $emailDriver === 'api' ? ' selected' : '' ?>>api (Resend)</option></select></div>
                     </div>
-                    <input name="email_api_key" class="form-control form-control-sm mb-1" type="password" autocomplete="new-password" maxlength="255" value="<?= e($emailApiKey) ?>" placeholder="API key (kosongkan bila tidak diubah)" data-testid="brand-email-api-key">
+                    <input name="email_api_key" class="form-control form-control-sm mb-1" type="password" autocomplete="new-password" maxlength="255" value="<?= e($emailApiKey) ?>" placeholder="<?= e(t('API key (kosongkan bila tidak diubah)')) ?>" data-testid="brand-email-api-key">
                     <input name="email_api_endpoint" class="form-control form-control-sm" maxlength="255" value="<?= e($emailEndpoint) ?>" placeholder="https://api.resend.com/emails" data-testid="brand-email-endpoint">
                 </div>
                 <div class="mb-3">

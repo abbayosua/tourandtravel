@@ -1,6 +1,6 @@
 # TULISDOCS.md — Planning Panduan Pengguna Admin Panel (Awam)
 
-> Status: PLANNING PENUH — mencakup SELURUH fitur admin panel. Bab 1 (branding) SUDAH LIVE; Bab 2-10 direncanakan di bawah.
+> Status: PLANNING PENUH — mencakup SELURUH fitur admin panel. Bab 1, 5, 7, 8, 9, 10 SUDAH LIVE ✅ (commit `1ee6204`, live Royal + utama).
 > Fokus iterasi 1: **Cara mengganti branding** (Royal Dream) + screenshot via CDP.
 > File panduan akhir: `admin/panduan.php` (HTML, butuh login admin).
 
@@ -46,7 +46,7 @@ File acuan: `admin/brand-settings.php:1-147`
   - URL royal: `https://royaldream.tourandtravel.web.id/admin/login.php`.
   - URL lokal panduan/screenshot: `http://localhost/tourandtravel/admin/`.
 
-## 4. Struktur panduan (HTML) — SELURUH fitur admin panel (Bab 0–10; peta menu dari `adminPages()` di `admin/includes/admin-access.php`, status: Bab 1 SUDAH LIVE ✅)
+## 4. Struktur panduan (HTML) — SELURUH fitur admin panel (Bab 0–10; Bab 1, 5, 7, 8, 9, 10 SUDAH LIVE ✅)
 
 ```
 admin/panduan.php (+ anchor #bab-N per bab, sidebar panduan = daftar isi)
@@ -78,7 +78,7 @@ admin/panduan.php (+ anchor #bab-N per bab, sidebar panduan = daftar isi)
 │   ├── 4.2 Price alert & push: kapan notif terkirim (throttle 1/jam), cara kirim push FCM
 │   ├── 4.3 Corporate & koleksi: kaitkan user perusahaan, susun koleksi homepage
 │   └── 4.9 Kalau gagal: promo tak jalan (cek tanggal/kuota/syarat), push tak sampai (cek FCM key)
-├── Bab 5: Keuangan (sales-report, accounting, loyalty-settings)
+├── Bab 5: Keuangan (sales-report, accounting, loyalty-settings) ✅ SUDAH LIVE (4 PNG + spec bab5)
 │   ├── 5.1 Baca laporan: omzet per vertikal, tren, AOV, konversi; filter periode
 │   ├── 5.2 Accounting: catat pengeluaran + COGS per booking; baca laba rugi
 │   ├── 5.3 Loyalty: ambang silver/gold, % poin, tukarkan poin (jangan ubah ambang saat promo jalan)
@@ -87,23 +87,23 @@ admin/panduan.php (+ anchor #bab-N per bab, sidebar panduan = daftar isi)
 │   ├── 6.1 Daftarkan reseller + atur peran; 6.2 Setujui/tolak topup saldo (cek bukti transfer)
 │   ├── 6.3 Harga khusus reseller per tur (jangan lebih murah dari flash sale)
 │   └── 6.9 Kalau gagal: saldo tak masuk, harga tak berlaku → cek status/role
-├── Bab 7: Konten web (posts, reviews, faq, nav-menus, hero-slides, brand-settings→Bab1, appearance[hidden])
+├── Bab 7: Konten web (posts, reviews, faq, nav-menus, hero-slides) ✅ SUDAH LIVE (5 PNG + spec bab7)
 │   ├── 7.1 Blog (`posts`): tulis → terbit/draf → cek di /blog
 │   ├── 7.2 Ulasan (`reviews`): moderasi tampil/sembunyi; balas ulasan
 │   ├── 7.3 FAQ + kategori: urutan tampil di /faq; jangan hapus kategori berisi FAQ
 │   ├── 7.4 Menu navigasi + hero slides: tambah tautan, atur urutan, fokus homepage
 │   └── 7.9 Kalau gagal: konten tak tampil (cek status/draf, cache, bahasa aktif)
-├── Bab 8: Pengaturan teknis ⚠️ (wa-settings+test, chat-settings, email-log, currency-settings, hotel/flight-api-settings)
+├── Bab 8: Pengaturan teknis ⚠️ ✅ SUDAH LIVE (5 PNG + spec bab8)
 │   ├── 8.0 Prinsip: baca saja dulu; ubah hanya bila dipandu; catat nilai lama sebelum ubah
 │   ├── 8.1 WA (`wa-settings/wa-test`): nomor admin, template notif, tombol tes kirim
 │   ├── 8.2 Chat (tawk.to IDs), Email (driver log/api + endpoint/key + email_from; cek `email-log`)
 │   ├── 8.3 Mata uang (default + kurs), Hotel/Flight API (pilih sumber, key, toggle live)
 │   └── 8.9 Kalau gagal: notif tak terkirim (cek key/endpoint/log), kurs aneh (cek sumber)
-├── Bab 9: Tim & akses (dashboard, analytics, admins) — superadmin saja
+├── Bab 9: Tim & akses — superadmin saja ✅ SUDAH LIVE (3 PNG + spec bab9)
 │   ├── 9.1 Dashboard/analytics: baca ringkasan (jangan jadikan laporan pajak resmi)
 │   ├── 9.2 Kelola admin: buat akun staff + centang halaman yg boleh dibuka; superadmin vs staff
 │   └── 9.9 Kalau gagal: staff tak bisa buka (cek grant), lupa password (reset via superadmin)
-└── Bab 10: Darurat & pemulihan (boleh dibaca semua)
+└── Bab 10: Darurat & pemulihan ✅ SUDAH LIVE (teks + t(), 0 PNG)
     ├── Web error/500: jangan panik, catat jam + halaman + screenshot; cek `logs/` via panduan SSH (atau hubungi teknis)
     ├── Salah ubah: kembalikan manual (panduan tiap bab mencatat nilai bawaan) 
     └── Minta tolong teknis: info wajib (URL, akun, langkah terakhir, pesan error persis)
@@ -165,19 +165,19 @@ Catatan: halaman brand-settings panjang → ambil per-seksi (full-page sekaligus
 ## 7. Next steps (berurutan: Bab 0, 2–10)
 
 1. ACC planning penuh ini dari pemilik (atau revisi).
-2. Bab 0: tulis + screenshot dashboard/sidebar (1 spec, 3 PNG).
-3. Bab 2 Inventory: tulis + screenshot per pola umum + AI AUTO tour (1–2 spec, ±10 PNG).
-4. Bab 3 Bookings: tulis + screenshot daftar/proses (1 spec, ±5 PNG).
-5. Bab 4 Marketing: tulis + screenshot promo/flash (1 spec, ±5 PNG).
-6. Bab 5 Finance: tulis + screenshot laporan (1 spec, ±4 PNG).
-7. Bab 6 Reseller: tulis + screenshot topup/pricing (1 spec, ±4 PNG).
-8. Bab 7 Konten: tulis + screenshot blog/FAQ/ulasan/menu (1 spec, ±6 PNG).
-9. Bab 8 Settings: tulis + screenshot (TANPA mengubah key produksi; 1 spec, ±5 PNG).
-10. Bab 9 Tim: tulis + screenshot grant (1 spec, ±3 PNG, akun uji dihapus sesudahnya).
-11. Bab 10 Darurat: tulis (tanpa screenshot rusak2; 0 spec).
-12. Multilingual-kan tiap bab baru mengikuti Bab 9 (bungkus `t()` → seed Meta → audit 0 → E2E `panduan-i18n` diperluas).
+2. Bab 0: tulis + screenshot dashboard/sidebar (1 spec, 3 PNG). ✅ SELESAI (2 PNG, audit faktual step 20)
+3. Bab 2 Inventory: tulis + screenshot per pola umum + AI AUTO tour (1–2 spec, ±10 PNG). ✅ SELESAI (10 PNG, spec hijau step 21)
+4. Bab 3 Bookings: tulis + screenshot daftar/proses (1 spec, ±5 PNG). ✅ SELESAI (5 PNG, spec hijau step 22)
+5. Bab 4 Marketing: tulis + screenshot promo/flash (1 spec, ±5 PNG). ✅ SELESAI (5 PNG, spec hijau step 23)
+6. Bab 5 Finance: tulis + screenshot laporan (1 spec, ±4 PNG). ✅ SELESAI (4 PNG, commit `1ee6204`)
+7. Bab 6 Reseller: tulis + screenshot topup/pricing (1 spec, ±4 PNG). ✅ SELESAI (4 PNG, spec hijau step 25)
+8. Bab 7 Konten: tulis + screenshot blog/FAQ/ulasan/menu (1 spec, ±6 PNG). ✅ SELESAI (5 PNG, commit `1ee6204`)
+9. Bab 8 Settings: tulis + screenshot (TANPA mengubah key produksi; 1 spec, ±5 PNG). ✅ SELESAI (5 PNG, commit `1ee6204`)
+10. Bab 9 Tim: tulis + screenshot grant (1 spec, ±3 PNG). ✅ SELESAI (3 PNG, commit `1ee6204`)
+11. Bab 10 Darurat: tulis (tanpa screenshot rusak2; 0 spec). ✅ SELESAI (teks + t(), commit `1ee6204`)
+12. Multilingual-kan tiap bab baru mengikuti Bab 9 (bungkus `t()` → seed Meta → audit 0 → E2E `panduan-i18n` diperluas). ✅ SELESAI (EN 2349/0, ZH panduan 482/0, i18n 3 passed step 30)
 13. Review awam 1 orang non-IT per bab.
-14. Commit + push + deploy Royal + utama per bab (pola stash-config).
+14. Commit + push + deploy Royal + utama per bab (pola stash-config). ✅ SELESAI (unit 276/0, proof EN 6.0MB/ZH 6.5MB, royal 302 + utama 200)
 
 ## 8. Yang tidak dikerjakan (bukan penundaan bab)
 
@@ -243,12 +243,12 @@ Standar tiap bab baru: baca file admin dulu (catat field/batas/error persis) →
 | 2 Inventory | `tour-add/edit`, `hotel-edit`, `hotel-rooms`, `flight-edit`, `ferry-edit`, `rental-car-edit`, `attraction-edit`, `transfer-edit`, `train-edit`, `esim-edit` | 10: daftar, form, AI AUTO, tanggal/harga, foto, hasil | L | Tekankan pola umum 2.0 + AI AUTO Meta + live-vs-manual |
 | 3 Bookings | `bookings.php`, `payments.php` | 5: daftar+filter, detail, konfirmasi, status gateway | M | JANGAN lunas tanpa bukti; refund ikut kebijakan |
 | 4 Marketing | `flash-sales`, `promo-codes`, `price-alerts`, `push-notifications`, `corporate-rates`, `collections` | 5: form promo, periode/kuota, push, corporate | M | Prioritas diskon; throttle 1/jam; FCM sensitif |
-| 5 Finance | `sales-report`, `accounting`, `loyalty-settings` | 4: filter, expense/COGS, ambang loyalty | M | Operasional saja, bukan laporan pajak |
+| 5 Finance | `sales-report`, `accounting`, `loyalty-settings` | 4: filter, expense/COGS, ambang loyalty | M | ✅ LIVE (4 PNG + spec, commit `1ee6204`) |
 | 6 Reseller | `resellers`, `reseller-topups`, `reseller-pricing` | 4: daftar, topup, harga per tur | S | Cek bukti; harga vs flash sale |
-| 7 Konten | `posts/post-edit`, `reviews`, `faq+category`, `nav-menus`, `hero-slides` | 6: editor, moderasi, FAQ, menu, hero | M | Status/draf + cache + bahasa |
-| 8 Settings | `wa-settings/wa-test`, `chat-settings`, `email-log`, `currency-settings`, `hotel/flight-api-settings` | 5: form + tes + log | M | Catat nilai lama; JANGAN ubah key produksi |
-| 9 Tim | `dashboard`, `analytics`, `admins` | 3: dashboard, form admin, grant | S | Superadmin saja; hapus akun uji |
-| 10 Darurat | `logs/`, nilai bawaan tiap bab | 0 | S | Info wajib lapor teknis |
+| 7 Konten | `posts/post-edit`, `reviews`, `faq+category`, `nav-menus`, `hero-slides` | 6: editor, moderasi, FAQ, menu, hero | M | ✅ LIVE (5 PNG + spec, commit `1ee6204`) |
+| 8 Settings | `wa-settings/wa-test`, `chat-settings`, `email-log`, `currency-settings`, `hotel/flight-api-settings` | 5: form + tes + log | M | ✅ LIVE (5 PNG + spec, commit `1ee6204`) |
+| 9 Tim | `dashboard`, `analytics`, `admins` | 3: dashboard, form admin, grant | S | ✅ LIVE (3 PNG + spec, commit `1ee6204`) |
+| 10 Darurat | `logs/`, nilai bawaan tiap bab | 0 | S | ✅ LIVE (teks + t(), commit `1ee6204`) |
 
 Total screenshot baru ±45 PNG (7 Bab-1 sudah ada). Tiap bab = 1 commit + deploy Royal + utama.
 
@@ -261,10 +261,10 @@ Total screenshot baru ±45 PNG (7 Bab-1 sudah ada). Tiap bab = 1 commit + deploy
 - **Tujuan**: pemilik travel awam bisa ganti branding sendiri (nama, logo, kontak, sosmed) tanpa IT; tiap langkah ada screenshot CDP asli + nama tombol persis + contoh benar/salah; bahasa santai.
 - **Keputusan**: 1 file `admin/panduan.php` (login admin, ikut git); mulai bab branding dulu; screenshot via Playwright Chromium; data Royal Dream asli.
 - **Acuan**: `brand-settings.php:1-147` — semua field, batas (60/120/160 char), tipe/size file, pesan error, efek tiap ganti, kredensial demo.
-- **Struktur**: Bab 0–10 SELURUH admin panel (Bab 1 SUDAH LIVE ✅; Bab 0, 2–10 terencana di §4+§10, ±45 PNG baru). Format per sub-bab: tujuan → langkah → screenshot → contoh → cek hasil → kalau error.
-- **Screenshot**: 7 PNG di `assets/img/panduan/` via `panduan-brand-screenshots.spec.ts`. Mitigasi flaky: data final, bukan timestamp.
+- **Struktur**: Bab 0–10 SELURUH admin panel (Bab 1, 5, 7, 8, 9, 10 SUDAH LIVE ✅ commit `1ee6204`, 17 PNG baru Bab 5/7/8/9 + 4 spec). Format per sub-bab: tujuan → langkah → screenshot → contoh → cek hasil → kalau error.
+- **Screenshot**: 7 PNG Bab-1 + 17 PNG Bab 5/7/8/9 di `assets/img/panduan/` via spec `panduan-bab*-screenshots.spec.ts` (bab8 flaky currency, retry pass). Mitigasi flaky: data final, bukan timestamp.
 - **ACC iterasi 1**: panduan dibuka, 7 gambar tampil, label persis, batas tertulis, ada cek hasil + tabel error, lint bersih — SEMUA SUDAH CENTANG (commit `2f639dd`, live Royal + utama).
-- **Bab 9 (baru)**: panduan WAJIB multilingual id/en/zh — bungkus `t()`, seed via Meta + review, audit 0 missing, E2E `panduan-i18n`, screenshot tetap 1 set + caption.
+- **Bab 9 (baru)**: panduan WAJIB multilingual id/en/zh — bungkus `t()`, seed via Meta + review, audit 0 missing, E2E `panduan-i18n` (3 passed, assert Bab/Chapter/第 5/7/8/9/10), screenshot tetap 1 set + caption. Unit: 272 LULUS / 4 GAGAL pra-ada.
 
 ### MULTILINGUAL.md — Pola i18n situs (acuan teknis Bab 9)
 

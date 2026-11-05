@@ -64,7 +64,7 @@ function atriaChat(array $messages, array $opts = []): string {
     curl_close($ch);
 
     if ($errno !== 0 || $raw === false) {
-        throw new RuntimeException('AI API tidak terjangkau (curl errno ' . $errno . ').');
+        throw new RuntimeException(sprintf(t('AI API tidak terjangkau (curl errno %s).'), $errno));
     }
     $data = json_decode($raw, true);
     if ($http < 200 || $http >= 300) {
@@ -108,7 +108,7 @@ function atriaTranslateTour(array $sourceFields, string $sourceLang, array $targ
     // Batasi total agar 1 request tetap aman (~hemat token & timeout)
     $total = array_sum(array_map('mb_strlen', $sourceFields));
     if ($total > 12000) {
-        throw new RuntimeException('Teks terlalu panjang untuk sekali translate AI (' . $total . ' karakter, maks 12000).');
+        throw new RuntimeException(sprintf(t('Teks terlalu panjang untuk sekali translate AI (%s karakter, maks 12000).'), $total));
     }
 
     $targets = implode(', ', array_map('atriaLangName', $targetLangs));
@@ -149,7 +149,7 @@ function atriaTranslateTour(array $sourceFields, string $sourceLang, array $targ
         }
     }
     if (!$out) {
-        throw new RuntimeException('AI tidak mengembalikan terjemahan.');
+        throw new RuntimeException(t('AI tidak mengembalikan terjemahan.'));
     }
     return $out;
 }

@@ -302,7 +302,7 @@ $cap = t('Tampilan menu dalam Bahasa Indonesia — posisi tombol sama di semua b
 <div class="panduan-tip"><?= sprintf(t('Contoh: gold butuh 5 booking + 7%%. Member gold belanja %s dapat %s poin otomatis.'), '<code>Rp1.000.000</code>', '<code>70.000</code>') ?></div>
 </div></div>
 <p class="mb-1"><b><?= t('Cek hasil:') ?></b> <?= sprintf(t('muncul tulisan hijau %s. Minta 1 member melakukan 1 booking lunas — poinnya harus bertambah sesuai persen tier-nya.'), '"<b>' . t('Pengaturan loyalty berhasil disimpan') . '</b>"') ?></p>
-<div class="panduan-warn"><?= t('JANGAN ubah ambang/persen saat promo jalan — member bisa naik/turun tier tiba-tiba. Catat nilai lama dulu (foto layar).') ?></div>
+<div class="panduan-warn"><?= t('JANGAN ubah ambang/persen saat promo jalan.') ?> <?= t('Catat nilai lama dulu (foto layar).') ?></div>
 </div></div>
 
 <div class="card border-0 shadow-sm mb-3"><div class="card-body">
