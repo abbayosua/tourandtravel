@@ -1,4 +1,9 @@
+0 && (price    [/hotels.php]
+ABS_MAX) hi = ABS_MAX; maxR.value = hi; }
+        }
+        minI.value = lo    [/tours.php]
 Booking.com    [/hotel-detail.php]
+Mrs    [/train-booking.php]
 PELNI    [/pelni.php]
 Rp 0    [/tour-detail.php]
 TravelPoints    [/booking-success.php]

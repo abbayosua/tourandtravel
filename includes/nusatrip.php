@@ -59,9 +59,9 @@ function nusaFormEncode(array $form): string {
     return implode('&', $parts);
 }
 
-function nusaCurl(string $url, array $headers, ?array $form = null): array {
+function nusaCurl(string $url, array $headers, ?array $form = null, int $timeout = 30): array {
     $ch = curl_init($url);
-    $opts = [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 30, CURLOPT_CONNECTTIMEOUT => 10,
+    $opts = [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => max(1, $timeout), CURLOPT_CONNECTTIMEOUT => 10,
         CURLOPT_ENCODING => '', CURLOPT_FOLLOWLOCATION => true, CURLOPT_HTTPHEADER => $headers,
         CURLOPT_USERAGENT => NUSA_UA];
     if (NUSA_PROXY !== '') $opts[CURLOPT_PROXY] = NUSA_PROXY;
@@ -80,12 +80,12 @@ function nusaCurl(string $url, array $headers, ?array $form = null): array {
 }
 
 /** GET signed ke nusatrip-api.com. $params tanpa token/version (ditambah otomatis). */
-function nusaGet(string $ep, array $params = [], string $version = NUSA_VERSION): array {
+function nusaGet(string $ep, array $params = [], string $version = NUSA_VERSION, int $timeout = 30): array {
     $params['token'] = NUSA_TOKEN;
     $params['version'] = $version;
     $sig = nusaSign($params);
     $url = NUSA_API . ltrim($ep, '/') . '?' . http_build_query($params);
-    return nusaCurl($url, nusaHeaders($sig));
+    return nusaCurl($url, nusaHeaders($sig), null, $timeout);
 }
 
 /** POST signed: version di query (sniffed), full params di query + form body (legacy B.C/r/d). */
@@ -275,10 +275,10 @@ function nusaSubmit(array $fields): array {
     return nusaPost('transaction_submit', $fields);
 }
 
-function nusaResult(string $taskId, string $checkoutId, string $retry = '0', ?string $lastState = null): array {
+function nusaResult(string $taskId, string $checkoutId, string $retry = '0', ?string $lastState = null, int $timeout = 30): array {
     $p = ['taskId' => $taskId, 'checkoutId' => $checkoutId, 'retry' => $retry, 'lang' => 'en'];
     if ($lastState !== null && $retry !== '0') $p['lastState'] = $lastState;
-    return nusaGet('transaction_result', $p);
+    return nusaGet('transaction_result', $p, NUSA_VERSION, $timeout);
 }
 
 /** Nomor VA hanya ada di transaction_summary?ref= (result tidak pernah berisi VA). */
@@ -287,18 +287,22 @@ function nusaSummary(string $ref): array {
 }
 
 /** Polling result ala aplikasi (r.java, p.java:q): max 9x jeda 5dt, retry+1 + lastState. */
-function nusaPollResult(string $taskId, string $checkoutId, int $maxTries = 2, int $sleepSec = 3): array {
+function nusaPollResult(string $taskId, string $checkoutId, int $maxTries = 2, int $sleepSec = 3, int $timeout = 30): array {
     $last = null;
+    $lastResp = ['http' => 0, 'raw' => '', 'data' => null];
     for ($i = 0; $i < $maxTries; $i++) {
         if ($i > 0) sleep($sleepSec);
         $retry = (string)$i;
-        $r = nusaResult($taskId, $checkoutId, $retry, $i === 0 ? null : (string)($last['lastState'] ?? '1'));
+        $r = nusaResult($taskId, $checkoutId, $retry, $i === 0 ? null : (string)($last['lastState'] ?? '1'), $timeout);
+        $lastResp = $r;
         $d = $r['data'] ?? null;
-        if (!is_array($d)) return $r;
+        // Timeout / bukan JSON → jangan menyerah, coba lagi (provider long-poll).
+        if (!is_array($d)) continue;
         $last = $d;
         if ((int)($d['finalStatus'] ?? 0) !== 0) return $r;
     }
-    return nusaResult($taskId, $checkoutId, '0');
+    if ($last !== null) return ['http' => (int)($lastResp['http'] ?? 200), 'raw' => (string)($lastResp['raw'] ?? ''), 'data' => $last];
+    return $lastResp;
 }
 
 /** deviceFingerPrint: 32-byte hex UPPER (64 char). */

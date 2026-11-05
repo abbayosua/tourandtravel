@@ -202,23 +202,28 @@ if ($step === 'submit' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+$resultPending = false; // belum final → tampilkan "memproses" + auto-refresh (jangan blokir 30 dtk)
+$resultRetry = 0;
+$resultMaxRetry = 20;
 if ($step === 'result') {
     $b = nusaFlightBookSess();
     $res = null;
     $summary = null;
     if (!empty($b['taskId']) && !empty($b['checkoutId'])) {
-        if (empty($_GET['polled'])) {
-            $pr = nusaPollResult((string)$b['taskId'], (string)$b['checkoutId']);
-            $res = $pr['data'] ?? ['raw_error' => $pr['raw'] ?? ''];
-        } else {
-            $r0 = nusaResult((string)$b['taskId'], (string)$b['checkoutId'], '0');
-            $res = $r0['data'] ?? ['raw_error' => $r0['raw'] ?? ''];
+        $resultRetry = max(0, (int)($_GET['retry'] ?? 0));
+        // Poll cepat (timeout pendek) supaya request tak menunggu 30 dtk; sisanya via auto-refresh.
+        // retry pertama (tepat setelah submit) timeout pendek → spinner muncul cepat.
+        $pollTimeout = $resultRetry === 0 ? 4 : 12;
+        $r0 = nusaResult((string)$b['taskId'], (string)$b['checkoutId'], (string)$resultRetry, $resultRetry > 0 ? '1' : null, $pollTimeout);
+        $res = $r0['data'] ?? null;
+        if (!is_array($res) || (int)($res['finalStatus'] ?? 0) === 0) {
+            $resultPending = true;
         }
-        if (!empty($res['ref'])) {
+        if (is_array($res) && !empty($res['ref'])) {
             $sm = nusaSummary((string)$res['ref']);
             $summary = $sm['data'] ?? null;
         }
-        if (is_array($res) && !isset($res['raw_error'])) nusaFlightPersist($b, $res, $summary);
+        if (is_array($res) && !empty($res['bookingCode'])) nusaFlightPersist($b, $res, $summary);
     } else $err = t('Tidak ada taskId. Ulangi booking.');
 }
 
@@ -228,7 +233,22 @@ require_once 'includes/header-shared.php';
 <section class="py-4 bg-light"><div class="container" style="max-width:760px">
 <h4 class="fw-bold mb-3"><i class="bi bi-airplane me-2"></i><?= t('Booking Tiket Pesawat') ?></h4>
 <?php if ($err): ?><div class="alert alert-danger"><?= e($err) ?></div><?php endif; ?>
-<?php if ($step === 'result' && !empty($res)): ?>
+<?php if ($step === 'result' && $resultPending): ?>
+    <?php $nextRetry = $resultRetry + 1; $keepPolling = $nextRetry <= $resultMaxRetry; $pollUrl = 'nusatrip-flight-book.php?step=result&retry=' . (int)$nextRetry; ?>
+    <div class="card border-0 shadow-sm"><div class="card-body p-4 text-center">
+        <div class="spinner-border text-primary" role="status" style="width:48px;height:48px;"></div>
+        <h5 class="fw-bold mt-3"><?= t('Memproses...') ?></h5>
+        <p class="text-muted small mb-3"><?= t('Menyiapkan kode pembayaran Anda.') ?></p>
+        <?php if ($keepPolling): ?>
+            <a href="<?= e($pollUrl) ?>" class="btn btn-primary rounded-pill"><?= t('Cek lagi') ?></a>
+            <script>setTimeout(function(){ location.replace(<?= json_encode($pollUrl) ?>); }, 4000);</script>
+        <?php else: ?>
+            <p class="text-danger small mb-2"><?= t('Masih diproses. Coba cek lagi sebentar lagi.') ?></p>
+            <a href="<?= e($pollUrl) ?>" class="btn btn-outline-primary rounded-pill"><?= t('Cek lagi') ?></a>
+        <?php endif; ?>
+        <p class="text-muted small mt-3 mb-0"><?= t('Task:') ?> <?= e((string)($b['taskId'] ?? '-')) ?></p>
+    </div></div>
+<?php elseif ($step === 'result' && !empty($res)): ?>
     <?php $payStatus = (int)($res['paymentResult']['paymentStatus'] ?? -1); $msgs = $res['messages'] ?? []; ?>
     <?php $va = $summary['paymentTransfer'] ?? null; ?>
     <div class="card border-0 shadow-sm"><div class="card-body p-4 text-center">

@@ -3,12 +3,16 @@
 "Pertama kali ke China, awalnya khawatir tapi ternyata lancar semua. Guide lokalnya speak Indonesian,很棒!"
 $ (USD)
 %d tour berhasil diatur ke bahasa %s
+%s / %s / %s / %s — ikuti aturannya, jangan akali.
+%s / %s — minimal 1 superadmin harus hidup. Jangan hapus/cabut akun sendiri bila kamu satu-satunya superadmin.
+%s / %s — perbaiki nomor lalu Simpan ulang.
+%s / %s — salin ID dari dashboard tawk.to, jangan ketik manual.
 %s sekarang %s (target: %s)
+%s — deskripsi kosong atau jumlah 0 tidak tersimpan.
 + Tambah
 , saldo Anda 
 -- Pilih --
 -- Pilih Profil --
--- Pilih Tanggal --
 /malam
 /malam termasuk pajak
 /malam · harga live dari
@@ -16,14 +20,49 @@ $ (USD)
 0% (non-refundable)
 1 hari, 2-3 jam, ...
 1 point = Rp 100 · diperoleh dari booking yang dibayar
+10.1 Web blank/500 setelah kamu ubah sesuatu
+10.2 Salah hapus / salah klik Approve / salah ubah harga
+10.3 Minta tolong teknis: kirim info lengkap biar cepat dibalas
+2.0 Pola umum (Tour, Hotel, Pesawat, Ferry, Rental, Atraksi, Transfer, Kereta, eSIM)
+2.1 Tour: manual vs AI AUTO (pakai Meta AI)
+2.2 Hotel + kamar (wajib nama + kota)
+2.3 Pesawat, Ferry, Kereta, Transfer, Rental (jadwal + rute)
+2.4 Atraksi & eSIM (harga boleh 0)
+2.5 Live (API) vs manual — jangan salah paham
 3-5 Hari
+3.1 Baca daftar booking (9 jenis)
+3.2 Proses: konfirmasi, batal, refund
+3.3 Pembayaran: gateway & manual
 30 hari ke depan
 30 hari terakhir
+4.1 Flash sale & kode promo
+4.2 Price alert & push (notifikasi otomatis)
+4.3 Corporate & koleksi
+403 / akses ditolak buka admins.php
+5.1 Sales Report: baca omzet per vertikal
+5.2 Accounting: catat pengeluaran + COGS agar laba benar
+5.3 Loyalty: ambang tier + persen poin TravelPoints
+5.9 Kalau gagal — cari pesan error-nya di sini
 5GB, 10GB, ...
 5j 30m
 6-8 Hari
+6.1 Daftar reseller: cari + filter saldo
+6.2 Topup: cek bukti, Approve/Reject
+6.3 Harga reseller per tur
 7 hari ke depan
+7.1 Blog: tulis artikel yang dibaca Google
+7.2 Ulasan: balas bintang tamu, hapus yang spam
+7.3 FAQ: jawab pertanyaan yang ditanya berulang-ulang
+7.4 Menu navigasi + gambar depan (hero)
+7.9 Kalau gagal — cari pesan error-nya di sini
+8.1 WA: nomor admin + token + tombol Test
+8.2 Live chat + log email: sapaan tamu & bukti terkirim
+8.3 Kurs + API live: harga asing & stok hotel/pesawat
+8.9 Kalau gagal — cari pesan error-nya di sini
 9+ Hari
+9.1 Dashboard: cek kesehatan web 2 menit tiap pagi
+9.2 Kelola admin: tambah akun + centang menu (superadmin saja)
+9.9 Kalau gagal — cari pesan error-nya di sini
 :brand adalah platform pemesanan perjalanan online untuk paket tour, hotel, tiket pesawat, ferry, kereta, transfer, atraksi, eSIM, dan rental mobil. Dengan menggunakan situs ini, Anda menyetujui seluruh ketentuan di halaman ini.
 :brand adalah platform pemesanan perjalanan online yang menyediakan paket tour domestik & internasional, hotel, tiket pesawat, ferry, kereta, transfer, atraksi, eSIM, dan rental mobil dalam satu tempat.
 :brand bertindak sebagai perantara pemesanan antara pelanggan dan penyedia layanan. Tanggung jawab atas pelaksanaan layanan (penerbangan, menginap, tour) berada pada masing-masing penyedia, sesuai syarat mereka.
@@ -33,7 +72,12 @@ $ (USD)
 > Rp 20 Juta
 A/B Testing
 AC
+AI API tidak terjangkau (curl errno %s).
+AI AUTO (tulis 1 bahasa, auto translate)
+AI tidak mengembalikan terjemahan.
 API Key
+API key (kosongkan bila tidak diubah)
+API: buka %s / %s. Centang %s + modul penyedia, isi %s bila diminta, tentukan %s (mis. %s). Simpan → cache dibersihkan otomatis.
 Account ID
 Accounting
 Ada Saldo
@@ -41,6 +85,9 @@ Add-on tidak tersedia untuk penerbangan ini.
 Add-on: Kursi & Bagasi
 Admin
 Admin Panel
+Admin berhasil dihapus.
+Admin berhasil diperbarui.
+Admin berhasil ditambahkan.
 Ajak Teman, Dapat Diskon
 Ajak Teman, Dapatkan TravelPoints!
 Ajak teman daftar & booking, kamu dan teman dapat diskon Rp100.000!
@@ -51,7 +98,10 @@ Aksi
 Aksi Cepat
 Aktif
 Aktifkan
-Aktifkan live hotel API (Booking.com/OYO/NusaTrip)
+Aktifkan Duffel (butuh API key funded)
+Aktifkan FlightList (gratis, lanjut Kiwi)
+Aktifkan live flight API (mati = jadwal lokal saja)
+Aktifkan live hotel API (NusaTrip)
 Aktifkan modul NusaTrip (search + booking + VA)
 Aktifkan modul OYO (fallback listing per kota)
 Aktivasi instan setelah pembayaran
@@ -60,74 +110,114 @@ Aktivitas Menarik
 Aktivitas Seru
 Aktivitas Terakhir
 Aktivitas, mis: Kintamani Tour 08:00
+Akun yang dipakai (username admin) + browser/HP apa.
 Akun:
+Alamat
 Alamat / terminal / hotel
 Alamat email Anda
+Alamat email pengirim tidak valid
 Alamat email tidak valid
 Alasan (opsional)
 Alasan Refund
 Alert harga disimpan!
 All rights reserved.
+Ambang tier dan persen poin loyalty
 Amount refund 0 — pengajuan otomatis ditolak
 Anak
 Analytics
+Anda
 Anda booking sebagai tamu. Masuk akun untuk melacak booking.
 Anda dapat booking sebagai tamu.
+Anda tidak memiliki akses ke halaman ini.
+Angkat 1 superadmin baru dulu, baru turunkan yang lama
 Apa Kata Mereka?
 Approve
+Approve: saldo otomatis bertambah + email + notif ke reseller. Reject: wajib tulis alasan, saldo tidak berubah.
 Approved
 Artikel tidak ditemukan
 Artikel, tips, dan panduan traveling dari TourAndTravel.
+Artinya
 Asuransi Dasar
 Asuransi Perjalanan
 Asuransi perjalanan
+Atas Nama
 Atau pilih channel lain
 Atraksi
 Atur Password Baru
 Atur menu yang muncul di SELURUH header website (tab + menu mobile).
+Aturan aman:
+Aturan: jangan jual slot live yang sudah habis di penyedia; jangan ubah harga live manual kecuali disuruh; kalau data live aneh, cek menu Hotel/Flight API (Bab 8) dulu.
 Auto
-Auto (NusaTrip native, fallback OYO)
+Auto (NusaTrip native)
 Automatic
 Avg Order Value
+Bab 0 — Mulai di sini (3 menit)
+Bab 1 — Ganti Branding Website
+Bab 10 — Darurat: web error / salah ubah / minta tolong
+Bab 2 — Kelola Produk (Inventory)
+Bab 3 — Pesanan & Pembayaran
+Bab 4 — Marketing: Promo, Flash Sale, Notif
+Bab 5 — Keuangan: Laporan & Loyalty
+Bab 6 — Reseller: Daftar, Topup, Harga
+Bab 7 — Konten: Blog, Ulasan, FAQ, Menu & Hero
+Bab 8 — Pengaturan Teknis: WA, Chat, Email, Kurs, API
+Bab 9 — Tim: Dashboard, Analitik & Kelola Admin
+Baca 4 angka di atas tabel: total transaksi, omzet (booking batal tidak dihitung), rata-rata per transaksi, dan vertikal teratas. Di bawahnya ada rincian per vertikal + daftar booking (kode, nama, item, qty, total, status, metode bayar).
+Baca daftar booking, proses status, setujui refund, dan cek pembayaran. Jangan tandai lunas tanpa bukti.
+Baca omzet, catat pengeluaran + COGS, atur poin loyalty. Angka di sini operasional — bukan laporan pajak resmi.
 Baca selengkapnya
 Bagasi
+Bagian %s di bawah kontak JANGAN diubah kalau tidak paham API key — biarkan apa adanya, web tetap jalan.
+Bagian %s tampil di footer bawah setiap halaman web. Nomor %s cukup angka saja, tanpa spasi/tanda plus — contoh benar %s, salah %s.
+Bagian %s: klik %s untuk logo, favicon (icon kecil di tab browser, maks 512KB), dan OG image (gambar saat link di-share ke WA/FB, maks 2MB). Centang %s bila ingin menghilangkan gambar lama.
 Bagikan
 Bagikan link di bawah — Anda & teman dapat reward Rp50.000 saat teman berhasil daftar.
 Bagikan pengalaman Anda...
 Bahan bakar
 Bahasa
 Bahasa Konten
+Bahasa sumber (yang kamu tulis)
+Bahasa sumber tidak valid
 Bahasa tidak didukung
 Bahasa tidak valid
 Bahasa ulasan
 Balas
 Balas ulasan...
+Balas: ketik balasan di kolom balasan ulasan itu, Simpan — tanggal balasan terisi otomatis. Hapus: klik Hapus (muncul tanya “Hapus ulasan ini?”) — foto ulasan ikut terhapus dan tidak bisa dikembalikan.
 Bali Paradise 5D4N
 Bambang S.
 Bandara
 Bangku reclining
+Bank
 Bank Transfer
+Bantalan margin terhadap pergerakan kurs. Ditambahkan setelah diskon, sebelum poin/saldo. 0 = nonaktif. Hanya berlaku untuk paket tour.
 Bantuan
 Bantuan 24 jam
 Bantuan Darurat 24 Jam
+Baru
 Batal
 Batal Gratis
 Batal gratis
+Batal: ubah ke cancelled + tulis alasan di catatan admin. Saldo reseller balik otomatis bila booking reseller.
 Batalkan
 Batalkan booking ini?
 Batas Pemakaian
+Batas Waktu
 Batas waktu pembayaran mengikuti ketentuan tiap channel pembayaran. Pesanan yang melewati batas waktu otomatis dibatalkan oleh sistem.
 Batasan Tanggung Jawab
 Bayar Sekarang
 Bayar dari Saldo
 Bayar dari Saldo Reseller
 Bayar dengan kartu tersimpan
+Bayar via Xendit Sandbox (VA / Kartu)
+Bebas: isi produk, blog, FAQ, ulasan, laporan baca, branding (Bab 1).
 Beijing 8D7N
 Beli Sekarang
 Beli paket wisata dengan harga reseller dan kelola booking dari satu dashboard.
 Belum ada aktivitas
 Belum ada aktivitas webhook.
 Belum ada artikel.
+Belum ada artikel. / Belum ada ulasan. / Belum ada data.
 Belum ada booking
 Belum ada booking reseller.
 Belum ada data
@@ -181,6 +271,7 @@ Berhasil berlangganan! Cek email Anda untuk konfirmasi.
 Berhasil dihapus
 Berhasil diperbarui
 Berhasil ditambahkan
+Berhasil ditambahkan / diperbarui / dihapus
 Berhasil join waitlist! Kami akan memberi tahu Anda jika ada slot tersedia.
 Berhasil menukar :p points menjadi :a
 Berjalan MANUAL — semua gateway nonaktif
@@ -190,31 +281,39 @@ Berlaku Sampai
 Berlaku sampai
 Berlangganan
 Berlangganan newsletter kami untuk promo eksklusif & tips perjalanan.
+Bersihkan
 Besaran Refund Paket Tour
 Besok
 Best Seller
 Bestseller
+Biarkan kosong jika tidak diubah
 Biaya
+Bikin diskon, kirim notifikasi, atur harga korporat, susun koleksi. Prioritas: jangan dobel diskon yang bikin rugi.
 Bila email terdaftar, tautan reset telah dikirim. Periksa kotak masuk Anda.
 Bintang
 Bintang Tertinggi
 Bisnis
 Blog
+Blog, Ulasan, FAQ, Menu, Hero, Brand & Logo (Bab 1 + Bab 7).
+Body
 Bonus
 Booking
 Booking %s
 Booking Anda sudah dibuat. Silakan pilih metode pembayaran dan selesaikan sebelum batas waktu.
+Booking Anda sudah dibuat. Silakan selesaikan pembayaran melalui transfer bank berikut.
+Booking Anda tercatat. Konfirmasi tiket sedang diproses oleh tim kami.
 Booking Baru
 Booking Berhasil
 Booking Berhasil!
 Booking Code:
 Booking Hotel
-Booking Hotel NusaTrip
 Booking Reseller
 Booking Saya
 Booking Sekarang
 Booking Terbaru
+Booking Tiket Pesawat
 Booking baru
+Booking belum lunas (masih pending) / persen 0
 Booking berhasil dibatalkan. TravelPoints yang digunakan telah dikembalikan.
 Booking berhasil dihapus
 Booking berhasil diubah.
@@ -234,20 +333,49 @@ Brand & Logo
 Brand & logo tersimpan
 Breakdown Pendapatan
 Breakdown Pengeluaran
+Buang 0/+/spasi, awali 62, 8–15 digit
 Buat Itinerary
 Buat akun untuk mulai berpetualang
+Buffer kurs (%)
 Buka
+Buka %s untuk detail: filter tanggal + vertikal, grafik tren, tabel per vertikal, top tur. Angka sama dengan Dashboard — bedanya bisa dibedah per tanggal/produk.
+Buka %s, klik %s dulu untuk buat kelompok (mis. Pembayaran, Refund). Baru klik %s: isi pertanyaan + jawaban + pilih kategori + centang %s.
+Buka %s, klik tombol %s. Isi %s (wajib — kalau kosong muncul %s), lalu %s (ringkasan 1–2 kalimat) + %s (isi lengkap) + %s (foto sampul, masuk folder %s) + %s (mis. Tips) + %s (draft = belum tampil, published = tampil + tanggal terbit otomatis).
+Buka %s. Ada 2 kelompok: %s (bawaan: explorer 0, silver 2, gold 5, joyplus 10 booking) dan %s per tier (bawaan: 5%%, 6%%, 7%%, 10%% dari total booking).
+Buka %s. Baca kartu KPI: %s (8 tabel booking), %s, %s (batal tidak dihitung), %s (= omzet − COGS − pengeluaran), %s, plus grafik 7 hari + 5 booking terbaru + 10 aktivitas terakhir.
+Buka %s. Di atas ada ringkasan: omzet, COGS, pengeluaran, laba kotor, laba bersih, margin%%, grafik 6 bulan, dan rincian per vertikal.
+Buka %s. Isi %s (wajib, format %s — tanpa spasi/titik, tanpa +), %s, dan %s server. Klik Simpan.
+Buka %s. Isi filter %s (tanggal mulai) + %s (tanggal akhir) + %s (Tour/Hotel/Pesawat/Atraksi/Transfer/Kereta/eSIM/Ferry) + %s (pending/confirmed/cancelled/refunded).
+Buka %s. Tampil 100 ulasan terbaru: nama tamu + bintang + nama tur/hotel + isi komentar + rating per aspek (%s).
+Buka Accounting
+Buka Analytics
+Buka Blog
+Buka Brand & Logo
+Buka Chat
+Buka Dashboard
+Buka Email
+Buka FAQ
+Buka Loyalty
+Buka Sales Report
+Buka Ulasan
+Buka WA
 Buka WhatsApp > Menu > Perangkat Tertaut > Gabung Perangkat
 Buka di Kiwi.com
 Buka halaman Booking Saya, pilih booking confirmed, klik Minta Refund, dan isi alasan. Tim kami akan meninjau pengajuan maksimal 3x24 jam hari kerja. Status pengajuan (requested / approved / rejected) dapat dipantau di halaman yang sama.
+Buka halaman admin: %s lalu login dengan akunmu. Di web latihan lokal, user %s password %s.
 Buka halaman checkout
+Buka halaman depan web, scroll ke bawah (footer). Pastikan nama, alamat, telepon, WA, email, dan jam sudah berubah seperti yang diisi.
+Buka halaman login admin, isi %s dan %s, lalu klik %s.
+Buka menu %s di sidebar, klik %s untuk produk baru atau ikon edit untuk mengubah.
 Bukan booking Anda
 Bukti Transfer (opsional)
 Bulk Bahasa Konten:
 Butuh Menginap?
 COGS
+COGS belum diisi di booking
 CS 24/7
 Cakupan
+Callback Token
 Cancelled
 Cannot reach WUZAPI
 Cara Mengajukan Refund
@@ -259,28 +387,46 @@ Cari Lagi
 Cari Penerbangan
 Cari Penerbangan Lain
 Cari Sekarang
+Cari Tiket KAI
+Cari Tiket Lain
 Cari Tour
 Cari Tour Lain
+Cari dengan kolom %s (ketik kata, mis. %s). Edit pakai ikon pensil, hapus pakai ikon tong sampah (muncul tanya %s).
 Cari destinasi atau aktivitas...
 Cari destinasi...
 Cari nama, email, telepon...
+Cari nama/email/telepon; filter Semua / Ada Saldo / Saldo Kosong. Kolom: saldo, jumlah booking, total belanja, tanggal daftar. Klik ikon jam untuk riwayat topup.
+Cari pakai kode booking atau filter tanggal. Klik baris untuk detail: nama, kontak, jadwal, harga, catatan admin.
 Cari stasiun / kota / kode…
 Cari...
+Catat nilai lama dulu (foto layar).
 Catatan
 Catatan (mis: Low Season)
 Catatan (opsional)
 Catatan Penting
 Catatan Penting (satu per baris)
 Catatan internal
+Catatan untuk Pembeli (opsional)
 Catatan untuk tim (tidak dikirim ke pelanggan email)
 Cek Harga per Tanggal
+Cek URL server + token, Test ulang
+Cek baris baru di tabel + angka laba berubah
+Cek baris baru/hilang di daftar + cek halaman web
 Cek blog TourAndTravel
+Cek hasil:
+Cek lagi
+Centang minimal 1 halaman, Simpan lagi
+Chat: buka %s. Isi %s (24 huruf/angka dari dashboard %s → Administration) + %s (umumnya %s). Kosongkan keduanya = widget mati. Klik Simpan.
 Check-in
 Check-out
 Client ID
 Client Key
 Client Secret
+Coba 3 langkah aman: (a) tekan Ctrl+Shift+R (buang cache), (b) logout lalu login lagi, (c) buka browser lain/HP. Kalau 1 browser error tapi browser lain normal = masalah cache, bukan data.
 Coba Lagi
+Coba berurutan hingga ada hasil. Checkout ikut sumber: NusaTrip native, Duffel order API, FlightList lanjut Kiwi, lokal form sendiri. Kosong = nusatrip,lokal.
+Coba berurutan hingga ada hasil. Checkout ikut sumber: NusaTrip native, lokal form sendiri. Kosongkan = ikut Sumber utama.
+Coba file lain di bawah 2MB, ulangi Simpan
 Coba: Batam → Jakarta, atau ubah tanggal.
 Coba: Batam → Singapore, atau ubah tanggal.
 Coba: CGK → DPS, SIN → CGK, atau ubah tanggal.
@@ -291,22 +437,45 @@ Confirmed
 Connect failed
 Content
 Contoh Konversi dari IDR 10.000.000
+Contoh Q&A bagus: Q: %s A: %s
+Contoh baca: %s berarti bulan ini ada 40 transaksi lunas, omzet Rp120 juta, rata-rata Rp3 juta per transaksi, tur paling laris.
+Contoh balasan baik: %s. Singkat, sebut nama tamu, janji diperbaiki bila ada komplain.
+Contoh benar: %s. Contoh salah: %s (tanpa https://) — tidak tersimpan sebagai link.
+Contoh benar: nomor %s + token %s. Nomor diawali 62 (kode Indonesia), 8–15 digit setelahnya.
+Contoh pesan bagus: %s. Teknisi langsung tahu harus ke mana tanpa tanya balik 5x.
 Contoh: Perubahan jadwal perjalanan
 Contoh: TAT-7A2B1
+Contoh: filter Status=failed + Event=refund → ketemu 3 email gagal → Resend satu-satu, cek status jadi sent.
+Contoh: gold butuh 5 booking + 7%%. Member gold belanja %s dapat %s poin otomatis.
+Contoh: hotel live mati = tamu hanya lihat hotel ketikanmu. Urutan %s = cari ke NusaTrip dulu, gagal baru ke data lokal.
+Contoh: judul %s → link otomatis %s. Ganti judul = link ikut berubah, jadi jangan ganti judul artikel yang sudah disebar.
+Contoh: menu %s → %s urutan 1 tampil paling kiri. Hero fokus %s tampil hanya di halaman tur.
 Contoh: pilih +62 lalu tulis 08517488415 — otomatis dikirim "62 8517488415"
+Contoh: setelah ubah urutan sumber jadi “oyo”, halaman hotel kosong. Kembalikan ke “nusatrip,lokal”, Simpan, Ctrl+Shift+R — hotel muncul lagi.
+Contoh: tur terjual %s, COGS (bayar hotel+bus) %s, iklan %s → laba = Rp3.000.000 − Rp2.000.000 − Rp200.000 = Rp800.000.
 Conversion Rate
 Corporate Rates
+Corporate: buat perusahaan + diskon 0–100%; kaitkan email user (kosongkan = lepas). Koleksi: wajib nama; centang tur aktif; atur urutan tampil di web.
 Cover
 Cover Image (Upload)
 Credential kosong atau terlalu panjang
 Current:
 Daftar
 Daftar Akun Baru
+Daftar FAQ per kategori
 Daftar Pembayaran
 Daftar Pengeluaran
 Daftar Perusahaan
 Daftar Referral
+Daftar admin dan hak akses
+Daftar artikel blog
+Daftar hero slides
+Daftar menu navigasi
+Daftar pengajuan topup
+Daftar reseller dengan saldo
 Daftar sebagai Reseller
+Daftar ulasan tamu
+Dampak: tamu tidak bisa bayar / admin tidak bisa login / hanya tampilan rusak?
 Dapat direfund
 Dapatkan Penawaran Terbaik
 Dapatkan TourCash
@@ -315,13 +484,19 @@ Dari
 Dari (CGK)...
 Dari dashboard tawk.to: Administration → Property ID. Kosongkan untuk menonaktifkan widget.
 Dashboard
+Dashboard + Analytics: ringkasan baca saja.
 Dashboard Reseller
+Dashboard reseller setelah topup
+Data Kontak
+Data Pemesan
+Data Penumpang
 Data Penumpang Utama
 Data Peserta
 Data Peserta & Paspor
 Data Tamu
 Data dibagikan secara terbatas kepada pihak yang diperlukan untuk memenuhi pesanan: penyedia layanan (maskapai, hotel, operator tour), payment gateway, dan penyedia pengiriman notifikasi — hanya sebatas yang dibutuhkan.
 Data digunakan untuk memproses pemesanan, verifikasi pembayaran melalui payment gateway resmi, mengirim e-tiket/notifikasi, dukungan pelanggan, dan peningkatan layanan. Kami tidak menjual data pribadi Anda.
+Data kontak wajib diisi.
 Data live
 Data pembayaran diproses langsung oleh payment gateway bersertifikat; kami tidak menyimpan nomor kartu. Akses data internal dibatasi dan dilindungi. Anda dapat meminta perbaikan atau penghapusan data melalui kontak di bawah.
 Data penumpang tidak tersedia.
@@ -343,14 +518,25 @@ Detail
 Detail Booking
 Detail Pesanan
 Detail Produk
+Detail Tiket
 Detail Tour
 Detail Transaksi
 Dewasa
+Di %s ada 2 mode. %s: isi 3 bahasa sendiri. %s: tulis 1 bahasa, klik %s untuk pratinjau, lalu %s — sisanya diisi AI otomatis.
+Di halaman %s, bagian paling atas ada %s (wajib, maks 60 huruf) dan %s (boleh kosong, maks 120 huruf). Nama ini muncul di menu atas web, judul tab browser, email, notifikasi WA, dan PDF.
+Di mana menunya?
+Di sidebar kiri, bagian %s, ada 3 menu: %s, %s, %s.
+Di sidebar kiri, bagian %s, klik %s.
+Di sidebar kiri, bagian %s: %s, %s, %s, %s, %s, %s.
+Di sidebar kiri, bagian %s: %s, %s, %s, %s, %s.
+Di sidebar kiri, bagian %s: %s, %s. Bagian %s: %s (superadmin saja).
 Diajukan
 Dibatalkan
 Dibayar
+Dibuat
 Didukung payment gateway resmi & terenkripsi.
 Dikonfirmasi
+Dipakai bila Urutan kosong.
 Dipercaya traveler
 Disconnect failed
 Disetujui
@@ -361,6 +547,7 @@ Diskon (%)
 Diskon Grup
 Diskon korporat
 Diskon:
+Ditampilkan ke pembeli saat pembayaran manual (transfer).
 Diterima
 Diterjemahkan
 Ditolak
@@ -371,6 +558,7 @@ Download PDF
 Draft
 Driver
 Driver profesional
+Duffel kosong.
 Dukungan Pelanggan
 Durasi
 Durasi (contoh: 5j 30m)
@@ -385,6 +573,7 @@ Earn
 Earn dari booking
 Earning Rate TravelPoints
 Edit
+Edit Admin
 Edit Artikel
 Edit FAQ
 Edit Ferry
@@ -408,69 +597,98 @@ Ekonomi
 Eksekutif, Bisnis, ...
 Eksternal
 Email
-Email (opsional)
 Email Anda sudah terdaftar di waitlist.
 Email atau password salah
 Email berhasil dikirim ulang.
+Email harus diisi
+Email pengirim
+Email pengirim (transaksional)
+Email salah ketik
 Email sudah terdaftar
 Email tidak dapat diubah
 Email tidak valid
 Email tidak valid.
 Email user
+Email: buka %s. Filter %s (%s) + %s (booking lunas, refund, dsb — 200 terbaru). Baris merah = gagal. Klik %s untuk kirim ulang isi generik dengan subject sama.
 English
 Environment
+Error %s artinya nama/kota kosong; error %s artinya harga kamar 0 — perbaiki lalu Simpan ulang.
 Error: 
 Event
+Excerpt
 Explorer (%)
 Explorer — minimal booking
 Export CSV
+Export CSV kosong / hanya judul
 FAQ
 FAQ / Bantuan
+FOTO DULU layar + catat jam + menu apa yang terakhir diubah (mis. “jam 10:15 ubah Hotel API”). Jangan klik Simpan di menu lain — 1 masalah jangan ditambah masalah baru.
+FX Buffer (Tour)
+FX buffer disimpan: %s%%
 Fasilitas
 Fasilitas Hotel
 Fasilitas Termasuk
+Favicon: ICO/PNG/JPG/WebP/SVG maks 512KB. OG image: JPG/PNG/WebP maks 2MB.
 Ferry
+File favicon salah
+File gambar / Gagal menyimpan file
 File harus format JPG/PNG/WebP
 File rusak
+File rusak / folder penuh
 Filter
+Filter pending/approved/rejected. Klik Lihat Bukti, cocokkan nominal + tanggal dengan mutasi bank.
+Filter tanggal/tipe/status tidak cocok — 0 baris
 Finance
 Find Your
 First
 First Class
 Flash Deals
 Flash Sale
+Flash Sale, Kode Promo, Price Alert, Push, Corporate, Koleksi (Bab 4).
+Flash sale: wajib pilih produk + tanggal mulai & selesai (selesai harus setelah mulai) + diskon 5–70%. Stok kosongkan = tanpa batas.
+Flight API
 FlightList (Real)
 FlightList dibatasi (HTML)
-FlightList juga tidak terjangkau
+FlightList kosong.
 FlightList tidak terjangkau
 FlightList: klik Pesan menampilkan link Kiwi.com (affiliate).
 Fokus
 Fokus Website
 Fokus tidak valid
 Fokus website berhasil disimpan.
+Footer web setelah ganti branding
 Format FlightList tidak valid
-Format JPG/PNG/WebP, max 2MB
+Format JPG/PNG/WebP, max 5MB
+Format nomor salah (pakai 08 / +62 / spasi)
 Format token tidak valid
 Foto
 Foto Paspor
 Foto Ulasan
+Foto layar error (full layar, termasuk alamat web di atas).
 Foto paspor peserta
 Foto paspor wajib diupload
 Funnel Booking
 Gagal
+Gagal ke penyedia
+Gagal kirim WA ke
 Gagal kirim WA ke %s. Cek server log.
+Gagal kirim WA ke ... Cek server log.
 Gagal membuat sesi booking. Silakan coba lagi atau pilih kamar lain.
+Gagal membuat sesi booking. Silakan coba lagi.
 Gagal membuat session
 Gagal memesan: 
 Gagal memotong saldo. Silakan coba lagi.
 Gagal memproses refund
+Gagal memuat detail tiket. Silakan coba lagi.
 Gagal memuat hasil. Coba lagi.
 Gagal memuat hotel. Periksa koneksi Anda.
+Gagal memuat jadwal kereta. Coba lagi.
 Gagal memuat penerbangan. Periksa koneksi Anda.
 Gagal memuat status: 
 Gagal memuat tour. Periksa koneksi Anda.
 Gagal memulai pembayaran. Coba lagi.
 Gagal memutuskan koneksi.
+Gagal mencari jadwal. Silakan coba lagi.
 Gagal mengambil kurs
 Gagal mengambil kurs dari Frankfurter API
 Gagal menghapus itinerary. Coba lagi.
@@ -481,17 +699,19 @@ Gagal menyimpan file
 Gagal menyimpan file config
 Gagal menyimpan wishlist. Coba lagi.
 Gagal upload
-Gagal upload file
 Gagal: 
 Galeri Foto
 Gambar
 Gambar Cover
 Gambar slide wajib diupload
 Ganti Password
+Ganti paspor
 Gateway
 Gateway (mode instant)
+Gelar
 Gold (%)
 Gold — minimal booking
+Grafik dan tabel analytics
 Guest
 Gunakan
 Gunakan Profil Tersimpan
@@ -503,12 +723,19 @@ H-4 sampai H-7 sebelum keberangkatan
 H-8 atau lebih sebelum keberangkatan
 HOT
 Habis
+Hak Akses
 Halaman lain (tour/hotel/flight detail) tidak berubah.
+Halaman login admin
+Halaman superadmin-only
 Hanya booking confirmed yang bisa diajukan refund
 Hapus
+Hapus (blog/FAQ/menu/admin/ulasan): TIDAK bisa dikembalikan. Jangan buat ulang asal — cek dulu halaman web, catat yang hilang, baru buat ulang pelan-pelan.
+Hapus OG image
 Hapus alert ini?
 Hapus artikel ini?
+Hapus artikel ini? / Hapus ulasan ini? / Hapus?
 Hapus booking ini?
+Hapus favicon
 Hapus flash sale ini?
 Hapus gambar ini?
 Hapus harga reseller ini?
@@ -520,6 +747,7 @@ Hapus koleksi?
 Hapus logo
 Hapus menu?
 Hapus pengeluaran ini?
+Hapus peserta
 Hapus peserta ini?
 Hapus profil ini?
 Hapus slide ini?
@@ -529,6 +757,7 @@ Hapus?
 Harga
 Harga & ketersediaan dapat berubah. Pembelian dilakukan di penyedia.
 Harga (Rp)
+Harga 0 artinya gratis — hanya isi 0 bila memang gratis. Tanggal lewat hari ini tidak bisa dipesan pengunjung.
 Harga Anak
 Harga Dewasa
 Harga Normal
@@ -544,9 +773,12 @@ Harga Termurah
 Harga Tertinggi
 Harga Transparan
 Harga Turun! 🎉
-Harga belum tervalidasi NusaTrip. Ulangi dari halaman hotel.
+Harga belum tervalidasi. Ulangi dari halaman hotel.
+Harga belum tervalidasi. Ulangi dari halaman pencarian.
 Harga harus diisi
-Harga kamar ini tidak tersedia di NusaTrip
+Harga kamar ini tidak tersedia
+Harga maksimum
+Harga minimum
 Harga mulai dari — per malam
 Harga mulai dari — per penumpang, one way
 Harga normal
@@ -554,25 +786,30 @@ Harga per Malam
 Harga per penumpang
 Harga reseller berhasil ditambahkan.
 Harga reseller berhasil diupdate.
+Harga reseller per tur
 Harga saat ini
 Harga spesial untuk rute favorit — kuota terbatas, pesan sekarang.
 Harga terbaik
 Harga termurah
 Harga termurah untuk menginap di kota favoritmu
+Harga tiket ini tidak tersedia
 Harga transparan tanpa biaya tersembunyi.
 Harga yang tertera adalah harga final dalam Rupiah, kecuali dinyatakan lain. Pemesanan bersifat confirmed setelah pembayaran terverifikasi oleh payment gateway (transfer bank, virtual account, gerai retail, QRIS, atau e-wallet).
 Harga/Hari
 Harga/Hari (Rp)
 Harga/Malam (Rp)
+Harga/orang
 Harga/pax
 Harga: 
 Hari
 Hari ini
 Hasil
 Hasil live tidak tersedia, menampilkan jadwal lokal.
+Hati-hati: promo/diskon, harga reseller, ambang loyalty, status booking — catat nilai lama sebelum ubah.
 Hemat
 Hero Slides
 Hero utama + slide hero sesuai fokus (dikelola di menu Hero Slides).
+Hero: buka %s, klik %s. Pilih %s (%s — mis. gambar tur hanya tampil di halaman tur), upload gambar, isi %s, centang %s.
 Highlights (satu per baris — tampil di brosur PDF)
 Home
 Homepage menonjolkan hotel: pencarian menginap dominan, deal hotel terbaik, hotel per kota.
@@ -583,13 +820,17 @@ Hotel (Agoda-style)
 Hotel API
 Hotel Bintang 4
 Hotel Lain di :city
+Hotel mitra langsung — pesan di sini tanpa perantara
 Hotel tidak ditemukan
 Hotel, vila & resor pilihan — booking instan, harga terbaik.
+Hotel/Pesawat punya 2 sumber: LIVE (NusaTrip/OYO/Duffel — harga & stok ikut penyedia, berubah sendiri) vs MANUAL (kamu yang isi & atur stok).
 Hubungi Kami
+Hubungi kami via WhatsApp untuk mendapatkan nomor pembayaran.
 Hubungkan Nomor Baru
 ID item
 ID itinerary wajib diisi.
 Ikon
+Ikuti contoh: nusatrip,lokal (hotel) / nusatrip,duffel,flightlist,lokal (pesawat)
 Ikuti tren travel, itinerary ideas, dan tips traveling terbaru.
 Impresi
 Indonesia
@@ -598,15 +839,31 @@ Inisialisasi koneksi...
 Instan
 Instant AKTIF via 
 Instant — payment gateway
+Instruksi Pembayaran
+Internet/API luar mati sesaat
 Invalid CSRF token
 Inventory
 Isi
+Isi %s + %s dulu (keduanya wajib), lalu bintang 1–5 dan harga per malam. Kolom Inggris/Cina boleh kosong.
+Isi 4 kolom %s dengan link lengkap (diawali %s). %s baris yang tidak punya akun — ikonnya otomatis hilang dari footer.
+Isi COGS (harga pokok) lewat menu %s: cari booking-nya, isi kolom %s (angka ≥ 0, boleh desimal), Simpan. Laba otomatis = omzet − COGS − pengeluaran.
 Isi Data Peserta & Paspor
 Isi Pesan
+Isi deskripsi + jumlah lebih dari 0, Simpan lagi
+Isi dulu minimal 1 kolom dalam bahasa sumber.
+Isi judul minimal 1 huruf, Simpan lagi
+Isi kolom %s di Kelola Booking dulu, lalu cek Accounting lagi
+Isi kolom wajib, lalu harga dan slot/tanggal. Kolom Inggris/Cina boleh kosong — otomatis memakai versi Indonesia.
+Isi label (mis. Promo) + URL (mis. /promo.php)
+Isi minimal 6 karakter
+Isi mis. cs_rina (tanpa spasi)
 Isi nama lengkap (sesuai paspor) dan unggah foto paspor untuk setiap peserta.
+Isi nama minimal 1 huruf, klik Simpan lagi
+Isi nomor format 628xxx, Simpan ulang
 Isi pesan notifikasi
 Isi saldo untuk booking paket wisata dengan harga reseller.
 Isi semua field
+Isi tulisan web: artikel blog, balas ulasan tamu, Q&A, menu atas, dan gambar besar depan. Semua tampil langsung di web setelah Publish.
 Item
 Item, periode wajib diisi; akhir harus setelah mulai
 Itinerary
@@ -614,6 +871,12 @@ Itinerary Saya
 Itinerary berhasil dihapus
 Itinerary berhasil ditambahkan
 Itinerary tidak ditemukan.
+JANGAN hapus menu Home/Beranda atau matikan semua hero — web jadi terlihat rusak. Nonaktifkan 1 dulu, cek web, baru lanjut.
+JANGAN hapus ulasan bintang kecil hanya karena malu — balas dulu dengan sopan. Hapus hanya untuk spam/iklan/judi/kata kasar.
+JANGAN jalankan flash sale + kode promo + harga reseller + corporate barengan untuk produk sama — diskon menumpuk. Cek prioritas diskon di checkout dulu.
+JANGAN matikan Live / ganti urutan sumber saat jam ramai tanpa foto nilai lama. Salah urutan (mis. ketik oyo) = error dan stok kosong. Modul OYO sudah sunset — paksa mati, jangan dihidupkan.
+JANGAN tandai paid bila uang belum masuk. Salah status = laporan dan poin ikut salah.
+JANGAN ubah ambang/persen saat promo jalan.
 JPG/PNG/WebP, maks 2MB. Rekomendasi 1920px lebar.
 JPG/PNG/WebP, maks 5MB
 Jadikan default
@@ -624,27 +887,36 @@ Jadwal Keberangkatan
 Jadwal Penerbangan
 Jadwal Penerbangan (satu per baris)
 Jadwal keberangkatan pukul
+Jadwal tidak lagi tersedia. Silakan cari jadwal ulang.
 Jadwal, maskapai, operator ferry/kereta, atau itinerary dapat berubah karena kondisi operasional atau force majeure. Bila layanan dibatalkan oleh penyedia, pelanggan berhak atas penjadwalan ulang atau refund sesuai Kebijakan Refund.
 Jalankan Pengecekan
 Jalankan pengecekan harga sekarang?
 Jam
 Jam Berangkat
+Jam Minggu
 Jam Operasional
 Jam Penjemputan
+Jam Senin-Sabtu
+Jam kejadian + menu terakhir diubah + nilai lama (dari foto Bab 8) + nilai baru.
+Jam pakai format 24 jam (mis. 14:30). Tulis kota persis sama seperti di web agar pencarian ketemu.
 Jam penjemputan harus diisi
+Jangan panik. Ikuti urutan ini: foto error → jangan ubah apa-apa lagi → coba 3 langkah aman → baru minta tolong dengan info lengkap.
+Jangan sentuh bila tak paham: API key (%s), pengaturan pembayaran, hapus massal, akun admin orang lain.
+Jangan upload file selain gambar (mis. PDF/Word) — muncul error dan gambar tidak tersimpan.
 Jawaban
 Jelajahi Juga: Paket Tour
 Jelajahi Paket Tour
 Jelajahi Tour
 Jelajahi tour
-Jika jumlah peserta berubah, Anda perlu mengisi ulang data peserta.
 Join Waitlist
 Joy+ (%)
 Joy+ — minimal booking
 Judul
 Judul Tour
+Judul artikel kosong
 Judul dan isi pesan (ID) wajib diisi
 Judul notifikasi
+Judul tour
 Judul tour harus diisi
 Judul wajib diisi
 Jumlah
@@ -663,7 +935,6 @@ Jumlah penumpang minimal 1
 Jumlah peserta melebihi kapasitas tour
 Jumlah peserta melebihi kapasitas tour.
 Jumlah peserta minimal 1
-Jumlah peserta tidak valid
 Jumlah tamu melebihi kapasitas kamar
 Jumlah tidak valid
 Jumlah tiket minimal 1
@@ -671,6 +942,12 @@ KAI
 KAI Lainnya
 KAI Tidak Ditemukan
 KAI tidak ditemukan
+KPI dan aktivitas dashboard
+Kabel-kabel web: notif WA, chat tamu, log email, kurs asing, dan stok live hotel/pesawat. Salah isi di sini bisa bikin web diam atau harga salah.
+Kalau gagal — cari pesan error-nya di sini
+Kalau pratinjau AI gagal (kuota/jaringan), isi manual saja — tour tetap tersimpan. Jangan klik Simpan dua kali.
+Kalau salah password, muncul tulisan merah %s — ketik ulang perlahan.
+Kalau web 3 bahasa, isi juga kolom EN + ZH (judul/ringkasan/isi). Slug (alamat link) dibuat otomatis dari judul — tidak perlu diketik manual.
 Kalender Ketersediaan
 Kalender harga
 Kamar
@@ -680,13 +957,13 @@ Kami akan memberi tahu Anda jika harga turun ke target.
 Kami akan menghubungi Anda via WhatsApp untuk konfirmasi.
 Kami bekerja sama dengan penyedia layanan terpercaya untuk memberikan harga transparan, proses booking yang mudah, dan pembayaran yang aman.
 Kamu baru memesan
+Kamu login sebagai staff, bukan superadmin
 Kapal
 Kapan saja
 Kapasitas
 Kartu
 Kartu Kredit
 Kartu Kredit / Debit
-Kartu dummy akan ditolak bank (kode 12101) — booking tercatat tapi tidak terbayar.
 Kasur
 Kategori
 Kategori FAQ
@@ -697,25 +974,30 @@ Ke (DPS)...
 Keamanan & Penyimpanan
 Keberangkatan
 Kebersihan
+Kebersihan, Lokasi, Staff, Nilai, Fasilitas, Kenyamanan
 Kebijakan Privasi
 Kebijakan Refund
 Kedaluwarsa
 Kelas
 Kelola
-Kelola Atraksi
+Kelola Admin
+Kelola Admin, khusus superadmin (Bab 9).
 Kelola Booking
+Kelola Booking + Pembayaran (Bab 3).
 Kelola FAQ
 Kelola Ferry
 Kelola Hotel
-Kelola Kereta
 Kelola Kereta Api
 Kelola Pesawat
-Kelola Rental
 Kelola Rental Mobil
 Kelola Reseller
+Kelola Reseller, Topup, Harga (Bab 6).
 Kelola Tiket Wisata
 Kelola Tour
+Kelola Tour → Tambah
+Kelola Tour, Hotel, Pesawat, Ferry, Rental, Atraksi, Transfer, Kereta, eSIM (Bab 2).
 Kelola Transfer
+Kelola agen reseller: lihat saldo, setujui topup, atur harga khusus. Jangan kasih harga lebih murah dari flash sale.
 Kelola eSIM
 Kelola saldo dan booking Anda sebagai reseller.
 Keluar
@@ -727,6 +1009,8 @@ Kembali ke Katalog
 Kembali ke Website
 Kembali ke halaman tour
 Kembali ke hasil
+Kembalikan nilai seperti foto HP (Bab 8: foto-sebelum-ubah). Kalau tidak ada foto, kembalikan ke bawaan aman: Live enabled MATI (manual), urutan sumber “nusatrip,lokal” (hotel) / “nusatrip,duffel,flightlist,lokal” (pesawat), mata uang IDR.
+Kenali peta sidebar (9 bagian, dari atas ke bawah):
 Kenapa Booking Hotel di
 Kenapa Pesan Tiket di
 Kenapa Pilih
@@ -738,30 +1022,50 @@ Kereta Api
 Ketentuan Layanan
 Ketentuan Umum Refund
 Keterangan
+Ketik sumber/urutan yang tidak ada
 Kewarganegaraan
+Khusus superadmin!
 King
+Kirim 5 info ini sekaligus (jangan dicicil):
 Kirim Notifikasi
 Kirim Permintaan Topup
 Kirim Tautan Reset
 Kirim Test
 Kirim Ulasan
+Klik OK bila yakin, Batal bila salah klik
+Klik Tambah dulu; kalau habis Cari, kosongkan pencarian
+Klik ikon telepon/email/WA di footer untuk memastikan link-nya jalan. Kalau belum berubah, tekan %s (refresh bersih) sekali.
 Klik tombol "Set Price Alert" pada detail tour atau hotel untuk membuat alert.
+Klik tombol %s (file %s): HP yang diisi harus dapat pesan %s dari nama travel-mu. Kalau dapat, kabel WA beres.
+Klik tombol biru %s di bawah form. Tunggu sampai muncul tulisan hijau %s — itu tandanya sudah masuk database. Jangan tutup halaman sebelum tulisan hijau muncul.
+Klik tombol hijau %s untuk unduh CSV (nama file otomatis %s). Buka di Excel/Spreadsheet untuk rekap.
 Kode
 Kode Booking
+Kode Invoice
 Kode Promo
 Kode Promo (opsional)
 Kode bandara tidak valid. Contoh: CGK, DPS, atau pilih dari daftar.
 Kode bayar Tripay
 Kode booking Anda:
+Kode booking sudah dibuat. Silakan hubungi kami via WhatsApp untuk mendapatkan nomor pembayaran.
 Kode booking tidak ditemukan. Periksa kembali kode Anda.
 Kode promo berlaku!
 Kode promo sudah ada
 Kode promo tidak berlaku
 Kode promo tidak valid
 Kode promo wajib diisi
+Kode promo: wajib kode (otomatis kapital) + nilai > 0; tipe persen/nominal; opsional min. belanja, maks. potongan, kuota, periode (bawaan: hari ini s.d. +1 tahun).
 Kolam Renang
 Koleksi
 Koleksi Tour
+Kolom COGS di Kelola Booking
+Kolom deskripsi kosong / jumlah 0
+Kolom kontak dan alamat
+Kolom media sosial
+Kolom nama kosong
+Kolom nama travel dan tagline
+Kolom nomor kosong
+Kolom upload logo
 Koneksi Pengirim WA
 Koneksi WhatsApp berhasil diputuskan.
 Konfigurasi
@@ -769,10 +1073,16 @@ Konfirmasi
 Konfirmasi Instan
 Konfirmasi Password
 Konfirmasi Pesanan
+Konfirmasi hapus — bukan error
 Konfirmasi instan
 Konfirmasi instan via WhatsApp
 Konfirmasi password tidak cocok
+Konfirmasi pembayaran kapal PELNI 
+Konfirmasi pembayaran tiket KAI 
+Konfirmasi: ubah status ke confirmed/paid. Pembeli otomatis dapat notif WA/email/push + poin loyalty bila paid.
 Kontak
+Kontak & Alamat
+Kontak & Alamat (tampil di footer)
 Kontak Privasi
 Kontak Refund
 Konten akan otomatis diterjemahkan ke bahasa lain
@@ -784,6 +1094,7 @@ Kosongkan jika tidak diubah.
 Kosongkan jika tidak ingin ganti
 Kosongkan jika tidak ingin mengubah gambar
 Kosongkan untuk memakai versi ID
+Kosongkan untuk menyembunyikan.
 Kota
 Kota / Hotel
 Kota Populer
@@ -795,27 +1106,44 @@ Kota atau terminal
 Kota kosong
 Kota tidak ditemukan di NusaTrip
 Kota tidak valid
+Kunci API = rahasia. Jangan foto/share. Sandbox untuk latihan, production untuk uang asli — salah tempel = bayar gagal.
 Kuota
 Kuota (kosong = tanpa batas)
 Kuota Data
 Kupon Bundlemu
 Kupon Saya
 Kurs Terkini (EUR Base)
+Kurs berhasil diperbarui: IDR=
 Kurs berhasil diperbarui: IDR=%s, SGD=%s, USD=%s
+Kurs: buka %s. Pilih %s (bawaan IDR), isi %s (mis. 2%% = harga asing dinaikkan 2%% buat jaga-jaga naik), klik %s untuk tarik kurs baru dari Frankfurter API.
 Kursi
 Kursi penuh untuk jadwal ini.
 Laba Bersih
 Laba Kotor
 Laba Rugi
 Laba bersih
+Laba terlihat salah / minus
 Label
+Label / URL menu kosong
 Label dan URL wajib diisi
 Lacak Booking
+Lalu klik %s: tiap tipe kamar wajib nama + harga>0; bed single/double/twin/king/suite; tamu 1–10; stok 0–999.
+Langkah 1 — Masuk ke admin
+Langkah 2 — Ganti nama travel + tagline
+Langkah 3 — Ganti link sosmed (boleh kosong)
+Langkah 4 — Ganti alamat, telepon, WA, email, jam (tampil di footer)
+Langkah 5 — Ganti logo, favicon, dan gambar share
+Langkah 6 — Klik Simpan, tunggu tulisan hijau
+Langkah 7 — Cek hasil di web
 Langsung
+Lanjut Test + cek halaman web
+Lanjutkan Pembayaran
 Lanjutkan di Kiwi: 
 Lanjutkan pembayaran di bawah untuk konfirmasi instan.
+Laporan omzet per vertikal
 Layanan
 Layanan Kamar
+Lebarkan tanggal, kosongkan tipe + status, Export lagi
 Leg
 Lengkapi Perjalanan: Hotel
 Lengkapi bundlemu, hemat 5%!
@@ -831,13 +1159,20 @@ Lihat Semua Tour
 Lihat Tour Lain
 Lihat Website
 Lihat detail
+Lihat paspor
 Link CTA
 Link CTA harus nama file .php, path internal (diawali /), atau URL
 Link Tracking
 Live Chat
 Live Chat (tawk.to)
+Live Flight API
 Live Hotel API
+Live enabled
+Live flight nonaktif — hanya jadwal lokal
+Live flight:
 Live hotel API dimatikan
+Live hotel nonaktif — hanya inventori lokal
+Live hotel:
 Live via Duffel (Test Mode)
 Loading...
 Log Email
@@ -845,17 +1180,19 @@ Log Webhook
 Login
 Login Admin
 Login Google gagal
+Login dengan akun superadmin
 Login diperlukan
 Login untuk Booking
 Login untuk Memesan
 Login untuk Set Price Alert
 Logo (JPG/PNG/WebP, maks 2MB)
 Logout
+Lokal saja (tanpa live)
 Lokasi
 Lokasi Penjemputan
 Lokasi penjemputan harus diisi
 Low Season
-Loyalty Settings
+Loyalty
 Lunas
 Lupa Password
 Lupa password?
@@ -870,11 +1207,15 @@ Maksimal
 Maksimal 6 leg.
 Malam (22-05)
 Manual
+Manual (isi 3 bahasa sendiri)
 Manual — approve admin
 Manual: booking pending, admin konfirmasi. Instant: pelanggan bayar via gateway.
+Manual: isi nama bank + nomor + pemilik + catatan per bahasa. Nota manual tampil di halaman bayar pengunjung.
 Marketing
+Marketing, Operasional, Gaji, Sewa, Utilitas, Lainnya
 Masa aktif
 Masih butuh bantuan?
+Masih diproses. Coba cek lagi sebentar lagi.
 Maskapai
 Mastercard
 Masuk
@@ -888,6 +1229,7 @@ Masukkan kota asal dan tujuan untuk mencari jadwal ferry.
 Masukkan pelabuhan asal dan tujuan untuk mencari jadwal kapal.
 Mata Uang
 Mata Uang Default
+Mata uang default
 Mata uang default berhasil disimpan: %s
 Mata uang yang ditampilkan ke pengunjung
 Match key
@@ -900,23 +1242,31 @@ Max Penumpang
 Max Peserta
 Max peserta minimal 1
 Max. Diskon
+Media Sosial
 Memeriksa kode promo...
 Memproses...
 Memuat status...
 Memutuskan...
 Menampilkan 200 dari
+Menerjemahkan via AI...
 Mengenal lebih dekat :brand
 Menghubungkan...
 Mengunggah...
 Menu
+Menu Kelola Admin (bagian Tim) hanya tampil untuk superadmin. Admin biasa (staff) tidak melihatnya — itu normal, bukan error. Minta superadmin untuk menambah/mengubah akun.
+Menu Kelola Admin tidak ada
+Menu Kelola Booking menampung: tour, atraksi, transfer, kereta, eSIM, hotel, pesawat, ferry. Status: pending, confirmed, cancelled, paid, refunded.
 Menu Navigasi
+Menu Pembayaran: mode manual vs instant; gateway Midtrans/Tripay/SingaPay/Xendit (sandbox vs production); tiap gateway punya server key + client key + merchant/code sendiri. Status pembayaran: pending, paid, failed, expired, challenge.
 Menu Utama
+Menu: buka %s. Isi %s + %s (wajib — kosong muncul %s), pilih %s (ikon kecil), %s (kata kunci halaman aktif), centang %s / %s, isi %s (0 = paling kiri), centang %s.
 Menunggu
 Menunggu Konfirmasi
 Menunggu Pembayaran
 Menunggu QR code...
 Menunggu pembayaran...
 Menunggu persetujuan admin
+Menyiapkan kode pembayaran Anda.
 Merchant Code
 Method not allowed
 Metode
@@ -926,7 +1276,6 @@ Min
 Min Pax
 Min. Beli
 Min. Pembelian
-Minggu: 09:00 - 15:00
 Minimal
 Minimal 1 leg.
 Minimal 2 leg untuk perjalanan multi-kota.
@@ -934,9 +1283,14 @@ Minimal Rp 50.000
 Minimal penukaran 100 points
 Minimal topup Rp 50.000
 Minta Refund
+Minta superadmin yang menambah/mengubah akun
 Mode
+Mode Input:
 Mode Pembayaran Paket Tour
+Modul Duffel:
+Modul FlightList:
 Modul NusaTrip nonaktif
+Modul NusaTrip nonaktif.
 Modul NusaTrip:
 Modul OYO nonaktif
 Modul OYO:
@@ -949,6 +1303,7 @@ Nama & No. WA Pemesan
 Nama & harga wajib diisi
 Nama & kota wajib diisi
 Nama Anda otomatis jadi peserta pertama.
+Nama Bank
 Nama Hotel
 Nama Kategori
 Nama Kereta
@@ -967,12 +1322,19 @@ Nama depan
 Nama harus diisi
 Nama itinerary, mis: Trip Bali 3 Hari
 Nama kategori wajib diisi
+Nama kepanjangan
 Nama lengkap sesuai paspor
 Nama lengkap wajib diisi.
 Nama minimal 3 karakter
+Nama pemesan
+Nama pemesan wajib diisi
 Nama penumpang
+Nama penumpang %d harus diisi
 Nama perusahaan
+Nama semua penumpang wajib diisi.
+Nama sesuai identitas
 Nama tersimpan, logo dihapus
+Nama tidak boleh kosong. Kalau kosong, muncul error %s dan tidak tersimpan.
 Nama tidak boleh mengandung angka
 Nama travel
 Nama travel maksimal 60 karakter
@@ -990,6 +1352,7 @@ Nikmati perjalanan Anda dengan :car. Mobil dalam kondisi prima, terawat, dan sia
 Nilai
 Nilai diskon harus > 0
 No.
+No. Identitas (NIK/Paspor)
 No. Penerbangan
 No. Penerbangan (opsional)
 No. Telepon
@@ -1000,13 +1363,19 @@ No. WhatsApp tidak valid (format: 08xxxxxxxxxx)
 Nominal (Rp)
 Nomor HP (pilih kode negara, tulis nomor lokal saja)
 Nomor Paspor
+Nomor Rekening
+Nomor Rekening Tujuan
 Nomor Tujuan
 Nomor Virtual Account
 Nomor WA Admin/Supplier
+Nomor WA admin
 Nomor WA admin harus diisi
 Nomor WA harus diawali 62 (contoh: 6285174488415)
 Nomor WA harus diisi
 Nomor WhatsApp yang digunakan untuk mengirim notifikasi ke supplier.
+Nomor identitas (KTP/Paspor)
+Nomor identitas penumpang
+Nomor identitas penumpang %d tidak valid
 Nomor kartu
 Nomor telepon tidak valid.
 Nomor tujuan notifikasi booking baru. Diawali 62, tanpa + atau spasi.
@@ -1018,6 +1387,7 @@ Notifikasi
 NusaTrip (utamakan)
 NusaTrip autocomplete kosong
 NusaTrip rkey (lama/opsional)
+NusaTrip tidak terjangkau
 NusaTrip: key tidak valid / kosong
 OK
 OYO
@@ -1027,12 +1397,15 @@ Oleh
 Order ID
 Order ID: 
 Otomatis
+Otomatis dialihkan dalam
 Overview
 PDF
 PELNI
 Pagi (05-12)
 Paid
 Pakai
+Pakai ICO/PNG/JPG/WebP/SVG di bawah 512KB
+Pakai format %s, atau kembalikan ke bawaan
 Paket
 Paket Belum Termasuk / Exclude (satu per baris)
 Paket Rekomendasi
@@ -1043,6 +1416,9 @@ Paket Tour (Klook-style)
 Paket Tour Populer
 Paket Tour ke :city
 Paket tour pilihan, villa & pengalaman — booking instan, harga terbaik.
+Panduan Admin Panel
+Panduan Branding
+Pantau kesehatan web tiap pagi + atur siapa boleh buka menu apa. Bagian Kelola Admin hanya untuk superadmin.
 Parameter booking tidak lengkap.
 Parkir
 Partner perjalanan terpercaya Anda. Kami menyediakan paket wisata domestik & internasional dengan harga terbaik.
@@ -1051,6 +1427,9 @@ Password
 Password Baru
 Password berhasil diubah. Silakan masuk dengan password baru.
 Password minimal 6 karakter
+Password minimal 6 karakter.
+Password terlalu pendek
+Pastikan status paid/confirmed dan persen tier > 0
 PayPal
 Payload Google tidak lengkap
 Pelabuhan
@@ -1063,7 +1442,6 @@ Pelanggan wajib memberikan data yang benar (nama, kontak, tanggal perjalanan, ju
 Pelni
 Pemakaian
 Pembayaran
-Pembayaran (langsung ke NusaTrip)
 Pembayaran 1-klik gagal: 
 Pembayaran Aman
 Pembayaran Berhasil
@@ -1071,14 +1449,19 @@ Pembayaran Diterima
 Pembayaran Gagal / Ditolak
 Pembayaran TravelPoints berhasil
 Pembayaran aman & terenkripsi
+Pembayaran dilakukan langsung ke Virtual Account penyedia tiket.
 Pembayaran diterima
 Pembayaran diterima. Terima kasih!
 Pembayaran gagal. Coba lagi.
+Pembayaran ke penyedia PELNI
 Pembayaran menggunakan TravelPoints
+Pembayaran sudah terkonfirmasi — booking tidak dapat diubah.
 Pemesan
 Pemesanan & Pembayaran
+Pemesanan gagal: 
 Pencarian
 Pendapatan
+Pendekkan nama, singkatan boleh
 Pending
 Penerbangan
 Penerbangan FlightList dipilih!
@@ -1094,6 +1477,7 @@ Pengajuan refund gagal
 Pengajuan refund hanya berlaku untuk booking berstatus confirmed yang belum digunakan. Dana refund yang disetujui dikreditkan ke saldo wallet (TravelPoints) akun Anda.
 Pengajuan refund sebelumnya sudah ditolak
 Pengalaman pelanggan yang sudah traveling bersama kami
+Pengaturan Flight API tersimpan
 Pengaturan Hotel API tersimpan
 Pengaturan Loyalty
 Pengaturan Loyalty & TravelPoints
@@ -1104,6 +1488,8 @@ Pengaturan Tripay
 Pengaturan WA
 Pengaturan WhatsApp
 Pengaturan WhatsApp berhasil disimpan
+Pengaturan WhatsApp berhasil disimpan / live chat tersimpan / Hotel/Flight API tersimpan
+Pengaturan Xendit Sandbox (VA + Kartu)
 Pengaturan live chat tersimpan
 Pengaturan loyalty berhasil disimpan
 Pengecekan selesai
@@ -1117,6 +1503,7 @@ Penuh
 Penumpang
 Penyesuaian
 Per bahasa (sesuai token)
+Peran
 Perbandingan Bulanan
 Perfect
 Periode
@@ -1137,16 +1524,20 @@ Pesan Kapal PELNI
 Pesan Penerbangan
 Pesan Sekarang
 Pesan Tiket
+Pesan Tiket KAI
 Pesan Transfer
 Pesan di
 Pesan tiket KAI — booking instan, harga terbaik.
 Pesan tiket ferry — booking instan, harga terbaik.
 Pesan tiket kapal PELNI — Batam, Jakarta, dan rute lainnya.
+Pesan yang muncul
+Pesanan Diterima
 Pesawat
 Peserta
 Peta harga atraksi
 Peta harga hotel
 Peta tidak tersedia untuk item ini.
+Petunjuk langkah demi langkah memakai seluruh menu admin — tanpa perlu bisa coding. Mulai dari Bab 0, lalu ke bab yang kamu butuhkan.
 Pilih
 Pilih (Lokal)
 Pilih Gambar (bisa banyak)
@@ -1155,29 +1546,38 @@ Pilih Stasiun
 Pilih Tanggal
 Pilih Tipe Kamar
 Pilih Tour (centang untuk menambahkan)
+Pilih Virtual Account bank atau kartu kredit di halaman checkout.
 Pilih bank
 Pilih channel pembayaran
 Pilih kamar lain.
 Pilih metode pembayaran di bawah untuk konfirmasi instan.
+Pilih metode pembayaran ke penyedia
 Pilih minimal 1 tour
+Pilih minimal satu halaman.
 Pilih produk utama yang dijual website ini. Halaman utama akan tersusun otomatis mengikuti pilihan.
 Pilih tanggal
 Pilih tanggal di kalender
 Pilih tanggal keberangkatan.
 Pilih tipe kamar
 Pilih tour...
+Pilih tur (aktif saja) + harga reseller > 0 + min pax + centang Aktif. Satu tur hanya satu baris harga; pakai Edit untuk ubah, Toggle untuk nonaktifkan, Hapus bila salah.
 Pilihan terbaik untuk liburan Anda
 Pocket WiFi
 Poin
 Poin & Loyalitas
 Poin Saya
 Poin akan ditambahkan setelah booking selesai.
+Poin member tidak bertambah
 Points
 Pramusaji
 Pratinjau
+Preset
 Price Alert
 Price Alert Saya
 Price Alerts
+Price alert dicek berkala (throttle ~1/jam). Push butuh FCM key (Bab 8) — tanpa itu tombol kirim gagal.
+Price alert read-only: klik cek untuk notifikasi user bila harga turun ke target; hapus bila spam. Push: pilih semua / per bahasa (id/en/zh) / per user; judul maks 150, isi maks 500 huruf; judul+isi Indonesia wajib, EN/Cina boleh kosong.
+Prinsip Bab 8: foto dulu sebelum ubah!
 Private Key
 Production
 Produk Tidak Ditemukan
@@ -1192,8 +1592,11 @@ Profit & Loss
 Promo
 Promo Tiket Setiap Hari
 Property ID
+Property ID salah salin
 Property ID tawk.to harus 24 karakter hex (contoh: 5f1a2b3c4d5e6f7a8b9c0d1e)
 Proses cepat & praktis
+Proteksi: web harus punya 1 superadmin
+Public Key
 Publish
 Pulang Pergi
 Pusat Bantuan
@@ -1220,6 +1623,7 @@ Referral Program
 Referral Saya
 Refresh
 Refresh QR
+Refresh halaman untuk melihat hasil.
 Refund
 Refund dihitung otomatis: 100% (≥H-8), 50% (H-4–H-7), 0% (<H-3) sesuai kebijakan produk.
 Refund disetujui:
@@ -1227,10 +1631,12 @@ Refund ditolak
 Refund pembatalan booking
 Refund poin
 Refund sudah diajukan/sebelumnya
+Refund tour: pakai tombol approve/reject refund (bukan ubah status manual). Dana masuk wallet TravelPoints.
 Refundable
 Refunded
 Reject
 Rejected
+Rekening Pembayaran Manual
 Rekomendasi
 Rekomendasi Paket Tour
 Rencana perjalanan yang kamu simpan.
@@ -1254,12 +1660,14 @@ Reward 5% dari total booking — bisa dipakai untuk booking berikutnya
 Rina A.
 Rincian segmen
 Ringkasan
+Ringkasan laba dan daftar pengeluaran
 Riwayat Booking
 Riwayat Pengiriman
 Riwayat Poin
 Riwayat Points
 Riwayat Topup
 Riwayat Transaksi
+Role
 Rp (IDR)
 Rp 10-20 Juta
 Rp 5-10 Juta
@@ -1267,9 +1675,13 @@ Rute
 Rute Kota (untuk brosur PDF)
 Rute Populer
 Rute multi-kota
+Rutinitas pagi: pending naik tiba-tiba → buka Kelola Booking proses. Laba minus → cek COGS di Bab 5. Booking sepi 3 hari → cek flash sale/promo di Bab 4.
 S$ (SGD)
 SIM
 Saat ada booking baru, notifikasi otomatis dikirim ke nomor WA Admin/Supplier:
+Salah Approve topup (kasih saldo gratis): jangan kurangi manual diam-diam. Catat username + nominal + jam, hubungi pemilik untuk potong/lebih-bayar resmi lewat menu Topup.
+Salah ubah ambang loyalty saat promo jalan: kembalikan ke nilai foto, jangan ubah lagi sampai promo selesai.
+Salah ubah harga/promo: nonaktifkan dulu yang salah (Toggle/Aktif mati), baru perbaiki. Salah yang tampil = rugi; salah yang mati = aman.
 Saldo
 Saldo Anda
 Saldo Kosong
@@ -1282,24 +1694,34 @@ Saldo points tidak cukup
 Saldo tersisa: 
 Saldo tidak cukup. Butuh 
 Sales Report
+Sales Report, Accounting, Loyalty (Bab 5).
 Salin
+Salin Nomor Rekening
+Salin Nomor VA
+Salin rkey penuh dari NusaTrip, jangan diketik
+Salin ulang dari dashboard tawk.to
 Sampai
 Sandbox
 Sarapan
 Sarapan, makan siang
 Sari Dewi
+Satu pola untuk semua produk: Daftar → Tambah/Edit → isi harga & slot → foto → aktifkan → cek di web.
 Saya ikut tour ini
+Saya punya Kode promo
 Scan QR code dengan WhatsApp Anda.
 Scan QR ini dengan WhatsApp Anda
 Scan voucher
+Sebagai superadmin, buka %s. Klik Tambah: isi %s (3–50 karakter: huruf/angka/_ . @ -), %s (baru: minimal 6; edit: kosongkan = tidak ganti), pilih %s (%s = semua menu, %s = pilih manual).
 Sebagian produk memiliki kebijakan khusus: full_refund (selalu 100%) atau non_refundable (selalu 0%), tercantum di halaman detail produk. Tiket pesawat, hotel, ferry, dan kereta mengikuti kebijakan maskapai/penyedia masing-masing.
+Secret Key
 Sedan, MVP, ...
-Segera
 Sekali Jalan
 Selamat Datang di %s
 Selamat datang
 Selamat datang kembali!
 Selesai
+Selesaikan pembayaran ke Virtual Account di bawah. Tiket diproses otomatis oleh penyedia.
+Selesaikan transfer, lalu konfirmasi via WhatsApp.
 Selimut
 Semua
 Semua Durasi
@@ -1314,32 +1736,42 @@ Semua Rating
 Semua Status
 Semua Tipe
 Semua Tujuan
+Semua akses
 Semua field wajib diisi
 Semua hotel sudah dimuat.
 Semua jadwal keberangkatan sudah penuh.
+Semua menu di sini sensitif. Sebelum klik Simpan, foto layar nilai lama (HP). Kalau web rusak setelah ubah, kembalikan persis seperti foto — jangan tebak-tebak.
 Semua modul live nonaktif
 Semua penerbangan sudah dimuat.
 Semua pengguna
 Semua status
 Semua tipe kamar sudah habis. Silakan pilih tanggal lain.
 Semua tour sudah dimuat.
-Senin - Sabtu: 08:00 - 20:00
 Server Key
 Server Terhubung
 Server Tidak Terhubung
 Server URL
+Server WA mati / token salah
+Service charge
 Sesampainya di pelabuhan, tunjukkan e-ticket ke petugas.
 Sesi booking kedaluwarsa. Ulangi dari halaman hotel.
+Sesi booking kedaluwarsa. Ulangi dari halaman pencarian.
+Sesi pemesanan kedaluwarsa. Silakan cari jadwal ulang.
+Sesi pemesanan tidak ditemukan. Silakan cari jadwal kereta terlebih dahulu.
+Sesi penerbangan tidak valid atau kedaluwarsa. Silakan cari ulang.
 Sesi penerbangan tidak valid. Silakan cari ulang.
 Sesi tidak valid, silakan muat ulang halaman.
 Sesi tidak valid. Kembali dan ulangi.
 Set Price Alert
 Set bahasa konten untuk tour yang dipilih?
+Setelah transfer, konfirmasi melalui WhatsApp dengan mengirim bukti transfer dan kode booking.
 Setiap booking dapat poin reward. Tukarkan untuk diskon tour berikutnya!
+Setiap kolom maks 160 huruf. Tombol telepon, email, dan WA di footer otomatis bisa diklik pengunjung.
 Settings
 Setujui Refund
 Setujui refund booking ini? Dana akan dikredit ke TravelPoints user.
 Setujui topup ini dan tambahkan saldo reseller?
+Setujui topup ini dan tambahkan saldo reseller? — hanya klik Approve bila uang benar masuk. Salah klik = kasih saldo gratis.
 Sewa
 Sewa Sekarang
 Siang (12-17)
@@ -1348,8 +1780,10 @@ Siap bantu kapan saja
 Siap mengirim notifikasi ke nomor supplier.
 Siapa Kami
 Silakan
+Silakan cari penerbangan lain.
 Silakan isi kota asal dan tujuan.
 Silakan login terlebih dahulu.
+Silakan transfer tepat sebesar
 Silver (%)
 Silver — minimal booking
 Simpan
@@ -1381,10 +1815,12 @@ Slot tidak cukup untuk tanggal tersebut.
 Slot tidak cukup. Silakan pilih tanggal lain.
 Slug
 Slug wajib diisi.
+Solusi
 Sore (17-22)
 Spa
 Spend
 Staff
+Staff tanpa centang halaman apa pun
 Stasiun Asal
 Stasiun Tujuan
 Stasiun asal
@@ -1408,16 +1844,22 @@ Submit gagal. Silakan coba lagi.
 Subscriber
 Subtotal
 Subtotal tidak valid
+Sudah coba apa: Ctrl+Shift+R? logout-login? browser lain? hasilnya apa?
 Sudah punya akun?
+Sukses — bukan error
 Sumber
 Sumber live tidak valid
+Sumber live tidak valid / Urutan sumber hanya boleh
 Sumber utama
+Superadmin
 Tab
+Tabel masih kosong / pencarian tidak cocok
+Tagline
 Tagline (opsional)
 Tahun
 Taman & Hiburan, Landmark, ...
-Taman Mediterania Blok JJ3 no 19, Batam, Kepulauan Riau, Indonesia
 Tambah
+Tambah Admin
 Tambah Artikel
 Tambah Asuransi Perjalanan
 Tambah FAQ
@@ -1439,11 +1881,15 @@ Tambah Tour Baru
 Tambah Transfer
 Tambah eSIM
 Tambah leg
+Tambah pengeluaran: pilih %s (%s), isi %s (mis. %s), isi %s (angka > 0, mis. %s), tanggal bawaan hari ini — lalu Simpan.
 Tambah peserta
 Tambah tanggal
 Tambahkan profil di sisi kiri untuk checkout lebih cepat.
+Tampil di menu
 Tampil di navbar, footer, judul tab, email, notifikasi WA, dan PDF.
+Tampil di tab
 Tampilan Homepage
+Tampilan menu dalam Bahasa Indonesia — posisi tombol sama di semua bahasa.
 Tamu
 Tamu & Kamar
 Tandai Kedaluwarsa
@@ -1468,6 +1914,7 @@ Tanggal keberangkatan tidak boleh di masa lalu.
 Tanggal keberangkatan tidak valid
 Tanggal keberangkatan tidak valid.
 Tanggal kunjungan harus diisi
+Tanggal lahir penumpang
 Tanggal penjemputan harus diisi
 Tanggal perjalanan harus diisi
 Tanggal sudah dibooking untuk hotel ini. Pilih tanggal lain.
@@ -1485,6 +1932,7 @@ Tautan reset tidak valid atau sudah kedaluwarsa.
 Tautkan
 Tautkan User
 Teks CTA
+Teks terlalu panjang untuk sekali translate AI (%s karakter, maks 12000).
 Telepon
 Tema
 Temukan
@@ -1501,6 +1949,7 @@ Terhubung
 Terima kasih, pemesanan Anda telah diterima.
 Terjadi kesalahan. Coba lagi nanti.
 Terjadi kesalahan. Coba lagi.
+Terjemahkan Otomatis (pratinjau)
 Terjual/Kuota
 Terkirim
 Terkonfirmasi
@@ -1512,9 +1961,12 @@ Termasuk sarapan
 Termurah
 Terpercaya
 Terpopuler
+Tersalin
 Tersedia
 Terunggah
 Test Kirim WA
+Test Notifikasi
+Test WA berhasil dikirim ke
 Test WA berhasil dikirim ke %s
 Test mode: booking akan membuat order Duffel Airways dummy.
 Tiba
@@ -1523,6 +1975,8 @@ Tidak Termasuk
 Tidak ada biaya tersembunyi
 Tidak ada data topup.
 Tidak ada device/token ditemukan untuk target ini
+Tidak ada file yang diunggah
+Tidak ada hasil untuk pencarian Anda.
 Tidak ada hotel ditemukan.
 Tidak ada jadwal ditemukan.
 Tidak ada jadwal ferry ditemukan untuk rute/tanggal ini.
@@ -1531,7 +1985,6 @@ Tidak ada jadwal kapal ditemukan untuk rute/tanggal ini.
 Tidak ada jadwal kapal untuk rute/tanggal ini.
 Tidak ada jadwal kereta ditemukan untuk rute/tanggal ini.
 Tidak ada mobil.
-Tidak ada penerbangan untuk rute/tanggal ini.
 Tidak ada penerbangan untuk rute/tanggal tersebut.
 Tidak ada pengajuan refund pending
 Tidak ada produk ditemukan.
@@ -1539,10 +1992,15 @@ Tidak ada taskId. Ulangi booking.
 Tidak ada tiket ditemukan.
 Tidak ada tour ditemukan
 Tidak ada transfer ditemukan.
+Tidak dapat menghapus akun sendiri.
+Tidak dapat menghapus superadmin terakhir.
+Tidak dapat menurunkan peran akun sendiri.
+Tidak dapat menurunkan superadmin terakhir.
 Tidak disebutkan
 Tier Anda
 Tier Threshold (Jumlah Booking)
 Tier maksimum tercapai!
+Tiket
 Tiket Lain di
 Tiket Pesawat (Tiket.com-style)
 Tiket Tempat Wisata
@@ -1550,6 +2008,7 @@ Tiket Tidak Ditemukan
 Tiket kereta pilihan — booking instan, harga terbaik.
 Tiket pesawat pilihan — booking instan, harga terbaik.
 Tiket tidak ditemukan
+Tim
 Tim support siap membantu booking Anda.
 Tingkat konversi
 Tipe
@@ -1560,6 +2019,8 @@ Tipe Kasur
 Tipe Kendaraan
 Tipe Mobil
 Tipe Tujuan
+Tipe favicon harus ICO/PNG/JPG/WebP/SVG
+Tipe favicon harus … / Ukuran favicon maksimal 512KB
 Tipe file harus JPG/PNG/WebP
 Tipe item
 Tips, panduan, dan cerita perjalanan
@@ -1612,14 +2073,17 @@ Tour berhasil dihapus
 Tour berhasil diperbarui
 Tour berhasil ditambahkan
 Tour dan harga wajib diisi.
+Tour dan harga wajib diisi. Tour yang sudah ada harganya tidak bisa ditambah lagi — edit yang sudah ada.
 Tour sudah memiliki harga reseller. Edit yang sudah ada.
 Tour tidak ditemukan
 Tour tidak ditemukan.
+Tour, Hotel, Pesawat, Semua Fokus
 TourAndTravel — paket tour, hotel, tiket pesawat, dan aktivitas wisata terbaik dengan harga transparan.
 Tracking
 Tracking Booking
 Transfer
 Transfer Bandara
+Transfer Bank
 Transfer Lain
 Transfer Tidak Ditemukan
 Transfer tidak ditemukan
@@ -1631,11 +2095,15 @@ TravelPoints Saya
 Tren Pendapatan
 Trip
 Triple (1 kamar 3 org)
+Tujuan:
 Tukar
 Tukar asal dan tujuan
 Tukar points
 Tukar points menjadi TravelPoints? Penukaran tidak dapat dibatalkan.
 Tulis Ulasan
+Tulis semua kolom dalam 1 bahasa (lihat Bahasa Konten), klik pratinjau untuk cek hasil, lalu Simpan — kolom yang masih kosong otomatis diterjemahkan AI saat disimpan. Itinerary, jadwal & galeri dilengkapi di halaman Edit.
+Tulisan sukses setelah simpan
+Tunggu 5 menit, klik Refresh lagi
 Tutup
 Twin
 Twin (1 kamar 2 org)
@@ -1643,23 +2111,36 @@ URL
 Ubah
 Ubah Booking
 Ubah Status
+Ubah angka ambang/persen, klik Simpan. Poin terbit otomatis saat booking lunas (paid/confirmed) — tidak perlu input manual.
 Ubah status booking ini? Customer akan menerima notifikasi.
+Ubah teks dalam 1 bahasa (lihat Bahasa Konten), klik pratinjau untuk cek hasil, lalu Update — kolom yang masih kosong otomatis diterjemahkan AI saat disimpan.
 Uji
 Uji pencarian live
+Ukuran favicon maksimal 512KB
 Ukuran file maksimal 2MB
+Ukuran file terlalu besar
 Ulasan
 Ulasan berhasil dikirim, terima kasih!
 Umumnya "default" (1i[...]) — biarkan bila tidak yakin.
+Unggah paspor
 Unknown action
 Untuk booking paket wisata dengan harga reseller
 Untuk multi-penumpang, silakan cari dengan jumlah penumpang yang sesuai.
+Untuk staff, centang %s (minimal 1 — mis. Booking saja untuk CS). Simpan. Edit pakai ikon pensil, hapus pakai %s, %s untuk nyalakan/matikan cepat.
 Update
 Update Tour
 Upload Galeri
 Upload beberapa gambar (JPG/PNG/WebP, max 2MB)
+Upload file tidak selesai. Coba lagi.
+Upload foto (JPG/PNG/WebP, maks 2MB). Klik %s, tunggu tulisan sukses, lalu buka halaman web produknya.
 Urut:
 Urutan
 Urutan & jenis section homepage (produk utama di atas, lainnya sebagai pendukung).
+Urutan efektif
+Urutan prioritas
+Urutan prioritas (menang atas Sumber utama)
+Urutan sumber hanya boleh: nusatrip, duffel, flightlist, lokal (pisah koma)
+Urutan sumber hanya boleh: nusatrip, lokal (pisah koma)
 Urutkan
 User %s dilepas.
 User %s ditautkan.
@@ -1668,7 +2149,10 @@ User ID
 User ID tertentu
 User ID tidak valid
 Username
+Username 3-50 karakter (huruf, angka, _ . @ -).
 Username atau password salah
+Username kosong / ada spasi / terlalu pendek
+Username sudah dipakai.
 Usia 13+
 Usia 2-12
 Varian
@@ -1677,13 +2161,16 @@ Vertikal Teratas
 Virtual Account
 Visa
 Visa / Mastercard / Amex. 3DS bila perlu.
+WA, Chat, Email, Mata Uang, Hotel/Flight API (Bab 8, hati-hati).
 WUZAPI Server
+Wajib diisi: %s, %s, %s. Mata uang: IDR/SGD/USD. Tanggal + itinerary + foto diisi lewat %s setelah tersimpan.
 Waktu
 Waktu Keberangkatan
 Waktu Pengajuan
 Webhook Midtrans:
 Webhook Singapay:
 Webhook Tripay:
+Webhook Xendit Sandbox:
 WhatsApp
 WiFi Gratis
 Widget ID
@@ -1693,6 +2180,7 @@ Wishlist
 Wishlist Saya
 Ya
 Yakin ingin memutuskan koneksi WhatsApp?
+Yakin ingin menghapus akun ini?
 Yakin ingin menghapus tour ini?
 Yang berubah saat fokus diganti
 Your World of Joy
@@ -1702,8 +2190,9 @@ alamat email tidak valid
 alert dinotifikasi
 asli
 atau
+atur kapan member naik tier dan berapa persen poin yang ia dapat tiap belanja lunas.
+atur tombol menu atas web + gambar besar halaman depan agar tamu mudah jalan-jalan di web.
 autocomplete kosong
-bagasi
 baru saja
 baru saja memesan hotel
 baru saja memesan paket tour
@@ -1712,12 +2201,14 @@ booking selesai
 breadcrumb
 bulan
 cc/pagename tidak valid
+chat tersimpan muncul %s; buka web — ikon chat melayang harus ada. Email resent sukses balik dengan %s.
 dan tiba pukul
 dari
 dari pendapatan
 dengan
 dengan estimasi perjalanan
 detail gagal
+detik…
 di halaman katalog.
 dikredit ke wallet
 diskon
@@ -1730,7 +2221,11 @@ email@contoh.com
 ferries
 flights
 gagal
+ganti filter tanggal — grafik + tabel harus berubah. Angka omzet Dashboard = angka Analytics periode sama.
 gunakan filter atau Export CSV untuk data lengkap
+hak akses dipilih
+hak akses halaman
+harga USD/SGD tampil benar; stok hotel/pesawat ikut penyedia live (NusaTrip/Duffel) atau dimatikan jadi manual.
 harga bervariasi per tanggal
 harga mulai
 hari
@@ -1741,29 +2236,46 @@ item
 jadwal
 jadwal ditemukan
 jam sejak booking pertama
-kabin
+karyawan baru bisa kerja tanpa bisa utak-atik gaji/pengaturan; yang keluar langsung dikunci.
 ke TravelPoints
+ke rekening berikut:
 kelas
 kendaraan
+kolom terisi otomatis — cek dengan pindah ke mode Manual.
 kosong
+kurs muncul %s; gagal muncul %s. API tersimpan muncul %s / %s. Buka halaman hotel/pesawat web — harga & stok harus berubah.
 kursi
+laba bersih
 leg
 locationId kosong
+login sebagai akun staff baru — menu yang tidak dicentang harus hilang. Staff buka Kelola Admin langsung ditolak (403).
 malam
 menuju
+mis. Transfer sebelum 24 jam, lalu kirim bukti via WhatsApp.
+muncul %s / %s / %s sesuai aksi. Buka halaman FAQ web — pertanyaan baru harus tampil di kategori yang benar.
+muncul %s / %s. Klik %s untuk mati/nyalakan cepat tanpa hapus. Buka web — menu + gambar depan harus berubah (kalau belum, tekan %s sekali).
+muncul %s. Test terkirim muncul %s; gagal muncul %s.
+muncul tulisan hijau %s dan balasan tampil di bawah komentar. Ulasan yang dihapus hilang dari daftar + halaman web.
+muncul tulisan hijau %s, baris baru tampil di daftar (judul + kategori + status + tanggal). Klik %s untuk sembunyikan/tampilkan tanpa hapus. Buka halaman blog web — artikel harus ada.
+muncul tulisan hijau %s. Minta 1 member melakukan 1 booking lunas — poinnya harus bertambah sesuai persen tier-nya.
 nonaktif
+omzet
+omzet − COGS − pengeluaran
 opsional
 opsional, legacy scraping
 orang
 org
 pagename/cc Booking.com tidak valid
+pakai untuk lacak / konfirmasi WA
 paket
 paket tour tersedia
 pax
 pcs
+pending/sukses/batal
 penerbangan
 penumpang
 per referral
+persen poin
 peserta
 poin
 poin tersedia
@@ -1776,21 +2288,36 @@ reseller
 review
 rkey NusaTrip
 rkey NusaTrip harus hex 32–160 karakter
+rkey salah / kependekan
 sekarang dan pakai kupon di bawah untuk hemat 5%.
+semua akses
+sent/failed
+setelah tambah pengeluaran, tulisan hijau %s muncul dan baris baru tampil di tabel. Setelah isi COGS, angka laba di Accounting berubah.
+setiap booking lunas/batal, HP kamu bunyi WA otomatis.
 ships
 slot
 stays
+tahu berapa transaksi + omzet masuk periode ini, vertikal mana paling laris, dan unduh datanya.
+tahu laba bersih = %s. Tanpa COGS + pengeluaran, omzet terlihat besar padahal belum dikurangi modal.
+tahu sekilas: berapa booking, pending berapa, omzet, laba bersih, tur aktif.
 tahun melayani pelanggan
+tamu bisa chat langsung di web; kamu bisa cek email mana yang gagal terkirim dan kirim ulang.
+tamu tidak perlu WA hanya untuk tanya “bayar pakai apa?” — jawabannya sudah ada di web.
+tamu yang dibalas merasa dihargai; spam/junk dibuang agar rating bersih.
+tanpa menu
 telah dibayar.
 telah disetujui. Saldo bertambah.
 telah ditolak.
+terbitkan artikel (mis. “5 Pantai Terbaik”) agar web ramai dari pencarian Google.
 terisi
 terkirim,
+tidak valid.
 tiket
 tiket ditemukan
 tipe kamar tersedia
 total
 total alert
+total booking
 tour
 tour dipilih
 tour ditemukan
@@ -1798,14 +2325,25 @@ trains
 transaksi
 transfer ditemukan
 transit
+tur aktif
+ubah filter tanggal 1 hari saja — daftar harus menyusut. Klik Export CSV — file harus terunduh dan bisa dibuka.
 ulasan
 unknown action
 untuk menyimpan itinerary
 update setiap 24 jam
+urutan sumber
 validasi gagal
 wajib diisi
 wajib diisi.
 wajib diupload
+wajib maskapai + nomor + asal + tujuan + jam berangkat/tiba + durasi + harga>0; kelas ekonomi/bisnis/first.
+wajib nama + asal + tujuan; jam kosong otomatis jadi 00:00; harga boleh 0.
+wajib nama + asal + tujuan; pilih tipe titik (bandara/kota/pelabuhan/hotel); penumpang min 1; harga boleh 0.
+wajib nama + kota; bintang 1–5; harga per malam. Lalu Kelola kamar: tipe bed, tamu 1–10, harga>0, stok 0–999.
+wajib nama + kota; kategori/durasi/deskripsi boleh kosong; harga boleh 0 (=gratis).
+wajib nama + negara + kuota; tipe esim/sim/wifi; durasi min 1 hari; harga boleh 0.
+wajib nama + tipe + kota + harga>0; transmisi auto/manual; kursi 2–20.
+wajib perusahaan + asal + tujuan + jam + harga>0; nama kapal boleh kosong.
 — Lepas afiliasi —
 →
 ✓ Disalin!

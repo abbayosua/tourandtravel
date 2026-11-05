@@ -32,6 +32,15 @@ if (toggleBtn && sidebar) {
         var lbl = a.querySelector('.nav-label');
         if (lbl && !a.getAttribute('title')) a.setAttribute('title', lbl.textContent.trim());
     });
+    // Menu aktif selalu terlihat: scroll sidebar secukupnya (halaman tak ikut geser).
+    var activeLink = sidebar.querySelector('.nav-link.active');
+    if (activeLink) {
+        var pad = 12;
+        var top = activeLink.offsetTop - pad;
+        var bottom = activeLink.offsetTop + activeLink.offsetHeight + pad;
+        if (top < sidebar.scrollTop) sidebar.scrollTop = top;
+        else if (bottom > sidebar.scrollTop + sidebar.clientHeight) sidebar.scrollTop = bottom - sidebar.clientHeight;
+    }
     // Mobile: sidebar = off-canvas drawer; mulai tertutup agar tidak menutupi konten.
     if (window.innerWidth < 768) sidebar.classList.add('collapsed');
     toggleBtn.addEventListener('click', function(e) {

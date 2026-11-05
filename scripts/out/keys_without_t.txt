@@ -1,38 +1,56 @@
-) + (rooms > 1 ?
-+ I18N.t(
-+ escapeHtml(text) +
-+ rooms +
+0 && (price
+0 && blob.size
+0, mis. %s), tanggal bawaan hari ini — lalu Simpan.'), '
+0; bed single/double/twin/king/suite; tamu 1–10; stok 0–999.'), '
 4.9 • 2M+
-<div class=
-<i class=
-></i>
-><div class=
-Berhasil! Cek email Anda.
+40 transaksi — Rp120.000.000 — Tour
+628xxxx
+ABS_MAX) hi = ABS_MAX; maxR.value = hi; }
+        }
+        minI.value = lo
+AI AUTO
+Apakah bisa refund?
+Bisa H-3, potong 20%% admin. Klik Kelola Booking → Refund.
 Booking.com
 Buka
+COGS
+Choose File
+Ctrl+Shift+R
+FX buffer
 Frankfurter API
-Gagal. Coba lagi.
 IDR
 IDR (Rp)
-Kode promo tidak valid
-Masukkan kode promo
-Memeriksa kode promo...
+Manual
 Midtrans Snap
+Mrs
 NOW() AND (stock_limit IS NULL OR sold_count
 NusaTrip
 OYO
 Open
 PELNI
+Promo
+Promo Liburan Batam
+Property ID
+Resend
 Rp 0
+Rp1.000.000
+Rp2.000.000
+Rp200.000
+Rp3.000.000
 SGD (S$)
+Sandbox
 Singapay (VA)
-Terjadi kesalahan. Coba lagi nanti.
+Test
 Test.php — berisi satu atau lebih fungsi
  *   function test
+Toggle
+Token
 TravelPoints
 Tripay
+URL
+URL" data-testid="brand-social-
 USD ($)
-ada 5 paket
-ada :n paket
-id-ID
+WhatsApp
+Widget ID
+Xendit Sandbox (VA + Kartu)
 · #
